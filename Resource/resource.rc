@@ -1,0 +1,58 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:        samples/samples.rc
+// Purpose:     a standard MSW .rc file for the wxWidgets samples
+// Author:      Vadim Zeitlin
+// Modified by:
+// Created:     04.08.03
+// Copyright:   (c) 2003 Vadim Zeitlin <vadim@wxwidgets.org>
+// Licence:     wxWindows licence
+/////////////////////////////////////////////////////////////////////////////
+
+// this minimal resource file is all what is needed for most of the wxWidgets
+// samples
+
+// note that the icon used by the Explorer (i.e. the programs icon) is the
+// first icon in the executable and the icons are sorted both by their order
+// and alphabetically (!), so put this icon first and give it a name
+// starting with "a"
+
+amadeus ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\favicon.ico"
+
+chapterIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddChapter.ico"
+sceneIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddScene.ico"
+characterIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddCharacter.ico"
+locationIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddLocation.ico"
+
+chapterPng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddChapter.png"
+scenePng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddScene.png"
+characterPng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddCharacter.png"
+locationPng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddLocation.png"
+
+newNote RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddNote.png"
+newImage RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddImage.png"
+resetCenter RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\ResetCenter.png"
+
+arrowRight RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\ArrowRight.png"
+arrowLeft RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\ArrowLeft.png"
+
+leftAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignLeft.png"
+centerAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignCenter.png"
+centerJustAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignCenterJust.png"
+rightAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignRight.png"
+bold RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Bold.png"
+italic RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Italic.png"
+underline RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Underline.png"
+
+savePng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Save.png"
+
+corkBoard RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\CorkBoard.png"
+test RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Teste.png"
+
+// set this to 1 if you don't want to use manifest resource (manifest resource
+// is needed to enable visual styles on Windows XP - see docs/msw/winxp.txt
+// for more information)
+#define wxUSE_NO_MANIFEST 0
+
+// this is not always needed but doesn't hurt (except making the executable
+// very slightly larger): this file contains the standard icons, cursors, ...
+#include "wx/msw/wx.rc"
