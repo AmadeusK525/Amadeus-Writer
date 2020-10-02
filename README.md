@@ -15,4 +15,12 @@
 
   For now you can download the executable from the Release folder and simply run it, it should run on all Windows devices (Mac and Linux builds will come soon). Beware of the fact that the program is very far from finished and you should *not* use it for writing yet, as there is no export option yet, so everything you write in each chapter will be saved but be enssentialy useless (unless you copy them somewhere else manually, but that will result in the loss of bold, italic and underline decorations).
 
-  Note that if you do test it out, your antivirus may block it from saving, as that requires writing data to your computer such as folders, images and files. To overcome that you'll have to figure out a way to prevent your antivirus from blocking it.
+## Notes
+  
+  - If you do test the program yourself, your antivirus may block it from saving, as that requires writing data to your computer such as folders, images and files. To overcome that you'll have to figure out a way to prevent your antivirus from blocking it.
+  
+  - Whenever you save, a file will be generated in the same directory as the one where the executable is located, so it's best to keep the program in a seperate folder. The filename will be 88165468. You shouldn't do anything with it, it helps the program automatically load the last saved project whenever you started, making it easier to just run the executable and have your project ready for use.
+  
+  - When you save a project, a folder will be created in whatever directory you chose. Inside it, ther will be some more folders and a .amp file. To open it, you'll have to open the application, select "File", "Open File" and then choose that .amp file, which contains the necessary information for the project.
+  
+  - One the outlining page, you'll see the corkboard. To move it around, drag it with the right mouse button. You can create notes and add images through the toolbar. To drag thos, use the left mouse button. You can change the colors of the notes by right clicking the bar at the top of each one. To connect elements with nodes, left click the little whit box and drag the node until you reach the back white box of another element. To clear connections, right click any box.
