@@ -410,6 +410,7 @@ void Corkboard::onMove(wxMouseEvent& event) {
         main->Update();
     }
 
+    /*
     if (startDragging) {
         NotesBox* box = new NotesBox(main, main->ScreenToClient(mouseOnScreen), wxDefaultSize, curBox);
 
@@ -425,6 +426,7 @@ void Corkboard::onMove(wxMouseEvent& event) {
         main->Refresh();
         main->Update();
     }
+    */
 
     if (isConnectingA) {
         wxRect rect;
@@ -688,10 +690,12 @@ void Corkboard::paintMain(wxPaintEvent& event) {
         }
     }
 
+    /*
     for (auto it : boxes) {
         it->Refresh();
         it->Update();
     }
+    */
 }
 
 void Corkboard::paintBoxes(wxDC& dc, NotesBox* note) {
