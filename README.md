@@ -13,7 +13,7 @@
   
 ## Where to get it
 
-  For now you can download the executable from the Release folder and simply run it, it should run on all Windows devices (Mac and Linux builds will come soon). Beware of the fact that the program is very far from finished and you should *not* use it for writing, as there is no export option yet, so everything you write in each chapter will be saved but enssentialy useless (unless you copy them somewhere else manually, but that will result in the loss of bold, italic and underline decorations).
+  For now you can download the executable (Amadeus.exe) from the Release folder and simply run it, it should run on all Windows devices (Mac and Linux builds will come soon). Beware of the fact that the program is very far from finished and you should *not* use it for writing, as there is no export option yet, so everything you write in each chapter will be saved but enssentialy useless (unless you copy them somewhere else manually, but that will result in the loss of bold, italic and underline decorations).
 
 ## Notes
   
