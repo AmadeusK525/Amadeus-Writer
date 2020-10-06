@@ -210,7 +210,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     //Initialize maximized
     Maximize();
-    outline->initCork(overview->GetSize(), wxBITMAP_PNG(test).ConvertToImage());
+    outline->initCork(overview->GetSize(), wxBITMAP_PNG(corkboard).ConvertToImage());
     elements->Hide();
     overview->Layout();
 

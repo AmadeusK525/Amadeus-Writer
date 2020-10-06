@@ -2,7 +2,7 @@
 
 #include "wx/panel.h"
 #include "wx/toolbar.h"
-#include "wx/dcbuffer.h"
+#include "wx/dcclient.h"
 
 #include <vector>
 #include <memory>
@@ -80,7 +80,7 @@ public:
     void onMouseCaptureLost(wxMouseCaptureLostEvent& event);
 
     void paintMain(wxPaintEvent& event);
-    void paintBoxes(wxDC& dc, NotesBox* note);
+    void paintBoxes(wxPaintDC& dc, NotesBox* note);
 
     DECLARE_EVENT_TABLE()
 };
