@@ -42,6 +42,10 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     void setAlignCenterJust(wxCommandEvent& event);
     void setAlignRight(wxCommandEvent& event);
 
+    void onUpdateBold(wxUpdateUIEvent& event);
+    void onUpdateItalic(wxUpdateUIEvent& event);
+    void onUpdateUnderline(wxUpdateUIEvent& event);
+
     void setFontSize(wxCommandEvent& event);
 
     void addNote(std::string& note, std::string& noteName, bool isDone);

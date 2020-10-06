@@ -3,7 +3,7 @@
 #include "wx/panel.h"
 #include "wx/richtext/richtextctrl.h"
 #include "wx/sizer.h"
-#include "wx/dcbuffer.h"
+#include "wx/dcclient.h"
 #include "wx/menu.h"
 
 #include <vector>

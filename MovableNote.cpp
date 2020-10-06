@@ -50,6 +50,7 @@ MovableNote::MovableNote(wxWindow* parent, const wxPoint& pos, const wxSize& siz
     arrow->Bind(wxEVT_PAINT, &MovableNote::paintArrow, this);
     arrow->Bind(wxEVT_LEFT_DOWN, &MovableNote::arrowDown, this);
     arrow->SetBackgroundColour((wxColour(80, 80, 80)));
+    arrow->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
     inBut = new wxCheckBox(this, CHECK_In, "");
     outBut = new wxCheckBox(this, CHECK_Out, "");
@@ -308,6 +309,8 @@ void MovableNote::paintArrow(wxPaintEvent& event) {
 
     dc.SetPen(wxPen(wxColour(180, 180, 180), 1.5));
     dc.DrawLine(wxPoint(3, 7), wxPoint(7, 3));
+
+    arrow->SetBackgroundColour((wxColour(80, 80, 80)));
 
     event.Skip(true);
 }

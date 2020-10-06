@@ -194,6 +194,8 @@ void NotesBox::paintBox(wxPaintEvent& event) {
     dc.DrawText(text, wxPoint(15, 2));
 
     corkboard->paintBoxes(dc, this);
+
+    event.Skip();
 }
 
 void NotesBox::paintArrow(wxPaintEvent& event) {
