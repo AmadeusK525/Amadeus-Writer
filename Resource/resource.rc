@@ -16,37 +16,36 @@
 // and alphabetically (!), so put this icon first and give it a name
 // starting with "a"
 
-amadeus ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\favicon.ico"
+amadeus ICON "Assets\\favicon.ico"
 
-chapterIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddChapter.ico"
-sceneIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddScene.ico"
-characterIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddCharacter.ico"
-locationIcon ICON "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddLocation.ico"
+chapterIcon ICON "Assets\\AddChapter.ico"
+sceneIcon ICON "Assets\\AddScene.ico"
+characterIcon ICON "Assets\\AddCharacter.ico"
+locationIcon ICON "Assets\\AddLocation.ico"
 
-chapterPng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddChapter.png"
-scenePng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddScene.png"
-characterPng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddCharacter.png"
-locationPng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddLocation.png"
+chapterPng RCDATA "Assets\\AddChapter.png"
+scenePng RCDATA "Assets\\AddScene.png"
+characterPng RCDATA "Assets\\AddCharacter.png"
+locationPng RCDATA "Assets\\AddLocation.png"
 
-newNote RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddNote.png"
-newImage RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AddImage.png"
-resetCenter RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\ResetCenter.png"
+newNote RCDATA "Assets\\AddNote.png"
+newImage RCDATA "Assets\\AddImage.png"
+resetCenter RCDATA "Assets\\ResetCenter.png"
 
-arrowRight RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\ArrowRight.png"
-arrowLeft RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\ArrowLeft.png"
+arrowRight RCDATA "Assets\\ArrowRight.png"
+arrowLeft RCDATA "Assets\\ArrowLeft.png"
 
-leftAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignLeft.png"
-centerAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignCenter.png"
-centerJustAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignCenterJust.png"
-rightAlign RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\AlignRight.png"
-bold RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Bold.png"
-italic RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Italic.png"
-underline RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Underline.png"
+leftAlign RCDATA "Assets\\AlignLeft.png"
+centerAlign RCDATA "Assets\\AlignCenter.png"
+centerJustAlign RCDATA "Assets\\AlignCenterJust.png"
+rightAlign RCDATA "Assets\\AlignRight.png"
+bold RCDATA "Assets\\Bold.png"
+italic RCDATA "Assets\\Italic.png"
+underline RCDATA "Assets\\Underline.png"
 
-savePng RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Save.png"
+savePng RCDATA "Assets\\Save.png"
 
-corkBoard RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\CorkBoard.png"
-test RCDATA "C:\\wxWidgets-3.1.3\\samples\\Amadeus Writer\\Assets\\Teste.png"
+corkBoard RCDATA "Assets\\CorkBoard.png"
 
 // set this to 1 if you don't want to use manifest resource (manifest resource
 // is needed to enable visual styles on Windows XP - see docs/msw/winxp.txt
