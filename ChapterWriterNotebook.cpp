@@ -16,6 +16,10 @@ EVT_TOOL(TOOL_AlignCenter, ChapterWriterNotebook::setAlignCenter)
 EVT_TOOL(TOOL_AlignCenterJust, ChapterWriterNotebook::setAlignCenterJust)
 EVT_TOOL(TOOL_AlignRight, ChapterWriterNotebook::setAlignRight)
 
+EVT_UPDATE_UI(TOOL_Bold, ChapterWriterNotebook::onUpdateBold)
+EVT_UPDATE_UI(TOOL_Italic, ChapterWriterNotebook::onUpdateItalic)
+EVT_UPDATE_UI(TOOL_Underline, ChapterWriterNotebook::onUpdateUnderline)
+
 EVT_COMBOBOX(TOOL_FontSize, ChapterWriterNotebook::setFontSize)
 
 EVT_TEXT(TEXT_Content, ChapterWriterNotebook::setModified)
@@ -93,97 +97,17 @@ void ChapterWriterNotebook::setModified(wxCommandEvent& event) {
 }
 
 void ChapterWriterNotebook::setBold(wxCommandEvent& event) {
-    if (contentTool->GetToolState(TOOL_Bold)) {
-        wxRichTextSelection sel = content->GetSelection();
-        bool it = content->IsSelectionItalics();
-        bool un = content->IsSelectionUnderlined();
-
-        if (sel.IsValid()) {
-            if (!content->IsSelectionBold()) {
-                content->ApplyBoldToSelection();
-            } else {
-                wxRichTextRange range = sel.GetRange();
-
-                content->Replace(range.GetStart(), range.GetEnd() + 1, content->GetStringSelection());
-                content->SetSelection(sel);
-
-                if (it)
-                    content->ApplyItalicToSelection();
-
-                if (un)
-                    content->ApplyUnderlineToSelection();
-            }
-            contentTool->ToggleTool(TOOL_Bold, false);
-        } else {
-            content->BeginBold();
-        }
-    } else {
-        content->EndBold();
-    }
-
+    content->ApplyBoldToSelection();
     setModified(event);
 }
 
 void ChapterWriterNotebook::setItalic(wxCommandEvent& event) {
-    if (contentTool->GetToolState(TOOL_Italic)) {
-        wxRichTextSelection sel = content->GetSelection();
-        bool bo = content->IsSelectionBold();
-        bool un = content->IsSelectionUnderlined();
-
-        if (sel.IsValid()) {
-            if (!content->IsSelectionItalics()) {
-                content->ApplyItalicToSelection();
-            } else {
-                wxRichTextRange range = sel.GetRange();
-
-                content->Replace(range.GetStart(), range.GetEnd() + 1, content->GetStringSelection());
-                content->SetSelection(sel);
-
-                if (bo)
-                    content->ApplyBoldToSelection();
-
-                if (un)
-                    content->ApplyUnderlineToSelection();
-            }
-            contentTool->ToggleTool(TOOL_Italic, false);
-        } else {
-            content->BeginItalic();
-        }
-    } else {
-        content->EndItalic();
-    }
-
+    content->ApplyItalicToSelection();
     setModified(event);
 }
 
 void ChapterWriterNotebook::setUnderlined(wxCommandEvent& event) {
-    if (contentTool->GetToolState(TOOL_Underline)) {
-        wxRichTextSelection sel = content->GetSelection();
-        bool bo = content->IsSelectionBold();
-        bool it = content->IsSelectionItalics();
-
-        if (sel.IsValid()) {
-            if (!content->IsSelectionUnderlined()) {
-                content->ApplyUnderlineToSelection();
-            } else {
-                wxRichTextRange range = sel.GetRange();
-
-                content->Replace(range.GetStart(), range.GetEnd() + 1, content->GetStringSelection());
-                content->SetSelection(sel);
-
-                if (bo)
-                    content->ApplyBoldToSelection();
-
-                if (it)
-                    content->ApplyItalicToSelection();
-            }
-            contentTool->ToggleTool(TOOL_Underline, false);
-        }
-        content->BeginUnderline();
-    } else {
-        content->EndUnderline();
-    }
-
+    content->ApplyUnderlineToSelection();
     setModified(event);
 }
 
@@ -201,6 +125,18 @@ void ChapterWriterNotebook::setAlignCenterJust(wxCommandEvent& event) {
 
 void ChapterWriterNotebook::setAlignRight(wxCommandEvent& event) {
     content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
+}
+
+void ChapterWriterNotebook::onUpdateBold(wxUpdateUIEvent& event) {
+    event.Check(content->IsSelectionBold());
+}
+
+void ChapterWriterNotebook::onUpdateItalic(wxUpdateUIEvent& event) {
+    event.Check(content->IsSelectionItalics());
+}
+
+void ChapterWriterNotebook::onUpdateUnderline(wxUpdateUIEvent& event) {
+    event.Check(content->IsSelectionUnderlined());
 }
 
 void ChapterWriterNotebook::setFontSize(wxCommandEvent& event) {

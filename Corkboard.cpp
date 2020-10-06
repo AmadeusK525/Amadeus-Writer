@@ -38,11 +38,14 @@ Corkboard::Corkboard(wxWindow* parent): wxPanel(parent) {
     pan = new wxPanel(this);
 
     main = new ImagePanel(pan, wxDefaultPosition, wxSize(200000, 200000));
+    //main->SetDoubleBuffered(true);
     main->Bind(wxEVT_RIGHT_DOWN, &Corkboard::onRightDown, this);
     main->Bind(wxEVT_LEFT_DOWN, &Corkboard::onLeftDown, this);
     main->Bind(wxEVT_LEFT_DCLICK, &Corkboard::onDoubleClick, this);
     main->Bind(wxEVT_MOUSE_CAPTURE_LOST, &Corkboard::onMouseCaptureLost, this);
     main->Bind(wxEVT_PAINT, &Corkboard::paintMain, this);
+    //main->Bind(wxEVT_ERASE_BACKGROUND, &Corkboard::onEraseBackground, this);
+
     //main->Bind(wxEVT_SCROLLWIN_LINEDOWN, &Corkboard::onScrollDown, this);
     //main->Bind(wxEVT_SCROLLWIN_LINEUP, &Corkboard::onScrollUp, this);
 
@@ -569,7 +572,7 @@ void Corkboard::onMouseCaptureLost(wxMouseCaptureLostEvent& event) {
 
 void Corkboard::paintMain(wxPaintEvent& event) {
     wxPaintDC dc(main);
-
+    
     dc.SetPen(wxPen(wxColour(240, 240, 240), 4));
     wxPoint c1;
     wxPoint c2;
@@ -696,9 +699,11 @@ void Corkboard::paintMain(wxPaintEvent& event) {
         it->Update();
     }
     */
+    
+    event.Skip();
 }
 
-void Corkboard::paintBoxes(wxDC& dc, NotesBox* note) {
+void Corkboard::paintBoxes(wxPaintDC& dc, NotesBox* note) {
     dc.SetPen(wxPen(wxColour(240, 240, 240), 4));
     wxPoint c1;
     wxPoint c2;
