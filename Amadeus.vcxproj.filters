@@ -9,6 +9,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{28f3cd53-1c50-4c99-81e4-bf5a0ac18956}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc">
@@ -16,115 +19,163 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MyApp.cpp">
+    <ClCompile Include="src\Chapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainFrame.cpp">
+    <ClCompile Include="src\ChapterCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CharacterCreator.cpp">
+    <ClCompile Include="src\ChaptersGrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChapterCreator.cpp">
+    <ClCompile Include="src\ChaptersNotebook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LocationCreator.cpp">
+    <ClCompile Include="src\ChapterWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp">
+    <ClCompile Include="src\ChapterWriterNotebook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Location.cpp">
+    <ClCompile Include="src\Character.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImagePanel.cpp">
+    <ClCompile Include="src\CharacterCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CharacterShowcase.cpp">
+    <ClCompile Include="src\CharacterShowcase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Chapter.cpp">
+    <ClCompile Include="src\Corkboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainNotebook.cpp">
+    <ClCompile Include="src\CorkboardImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LocationShowcase.cpp">
+    <ClCompile Include="src\DragList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChaptersGrid.cpp">
+    <ClCompile Include="src\ImagePanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChapterWriter.cpp">
+    <ClCompile Include="src\Location.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DragList.cpp">
+    <ClCompile Include="src\LocationCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Note.cpp">
+    <ClCompile Include="src\LocationShowcase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChapterWriterNotebook.cpp">
+    <ClCompile Include="src\MainFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Overview.cpp">
+    <ClCompile Include="src\MainNotebook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Release.cpp">
+    <ClCompile Include="src\MovableNote.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChaptersNotebook.cpp">
+    <ClCompile Include="src\MyApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Outline.cpp">
+    <ClCompile Include="src\Note.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Corkboard.cpp">
+    <ClCompile Include="src\NotesBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MovableNote.cpp">
+    <ClCompile Include="src\Outline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NotesBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CorkboardImage.cpp">
+    <ClCompile Include="src\Release.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MyApp.h" />
-    <ClInclude Include="MainFrame.h" />
-    <ClInclude Include="CharacterCreator.h" />
-    <ClInclude Include="ChapterCreator.h" />
-    <ClInclude Include="LocationCreator.h" />
-    <ClInclude Include="Character.h" />
-    <ClInclude Include="Location.h" />
-    <ClInclude Include="ImagePanel.h" />
-    <ClInclude Include="CharacterShowcase.h" />
-    <ClInclude Include="Chapter.h" />
-    <ClInclude Include="MainNotebook.h" />
-    <ClInclude Include="LocationShowcase.h" />
-    <ClInclude Include="ChaptersGrid.h" />
-    <ClInclude Include="ChapterWriter.h" />
-    <ClInclude Include="DragList.h" />
-    <ClInclude Include="wxmemdbg.h" />
-    <ClInclude Include="Note.h" />
-    <ClInclude Include="ChapterWriterNotebook.h" />
-    <ClInclude Include="Overview.h" />
-    <ClInclude Include="Release.h" />
-    <ClInclude Include="ChaptersNotebook.h" />
-    <ClInclude Include="Outline.h" />
-    <ClInclude Include="Corkboard.h" />
-    <ClInclude Include="MovableNote.h" />
-    <ClInclude Include="NotesBox.h" />
-    <ClInclude Include="CorkboardImage.h" />
-    <ClInclude Include="Resource\resource.h" />
+    <ClInclude Include="src\Chapter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChapterCreator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChaptersGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChaptersNotebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChapterWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChapterWriterNotebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Character.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CharacterCreator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CharacterShowcase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Corkboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CorkboardImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DragList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ImagePanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Location.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LocationCreator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LocationShowcase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MainFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MainNotebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovableNote.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MyApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Note.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NotesBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Outline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Release.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wxmemdbg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpp.hint" />
     <None Include="..\resource.bin">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>
