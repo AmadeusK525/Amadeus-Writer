@@ -26,5 +26,7 @@
   - One the outlining page, you'll see the corkboard. To move it around, drag it with the right mouse button. You can create notes and add images through the toolbar. To drag thos, use the left mouse button. You can change the colors of the notes by right clicking the bar at the top of each one. To connect elements with nodes, left click the little whit box and drag the node until you reach the back white box of another element. To clear connections, right click any box.
   
   - The program opens on a blank screen, which is the "Overview" page, the main page. I haven't designed it yet, so it may look weird initially. It'll be like the main hub, with useful information about the current state of the book, characters, etc.
+  
+  - The file size is currently pretty large, 20Mb+, but that's because all of the assets (icons, background images..) are embedded in the executable for convinence reasons. The application by itself takes about 6Mb of storage (for now).
 
   - For now you can test out everything from free, but someday when I finishe it I do plan to put it up for sale. The price won't be anything huge though, something like $5.00 or $10.00, just so I'm a little compensated for the work I've done. I hope you all enjoy writing with it as much as I am writing it! 
