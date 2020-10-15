@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\sample.rc">
+    <ResourceCompile Include="Resource\resource.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -119,7 +119,7 @@
     <ClInclude Include="MovableNote.h" />
     <ClInclude Include="NotesBox.h" />
     <ClInclude Include="CorkboardImage.h" />
-    <ClInclude Include="..\resource.h" />
+    <ClInclude Include="Resource\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
