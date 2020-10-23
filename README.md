@@ -5,7 +5,7 @@
   
   My vision is to have a program that can be utilized in every step of the writing process, incluing the research, the outline, the writing itself, keeping track of characters, locations, items, etc. I plan to add tools such as a drawing board for sketching your own drawings, an integraded video player, a built-in Google extension, a timeline, online social features and more. It will take a while since I'm currently very busy with other things.
   
-  For now, you can already create characters and locations, specifying lots of attributes in each of them, you can use the famous corkboard for outlining, creating notes, changing colors, adding images, connecting stuff around... You can create chapters and write in each of them, changing the font weight and style, keep track of the characters and locations present in the chapter, add notes to it (which can be green or red, you can change the color anytime). There is a save option to save all of these components and the chapter writing has an autosave function, including word count.
+  For now, you can already create characters and locations, specifying lots of attributes in each of them, you can use the famous corkboard for outlining, creating notes, changing colors, adding images, connecting stuff around... You can create chapters and write in each of them, changing the font weight and style, keep track of the characters and locations present in the chapter, add notes to it (which can be green or red, you can change the color anytime). There is a save option to save all of these components and the chapter writing has an autosave function, including word count. There are screenshots and the end.
   
 ## Contribute to the project
   
@@ -30,3 +30,11 @@
   - The file size is currently pretty large, 20Mb+, but that's because all of the assets (icons, background images..) are embedded in the executable for convinence reasons. The application by itself takes about 6Mb of storage (for now).
 
   - For now you can test out everything from free, but someday when I finishe it I do plan to put it up for sale. The price won't be anything huge though, something like $5.00 or $10.00, just so I'm a little compensated for the work I've done. I hope you all enjoy writing with it as much as I am writing it! 
+
+## Screenshots
+
+![Characters showcase](Assets/Screenshots/Character-Showcase?raw=true "Characters showcase")
+![Characters showcase](Assets/Screenshots/Corkboard-Showcase?raw=true "Corkboard showcase")
+![Characters showcase](Assets/Screenshots/Chapter-Table-Showcase?raw=true "Chapter table showcase")
+![Characters showcase](Assets/Screenshots/Chapter-Writer-Showcase?raw=true "Chapter writer showcase")
+![Characters showcase](Assets/Screenshots/Chapter-Notes-Showcase?raw=true "Chapter notes showcase")
