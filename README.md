@@ -33,7 +33,7 @@
 
 ## Screenshots
 
-![Characters showcase](Assets/Screenshots/Character-Showcase?raw=true "Characters showcase")
+![Characters showcase](Assets/Screenshots/Character-Showcase)
 ![Characters showcase](Assets/Screenshots/Corkboard-Showcase?raw=true "Corkboard showcase")
 ![Characters showcase](Assets/Screenshots/Chapter-Table-Showcase?raw=true "Chapter table showcase")
 ![Characters showcase](Assets/Screenshots/Chapter-Writer-Showcase?raw=true "Chapter writer showcase")
