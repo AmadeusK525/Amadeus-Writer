@@ -14,6 +14,7 @@ chapterPng RCDATA "Assets\\AddChapter.png"
 scenePng RCDATA "Assets\\AddScene.png"
 characterPng RCDATA "Assets\\AddCharacter.png"
 locationPng RCDATA "Assets\\AddLocation.png"
+fullScreenPng RCDATA "Assets\\FullScreen.png"
 
 newNote RCDATA "Assets\\AddNote.png"
 newImage RCDATA "Assets\\AddImage.png"
