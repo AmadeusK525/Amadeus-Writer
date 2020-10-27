@@ -30,6 +30,7 @@
 using std::string;
 using std::vector;
 
+// Declaring some classes which will be used later. If I don't, there are some issues when including them.
 class MainToolBar;
 class ChaptersGrid;
 class ChaptersNotebook;
@@ -39,7 +40,6 @@ class MainFrame : public wxFrame {
 private:
     wxPanel* panel = nullptr;
 
-    wxPanel* mainPanel = nullptr;
     wxPanel* overview = nullptr;
     MainNotebook* elements = nullptr;
     ChaptersNotebook* chaptersNote = nullptr;
@@ -54,6 +54,7 @@ private:
     wxMenu* editMenu = nullptr;
     wxMenu* helpMenu = nullptr;
 
+    //These are paths used for loading stuff, saving, etc.
     string currentDocFile = "";
     string previousDocFile = "dummy";
     string previousDocFolder = "dummy";
@@ -84,6 +85,10 @@ public:
 
     ChaptersNotebook* getNote() { return chaptersNote; }
 
+    // These three go together when saving / loading. setLast writes to a file the path to the most recently
+    // worked on project. When booting up the application, the getLast function will
+    // be called and it will get the written path, opening up the project automatically,
+    // with no need to load it. Makes things more convenient.
     void setLast();
     void getLast();
     void loadFile();
@@ -95,6 +100,8 @@ public:
     void saveFileAs(wxCommandEvent& event);
 
     void editTitle(wxCommandEvent& event);
+
+    void fullScreen(wxCommandEvent& event);
 
     void newChar(wxCommandEvent& event);
     void newChap(wxCommandEvent& event);
@@ -134,6 +141,7 @@ enum {
     TOOL_NewLocation,
     TOOL_Search,
     TOOL_Save,
+    TOOL_FullScreen,
 
     MENU_New,
     MENU_Open,
