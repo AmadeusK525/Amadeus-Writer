@@ -124,7 +124,7 @@ void ChapterWriterNotebook::setAlignCenter(wxCommandEvent& event) {
 }
 
 void ChapterWriterNotebook::setAlignCenterJust(wxCommandEvent& event) {
-    content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
+    content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
 }
 
 void ChapterWriterNotebook::setAlignRight(wxCommandEvent& event) {
