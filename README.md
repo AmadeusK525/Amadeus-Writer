@@ -14,6 +14,10 @@
 ## Where to get it
 
   For now you can download the executable (Amadeus.exe) from the Release folder and simply run it, it should run on all Windows devices (Mac and Linux builds will come soon). Beware of the fact that the program is very far from finished and you should *not* use it for writing, as there is no export option yet, so everything you write in each chapter will be saved but enssentialy useless (unless you copy them somewhere else manually, but that will result in the loss of bold, italic and underline decorations).
+  
+## Build
+
+  Only Boost and wxWidgets are used on the project, so you'll need to have those linked. If your wxWidgets is located at C:\wxWidgets-3.1.3 and your Boost is at C:\Boost\boost- you can just open the solution and the project will most likely be ready. Otherwise, you'll have to link everything yourself. You can alternatively edit the Amadeus.vcxproj file in a standard word processor. Just Find and Replace all C:\Boost\boost_1_73_0 with wherever your Boost library is located, as well as C:\wxWidgets-3.1.3 with wherever your wxWidgets library is located. Then, just open the solution.
 
 ## Notes
   
