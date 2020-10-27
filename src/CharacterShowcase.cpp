@@ -5,11 +5,11 @@
 CharacterShowcase::CharacterShowcase(wxWindow* parent):
     wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL) {
 
-    role = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxTE_READONLY | wxTE_CENTER);
+    role = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxTE_CENTER | wxBORDER_RAISED);
     role->SetBackgroundColour(wxColour(220, 220, 220));
     role->SetFont(wxFont(wxFontInfo(12).Bold()));
 
-    label1 = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxTE_READONLY | wxTE_CENTER);
+    label1 = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxTE_CENTER | wxBORDER_SIMPLE);
     label1->SetBackgroundColour(wxColour(250, 250, 250));
     label1->SetFont(wxFont(wxFontInfo(12).Bold()));
 
@@ -21,19 +21,19 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     wxStaticText* label2 = new wxStaticText(this, -1, "Age:");
     label2->SetFont(wxFont(wxFontInfo(12).Bold()));
     label2->SetBackgroundColour(wxColour(190, 190, 190));
-    age = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(45, 20), wxTE_READONLY);
+    age = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(45, 20), wxTE_READONLY | wxBORDER_SIMPLE);
     age->SetFont(wxFont(wxFontInfo(11)));
     age->SetBackgroundColour(wxColour(225, 225, 225));
     wxStaticText* label3 = new wxStaticText(this, -1, "Sex:");
     label3->SetFont(wxFont(wxFontInfo(12).Bold()));
     label3->SetBackgroundColour(wxColour(190, 190, 190));
-    sex = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxTE_READONLY);
+    sex = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE);
     sex->SetFont(wxFont(wxFontInfo(11)));
     sex->SetBackgroundColour(wxColour(225, 225, 225));
     wxStaticText* label4 = new wxStaticText(this, -1, "Height:");
     label4->SetFont(wxFont(wxFontInfo(12).Bold()));
     label4->SetBackgroundColour(wxColour(190, 190, 190));
-    height = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxTE_READONLY);
+    height = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxTE_READONLY | wxBORDER_SIMPLE);
     height->SetFont(wxFont(wxFontInfo(11)));
     height->SetBackgroundColour(wxColour(225, 225, 225));
 
@@ -48,13 +48,13 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     wxStaticText* label5 = new wxStaticText(this, -1, "Nickname:");
     label5->SetFont(wxFont(wxFontInfo(12).Bold()));
     label5->SetBackgroundColour(wxColour(190, 190, 190));
-    nick = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(100, 20), wxTE_READONLY);
+    nick = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 20), wxTE_READONLY | wxBORDER_SIMPLE);
     nick->SetFont(wxFont(wxFontInfo(11)));
     nick->SetBackgroundColour(wxColour(225, 225, 225));
     wxStaticText* label6 = new wxStaticText(this, -1, "Nationality:");
     label6->SetFont(wxFont(wxFontInfo(12).Bold()));
     label6->SetBackgroundColour(wxColour(190, 190, 190));
-    nat = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(120, 20), wxTE_READONLY);
+    nat = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(120, 20), wxTE_READONLY | wxBORDER_SIMPLE);
     nat->SetFont(wxFont(wxFontInfo(11)));
     nat->SetBackgroundColour(wxColour(225, 225, 225));
 
@@ -67,7 +67,7 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     wxStaticText* label7 = new wxStaticText(this, -1, "Appearance");
     label7->SetFont(wxFont(wxFontInfo(12).Bold()));
     label7->SetBackgroundColour(wxColour(180, 180, 180));
-    appearance = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_MULTILINE | wxTE_NO_VSCROLL);
+    appearance = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
     appearance->SetFont(wxFont(wxFontInfo(9)));
     appearance->SetBackgroundColour(wxColour(225, 225, 225));
 
@@ -111,35 +111,40 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     this->FitInside();
 
     this->SetScrollRate(20, 20);
+
+    appearance->SetCursor(wxCURSOR_DEFAULT);
+    personality->SetCursor(wxCURSOR_DEFAULT);
+    backstory->SetCursor(wxCURSOR_DEFAULT);
 }
 
 void CharacterShowcase::setData(wxImage& set, vector<string>& charData) {
-    if (set.IsOk()) {
+    if (set.IsOk())
         image->setImage(set);
-    } else {
+    else
         image->ClearBackground();
-    }
 
-    label1->SetValue(charData[0]);
-    sex->SetValue(charData[1]);
-    if (charData[1] == "Female") {
+    label1->SetLabel(charData[0]);
+    sex->SetLabel(charData[1]);
+
+    if (charData[1] == "Female")
         sex->SetBackgroundColour(wxColour(255, 182, 193));
-    } else if (charData[1] == "Male") {
+    else if (charData[1] == "Male")
         sex->SetBackgroundColour(wxColour(139, 186, 255));
-    } else {
-        sex->SetBackgroundColour(wxColour(220, 220 ,220));
-    }
-    age->SetValue(charData[2]);
-    height->SetValue(charData[4]);
-    nat->SetValue(charData[3]);
-    nick->SetValue(charData[5]);
-    role->SetValue(charData[6]);
+    else
+        sex->SetBackgroundColour(wxColour(220, 220, 220));
+    
+    sex->Refresh();
 
-    if (charData[6] == "Main") {
+    age->SetLabel(charData[2]);
+    height->SetLabel(charData[4]);
+    nat->SetLabel(charData[3]);
+    nick->SetLabel(charData[5]);
+    role->SetLabel(charData[6]);
+
+    if (charData[6] == "Main")
         role->SetBackgroundColour(wxColour(230, 60, 60));
-    } else {
+    else
         role->SetBackgroundColour(wxColour(220, 220, 220));
-    }
 
     appearance->SetValue(charData[7]);
     personality->SetValue(charData[8]);
