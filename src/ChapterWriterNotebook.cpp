@@ -19,6 +19,10 @@ EVT_TOOL(TOOL_AlignRight, ChapterWriterNotebook::setAlignRight)
 EVT_UPDATE_UI(TOOL_Bold, ChapterWriterNotebook::onUpdateBold)
 EVT_UPDATE_UI(TOOL_Italic, ChapterWriterNotebook::onUpdateItalic)
 EVT_UPDATE_UI(TOOL_Underline, ChapterWriterNotebook::onUpdateUnderline)
+EVT_UPDATE_UI(TOOL_AlignLeft, ChapterWriterNotebook::onUpdateAlignLeft)
+EVT_UPDATE_UI(TOOL_AlignCenter, ChapterWriterNotebook::onUpdateAlignCenter)
+EVT_UPDATE_UI(TOOL_AlignCenterJust, ChapterWriterNotebook::onUpdateAlignCenterJust)
+EVT_UPDATE_UI(TOOL_AlignRight, ChapterWriterNotebook::onUpdateAlignRight)
 
 EVT_COMBOBOX(TOOL_FontSize, ChapterWriterNotebook::setFontSize)
 
@@ -139,8 +143,24 @@ void ChapterWriterNotebook::onUpdateUnderline(wxUpdateUIEvent& event) {
     event.Check(content->IsSelectionUnderlined());
 }
 
+void ChapterWriterNotebook::onUpdateAlignLeft(wxUpdateUIEvent& event) {
+    event.Check(content->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
+}
+
+void ChapterWriterNotebook::onUpdateAlignCenter(wxUpdateUIEvent& event) {
+    event.Check(content->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
+}
+
+void ChapterWriterNotebook::onUpdateAlignCenterJust(wxUpdateUIEvent& event) {
+    event.Check(content->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
+}
+
+void ChapterWriterNotebook::onUpdateAlignRight(wxUpdateUIEvent& event) {
+    event.Check(content->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
+}
+
 void ChapterWriterNotebook::setFontSize(wxCommandEvent& event) {
-    content->BeginFontSize(15);
+    content->BeginFontSize(event.GetInt());
 }
 
 void ChapterWriterNotebook::addNote(std::string& noteContent, std::string& noteName, bool isDone) {
@@ -250,9 +270,9 @@ void ChapterWriterNotebook::setGreen(wxCommandEvent& event) {
         sp = dynamic_cast<wxPanel*>(notesSizer->GetItem(i)->GetWindow());
 
         if (sp == np) {
-            sp->SetBackgroundColour(wxColour(0, 210, 0));
-            np->Refresh();
             it->isDone = true;
+            np->SetBackgroundColour(wxColour(0, 210, 0));
+            np->Refresh();
             break;
         }
 
