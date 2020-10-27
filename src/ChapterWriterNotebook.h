@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CHAPTERWRITERNOTEBOOK_H_
+#define CHAPTERWRITERNOTEBOOK_H_
+
 #include "wx/aui/aui.h"
 #include "wx/richtext/richtextctrl.h"
 #include "wx/richtext/richtextstyles.h"
@@ -80,3 +83,5 @@ enum {
     MENU_Delete,
     TEXT_Content
 };
+
+#endif

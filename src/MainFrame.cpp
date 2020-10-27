@@ -35,6 +35,7 @@ EVT_TOOL(TOOL_NewCharacter, MainFrame::newChar)
 EVT_TOOL(TOOL_NewLocation, MainFrame::newLoc)
 
 EVT_TOOL(TOOL_Save, MainFrame::saveFile)
+EVT_MENU(TOOL_FullScreen, MainFrame::fullScreen)
 
 EVT_MENU(wxID_ABOUT, MainFrame::about)
 
@@ -60,10 +61,14 @@ bool MainFrame::isSaved;
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
     wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE) {
 
+    // This entire constructor makes the Main Frame of the application look like it does.
+    // I see no vantage in doing all of this in a separate "Init()" function and
+    // calling it in the constructor.
+
     currentDocFolder = "";
     Hide();
 
-    mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
+    wxPanel* mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
     mainPanel->SetBackgroundColour(wxColour(150, 150, 150));
 
     panel = new wxPanel(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
@@ -87,6 +92,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     wxFont font(wxFontInfo(16).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
 
+    // These are the buttons located on the left pane.
     wxButton* button0 = new wxButton(pageSel, BUTTON_Overview, "Overview");
     button0->SetFont(font);
     button0->SetBackgroundColour(wxColour(255, 255, 255));
@@ -134,7 +140,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     topSizer->Add(panel2, 1, wxGROW);
     topSizer->Add(panel, 4, wxEXPAND);
 
-    //Create menus and such
+    // Create menus and such
 
     mainMenu = new wxMenuBar();
 
@@ -171,7 +177,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     mainMenu->Append(helpMenu, "Help");
     SetMenuBar(mainMenu);
 
-    //Creating toolbar and setting tools
+    // Creating toolbar and setting tools
 
     toolBar = new wxToolBar(mainPanel, wxID_ANY);
     toolBar->SetBackgroundColour(wxColour(120, 120, 120));
@@ -183,8 +189,12 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     toolBar->AddSeparator();
     toolBar->AddSeparator();
     toolBar->AddTool(TOOL_Save, "", wxBITMAP_PNG(savePng), "Save project", wxITEM_NORMAL);
+    toolBar->AddSeparator();
+    toolBar->AddCheckTool(TOOL_FullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
 
     toolBar->AddStretchableSpace();
+
+    // Initializing the search bar. It's actually owned by the another class, but it's initialized in this constructor.
 
     elements->searchBar = new wxSearchCtrl(toolBar, TOOL_Search, wxEmptyString, wxDefaultPosition, wxSize(250, -1), wxTE_CAPITALIZE);
     elements->searchBar->ShowCancelButton(true);
@@ -201,14 +211,16 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     SetIcon(wxICON(amadeus));
 
-    //Set file state as saved
+    // Set file state as saved
     isSaved = true;
 
+    // This is just initializing the vector which will be used for the save system. Since the entire
+    // system will probably be replaced later down the line, don't worry too much about it right now.
     for (int i = 0; i < 4; i++) {
         saved.push_back(0);
     }
 
-    //Initialize maximized
+    // Initialize maximized
     Maximize();
     outline->initCork(overview->GetSize(), wxBITMAP_PNG(corkboard).ConvertToImage());
     elements->Hide();
@@ -216,10 +228,12 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     Show();
 
+    // This gets the most recent worked on project and loads it.
     getLast();
 }
 
 void MainFrame::newFile(wxCommandEvent& event) {
+    // Checking whether the project is saved before starting a new one.
     if (!isSaved) {
         wxMessageDialog* saveBefore = new wxMessageDialog(this, "Do you want to save before creating a new project?",
             "New project", wxYES_NO | wxCANCEL | wxYES_DEFAULT | wxICON_EXCLAMATION);
@@ -245,10 +259,12 @@ void MainFrame::newFile(wxCommandEvent& event) {
 
     saved.clear();
 
+    // Initializing the vector used in the save system with 0's again
     for (int i = 0; i < 4; i++) {
         saved.push_back(0);
     }
 
+    // Updating everything that needs to be reset.
     characters.clear();
     locations.clear();
     chaptersNote->getGrid()->clearAll();
@@ -256,6 +272,7 @@ void MainFrame::newFile(wxCommandEvent& event) {
     MainNotebook::charList->DeleteAllItems();
     MainNotebook::locList->DeleteAllItems();
 
+    // Clearing all paths and setting window title as generic.
     currentDocFolder = "a";
     currentDocFile = "";
     previousDocFile = "dummy";
@@ -290,17 +307,26 @@ void MainFrame::openFile(wxCommandEvent& event) {
 }
 
 void MainFrame::saveFile(wxCommandEvent& event) {
+    // First, check whether the current path of the project exists. If it doesn't,
+    // the "saveFileAs" is called, which calls back the "saveAs" function.
     if (!fs::exists(currentDocFolder)) {
         MainFrame::saveFileAs(event);
     } else {
         std::ofstream file(currentDocFile, std::ios::binary | std::ios::out);
 
+        // This for loop writes how many characters there are, how many locations, how many chapters
+        // and how many items (not yet implemented). It'll be used when actually loading them.
         for (unsigned int i = 0; i < 4; i++) {
             file.write((char*)&saved[i], sizeof(int));
         }    
 
+        // This saves the number of elements that are present in the outline page,
+        // it'll be used when actually loading them.
         outline->saveQuantities(file);
 
+        // Get number of all "stuff" on the project and initialize gauge
+        // with the max number being that one, so that it can be incremented
+        // by one each time you load something.
         int progressSize = saved[0] + saved[1] + saved[2] + saved[3]
             + outline->getCount();
         int currentSize = 0;
@@ -310,6 +336,9 @@ void MainFrame::saveFile(wxCommandEvent& event) {
 
         string imagePath;
 
+        // This for loop calls the save funtion of each character and saves it, besides
+        // saving the image (if it exists) that is attached to it. It increments the gauge
+        // by one each time.
         for (auto it = characters.begin(); it != characters.end(); it++) {
             it->second.save(file);
 
@@ -322,6 +351,7 @@ void MainFrame::saveFile(wxCommandEvent& event) {
             progress->Update(currentSize++);
         }
 
+        // Same as the above but for locations.
         for (auto it = locations.begin(); it != locations.end(); it++) {
             it->second.save(file);
 
@@ -334,35 +364,42 @@ void MainFrame::saveFile(wxCommandEvent& event) {
             progress->Update(currentSize++);
         }
 
+        // Same as the above but for chapters. No images are saved.
         for (auto it = chaptersNote->getGrid()->chapters.begin(); it != chaptersNote->getGrid()->chapters.end(); it++) {
             it->save(file);
             progress->Update(currentSize++);
         }
 
+        // This calls the save function of the outline page, which saves the corkboard
+        // elements and will futurely save other stuff.
         outline->saveOutline(file, currentSize, progress);
 
         file.close();
 
-        std::ofstream note1(currentImagePath + "\\Characters\\!!!Note!!!.txt", std::ios::out);
-        note1 << "Please, NEVER change the names of the images nor move them somewhere else!";
-        note1.close();
+        // The following lines are just notes written in each directory warning the
+        // user not to move stuff around, since that'll break the save system (which
+        // is something I'd like to avoid, so I'm looking into making it
+        // way more difficult to break.
+        std::ofstream note(currentImagePath + "\\Characters\\!!!Note!!!.txt", std::ios::out);
+        note << "Please, NEVER change the names of the images nor move them somewhere else!";
+        note.close();
 
-        progress->Update(progressSize);
+        note.open(currentImagePath + "\\Locations\\!!!Note!!!.txt", std::ios::out);
+        note << "Please, NEVER change the names of the images nor move them somewhere else!";
+        note.close();
 
-        std::ofstream note2(currentImagePath + "\\Locations\\!!!Note!!!.txt", std::ios::out);
-        note2 << "Please, NEVER change the names of the images nor move them somewhere else!";
-        note2.close();
+        note.open(currentImagePath + "\\Outline\\!!!Note!!!.txt", std::ios::out);
+        note << "Please, NEVER change the names of the images nor move them somewhere else!";
+        note.close();
 
-        std::ofstream note3(currentImagePath + "\\Outline\\!!!Note!!!.txt", std::ios::out);
-        note3 << "Please, NEVER change the names of the images nor move them somewhere else!";
-        note3.close();
-
-        std::ofstream note4(currentDocFolder + "\\Chapters\\!!!Note!!!.txt", std::ios::out);
-        note4 << "Please, NEVER change the names of the chapters nor move them somewhere else!";
-        note4.close();
+        note.open(currentDocFolder + "\\Chapters\\!!!Note!!!.txt", std::ios::out);
+        note << "Please, NEVER change the names of the chapters nor move them somewhere else!";
+        note.close();
 
         progress->Destroy();
 
+        // Sets save state as saved, updates the current title and all that good stuff.
+        // The attribute "saveDialog" currently does nothing.
         isSaved = true;
         showDialog = true;
 
@@ -480,6 +517,10 @@ void MainFrame::editTitle(wxCommandEvent& event) {
     Show();
 }
 
+void MainFrame::fullScreen(wxCommandEvent& event) {
+    ShowFullScreen(!IsFullScreen());
+}
+
 void MainFrame::about(wxCommandEvent& event) {
     wxAboutDialogInfo info;
     info.SetName("AmadeusWriter");
@@ -498,6 +539,10 @@ void MainFrame::notSaved(wxCommandEvent& event) {
     isSaved = false;
     event.Skip();
 }
+
+// These 5 "on******" functions are for swithcing the viewable panel when the buttons on the left pane are clicked;
+// They simply remove the shown panel from the sizer, add the requested one and
+// Hide everything else. The search bar is only shown when the Elements page is visible.
 
 void MainFrame::onOverview(wxCommandEvent& event) {
     if (!overview->IsShown()) {
@@ -608,6 +653,7 @@ void MainFrame::onOutline(wxCommandEvent& event) {
     event.Skip();
 }
 
+// These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
 void MainFrame::newChar(wxCommandEvent& event) {
     CharacterCreator* create = new CharacterCreator(this, elements);
     create->Show();
@@ -629,17 +675,23 @@ void MainFrame::newLoc(wxCommandEvent& event) {
 }
 
 void MainFrame::search(wxCommandEvent& event) {
+    // Get which page (Characters, Locations or Items) is currently displayed.
     int sel = elements->GetSelection();
     int item;
+
+    // Get the searched string.
     string nameSearch = event.GetString();
     wxMenu menu;
 
+    // Switch accordingly to current page being displayed, then either display a message
+    // saying that it couldn't be found or select it on the list and make it visible.
     switch(sel) {
     case 0:
         item = elements->charList->FindItem(-1, nameSearch, true);
 
         if (item == -1) {
-            wxMessageBox("Character """ + nameSearch + """ could not be found", "Not found!", wxOK | wxICON_INFORMATION | wxCENTER);
+            wxMessageBox("Character """ + nameSearch + """ could not be found", "Not found!",
+                wxOK | wxICON_INFORMATION | wxCENTER);
         } else {
             elements->charList->Select(item, true);
             elements->charList->EnsureVisible(item);
@@ -650,9 +702,16 @@ void MainFrame::search(wxCommandEvent& event) {
 
     case 1:
         item = elements->locList->FindItem(-1, event.GetString(), true);
-        elements->locList->Select(item, true);
-        elements->locList->EnsureVisible(item);
-        elements->locList->SetFocus();
+        
+        if (item == -1) {
+            wxMessageBox("Location """ + nameSearch + """ could not be found", "Not found!",
+                wxOK | wxICON_INFORMATION | wxCENTER);
+        } else {
+            elements->locList->Select(item, true);
+            elements->locList->EnsureVisible(item);
+            elements->locList->SetFocus();
+        }
+
         break;
 
     case 2:
@@ -664,6 +723,11 @@ void MainFrame::search(wxCommandEvent& event) {
 }
 
 void MainFrame::setLast() {
+    // This function is called at every save and it writes a file named 88165468
+    // next to the executable. In the file, there are paths to the project.
+    // These paths are used when loading so that the user doesn't need to manually
+    // load a project at startup, it automatically loads the last project that was worked on.
+
     std::ofstream last("88165468", std::ios::binary | std::ios::out);
 
     int size = currentDocFile.size() + 1;
@@ -687,6 +751,8 @@ void MainFrame::setLast() {
 }
 
 void MainFrame::getLast() {
+    // Nothing special here, just reads the 88165468 file and, if succesful, calls the load function.
+    // Else, just clear the paths and load a standard new project.
     std::ifstream last("88165468", std::ios::binary | std::ios::in);
 
     if (last.is_open()) {
@@ -738,6 +804,9 @@ void MainFrame::getLast() {
 }
 
 void MainFrame::loadFile() {
+    // This is the load function. It works by getting the amount of characters
+    // (written at the beginning of the "saveAs" function), then calling the load
+    // character function that amount of times. It does that for locations, chapters, notes and the corkboard as well.
     std::ifstream file(currentDocFile, std::ios::in | std::ios::binary);
 
     saved.clear();
@@ -824,5 +893,7 @@ void MainFrame::loadFile() {
 }
 
 void MainFrame::callUpdate(wxCommandEvent& event) {
+    // I don't think I actually use this function since I made "updateLB" static,
+    // will probably get rid of it after further investigating.
     MainNotebook::updateLB();
 }
