@@ -16,6 +16,9 @@ EVT_TOOL(TOOL_AlignCenter, ChapterWriterNotebook::setAlignCenter)
 EVT_TOOL(TOOL_AlignCenterJust, ChapterWriterNotebook::setAlignCenterJust)
 EVT_TOOL(TOOL_AlignRight, ChapterWriterNotebook::setAlignRight)
 
+EVT_TOOL(TOOL_ChapterFullScreen, ChapterWriterNotebook::onFullScreen)
+EVT_TOOL(TOOL_PageView, ChapterWriterNotebook::onPageView)
+
 EVT_UPDATE_UI(TOOL_Bold, ChapterWriterNotebook::onUpdateBold)
 EVT_UPDATE_UI(TOOL_Italic, ChapterWriterNotebook::onUpdateItalic)
 EVT_UPDATE_UI(TOOL_Underline, ChapterWriterNotebook::onUpdateUnderline)
@@ -61,7 +64,7 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
         if (i > 12)
             i++;
 
-        sizes.Add(std::to_string(i));
+        sizes.Add(std::to_string(i) + " pts");
     }
     sizes.Add("36");
     sizes.Add("48");
@@ -71,6 +74,9 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
         sizes, wxCB_READONLY | wxCB_SIMPLE);
 
     contentTool->AddControl(fontSize);
+    contentTool->AddStretchableSpace();
+    contentTool->AddCheckTool(TOOL_ChapterFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
+    //contentTool->AddCheckTool()
 
     contentTool->Realize();
 
@@ -89,8 +95,6 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
 
     AddPage(mainPanel, "First View");
     AddPage(corkBoard, "Chapter notes");
-
-    //content->BeginParagraphSpacing(30, 30);
 
     wxTimer timer(this, 12345);
     timer.Start(10000);
@@ -130,6 +134,12 @@ void ChapterWriterNotebook::setAlignCenterJust(wxCommandEvent& event) {
 void ChapterWriterNotebook::setAlignRight(wxCommandEvent& event) {
     content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
 }
+
+void ChapterWriterNotebook::onFullScreen(wxCommandEvent& event) {
+    parent->toggleFullScreen();
+}
+
+void ChapterWriterNotebook::onPageView(wxCommandEvent& event) {}
 
 void ChapterWriterNotebook::onUpdateBold(wxUpdateUIEvent& event) {
     event.Check(content->IsSelectionBold());
