@@ -82,6 +82,7 @@ public:
 
     void timerEvent(wxTimerEvent& event);
 
+    void toggleFullScreen() { ShowFullScreen(!IsFullScreen()); }
     void onClose(wxCloseEvent& event);
 
     DECLARE_EVENT_TABLE()

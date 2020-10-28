@@ -227,9 +227,6 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     overview->Layout();
 
     Show();
-
-    // This gets the most recent worked on project and loads it.
-    getLast();
 }
 
 void MainFrame::newFile(wxCommandEvent& event) {
@@ -728,7 +725,7 @@ void MainFrame::setLast() {
     // These paths are used when loading so that the user doesn't need to manually
     // load a project at startup, it automatically loads the last project that was worked on.
 
-    std::ofstream last("88165468", std::ios::binary | std::ios::out);
+    std::ofstream last(executablePath + "\\88165468", std::ios::binary | std::ios::out);
 
     int size = currentDocFile.size() + 1;
 
@@ -753,7 +750,7 @@ void MainFrame::setLast() {
 void MainFrame::getLast() {
     // Nothing special here, just reads the 88165468 file and, if succesful, calls the load function.
     // Else, just clear the paths and load a standard new project.
-    std::ifstream last("88165468", std::ios::binary | std::ios::in);
+    std::ifstream last(executablePath + "\\88165468", std::ios::binary | std::ios::in);
 
     if (last.is_open()) {
 
@@ -892,8 +889,37 @@ void MainFrame::loadFile() {
     isSaved = true;
 }
 
+bool MainFrame::loadFileFromOpenWith(string& path) {
+    string fileName;
+    string backslash("\\");
+    for (int i = path.size() - 1; i > 0; i--) {
+        if (path[i] == backslash) {
+            for (int j = i + 1; j < path.size(); j++) {
+                fileName += path[j];
+            }
+            break;
+        }
+    }
+
+    currentDocFile = path;
+
+    string temp(currentDocFile);
+
+    currentDocFolder = temp.erase(path.size() - fileName.size() - 1);
+    currentImagePath = currentDocFolder + "\\Images";
+    currentTitle = fileName;
+    previousTitle = currentTitle;
+
+    loadFile();
+    return true;
+}
+
+void MainFrame::setExecPath(string& path) {
+    executablePath = path.erase(path.size() - 12);
+}
+
+// I don't think I actually use this function since I made "updateLB" static,
+// will probably get rid of it after further investigating.
 void MainFrame::callUpdate(wxCommandEvent& event) {
-    // I don't think I actually use this function since I made "updateLB" static,
-    // will probably get rid of it after further investigating.
     MainNotebook::updateLB();
 }
