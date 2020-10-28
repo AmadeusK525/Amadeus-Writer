@@ -61,6 +61,7 @@ private:
     string currentImagePath = "";
     string currentTitle = "New Amadeus project";
     string previousTitle = "";
+    string executablePath = "";
 
     wxToolBar* toolBar = nullptr;
 
@@ -92,6 +93,9 @@ public:
     void setLast();
     void getLast();
     void loadFile();
+
+    bool loadFileFromOpenWith(string& path);
+    void setExecPath(string& path);
 
     void quit(wxCommandEvent& event);
     void newFile(wxCommandEvent& event);

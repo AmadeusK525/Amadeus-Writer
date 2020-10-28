@@ -45,6 +45,9 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     void setAlignCenterJust(wxCommandEvent& event);
     void setAlignRight(wxCommandEvent& event);
 
+    void onFullScreen(wxCommandEvent& event);
+    void onPageView(wxCommandEvent& event);
+
     void onUpdateBold(wxUpdateUIEvent& event);
     void onUpdateItalic(wxUpdateUIEvent& event);
     void onUpdateUnderline(wxUpdateUIEvent& event);
@@ -78,7 +81,8 @@ enum {
     TOOL_AlignCenter,
     TOOL_AlignCenterJust,
     TOOL_FontSize,
-
+    TOOL_ChapterFullScreen,
+    TOOL_PageView,
 
     MENU_Delete,
     TEXT_Content
