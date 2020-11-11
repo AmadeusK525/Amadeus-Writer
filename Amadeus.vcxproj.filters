@@ -49,9 +49,6 @@
     <ClCompile Include="src\Corkboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CorkboardImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\DragList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -73,22 +70,19 @@
     <ClCompile Include="src\MainNotebook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MovableNote.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\MyApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Note.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\NotesBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Outline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CorkboardCanvas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -123,9 +117,6 @@
     <ClInclude Include="src\Corkboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\CorkboardImage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\DragList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -147,16 +138,10 @@
     <ClInclude Include="src\MainNotebook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\MovableNote.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\MyApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Note.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\NotesBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Outline.h">
@@ -171,6 +156,7 @@
     <ClInclude Include="src\wxmemdbg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\CorkboardCanvas.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resource.bin">

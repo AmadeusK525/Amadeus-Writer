@@ -4,8 +4,7 @@
 #endif
 #include "MyApp.h"
 
-#include "wx/cmdline.h"
-#include "wx/filename.h"
+#include <wx/filename.h>
 #include <iostream>
 
 IMPLEMENT_APP(MyApp)
@@ -14,7 +13,6 @@ bool MyApp::OnInit() {
     wxInitAllImageHandlers();
 
     MainFrame* mainFrame = new MainFrame("New Amadeus project", wxDefaultPosition, wxSize(800, 700));
-
     mainFrame->Show(true);
     SetTopWindow(mainFrame);
     
@@ -26,6 +24,8 @@ bool MyApp::OnInit() {
     // it gets the most recent worked on project and loads it.
     if (argc > 1)
         mainFrame->loadFileFromOpenWith((string)argv.GetArguments()[1]);
+    else
+        mainFrame->getLast();
     
     return true;
 }

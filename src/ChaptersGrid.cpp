@@ -25,6 +25,12 @@ void ChaptersGrid::addChapter(Chapter& chapter, int& pos) {
         chapters.push_back(chapter);
     }
 
+    // Redeclare all chapter positions  
+    int i = 1;
+    for (auto it : chapters) {
+        it.position = i++;
+    }
+
     MainFrame::saved[2]++;
     addButton();
     MainFrame::isSaved = false;
@@ -48,7 +54,7 @@ void ChaptersGrid::addButton() {
 }
 
 void ChaptersGrid::openChapter(wxCommandEvent& event) {
-    if (!boost::filesystem::is_directory(MainFrame::currentDocFolder + "\\Chapters")) {
+    if (!boost::filesystem::is_directory(MainFrame::currentDocFolder + "\\Files")) {
         wxMessageDialog* first = new wxMessageDialog(parent, "It seems like you haven't saved your project yet.\nPlease do before writing any chapters.",
             "Save before", wxOK | wxCANCEL | wxOK_DEFAULT);
         first->SetOKCancelLabels("Save", "Cancel");
