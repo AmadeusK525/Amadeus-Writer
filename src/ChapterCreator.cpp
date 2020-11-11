@@ -126,7 +126,7 @@ void ChapterCreator::create(wxCommandEvent& event) {
 
     int pos = nchapList->FindItem(-1, tempName);
 
-    chapter.position = pos;
+    chapter.position = pos + 1;
 
     grid->addChapter(chapter, pos);
 

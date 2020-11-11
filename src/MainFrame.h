@@ -3,15 +3,15 @@
 #ifndef MAINFRAME_H_
 #define MAINFRAME_H_
 
-#include "wx/menu.h"
-#include "wx/textctrl.h"
-#include "wx/srchctrl.h"
-#include "wx/listctrl.h"
-#include "wx/notebook.h"
-#include "wx/gdicmn.h"
-#include "wx/aboutdlg.h"
-#include "wx/toolbook.h"
-#include "wx/progdlg.h"
+#include <wx/menu.h>
+#include <wx/textctrl.h>
+#include <wx/srchctrl.h>
+#include <wx/listctrl.h>
+#include <wx/notebook.h>
+#include <wx/gdicmn.h>
+#include <wx/aboutdlg.h>
+#include <wx/toolbook.h>
+#include <wx/progdlg.h>
 
 #include <map>
 #include <string>

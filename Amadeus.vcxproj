@@ -136,7 +136,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\include\wx\html;C:\wxWidgets-3.1.3\include\wx\xml;C:\wxWidgets-3.1.3\include\wx\richtext;C:\wxWidgets-3.1.3\include\wx\aui;C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories);C:\wxWidgets-3.1.3\include\msvc;C:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\wxSF\include;$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;%(AdditionalIncludeDirectories);$(WXWIN)\include\msvc;C:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -154,9 +154,9 @@
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28ud_wxsf.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxWidgets-3.1.3\lib\vc_lib;C:\wxWidgets-3.1.3\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_lib\;$(WXWIN)\lib\vc_lib;$(WXWIN)\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -173,7 +173,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\include\wx\html;C:\wxWidgets-3.1.3\include\wx\xml;C:\wxWidgets-3.1.3\include\wx\richtext;C:\wxWidgets-3.1.3\include\wx\aui;C:\wxWidgets-3.1.3\include\msvc;C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;NDEBUG;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -190,9 +190,9 @@
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxWidgets-3.1.3\lib\vc_lib;C:\wxWidgets-3.1.3\lib\vc_lib\mswu;C:\wxWidgets-3.1.3\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_lib\;$(WXWIN)\lib\vc_lib;$(WXWIN)\lib\vc_lib\mswu;%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -210,7 +210,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0;C:\wxWidgets-3.1.3\src\html;C:\wxWidgets-3.1.3\src\xml;C:\wxWidgets-3.1.3\src\richtext</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\wxSF\include;C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0;C:\wxWidgets-3.1.3\src\html;C:\wxWidgets-3.1.3\src\xml;C:\wxWidgets-3.1.3\src\richtext</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;_UNICODE;WXUSINGDLL;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -228,9 +228,9 @@
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxWidgets-3.1.3\build\msw\vc_mswuddll\richtext;C:\wxWidgets-3.1.3\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib;C:\wxWidgets-3.1.3\build\msw;C:\wxWidgets-3.1.3\build\msw\vc_mswudll\richtext</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_lib\;C:\wxWidgets-3.1.3\build\msw\vc_mswuddll\richtext;C:\wxWidgets-3.1.3\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib;C:\wxWidgets-3.1.3\build\msw;C:\wxWidgets-3.1.3\build\msw\vc_mswudll\richtext</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -246,7 +246,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0;C:\wxWidgets-3.1.3\src\html;C:\wxWidgets-3.1.3\src\xml;C:\wxWidgets-3.1.3\src\richtext</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\wxSF\include;C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0;C:\wxWidgets-3.1.3\src\html;C:\wxWidgets-3.1.3\src\xml;C:\wxWidgets-3.1.3\src\richtext</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;NDEBUG;_UNICODE;WXUSINGDLL;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -262,9 +262,9 @@
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.3\lib\$(wxOutDirName)\$(wxIncSubDir);C:\wxWidgets-3.1.3\include;.;C:\wxWidgets-3.1.3\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxWidgets-3.1.3\build\msw\vc_mswuddll\richtext;C:\wxWidgets-3.1.3\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib;C:\wxWidgets-3.1.3\build\msw;C:\wxWidgets-3.1.3\build\msw\vc_mswudll\richtext</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_lib\;C:\wxWidgets-3.1.3\build\msw\vc_mswuddll\richtext;C:\wxWidgets-3.1.3\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib;C:\wxWidgets-3.1.3\build\msw;C:\wxWidgets-3.1.3\build\msw\vc_mswudll\richtext</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -432,7 +432,7 @@
     <ClCompile Include="src\Character.cpp" />
     <ClCompile Include="src\CharacterShowcase.cpp" />
     <ClCompile Include="src\Corkboard.cpp" />
-    <ClCompile Include="src\CorkboardImage.cpp" />
+    <ClCompile Include="src\CorkboardCanvas.cpp" />
     <ClCompile Include="src\DragList.cpp" />
     <ClCompile Include="src\ImagePanel.cpp" />
     <ClCompile Include="src\Location.cpp" />
@@ -440,11 +440,9 @@
     <ClCompile Include="src\LocationShowcase.cpp" />
     <ClCompile Include="src\MainFrame.cpp" />
     <ClCompile Include="src\MainNotebook.cpp" />
-    <ClCompile Include="src\MovableNote.cpp" />
     <ClCompile Include="src\MyApp.cpp" />
     <ClCompile Include="src\CharacterCreator.cpp" />
     <ClCompile Include="src\Note.cpp" />
-    <ClCompile Include="src\NotesBox.cpp" />
     <ClCompile Include="src\Outline.cpp" />
     <ClCompile Include="src\Release.cpp" />
   </ItemGroup>
@@ -459,7 +457,7 @@
     <ClInclude Include="src\Character.h" />
     <ClInclude Include="src\CharacterShowcase.h" />
     <ClInclude Include="src\Corkboard.h" />
-    <ClInclude Include="src\CorkboardImage.h" />
+    <ClInclude Include="src\CorkboardCanvas.h" />
     <ClInclude Include="src\DragList.h" />
     <ClInclude Include="src\ImagePanel.h" />
     <ClInclude Include="src\Location.h" />
@@ -467,11 +465,9 @@
     <ClInclude Include="src\LocationShowcase.h" />
     <ClInclude Include="src\MainFrame.h" />
     <ClInclude Include="src\MainNotebook.h" />
-    <ClInclude Include="src\MovableNote.h" />
     <ClInclude Include="src\MyApp.h" />
     <ClInclude Include="src\CharacterCreator.h" />
     <ClInclude Include="src\Note.h" />
-    <ClInclude Include="src\NotesBox.h" />
     <ClInclude Include="src\Outline.h" />
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\wxmemdbg.h" />
