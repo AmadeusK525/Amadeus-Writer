@@ -22,8 +22,6 @@ private:
 public:
     Outline(wxWindow* parent);
 
-    void initCork(const wxSize& size, wxImage& image) { corkboard->initMain(size, image); };
-
     void clearAll();
     int  getCount() { return non + noi + nob; }
 
