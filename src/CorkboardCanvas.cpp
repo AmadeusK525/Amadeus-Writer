@@ -53,7 +53,7 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 	// Reset everything.
 	if (m_isDraggingRight) {
 		m_isDraggingRight = false;
-		wxCursor cursor(wxCURSOR_DEFAULT);
+		SetCursor(wxCursor(wxCURSOR_DEFAULT));
 		ReleaseCapture();
 	} else {
 
@@ -72,7 +72,7 @@ void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 	if (m_beginDraggingRight) {
 		m_isDraggingRight = true;
 		m_beginDraggingRight = false;
-		wxCursor cursor(wxCURSOR_CLOSED_HAND);
+		SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
 	}
 
 	if (m_isDraggingRight) {
