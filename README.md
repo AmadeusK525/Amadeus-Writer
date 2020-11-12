@@ -17,7 +17,7 @@
   
 ## Build
 
-  Only Boost and wxWidgets are used on the project, so you'll need to have those linked. If your wxWidgets is located at C:\wxWidgets-3.1.3 and your Boost is at C:\Boost\boost- you can just open the solution and the project will most likely be ready. Otherwise, you'll have to link everything yourself. You can alternatively edit the Amadeus.vcxproj file in a standard word processor. Just Find and Replace all C:\Boost\boost_1_73_0 with wherever your Boost library is located, as well as C:\wxWidgets-3.1.3 with wherever your wxWidgets library is located. Then, just open the solution.
+  wxWidgets, wxShapeFramework and Boost are used on the project, so you'll need to have those linked. If your Boost is at C:\Boost\boost_1_73_0, your wxShapeFramework at C:\wxSF and you have wxWidgets' environment variable setup, you can just open the solution and the project will most likely be ready. Otherwise, you'll have to link everything yourself. You can alternatively edit the Amadeus.vcxproj file in a standard word processor. Just Find and Replace all C:\Boost\boost_1_73_0 with wherever your Boost library is located, as well as C:\wxSF with wherever your wxShapeFramework library is located. Then, just open the solution.
 
 ## Notes
   
