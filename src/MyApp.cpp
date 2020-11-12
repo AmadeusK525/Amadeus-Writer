@@ -1,13 +1,8 @@
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
 #include "MyApp.h"
 
-#include <wx/filename.h>
 #include <iostream>
 
-IMPLEMENT_APP(MyApp)
+wxIMPLEMENT_APP(MyApp);
 
 bool MyApp::OnInit() {
     wxInitAllImageHandlers();

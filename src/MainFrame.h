@@ -1,7 +1,7 @@
-#pragma once
-
 #ifndef MAINFRAME_H_
 #define MAINFRAME_H_
+
+#pragma once
 
 #include <wx/menu.h>
 #include <wx/textctrl.h>
@@ -38,6 +38,7 @@ class Release;
 
 class MainFrame : public wxFrame {
 private:
+    wxPanel* mainPanel = nullptr;
     wxPanel* panel = nullptr;
 
     wxPanel* overview = nullptr;
@@ -47,6 +48,9 @@ private:
     Outline* outline = nullptr;
 
     wxPanel* pageSel = nullptr;
+
+    wxBoxSizer* holderSizer = nullptr;
+    bool isFrameFullScreen = false;
 
     wxMenuBar* mainMenu = nullptr;
     wxMenu* projectMenu = nullptr;
@@ -126,6 +130,8 @@ public:
     void onOutline(wxCommandEvent& event);
 
     void search(wxCommandEvent& event);
+
+    void corkboardFullScreen(bool fs, wxWindow* toolBar, wxWindow* canvas);
 
     DECLARE_EVENT_TABLE()
 };

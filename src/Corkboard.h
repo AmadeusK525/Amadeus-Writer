@@ -24,6 +24,8 @@ private:
     Outline* parent = nullptr;
     wxToolBar* toolBar = nullptr;
 
+    wxBoxSizer* corkboardSizer = nullptr;
+
     CorkboardCanvas* canvas = nullptr;
     wxSFDiagramManager manager;
 
@@ -34,6 +36,10 @@ public:
 
     void addNote(wxCommandEvent& event);
     void addImage(wxCommandEvent& event);
+    void callFullScreen(wxCommandEvent& event);
+
+    void fullScreen(bool fs);
+    wxToolBar* getToolbar() { return toolBar; }
 
     DECLARE_EVENT_TABLE()
 };
@@ -41,7 +47,8 @@ public:
 enum {
     TOOL_NewNote,
     TOOL_NewImage,
-    TOOL_ResetCenter
+    TOOL_ResetCenter,
+    TOOL_CorkboardFullScreen
 };
 
 #endif
