@@ -5,10 +5,14 @@
 
 #include <wx\wxsf\wxShapeFramework.h>
 #include "Corkboard.h"
+#include "MainFrame.h"
 
 class CorkboardCanvas : public wxSFShapeCanvas {
 private:
 	Corkboard* parent = nullptr;
+	MainFrame* mainFrame = nullptr;
+
+	bool m_isFullScreen = false;
 
 	bool m_beginDraggingRight = false;
 	bool m_isDraggingRight = false;
@@ -19,6 +23,8 @@ public:
 	CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent, wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
 		long style = wxHSCROLL | wxVSCROLL);
+
+	void doFullScreen(bool fs);
 
 	virtual void OnRightDown(wxMouseEvent& event);
 	virtual void OnRightUp(wxMouseEvent& event);

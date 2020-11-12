@@ -69,8 +69,12 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     currentDocFolder = "";
     Hide();
 
-    wxPanel* mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
+    mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
     mainPanel->SetBackgroundColour(wxColour(150, 150, 150));
+
+    holderSizer = new wxBoxSizer(wxHORIZONTAL);
+    holderSizer->Add(mainPanel, wxSizerFlags(1).Expand());
+    SetSizer(holderSizer);
 
     panel = new wxPanel(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
     panel->Show();
@@ -208,7 +212,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     ver = new wxBoxSizer(wxVERTICAL);
     ver->Add(toolBar, 0, wxGROW);
     ver->Add(topSizer, 1, wxGROW);
-    mainPanel->SetSizerAndFit(ver);
+    mainPanel->SetSizer(ver);
 
     SetIcon(wxICON(amadeus));
 
@@ -514,6 +518,7 @@ void MainFrame::editTitle(wxCommandEvent& event) {
 
 void MainFrame::fullScreen(wxCommandEvent& event) {
     ShowFullScreen(!IsFullScreen());
+    isFrameFullScreen = !isFrameFullScreen;
 }
 
 void MainFrame::about(wxCommandEvent& event) {
@@ -714,6 +719,27 @@ void MainFrame::search(wxCommandEvent& event) {
     case 3:
         break;
     }
+}
+
+void MainFrame::corkboardFullScreen(bool doFullScreen, wxWindow* toolBar, wxWindow* canvas) {
+    mainPanel->Show(!doFullScreen);
+    
+    if (doFullScreen) {
+        holderSizer->Replace(mainPanel, outline->getCorkboard());
+
+        ShowFullScreen(true);
+    } else {
+        holderSizer->Replace(outline->getCorkboard(), mainPanel);
+        
+        if (!isFrameFullScreen)
+            ShowFullScreen(false);
+    }
+    
+    SetSizer(holderSizer);
+
+    Layout();
+    Update();
+    Refresh(true);
 }
 
 void MainFrame::setLast() {

@@ -1,4 +1,5 @@
 #include "CorkboardCanvas.h"
+#include "MyApp.h"
 
 #include <wx\wx.h>
 
@@ -6,10 +7,13 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	wxWindowID id, const wxPoint& pos, const wxSize& size, long style) :
 	wxSFShapeCanvas(manager, parent, id, pos, size, style) {
 
+	mainFrame = (MainFrame*)wxGetApp().GetTopWindow();
+	this->parent = (Corkboard*)parent;
+
 	// Fill background with gradient color.
 	AddStyle(sfsGRADIENT_BACKGROUND);
 	SetGradientFrom(wxColour(255, 240, 200));
-	SetGradientTo(wxColour(255, 213, 121));
+	SetGradientTo(wxColour(255, 180, 100));
 
 	// Canvas background can be printed/ommited during the canvas printing job.
 	AddStyle(sfsPRINT_BACKGROUND);
@@ -35,6 +39,18 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	Bind(wxEVT_MOUSE_CAPTURE_LOST, &CorkboardCanvas::OnMouseCaptureLost, this);
 }
 
+void CorkboardCanvas::doFullScreen(bool fs) {
+	if (fs) {
+		parent->fullScreen(fs);
+		mainFrame->corkboardFullScreen(fs, parent->getToolbar(), this);
+	} else {
+		mainFrame->corkboardFullScreen(fs, parent->getToolbar(), this);
+		parent->fullScreen(fs);
+	}
+
+	m_isFullScreen = !m_isFullScreen;
+}
+
 void CorkboardCanvas::OnRightDown(wxMouseEvent& event) {
 	// Set begin dragging state as true and calculate current mouse position and current
 	// scrollbar position.
@@ -54,15 +70,17 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 	if (m_isDraggingRight) {
 		m_isDraggingRight = false;
 		SetCursor(wxCursor(wxCURSOR_DEFAULT));
-		ReleaseCapture();
 	} else {
 
 	}
 
+	if (HasCapture())
+		ReleaseCapture();
+
 	m_beginDraggingRight = false;
 
 	// Call default behaviour.
-	wxSFShapeCanvas::OnRightUp(event);
+	//wxSFShapeCanvas::OnRightUp(event);
 	event.Skip();
 }
 
@@ -108,7 +126,7 @@ void CorkboardCanvas::OnMouseWheel(wxMouseEvent& event) {
 void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 	switch (event.GetKeyCode()) {
 	case WXK_F11:
-
+		doFullScreen(!m_isFullScreen);
 		break;
 	}
 
@@ -119,5 +137,4 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 
 void CorkboardCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
 	m_isDraggingRight = false;
-	event.Skip();
 }

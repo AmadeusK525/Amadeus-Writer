@@ -7,10 +7,16 @@
 namespace fs = boost::filesystem;
 
 Outline::Outline(wxWindow* parent) : wxNotebook(parent, -1) {
-    corkboard = new Corkboard(this);
+    corkHolder = new wxPanel(this);
+    corkboard = new Corkboard(corkHolder);
     timeline = new wxPanel(this);
 
-    AddPage(corkboard, "Corkboard");
+    // Hack for doing corkboard fullscreen
+    corkHolderSizer = new wxBoxSizer(wxVERTICAL);
+    corkHolderSizer->Add(corkboard, wxSizerFlags(1).Expand());
+    corkHolder->SetSizer(corkHolderSizer);
+
+    AddPage(corkHolder, "Corkboard");
     AddPage(timeline, "Timeline");
 }
 

@@ -156,7 +156,9 @@
     <ClInclude Include="src\wxmemdbg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\CorkboardCanvas.h" />
+    <ClInclude Include="src\CorkboardCanvas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resource.bin">
