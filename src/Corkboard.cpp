@@ -36,9 +36,6 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
     manager.AcceptShape("wxSFAllShapes");
     canvas = new CorkboardCanvas(&manager, this);
 
-    canvas->AddStyle(wxSFShapeCanvas::sfsGRID_USE);
-    canvas->AddStyle(wxSFShapeCanvas::sfsGRID_SHOW);
-
     corkboardSizer = new wxBoxSizer(wxVERTICAL);
     corkboardSizer->Add(toolBar, wxSizerFlags(0).Expand().Border(wxALL, 1));
     corkboardSizer->Add(canvas, wxSizerFlags(1).Expand());
@@ -48,7 +45,7 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
 
 void Corkboard::addNote(wxCommandEvent& event) {
     wxSFShapeBase* pShape =
-        manager.AddShape(CLASSINFO(wxSFRectShape),
+        manager.AddShape(CLASSINFO(wxSFRoundRectShape),
         wxPoint(wxGetMousePosition().x + 50, wxGetMousePosition().y + 50));
 
     if (pShape) {
@@ -57,6 +54,9 @@ void Corkboard::addNote(wxCommandEvent& event) {
         pShape->AcceptChild
         ("wxSFRectShape");
     }
+
+    // Show shadows only on the topmost shapes.
+    canvas->ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
     // ... and then perform standard
     // operations provided by the shape
     // canvas:
