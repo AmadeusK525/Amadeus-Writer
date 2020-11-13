@@ -10,10 +10,14 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	mainFrame = (MainFrame*)wxGetApp().GetTopWindow();
 	this->parent = (Corkboard*)parent;
 
+	// Remove grid lines.
+	RemoveStyle(sfsGRID_SHOW);
+	RemoveStyle(sfsGRID_USE);
+
 	// Fill background with gradient color.
 	AddStyle(sfsGRADIENT_BACKGROUND);
-	SetGradientFrom(wxColour(255, 240, 200));
-	SetGradientTo(wxColour(255, 180, 100));
+	SetGradientFrom(wxColour(255, 250, 220));
+	SetGradientTo(wxColour(240, 150, 70));
 
 	// Canvas background can be printed/ommited during the canvas printing job.
 	AddStyle(sfsPRINT_BACKGROUND);
@@ -21,22 +25,21 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	// Disable mouse wheel scrolling so it can be used for zooming.
 	EnableScrolling(false, false);
 	
-	// Set distance between grid lines
-	SetGridLineMult(10);
-
 	// Process mousewheel for zoom scrolling and set min and max scale.
 	AddStyle(sfsPROCESS_MOUSEWHEEL);
 	SetMinScale(0.1);
 	SetMaxScale(2);
-
-	// Show shadows only on the topmost shapes.
-	ShowShadows(true, shadowTOPMOST);
 
 	// Specify accepted shapes.
 	GetDiagramManager()->ClearAcceptedShapes();
 	GetDiagramManager()->AcceptShape(wxT("All"));
 
 	Bind(wxEVT_MOUSE_CAPTURE_LOST, &CorkboardCanvas::OnMouseCaptureLost, this);
+
+	// Use wxGC for drawing everything. This looks a lot nicer, but may be
+	// slower, but imo definitely worth keeping on.
+	wxSFShapeCanvas::EnableGC(true);
+	Refresh(true);
 }
 
 void CorkboardCanvas::doFullScreen(bool fs) {
