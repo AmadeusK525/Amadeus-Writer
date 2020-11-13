@@ -22,6 +22,9 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	// Canvas background can be printed/ommited during the canvas printing job.
 	AddStyle(sfsPRINT_BACKGROUND);
 
+	SetShadowFill(wxBrush(wxColour(110, 70, 60)));
+	SetShadowOffset(wxRealPoint(3.5, 3.5));
+
 	// Disable mouse wheel scrolling so it can be used for zooming.
 	EnableScrolling(false, false);
 	
