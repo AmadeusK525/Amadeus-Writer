@@ -1,4 +1,5 @@
 #include "CorkboardCanvas.h"
+#include "AutoWrapTextShape.h"
 #include "MyApp.h"
 
 #include <wx\wx.h>
@@ -22,6 +23,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	// Canvas background can be printed/ommited during the canvas printing job.
 	AddStyle(sfsPRINT_BACKGROUND);
 
+	// Edited default shadow.
 	SetShadowFill(wxBrush(wxColour(110, 70, 60)));
 	SetShadowOffset(wxRealPoint(3.5, 3.5));
 
@@ -35,14 +37,13 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 
 	// Specify accepted shapes.
 	GetDiagramManager()->ClearAcceptedShapes();
-	GetDiagramManager()->AcceptShape(wxT("All"));
+	GetDiagramManager()->AcceptShape("All");
 
 	Bind(wxEVT_MOUSE_CAPTURE_LOST, &CorkboardCanvas::OnMouseCaptureLost, this);
 
 	// Use wxGC for drawing everything. This looks a lot nicer, but may be
 	// slower, but imo definitely worth keeping on.
 	wxSFShapeCanvas::EnableGC(true);
-	Refresh(true);
 }
 
 void CorkboardCanvas::doFullScreen(bool fs) {
@@ -55,6 +56,16 @@ void CorkboardCanvas::doFullScreen(bool fs) {
 	}
 
 	m_isFullScreen = !m_isFullScreen;
+}
+
+void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
+	AutoWrapTextShape::willCountLines(false);
+	wxSFShapeCanvas::OnLeftDown(event);
+}
+
+void CorkboardCanvas::OnLeftUp(wxMouseEvent& event) {
+	AutoWrapTextShape::willCountLines(true);
+	wxSFShapeCanvas::OnLeftUp(event);
 }
 
 void CorkboardCanvas::OnRightDown(wxMouseEvent& event) {
@@ -112,21 +123,12 @@ void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 }
 
 void CorkboardCanvas::OnMouseWheel(wxMouseEvent& event) {
+	AutoWrapTextShape::willCountLines(false);
+
 	// Call default behaviour.
+	event.SetControlDown(true);
 	wxSFShapeCanvas::OnMouseWheel(event);
-
-	// Calculate and apply zoom.
-	float newScale = GetScale() + (float)event.GetWheelRotation() / (1500.0 / GetScale());
-
-	if (newScale <= 0.05)
-		SetScale(0.05);
-	else if (newScale >= 2)
-		SetScale(2);
-	else
-		SetScale(newScale);
-
-	Refresh(false);
-	event.Skip();
+	event.SetControlDown(false);
 }
 
 void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {

@@ -423,6 +423,7 @@
     <ResourceCompile Include="Resource\resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AutoWrapTextShape.cpp" />
     <ClCompile Include="src\Chapter.cpp" />
     <ClCompile Include="src\ChapterCreator.cpp" />
     <ClCompile Include="src\ChaptersNotebook.cpp" />
@@ -443,11 +444,13 @@
     <ClCompile Include="src\MyApp.cpp" />
     <ClCompile Include="src\CharacterCreator.cpp" />
     <ClCompile Include="src\Note.cpp" />
+    <ClCompile Include="src\NoteShape.cpp" />
     <ClCompile Include="src\Outline.cpp" />
     <ClCompile Include="src\Release.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\resource.h" />
+    <ClInclude Include="src\AutoWrapTextShape.h" />
     <ClInclude Include="src\Chapter.h" />
     <ClInclude Include="src\ChapterCreator.h" />
     <ClInclude Include="src\ChaptersNotebook.h" />
@@ -468,6 +471,7 @@
     <ClInclude Include="src\MyApp.h" />
     <ClInclude Include="src\CharacterCreator.h" />
     <ClInclude Include="src\Note.h" />
+    <ClInclude Include="src\NoteShape.h" />
     <ClInclude Include="src\Outline.h" />
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\wxmemdbg.h" />
