@@ -26,6 +26,8 @@ public:
 
 	void doFullScreen(bool fs);
 
+	virtual void OnLeftDown(wxMouseEvent& event);
+	virtual void OnLeftUp(wxMouseEvent& event);
 	virtual void OnRightDown(wxMouseEvent& event);
 	virtual void OnRightUp(wxMouseEvent& event);
 	virtual void OnMouseMove(wxMouseEvent& event);
