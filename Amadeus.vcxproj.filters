@@ -11,6 +11,7 @@
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{28f3cd53-1c50-4c99-81e4-bf5a0ac18956}</UniqueIdentifier>
+      <Extensions>h</Extensions>    
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +86,12 @@
     <ClCompile Include="src\CorkboardCanvas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\NoteShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AutoWrapTextShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Chapter.h">
@@ -157,6 +164,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CorkboardCanvas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NoteShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AutoWrapTextShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

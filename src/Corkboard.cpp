@@ -5,6 +5,7 @@
 #include "ImagePanel.h"
 #include "Outline.h"
 #include "CorkboardCanvas.h"
+#include "NoteShape.h"
 
 #include "wxmemdbg.h"
 
@@ -33,7 +34,7 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
 
     SetBackgroundColour(wxColour(0, 0, 0));
 
-    manager.AcceptShape("wxSFAllShapes");
+    manager.AcceptShape("All");
     canvas = new CorkboardCanvas(&manager, this);
 
     corkboardSizer = new wxBoxSizer(wxVERTICAL);
@@ -44,22 +45,13 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
 }
 
 void Corkboard::addNote(wxCommandEvent& event) {
-    wxSFShapeBase* pShape =
-        manager.AddShape(CLASSINFO(wxSFRoundRectShape),
+    NoteShape* pShape = (NoteShape*)manager.AddShape(CLASSINFO(NoteShape),
         wxPoint(wxGetMousePosition().x + 50, wxGetMousePosition().y + 50));
 
-    if (pShape) {
-        // set accepted child shapes for the
-        // new shape ...
-        pShape->AcceptChild
-        ("wxSFRectShape");
-    }
-
     // Show shadows only on the topmost shapes.
-    canvas->ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
-    // ... and then perform standard
-    // operations provided by the shape
-    // canvas:
+    // canvas->ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
+
+    // ... and then perform standard operations provided by the shape canvas:
     Refresh(false);
     event.Skip();
 }
