@@ -12,10 +12,7 @@
 
 BEGIN_EVENT_TABLE(Corkboard, wxPanel)
 
-EVT_TOOL(TOOL_NewNote, Corkboard::addNote)
-EVT_TOOL(TOOL_NewImage, Corkboard::addImage)
-
-EVT_TOOL(TOOL_CorkboardFullScreen, Corkboard::callFullScreen)
+EVT_TOOL_RANGE(TOOL_Cursor, TOOL_CorkboardFullScreen, Corkboard::onTool)
 
 END_EVENT_TABLE()
 
@@ -23,10 +20,11 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
     this->parent = (Outline*)(parent->GetParent());
 
     toolBar = new wxToolBar(this, -1);
-    toolBar->AddTool(TOOL_NewNote, "", wxBITMAP_PNG(newNote), "New note");
-    toolBar->AddTool(TOOL_NewImage, "", wxBITMAP_PNG(newImage), "New image");
-    toolBar->AddSeparator();
-    toolBar->AddTool(TOOL_ResetCenter, "", wxBITMAP_PNG(resetCenter), "Reset to center");
+    toolBar->AddRadioTool(TOOL_Cursor, "", wxBITMAP_PNG(cursor), wxNullBitmap, "Default");
+    toolBar->AddRadioTool(TOOL_NewNote, "", wxBITMAP_PNG(newNote), wxNullBitmap, "New note");
+    toolBar->AddRadioTool(TOOL_NewImage, "", wxBITMAP_PNG(newImage), wxNullBitmap, "New image");
+    //toolBar->AddSeparator();
+    //toolBar->AddTool(TOOL_ResetCenter, "", wxBITMAP_PNG(resetCenter), "Reset to center");
     toolBar->AddSeparator();
     toolBar->AddSeparator();
     toolBar->AddCheckTool(TOOL_CorkboardFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Full screen");
@@ -45,48 +43,22 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
     SetSizer(corkboardSizer);
 }
 
-void Corkboard::addNote(wxCommandEvent& event) {
-    NoteShape* pShape = (NoteShape*)manager.AddShape(CLASSINFO(NoteShape),
-        wxPoint(wxGetMousePosition().x + 50, wxGetMousePosition().y + 50));
+void Corkboard::onTool(wxCommandEvent& event) {
+    switch (event.GetId()) {
+    case TOOL_Cursor:
+        toolMode = modeDEFAULT;
+        break;
 
-    pShape->AcceptConnection("All");
-    pShape->AcceptSrcNeighbour("All");
-    pShape->AcceptTrgNeighbour("All");
-    pShape->AcceptChild("All");
+    case TOOL_NewNote:
+        toolMode = modeNOTE;
+        break;
 
-    // Show shadows only on the topmost shapes.
-    canvas->ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
-
-    // ... and then perform standard operations provided by the shape canvas:
-    Refresh(false);
-}
-
-void Corkboard::addImage(wxCommandEvent& event) {
-    wxFileDialog dlg(this, wxT("Load bitmap image..."), wxGetCwd(), wxT(""),
-        wxT("BMP Files, JPEG Files, JPG Files,  PNG Files (*.bmp;*.jpeg;*.jpg;*.png)|*.bmp;*.jpeg;*.jpg;*.png"),
-        wxFD_FILE_MUST_EXIST);
-
-    if (dlg.ShowModal() == wxID_OK) {
-        ImageShape* pShape = (ImageShape*)(manager.AddShape(CLASSINFO(ImageShape),
-            wxPoint(wxGetMousePosition().x + 50, wxGetMousePosition().y + 50), sfDONT_SAVE_STATE));
-
-        if (pShape) {
-            // create image from BMP file
-            pShape->CreateFromFile(dlg.GetPath(), wxBITMAP_TYPE_ANY);
-
-            // set shape policy
-            pShape->AcceptConnection("All");
-            pShape->AcceptSrcNeighbour("All");
-            pShape->AcceptTrgNeighbour("All");
-            pShape->AcceptChild("All");
-        }
+    case TOOL_NewImage:
+        toolMode = modeIMAGE;
+        break;
+    case TOOL_FullScreen:
+        callFullScreen(event);
     }
-
-    // Show shadows only on the topmost shapes.
-    canvas->ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
-
-    // ... and then perform standard operations provided by the shape canvas:
-    Refresh(false);
 }
 
 void Corkboard::callFullScreen(wxCommandEvent& event) {
@@ -107,4 +79,20 @@ void Corkboard::fullScreen(bool fs) {
 
     toolBar->ToggleTool(TOOL_CorkboardFullScreen, fs);
     corkboardSizer->Layout();
+}
+
+void Corkboard::setToolMode(ToolMode mode) {
+    switch (mode) {
+    case modeDEFAULT:
+        toolBar->ToggleTool(TOOL_Cursor, true);
+        break;
+    case modeNOTE:
+        toolBar->ToggleTool(TOOL_NewNote, true);
+        break;
+    case modeIMAGE:
+        toolBar->ToggleTool(TOOL_NewImage, true);
+        break;
+    }
+
+    toolMode = mode;
 }
