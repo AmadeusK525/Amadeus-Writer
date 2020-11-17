@@ -16,14 +16,13 @@ public:
 	XS_DECLARE_CLONABLE_CLASS(AutoWrapTextShape);
 
 	AutoWrapTextShape();
-	AutoWrapTextShape(static AutoWrapTextShape& other);
+	AutoWrapTextShape(const AutoWrapTextShape& other);
 
 	virtual ~AutoWrapTextShape() {}
 
 	virtual void UpdateRectSize();
 	virtual void DrawTextContent(wxDC& dc);
 
-	virtual void OnLeftClick(wxPoint& pos);
 	virtual void OnLeftDoubleClick(wxPoint& pos);
 
 	static void willCountLines(bool will) { AutoWrapTextShape::countLines = will; }
