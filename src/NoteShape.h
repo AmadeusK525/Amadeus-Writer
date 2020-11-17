@@ -4,19 +4,25 @@
 
 #include <wx\wxsf\wxShapeFramework.h>
 #include "AutoWrapTextShape.h"
+#include "CorkboardCanvas.h"
 
 class NoteShape: public wxSFRoundRectShape {
 protected:
 	AutoWrapTextShape* content = nullptr;
 
 public:
+	wxWindowID curColour = CorkboardCanvas::MENU_NoteDefault;
+
+public:
 	// Enable RTTI and cloneability
 	XS_DECLARE_CLONABLE_CLASS(NoteShape);
 
 	NoteShape();
-	NoteShape(static NoteShape& other);
+	NoteShape(const NoteShape& other);
 
 	virtual ~NoteShape() { }
+
+	void changeColour(wxWindowID id);
 
 	void willCountLines(bool count) { content->willCountLines(count); }
 	void willClip(bool will) { content->willClip(will); }

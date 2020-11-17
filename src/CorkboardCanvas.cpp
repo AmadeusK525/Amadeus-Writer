@@ -1,5 +1,5 @@
 #include "CorkboardCanvas.h"
-#include "AutoWrapTextShape.h"
+#include "NoteShape.h"
 #include "MyApp.h"
 
 #include <wx\wx.h>
@@ -34,6 +34,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	AddStyle(sfsPROCESS_MOUSEWHEEL);
 	SetMinScale(0.1);
 	SetMaxScale(2);
+	SetScale(0.85);
 
 	// Specify accepted shapes.
 	GetDiagramManager()->ClearAcceptedShapes();
@@ -58,9 +59,25 @@ void CorkboardCanvas::doFullScreen(bool fs) {
 	m_isFullScreen = !m_isFullScreen;
 }
 
+void CorkboardCanvas::onMenu(wxCommandEvent& event) {
+	wxWindowID id = event.GetId();
+
+	if (id == MENU_NoteBlack || id == MENU_NoteBlue || id == MENU_NoteDefault ||
+		id == MENU_NoteGreen || id == MENU_NotePink || id == MENU_NoteRed ||
+		id == MENU_NoteWhite || id == MENU_NoteYellow)
+		((NoteShape*)shapeForMenu)->changeColour(id);
+	else if (id == MENU_DeleteNote)
+		GetDiagramManager()->RemoveShape(shapeForMenu);
+}
+
 void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 	AutoWrapTextShape::willCountLines(false);
-	wxSFShapeCanvas::OnLeftDown(event);
+
+	if (event.ControlDown()) {
+		StartInteractiveConnection(CLASSINFO(wxSFLineShape), event.GetPosition());
+	} else {
+		wxSFShapeCanvas::OnLeftDown(event);
+	}
 }
 
 void CorkboardCanvas::OnLeftUp(wxMouseEvent& event) {
@@ -88,7 +105,29 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 		m_isDraggingRight = false;
 		SetCursor(wxCursor(wxCURSOR_DEFAULT));
 	} else {
+		shapeForMenu = GetShapeUnderCursor();
 
+		if (shapeForMenu) {
+			wxClassInfo* classInfo = shapeForMenu->GetClassInfo();
+			wxMenu menu;
+			if (classInfo == CLASSINFO(NoteShape)) {
+				menu.AppendRadioItem(MENU_NoteDefault, "Default");
+				menu.AppendRadioItem(MENU_NoteBlack, "Black");
+				menu.AppendRadioItem(MENU_NoteWhite, "White");
+				menu.AppendRadioItem(MENU_NoteRed, "Red");
+				menu.AppendRadioItem(MENU_NoteGreen, "Green");
+				menu.AppendRadioItem(MENU_NoteBlue, "Blue");
+				menu.AppendRadioItem(MENU_NoteYellow, "Yellow");
+				menu.AppendRadioItem(MENU_NotePink, "Pink");
+				menu.AppendSeparator();
+				menu.Append(MENU_DeleteNote, "Delete");
+
+				menu.Check(((NoteShape*)shapeForMenu)->curColour, true);
+			} //else if (classInfo == CLASSINFO())
+
+			menu.Bind(wxEVT_MENU, &CorkboardCanvas::onMenu, this);
+			PopupMenu(&menu);
+		}
 	}
 
 	if (HasCapture())
@@ -129,12 +168,30 @@ void CorkboardCanvas::OnMouseWheel(wxMouseEvent& event) {
 	event.SetControlDown(true);
 	wxSFShapeCanvas::OnMouseWheel(event);
 	event.SetControlDown(false);
+
+	int xs, ys;
+
+	GetScrollPixelsPerUnit(&xs, &ys);
+
+	wxPoint pos = ScreenToClient(wxGetMousePosition());
+	Scroll(pos.x / xs, pos.y / ys);
+}
+
+void CorkboardCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
+	m_isDraggingRight = false;
 }
 
 void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 	switch (event.GetKeyCode()) {
 	case WXK_F11:
 		doFullScreen(!m_isFullScreen);
+		break;
+
+	case WXK_ESCAPE:
+		if (m_isFullScreen) {
+			doFullScreen(false);
+			m_isFullScreen = false;
+		}
 		break;
 	}
 
@@ -143,6 +200,6 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 	event.Skip();
 }
 
-void CorkboardCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
-	m_isDraggingRight = false;
+void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
+	connection->SetLinePen(wxPen(wxColour(30, 30, 30), 2));
 }

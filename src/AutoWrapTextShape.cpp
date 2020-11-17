@@ -7,11 +7,11 @@ bool AutoWrapTextShape::countLines = true;
 bool AutoWrapTextShape::clipRegion = false;
 
 AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape() {
-	m_sText = "";
-	SetFill(wxBrush(bgColour));
+	SetFill(bgColour);
 }
 
-AutoWrapTextShape::AutoWrapTextShape(static AutoWrapTextShape& other): wxSFEditTextShape(other) {
+AutoWrapTextShape::AutoWrapTextShape(const AutoWrapTextShape& other): wxSFEditTextShape(other) {
+	SetFill(bgColour);
 	m_sText = other.m_sText;
 	bgColour = other.bgColour;
 }
@@ -58,9 +58,6 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 
 	if (clipRegion)
 		dc.DestroyClippingRegion();
-}
-
-void AutoWrapTextShape::OnLeftClick(wxPoint& pos) {
 }
 
 void AutoWrapTextShape::OnLeftDoubleClick(wxPoint& pos) {

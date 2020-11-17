@@ -436,6 +436,7 @@
     <ClCompile Include="src\CorkboardCanvas.cpp" />
     <ClCompile Include="src\DragList.cpp" />
     <ClCompile Include="src\ImagePanel.cpp" />
+    <ClCompile Include="src\ImageShape.cpp" />
     <ClCompile Include="src\Location.cpp" />
     <ClCompile Include="src\LocationCreator.cpp" />
     <ClCompile Include="src\LocationShowcase.cpp" />
@@ -463,6 +464,7 @@
     <ClInclude Include="src\CorkboardCanvas.h" />
     <ClInclude Include="src\DragList.h" />
     <ClInclude Include="src\ImagePanel.h" />
+    <ClInclude Include="src\ImageShape.h" />
     <ClInclude Include="src\Location.h" />
     <ClInclude Include="src\LocationCreator.h" />
     <ClInclude Include="src\LocationShowcase.h" />
