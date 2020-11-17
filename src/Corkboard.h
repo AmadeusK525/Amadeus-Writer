@@ -19,6 +19,12 @@ class Outline;
 
 using std::vector;
 
+enum ToolMode {
+    modeDEFAULT,
+    modeNOTE,
+    modeIMAGE
+};
+
 class Corkboard : public wxPanel {
 private:
     Outline* parent = nullptr;
@@ -29,26 +35,31 @@ private:
     CorkboardCanvas* canvas = nullptr;
     wxSFDiagramManager manager;
 
+    ToolMode toolMode = modeDEFAULT;
     bool isDraggingRight = false;
 
 public:
     Corkboard(wxWindow* parent);
 
-    void addNote(wxCommandEvent& event);
-    void addImage(wxCommandEvent& event);
-    void callFullScreen(wxCommandEvent& event);
+    void onTool(wxCommandEvent& event);
 
+    void callFullScreen(wxCommandEvent& event);
     void fullScreen(bool fs);
+
+    void setToolMode(ToolMode mode);
+    ToolMode getToolMode() { return toolMode; }
     wxToolBar* getToolbar() { return toolBar; }
+
+    //friend class CorkboardCanvas;
+
+    enum {
+        TOOL_Cursor,
+        TOOL_NewNote,
+        TOOL_NewImage,
+        TOOL_ResetCenter,
+        TOOL_CorkboardFullScreen
+    };
 
     DECLARE_EVENT_TABLE()
 };
-
-enum {
-    TOOL_NewNote,
-    TOOL_NewImage,
-    TOOL_ResetCenter,
-    TOOL_CorkboardFullScreen
-};
-
 #endif
