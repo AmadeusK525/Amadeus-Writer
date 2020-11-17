@@ -1,5 +1,6 @@
 #include "CorkboardCanvas.h"
 #include "NoteShape.h"
+#include "ImageShape.h"
 #include "MyApp.h"
 
 #include <wx\wx.h>
@@ -73,10 +74,79 @@ void CorkboardCanvas::onMenu(wxCommandEvent& event) {
 void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 	AutoWrapTextShape::willCountLines(false);
 
-	if (event.ControlDown()) {
-		StartInteractiveConnection(CLASSINFO(wxSFLineShape), event.GetPosition());
-	} else {
-		wxSFShapeCanvas::OnLeftDown(event);
+	switch (parent->getToolMode()) {
+	case modeNOTE:
+	{
+		NoteShape* shape = (NoteShape*)GetDiagramManager()->AddShape(CLASSINFO(NoteShape),
+			ScreenToClient(wxGetMousePosition()));
+
+		shape->AcceptConnection("All");
+		shape->AcceptSrcNeighbour("All");
+		shape->AcceptTrgNeighbour("All");
+
+		// Show shadows only on the topmost shapes.
+		ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
+
+		// ... and then perform standard operations provided by the shape canvas:
+		Refresh(false);
+		parent->setToolMode(modeDEFAULT);
+		break;
+	}
+	case modeIMAGE:
+	 {
+		wxFileDialog dlg(this, wxT("Load bitmap image..."), wxGetCwd(), wxT(""),
+			wxT("BMP Files, JPEG Files, JPG Files,  PNG Files (*.bmp;*.jpeg;*.jpg;*.png)|*.bmp;*.jpeg;*.jpg;*.png"),
+			wxFD_FILE_MUST_EXIST);
+
+		if (dlg.ShowModal() == wxID_OK) {
+			ImageShape* shape = (ImageShape*)(GetDiagramManager()->AddShape(CLASSINFO(ImageShape),
+				event.GetPosition(), sfDONT_SAVE_STATE));
+
+			if (shape) {
+				// Create image from file.
+				shape->CreateFromFile(dlg.GetPath(), wxBITMAP_TYPE_ANY);
+
+				wxImage image(dlg.GetPath());
+
+				int width = image.GetWidth();
+				int height = image.GetHeight();
+
+				double ratio;
+				double canvasScale = GetScale();
+
+				if (width > height)
+					ratio = 250.0 / (double)width;
+				else
+					ratio = 250.0 / (double)height;
+
+				shape->Scale(ratio, ratio);
+
+				// Set shape policy.
+				shape->AcceptConnection("All");
+				shape->AcceptSrcNeighbour("All");
+				shape->AcceptTrgNeighbour("All");
+				shape->AcceptChild("All");
+			}
+		}
+
+		// Show shadows only on the topmost shapes.
+		ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
+
+		// ... and then perform standard operations provided by the shape canvas:
+		Refresh(false);
+		parent->setToolMode(modeDEFAULT);
+		break;
+	}
+	case modeDEFAULT:
+	{
+		if (event.ControlDown()) {
+			StartInteractiveConnection(CLASSINFO(wxSFLineShape), event.GetPosition());
+		} else {
+			wxSFShapeCanvas::OnLeftDown(event);
+		}
+
+		break;
+	}
 	}
 }
 
@@ -191,7 +261,8 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 		if (m_isFullScreen) {
 			doFullScreen(false);
 			m_isFullScreen = false;
-		}
+		} else
+			return;
 		break;
 	}
 
@@ -201,5 +272,5 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 }
 
 void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
-	connection->SetLinePen(wxPen(wxColour(30, 30, 30), 2));
+	connection->SetLinePen(wxPen(wxColour(150, 0, 0), 3));
 }

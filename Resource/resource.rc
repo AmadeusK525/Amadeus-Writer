@@ -16,6 +16,7 @@ characterPng RCDATA "Assets\\AddCharacter.png"
 locationPng RCDATA "Assets\\AddLocation.png"
 fullScreenPng RCDATA "Assets\\FullScreen.png"
 
+cursor RCDATA "Assets\\Cursor.png"
 newNote RCDATA "Assets\\AddNote.png"
 newImage RCDATA "Assets\\AddImage.png"
 resetCenter RCDATA "Assets\\ResetCenter.png"
