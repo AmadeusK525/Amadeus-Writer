@@ -7,17 +7,17 @@
 
 class ImageShape: public wxSFBitmapShape {
 private:
-	double scale;
+	double ratio;
 
 public:
 	ImageShape();
 	ImageShape(const ImageShape& other);
 	virtual ~ImageShape();
 
-	virtual void Scale(double x, double y, bool children = sfWITHCHILDREN);
+	void create(const wxString& path, wxBitmapType type = wxBITMAP_TYPE_ANY);
 
-	//virtual void OnBeginHandle(wxSFShapeHandle& handle);
-	//virtual void OnHandle(wxSFShapeHandle& handle);
+	virtual void OnBeginHandle(wxSFShapeHandle& handle);
+	virtual void OnHandle(wxSFShapeHandle& handle);
 	//virtual void OnEndHandle(wxSFShapeHandle& handle);
 
 	XS_DECLARE_CLONABLE_CLASS(ImageShape)

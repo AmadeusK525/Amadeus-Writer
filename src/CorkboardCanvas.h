@@ -22,6 +22,9 @@ private:
 	wxPoint m_scrollbarPos{};
 
 public:
+	//wxPoint curMousePos{};
+
+public:
 	CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent, wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
 		long style = wxHSCROLL | wxVSCROLL);
