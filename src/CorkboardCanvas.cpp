@@ -133,16 +133,13 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		parent->setToolMode(modeDEFAULT);
 		break;
 	}
-	case modeDEFAULT:
-	{
-		//if (event.ControlDown()) {
-			//StartInteractiveConnection(CLASSINFO(wxSFLineShape), event.GetPosition());
-		//} else {
-			wxSFShapeCanvas::OnLeftDown(event);
-	//	}
-
+	case modeCONNECTION:
+		StartInteractiveConnection(CLASSINFO(wxSFCurveShape), event.GetPosition());
+		parent->setToolMode(modeDEFAULT);
 		break;
-	}
+	case modeDEFAULT:
+		wxSFShapeCanvas::OnLeftDown(event);
+		break;
 	}
 }
 
