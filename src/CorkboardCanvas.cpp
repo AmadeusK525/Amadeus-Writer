@@ -15,6 +15,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	// Remove grid lines.
 	RemoveStyle(sfsGRID_SHOW);
 	RemoveStyle(sfsGRID_USE);
+	RemoveStyle(sfsMULTI_SIZE_CHANGE);
 
 	// Fill background with gradient color.
 	AddStyle(sfsGRADIENT_BACKGROUND);
@@ -26,7 +27,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 
 	// Edited default shadow.
 	SetShadowFill(wxBrush(wxColour(110, 70, 60)));
-	SetShadowOffset(wxRealPoint(3.5, 3.5));
+	SetShadowOffset(wxRealPoint(4.5, 4.5));
 
 	// Disable mouse wheel scrolling so it can be used for zooming.
 	EnableScrolling(false, false);
@@ -94,7 +95,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 	}
 	case modeIMAGE:
 	 {
-		wxFileDialog dlg(this, wxT("Load bitmap image..."), wxGetCwd(), wxT(""),
+		wxFileDialog dlg(this, wxT("Load image..."), wxGetCwd(), wxT(""),
 			wxT("BMP Files, JPEG Files, JPG Files,  PNG Files (*.bmp;*.jpeg;*.jpg;*.png)|*.bmp;*.jpeg;*.jpg;*.png"),
 			wxFD_FILE_MUST_EXIST);
 
@@ -104,20 +105,15 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 
 			if (shape) {
 				// Create image from file.
-				shape->CreateFromFile(dlg.GetPath(), wxBITMAP_TYPE_ANY);
-
-				wxImage image(dlg.GetPath());
-
-				int width = image.GetWidth();
-				int height = image.GetHeight();
-
+				shape->create(dlg.GetPath(), wxBITMAP_TYPE_ANY);
+				
+				wxRect bb = shape->GetBoundingBox();
 				double ratio;
-				double canvasScale = GetScale();
 
-				if (width > height)
-					ratio = 250.0 / (double)width;
+				if (bb.width > bb.height)
+					ratio = 250.0 / (double)bb.width;
 				else
-					ratio = 250.0 / (double)height;
+					ratio = 250.0 / (double)bb.height;
 
 				shape->Scale(ratio, ratio);
 
@@ -139,11 +135,11 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 	}
 	case modeDEFAULT:
 	{
-		if (event.ControlDown()) {
-			StartInteractiveConnection(CLASSINFO(wxSFLineShape), event.GetPosition());
-		} else {
+		//if (event.ControlDown()) {
+			//StartInteractiveConnection(CLASSINFO(wxSFLineShape), event.GetPosition());
+		//} else {
 			wxSFShapeCanvas::OnLeftDown(event);
-		}
+	//	}
 
 		break;
 	}
@@ -239,12 +235,12 @@ void CorkboardCanvas::OnMouseWheel(wxMouseEvent& event) {
 	wxSFShapeCanvas::OnMouseWheel(event);
 	event.SetControlDown(false);
 
-	int xs, ys;
+	//int xs, ys;
 
-	GetScrollPixelsPerUnit(&xs, &ys);
+	//GetScrollPixelsPerUnit(&xs, &ys);
 
-	wxPoint pos = ScreenToClient(wxGetMousePosition());
-	Scroll(pos.x / xs, pos.y / ys);
+	//wxPoint pos = ScreenToClient(wxGetMousePosition());
+	//Scroll(pos.x / xs, pos.y / ys);
 }
 
 void CorkboardCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
