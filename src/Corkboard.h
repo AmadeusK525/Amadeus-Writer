@@ -22,7 +22,8 @@ using std::vector;
 enum ToolMode {
     modeDEFAULT,
     modeNOTE,
-    modeIMAGE
+    modeIMAGE,
+    modeCONNECTION
 };
 
 class Corkboard : public wxPanel {
@@ -56,6 +57,7 @@ public:
         TOOL_Cursor,
         TOOL_NewNote,
         TOOL_NewImage,
+        TOOL_NewConnection,
         TOOL_ResetCenter,
         TOOL_CorkboardFullScreen
     };
