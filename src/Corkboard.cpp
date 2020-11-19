@@ -43,9 +43,12 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
 }
 
 void Corkboard::onTool(wxCommandEvent& event) {
+    if (canvas->GetMode() == CorkboardCanvas::modeCREATECONNECTION)
+        canvas->AbortInteractiveConnection();
+
     switch (event.GetId()) {
     case TOOL_Cursor:
-        toolMode = modeDEFAULT;
+        toolMode = modeDESIGN;
         break;
 
     case TOOL_NewNote:
@@ -86,7 +89,7 @@ void Corkboard::fullScreen(bool fs) {
 
 void Corkboard::setToolMode(ToolMode mode) {
     switch (mode) {
-    case modeDEFAULT:
+    case modeDESIGN:
         toolBar->ToggleTool(TOOL_Cursor, true);
         break;
     case modeNOTE:

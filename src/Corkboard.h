@@ -20,7 +20,7 @@ class Outline;
 using std::vector;
 
 enum ToolMode {
-    modeDEFAULT,
+    modeDESIGN,
     modeNOTE,
     modeIMAGE,
     modeCONNECTION
@@ -36,7 +36,7 @@ private:
     CorkboardCanvas* canvas = nullptr;
     wxSFDiagramManager manager;
 
-    ToolMode toolMode = modeDEFAULT;
+    ToolMode toolMode = modeDESIGN;
     bool isDraggingRight = false;
 
 public:
