@@ -36,7 +36,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	AddStyle(sfsPROCESS_MOUSEWHEEL);
 	SetMinScale(0.1);
 	SetMaxScale(2);
-	SetScale(0.85);
+	SetScale(0.75);
 
 	// Specify accepted shapes.
 	GetDiagramManager()->ClearAcceptedShapes();
@@ -68,8 +68,10 @@ void CorkboardCanvas::onMenu(wxCommandEvent& event) {
 		id == MENU_NoteGreen || id == MENU_NotePink || id == MENU_NoteRed ||
 		id == MENU_NoteWhite || id == MENU_NoteYellow)
 		((NoteShape*)shapeForMenu)->changeColour(id);
-	else if (id == MENU_DeleteNote)
+	else if (id == MENU_DeleteNote || id == MENU_DeleteImage)
 		GetDiagramManager()->RemoveShape(shapeForMenu);
+
+	shapeForMenu = nullptr;
 }
 
 void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
@@ -90,7 +92,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
-		parent->setToolMode(modeDEFAULT);
+		parent->setToolMode(modeDESIGN);
 		break;
 	}
 	case modeIMAGE:
@@ -130,15 +132,19 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
-		parent->setToolMode(modeDEFAULT);
+		parent->setToolMode(modeDESIGN);
 		break;
 	}
 	case modeCONNECTION:
-		StartInteractiveConnection(CLASSINFO(wxSFCurveShape), event.GetPosition());
-		AutoWrapTextShape::willCountLines(false);
-		parent->setToolMode(modeDEFAULT);
+		if (GetMode() == modeREADY) {
+			StartInteractiveConnection(CLASSINFO(wxSFCurveShape), event.GetPosition());
+			AutoWrapTextShape::willCountLines(false);
+			m_isConnecting = true;
+		} else
+			wxSFShapeCanvas::OnLeftDown(event);
+
 		break;
-	case modeDEFAULT:
+	case modeDESIGN:
 		wxSFShapeCanvas::OnLeftDown(event);
 		break;
 	}
@@ -187,7 +193,9 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 				menu.Append(MENU_DeleteNote, "Delete");
 
 				menu.Check(((NoteShape*)shapeForMenu)->curColour, true);
-			} //else if (classInfo == CLASSINFO())
+			} else if (classInfo == CLASSINFO(ImageShape)) {
+				menu.Append(MENU_DeleteImage, "Delete");
+			}
 
 			menu.Bind(wxEVT_MENU, &CorkboardCanvas::onMenu, this);
 			PopupMenu(&menu);
@@ -251,20 +259,43 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 		doFullScreen(!m_isFullScreen);
 		break;
 	case WXK_ESCAPE:
+		if (m_isConnecting)
+			break;
 		if (m_isFullScreen) {
 			doFullScreen(false);
 			m_isFullScreen = false;
-		} else
-			return;
+		}
+
 		break;
+	case WXK_DELETE:
+		if (m_isConnecting) {
+			event.m_keyCode = WXK_ESCAPE;
+		}
 	}
 
 	// Call default behaviour.
 	wxSFShapeCanvas::OnKeyDown(event);
-	event.Skip();
 }
 
 void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
 	AutoWrapTextShape::willCountLines(true);
-	connection->SetLinePen(wxPen(wxColour(150, 0, 0), 3));
+
+	if (connection) {
+		connection->SetLinePen(wxPen(wxColour(150, 0, 0), 3));
+		connection->SetTrgArrow(CLASSINFO(wxSFSolidArrow));
+
+		connection->AcceptChild(wxT("wxSFTextShape"));
+		connection->AcceptChild(wxT("wxSFEditTextShape"));
+
+		connection->AcceptConnection(wxT("All"));
+		connection->AcceptSrcNeighbour(wxT("All"));
+		connection->AcceptTrgNeighbour(wxT("All"));
+
+		//connection->SetDockPoint(sfDOCK)
+
+		m_isConnecting = false;
+	}
+
+	parent->setToolMode(modeDESIGN);
+	wxSFShapeCanvas::OnConnectionFinished(connection);
 }
