@@ -24,8 +24,6 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
     toolBar->AddRadioTool(TOOL_NewNote, "", wxBITMAP_PNG(newNote), wxNullBitmap, "New note");
     toolBar->AddRadioTool(TOOL_NewImage, "", wxBITMAP_PNG(newImage), wxNullBitmap, "New image");
     toolBar->AddRadioTool(TOOL_NewConnection, "", wxBITMAP_PNG(connectionLine), wxNullBitmap, "New connection");
-    //toolBar->AddSeparator();
-    //toolBar->AddTool(TOOL_ResetCenter, "", wxBITMAP_PNG(resetCenter), "Reset to center");
     toolBar->AddSeparator();
     toolBar->AddSeparator();
     toolBar->AddCheckTool(TOOL_CorkboardFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Full screen");
@@ -60,7 +58,7 @@ void Corkboard::onTool(wxCommandEvent& event) {
     case TOOL_NewConnection:
         toolMode = modeCONNECTION;
         break;
-    case TOOL_FullScreen:
+    case TOOL_CorkboardFullScreen:
         callFullScreen(event);
         break;
     }
