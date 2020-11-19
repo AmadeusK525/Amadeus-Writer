@@ -1,9 +1,10 @@
-#pragma once
 #ifndef MYAPP_H_
 #define MYAPP_H_
 
+#pragma once
+
+#include <wx/wx.h>
 #include "MainFrame.h"
-#include "wx/cmdline.h"
 
 class MyApp: public wxApp {
 private:
@@ -12,8 +13,7 @@ private:
 
 public:
     virtual bool OnInit();
-    //virtual bool OnInitCmdLine();
-    //virtual bool OnParseCmdLine();
 };
 
+wxDECLARE_APP(MyApp);
 #endif

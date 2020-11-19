@@ -1,92 +1,66 @@
+#ifndef CORKBOARD_H_
+#define CORKBOARD_H_
+
 #pragma once
 
-#include "wx/panel.h"
-#include "wx/toolbar.h"
-#include "wx/dcclient.h"
+#include <wx/panel.h>
+#include <wx/toolbar.h>
+#include <wx/dcclient.h>
+
+#include <wx\wxsf\wxShapeFramework.h>
 
 #include <vector>
 #include <memory>
 
-class NotesBox;
-class MovableNote;
-class CorkboardImage;
-class ImagePanel;
+class CorkboardCanvas;
 
 class Corkboard;
 class Outline;
 
 using std::vector;
 
+enum ToolMode {
+    modeDESIGN,
+    modeNOTE,
+    modeIMAGE,
+    modeCONNECTION
+};
+
 class Corkboard : public wxPanel {
 private:
     Outline* parent = nullptr;
-
     wxToolBar* toolBar = nullptr;
-    wxPanel* pan = nullptr;
 
-    bool startDragging = false;
-    bool draggingLeft = false;
-    bool draggingRight = false;
-    int x;
-    int y;
+    wxBoxSizer* corkboardSizer = nullptr;
 
-    int zoom = 100;
-    int prevZoom = 100;
+    CorkboardCanvas* canvas = nullptr;
+    wxSFDiagramManager manager;
 
-
-public:
-    ImagePanel* main = nullptr;
-
-    bool isConnectingA = false;
-    bool isConnectingB = false;
-
-    int curNote = 0;
-    int curBox = 0;
-    int curImage = 0;
-
-    vector<MovableNote*> notes;
-    //vector<std::pair<wxPoint, wxPoint>> points;
-    vector<NotesBox*> boxes;
-    vector<CorkboardImage*> images;
-
-    MovableNote* connectingA = nullptr;
-    MovableNote* connectedA = nullptr;
-    CorkboardImage* connectingB = nullptr;
-    CorkboardImage* connectedB = nullptr;
+    ToolMode toolMode = modeDESIGN;
+    bool isDraggingRight = false;
 
 public:
     Corkboard(wxWindow* parent);
 
-    void initMain(const wxSize& size, wxImage& image);
+    void onTool(wxCommandEvent& event);
 
-    void addNote(wxCommandEvent& event);
-    void addImage(wxCommandEvent& event);
-    void doDeleteNote(wxWindowID id);
-    void doDeleteBox(wxWindowID id);
-    void doDeleteImage(wxWindowID id);
+    void callFullScreen(wxCommandEvent& event);
+    void fullScreen(bool fs);
 
-    void resetCenter(wxCommandEvent& event);
+    void setToolMode(ToolMode mode);
+    ToolMode getToolMode() { return toolMode; }
+    wxToolBar* getToolbar() { return toolBar; }
 
-    void onLeftDown(wxMouseEvent& event);
-    void onRightDown(wxMouseEvent& event);
-    void onDoubleClick(wxMouseEvent& event);
-    void onMouseUp(wxMouseEvent& event);
-    void onMove(wxMouseEvent& event);
-    void onScrollDown(wxScrollWinEvent& event);
-    void onScrollUp(wxScrollWinEvent& event);
+    //friend class CorkboardCanvas;
 
-    void doZoom();
-
-    void onMouseCaptureLost(wxMouseCaptureLostEvent& event);
-
-    void paintMain(wxPaintEvent& event);
-    void paintBoxes(wxPaintDC& dc, NotesBox* note);
+    enum {
+        TOOL_Cursor,
+        TOOL_NewNote,
+        TOOL_NewImage,
+        TOOL_NewConnection,
+        TOOL_CorkboardFullScreen
+    };
 
     DECLARE_EVENT_TABLE()
 };
-
-enum {
-    TOOL_NewNote,
-    TOOL_NewImage,
-    TOOL_ResetCenter
-};
+#endif

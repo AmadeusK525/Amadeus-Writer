@@ -4,11 +4,12 @@
 #include "CharacterCreator.h"
 #include "CharacterShowcase.h"
 #include "LocationCreator.h"
-#include "MovableNote.h"
 
 #include "wxmemdbg.h"
 
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
 #define BOOST_FILESYSTEM_NO_DEPRECATED
+#endif
 
 using std::string;
 using std::vector;
@@ -68,8 +69,12 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     currentDocFolder = "";
     Hide();
 
-    wxPanel* mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
+    mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
     mainPanel->SetBackgroundColour(wxColour(150, 150, 150));
+
+    holderSizer = new wxBoxSizer(wxHORIZONTAL);
+    holderSizer->Add(mainPanel, wxSizerFlags(1).Expand());
+    SetSizer(holderSizer);
 
     panel = new wxPanel(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
     panel->Show();
@@ -207,7 +212,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     ver = new wxBoxSizer(wxVERTICAL);
     ver->Add(toolBar, 0, wxGROW);
     ver->Add(topSizer, 1, wxGROW);
-    mainPanel->SetSizerAndFit(ver);
+    mainPanel->SetSizer(ver);
 
     SetIcon(wxICON(amadeus));
 
@@ -222,7 +227,6 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     // Initialize maximized
     Maximize();
-    outline->initCork(overview->GetSize(), wxBITMAP_PNG(corkboard).ConvertToImage());
     elements->Hide();
     overview->Layout();
 
@@ -265,7 +269,6 @@ void MainFrame::newFile(wxCommandEvent& event) {
     characters.clear();
     locations.clear();
     chaptersNote->getGrid()->clearAll();
-    outline->clearAll();
     MainNotebook::charList->DeleteAllItems();
     MainNotebook::locList->DeleteAllItems();
 
@@ -369,7 +372,6 @@ void MainFrame::saveFile(wxCommandEvent& event) {
 
         // This calls the save function of the outline page, which saves the corkboard
         // elements and will futurely save other stuff.
-        outline->saveOutline(file, currentSize, progress);
 
         file.close();
 
@@ -389,8 +391,8 @@ void MainFrame::saveFile(wxCommandEvent& event) {
         note << "Please, NEVER change the names of the images nor move them somewhere else!";
         note.close();
 
-        note.open(currentDocFolder + "\\Chapters\\!!!Note!!!.txt", std::ios::out);
-        note << "Please, NEVER change the names of the chapters nor move them somewhere else!";
+        note.open(currentDocFolder + "\\Files\\!!!Note!!!.txt", std::ios::out);
+        note << "Please, NEVER change the names of the files nor move them somewhere else!";
         note.close();
 
         progress->Destroy();
@@ -429,7 +431,7 @@ void MainFrame::saveFileAs(wxCommandEvent& event) {
             fs::create_directory(currentImagePath + "\\Characters");
             fs::create_directory(currentImagePath + "\\Locations");
             fs::create_directory(currentImagePath + "\\Outline");
-            fs::create_directory(currentDocFolder + "\\Chapters");
+            fs::create_directory(currentDocFolder + "\\Files");
             //fs::permissions(currentDocFolder + "\\Chapters", fs::all_all);
 
             currentDocFile = currentDocFolder + "\\" + currentTitle;
@@ -516,6 +518,7 @@ void MainFrame::editTitle(wxCommandEvent& event) {
 
 void MainFrame::fullScreen(wxCommandEvent& event) {
     ShowFullScreen(!IsFullScreen());
+    isFrameFullScreen = !isFrameFullScreen;
 }
 
 void MainFrame::about(wxCommandEvent& event) {
@@ -540,7 +543,6 @@ void MainFrame::notSaved(wxCommandEvent& event) {
 // These 5 "on******" functions are for swithcing the viewable panel when the buttons on the left pane are clicked;
 // They simply remove the shown panel from the sizer, add the requested one and
 // Hide everything else. The search bar is only shown when the Elements page is visible.
-
 void MainFrame::onOverview(wxCommandEvent& event) {
     if (!overview->IsShown()) {
         mainSizer->Add(overview, 1, wxGROW);
@@ -719,6 +721,27 @@ void MainFrame::search(wxCommandEvent& event) {
     }
 }
 
+void MainFrame::corkboardFullScreen(bool doFullScreen, wxWindow* toolBar, wxWindow* canvas) {
+    mainPanel->Show(!doFullScreen);
+    
+    if (doFullScreen) {
+        holderSizer->Replace(mainPanel, outline->getCorkboard());
+
+        ShowFullScreen(true);
+    } else {
+        holderSizer->Replace(outline->getCorkboard(), mainPanel);
+        
+        if (!isFrameFullScreen)
+            ShowFullScreen(false);
+    }
+    
+    SetSizer(holderSizer);
+
+    Layout();
+    Update();
+    Refresh(true);
+}
+
 void MainFrame::setLast() {
     // This function is called at every save and it writes a file named 88165468
     // next to the executable. In the file, there are paths to the project.
@@ -869,8 +892,6 @@ void MainFrame::loadFile() {
 
         progress->Update(currentSize++);
     }
-
-    outline->loadOutline(file, currentSize, progress);
 
     file.close();
 

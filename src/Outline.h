@@ -20,9 +20,12 @@ private:
     int pnoi = 0;
 
 public:
-    Outline(wxWindow* parent);
+    // Hack for doing corkboard fullscreen
+    wxPanel* corkHolder = nullptr;
+    wxBoxSizer* corkHolderSizer = nullptr;
 
-    void initCork(const wxSize& size, wxImage& image) { corkboard->initMain(size, image); };
+public:
+    Outline(wxWindow* parent);
 
     void clearAll();
     int  getCount() { return non + noi + nob; }
@@ -36,5 +39,7 @@ public:
 
     void saveQuantities(std::ofstream& out);
     void loadQuantities(std::ifstream& in);
+
+    Corkboard* getCorkboard() { return corkboard; }
 };
 

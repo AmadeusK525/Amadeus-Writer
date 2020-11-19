@@ -27,6 +27,8 @@ EVT_CLOSE(ChapterWriter::onClose)
 
 END_EVENT_TABLE()
 
+namespace fs = boost::filesystem;
+
 ChapterWriter::ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb) : saveTimer(this, TIMER_Save), wordsTimer(this, TIMER_Words),
     wxFrame(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxFRAME_FLOAT_ON_PARENT | wxDEFAULT_FRAME_STYLE) {
 
@@ -40,7 +42,9 @@ ChapterWriter::ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb) : s
 
     notebook = new ChapterWriterNotebook(this);
 
-    leftPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
+    wxNotebook* leftNotebook = new wxNotebook(this, -1);
+
+    leftPanel = new wxPanel(leftNotebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
     leftPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
     wxPanel* sumPanel = new wxPanel(leftPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
@@ -108,6 +112,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb) : s
     leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxRIGHT | wxBOTTOM, 8));
 
     leftPanel->SetSizer(leftSizer);
+    leftNotebook->AddPage(leftPanel,"Left");
 
     wxPanel* rightPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
@@ -149,7 +154,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb) : s
     rightPanel->SetSizer(rightSizer);
 
     wxBoxSizer* mainSizer = new wxBoxSizer(wxHORIZONTAL);
-    mainSizer->Add(leftPanel, wxSizerFlags(1).Expand());
+    mainSizer->Add(leftNotebook, wxSizerFlags(1).Expand());
     mainSizer->Add(notebook, wxSizerFlags(4).Expand());
     mainSizer->Add(rightPanel, wxSizerFlags(1).Expand());
 
@@ -419,8 +424,11 @@ void ChapterWriter::loadChapter() {
 
     SetTitle(it->name);
 
-    if (boost::filesystem::exists(parent->currentDocFolder + "\\Chapters\\" + thisChap->name + ".xml")) {
-        notebook->content->LoadFile(parent->currentDocFolder + "\\Chapters\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
+    if (fs::exists(parent->currentDocFolder + "\\Files\\Chapter " +
+        std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml")) {
+        
+        notebook->content->LoadFile(parent->currentDocFolder + "\\Files\\Chapter " +
+            std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
     } else {
         notebook->content->Clear();
     }
@@ -494,7 +502,8 @@ void ChapterWriter::saveChapter() {
     }
 
     if (notebook->content->GetValue() != "") {
-        thisChap->content.SaveFile(parent->currentDocFolder + "\\Chapters\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
+        thisChap->content.SaveFile(parent->currentDocFolder + "\\Files\\Chapter " +
+            std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
     }
 }
 
