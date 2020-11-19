@@ -135,6 +135,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 	}
 	case modeCONNECTION:
 		StartInteractiveConnection(CLASSINFO(wxSFCurveShape), event.GetPosition());
+		AutoWrapTextShape::willCountLines(false);
 		parent->setToolMode(modeDEFAULT);
 		break;
 	case modeDEFAULT:
@@ -249,7 +250,6 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 	case WXK_F11:
 		doFullScreen(!m_isFullScreen);
 		break;
-
 	case WXK_ESCAPE:
 		if (m_isFullScreen) {
 			doFullScreen(false);
@@ -265,5 +265,6 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 }
 
 void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
+	AutoWrapTextShape::willCountLines(true);
 	connection->SetLinePen(wxPen(wxColour(150, 0, 0), 3));
 }

@@ -58,7 +58,6 @@ public:
         TOOL_NewNote,
         TOOL_NewImage,
         TOOL_NewConnection,
-        TOOL_ResetCenter,
         TOOL_CorkboardFullScreen
     };
 
