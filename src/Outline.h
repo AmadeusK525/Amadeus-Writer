@@ -12,12 +12,6 @@ class Outline : public wxNotebook {
 private:
     Corkboard* corkboard = nullptr;
     wxPanel* timeline = nullptr;
-    
-    int non = 0;
-    int noi = 0;
-    int nob = 0;
-
-    int pnoi = 0;
 
 public:
     // Hack for doing corkboard fullscreen
@@ -26,19 +20,9 @@ public:
 
 public:
     Outline(wxWindow* parent);
-
-    void clearAll();
-    int  getCount() { return non + noi + nob; }
-
-    void setNon(int n) { non = n; }
-    void setNoi(int n) { noi = n; }
-    void setNob(int n) { nob = n; }
-
-    void saveOutline(std::ofstream& out, int& progress, wxProgressDialog* dialog);
-    void loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog);
-
-    void saveQuantities(std::ofstream& out);
-    void loadQuantities(std::ifstream& in);
+    
+    void saveOutline(int& progress, wxProgressDialog* dialog);
+    void loadOutline(int& progress, wxProgressDialog* dialog);
 
     Corkboard* getCorkboard() { return corkboard; }
 };

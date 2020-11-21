@@ -51,6 +51,9 @@ public:
     ToolMode getToolMode() { return toolMode; }
     wxToolBar* getToolbar() { return toolBar; }
 
+    void save();
+    void load();
+    
     //friend class CorkboardCanvas;
 
     enum {

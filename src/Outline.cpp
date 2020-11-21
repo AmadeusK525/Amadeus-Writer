@@ -20,22 +20,12 @@ Outline::Outline(wxWindow* parent) : wxNotebook(parent, -1) {
     AddPage(timeline, "Timeline");
 }
 
-void Outline::saveQuantities(std::ofstream& out) {
-    if (out.is_open()) {
-        out.write((char*)&non, sizeof(int));
-
-        out.write((char*)&noi, sizeof(int));
-
-        out.write((char*)&nob, sizeof(int));
-    }
+void Outline::saveOutline(int& progress, wxProgressDialog* dialog) {
+    corkboard->save();
+    dialog->Update(progress++);
 }
 
-void Outline::loadQuantities(std::ifstream& in) {
-    if (in.is_open()) {
-        in.read((char*)&non, sizeof(int));
-
-        in.read((char*)&noi, sizeof(int));
-
-        in.read((char*)&nob, sizeof(int));
-    }
+void Outline::loadOutline(int& progress, wxProgressDialog* dialog) {
+    corkboard->load();
+    dialog->Update(progress++);
 }
