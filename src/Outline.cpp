@@ -20,12 +20,12 @@ Outline::Outline(wxWindow* parent) : wxNotebook(parent, -1) {
     AddPage(timeline, "Timeline");
 }
 
-void Outline::saveOutline(int& progress, wxProgressDialog* dialog) {
-    corkboard->save();
+void Outline::saveOutline(std::ofstream& out, int& progress, wxProgressDialog* dialog) {
+    corkboard->save(out);
     dialog->Update(progress++);
 }
 
-void Outline::loadOutline(int& progress, wxProgressDialog* dialog) {
-    corkboard->load();
+void Outline::loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog) {
+    corkboard->load(in);
     dialog->Update(progress++);
 }
