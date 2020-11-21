@@ -72,6 +72,7 @@ void CorkboardCanvas::onMenu(wxCommandEvent& event) {
 		GetDiagramManager()->RemoveShape(shapeForMenu);
 
 	shapeForMenu = nullptr;
+	SaveCanvasState();
 }
 
 void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
@@ -93,6 +94,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
 		parent->setToolMode(modeDESIGN);
+		SaveCanvasState();
 		break;
 	}
 	case modeIMAGE:
@@ -132,6 +134,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
+		SaveCanvasState();
 		parent->setToolMode(modeDESIGN);
 		break;
 	}
@@ -143,6 +146,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		} else
 			wxSFShapeCanvas::OnLeftDown(event);
 
+		SaveCanvasState();
 		break;
 	case modeDESIGN:
 		wxSFShapeCanvas::OnLeftDown(event);

@@ -105,3 +105,11 @@ void Corkboard::setToolMode(ToolMode mode) {
 
     toolMode = mode;
 }
+
+void Corkboard::save() {
+    canvas->SaveCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
+}
+
+void Corkboard::load() {
+    canvas->LoadCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
+}

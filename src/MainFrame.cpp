@@ -320,15 +320,10 @@ void MainFrame::saveFile(wxCommandEvent& event) {
             file.write((char*)&saved[i], sizeof(int));
         }    
 
-        // This saves the number of elements that are present in the outline page,
-        // it'll be used when actually loading them.
-        outline->saveQuantities(file);
-
         // Get number of all "stuff" on the project and initialize gauge
         // with the max number being that one, so that it can be incremented
         // by one each time you load something.
-        int progressSize = saved[0] + saved[1] + saved[2] + saved[3]
-            + outline->getCount();
+        int progressSize = saved[0] + saved[1] + saved[2] + saved[3] + 1;
         int currentSize = 0;
 
         wxProgressDialog* progress = new wxProgressDialog("Saving project...", currentDocFile, progressSize, this,
@@ -369,6 +364,8 @@ void MainFrame::saveFile(wxCommandEvent& event) {
             it->save(file);
             progress->Update(currentSize++);
         }
+
+        outline->saveOutline(currentSize, progress);
 
         // This calls the save function of the outline page, which saves the corkboard
         // elements and will futurely save other stuff.
@@ -430,9 +427,8 @@ void MainFrame::saveFileAs(wxCommandEvent& event) {
             fs::create_directory(currentImagePath);
             fs::create_directory(currentImagePath + "\\Characters");
             fs::create_directory(currentImagePath + "\\Locations");
-            fs::create_directory(currentImagePath + "\\Outline");
             fs::create_directory(currentDocFolder + "\\Files");
-            //fs::permissions(currentDocFolder + "\\Chapters", fs::all_all);
+            fs::create_directory(currentDocFolder + "\\Files\\Outline");
 
             currentDocFile = currentDocFolder + "\\" + currentTitle;
         }
@@ -840,9 +836,6 @@ void MainFrame::loadFile() {
         progressSize += saved[i];
     }
 
-    outline->loadQuantities(file);
-    progressSize += outline->getCount();
-
     wxProgressDialog* progress = new wxProgressDialog("Loading project...", currentDocFile, progressSize, this,
         wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_SMOOTH);
 
@@ -892,6 +885,8 @@ void MainFrame::loadFile() {
 
         progress->Update(currentSize++);
     }
+
+    outline->loadOutline(currentSize, progress);
 
     file.close();
 
