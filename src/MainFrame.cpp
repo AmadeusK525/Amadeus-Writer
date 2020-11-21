@@ -22,6 +22,8 @@ EVT_MENU(MENU_New, MainFrame::newFile)
 EVT_MENU(MENU_Open, MainFrame::openFile)
 EVT_MENU(MENU_Save, MainFrame::saveFile)
 EVT_MENU(MENU_SaveAs, MainFrame::saveFileAs)
+EVT_MENU(MENU_ExportCorkboardPNG, MainFrame::exportCorkboard)
+EVT_MENU(MENU_ExportCorkboardBMP, MainFrame::exportCorkboard)
 EVT_MENU(MENU_Quit, MainFrame::quit)
 
 EVT_MENU(MENU_Update, MainFrame::callUpdate)
@@ -150,11 +152,15 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     mainMenu = new wxMenuBar();
 
     fileMenu = new wxMenu();
+    wxMenu* exportCanvas = new wxMenu();
+    exportCanvas->Append(MENU_ExportCorkboardPNG, "PNG image", "Export the contents of the Canvas to an image file, in this case, PNG");
+    exportCanvas->Append(MENU_ExportCorkboardBMP, "BMP image", "Export the contents of the Canvas to an image file, in this case, BMP");
 
     fileMenu->Append(MENU_New, "&New project", "Create a new project");
     fileMenu->Append(MENU_Open, "&Open project", "Open an existing project");
     fileMenu->Append(MENU_Save, "&Save", "Save the current document project");
     fileMenu->Append(MENU_SaveAs, "Save &As");
+    fileMenu->AppendSubMenu(exportCanvas, "Export corkboard to...");
     fileMenu->Append(MENU_Quit, "&Quit", "Quit the editor");
 
     projectMenu = new wxMenu();
@@ -365,7 +371,7 @@ void MainFrame::saveFile(wxCommandEvent& event) {
             progress->Update(currentSize++);
         }
 
-        outline->saveOutline(currentSize, progress);
+        outline->saveOutline(file, currentSize, progress);
 
         // This calls the save function of the outline page, which saves the corkboard
         // elements and will futurely save other stuff.
@@ -427,6 +433,7 @@ void MainFrame::saveFileAs(wxCommandEvent& event) {
             fs::create_directory(currentImagePath);
             fs::create_directory(currentImagePath + "\\Characters");
             fs::create_directory(currentImagePath + "\\Locations");
+            fs::create_directory(currentImagePath + "\\Corkboard");
             fs::create_directory(currentDocFolder + "\\Files");
             fs::create_directory(currentDocFolder + "\\Files\\Outline");
 
@@ -440,6 +447,20 @@ void MainFrame::saveFileAs(wxCommandEvent& event) {
         delete saveDialog;
 
     event.Skip();
+}
+
+void MainFrame::exportCorkboard(wxCommandEvent& event) {
+    wxBitmapType type;
+    switch (event.GetId()) {
+    case MENU_ExportCorkboardPNG:
+        type = wxBITMAP_TYPE_PNG;
+        break;
+    case MENU_ExportCorkboardBMP:
+        type = wxBITMAP_TYPE_BMP;
+        break;
+    }
+
+    outline->getCorkboard()->exportToImage(type);
 }
 
 void MainFrame::onQuit(wxCloseEvent& event) {
@@ -886,7 +907,7 @@ void MainFrame::loadFile() {
         progress->Update(currentSize++);
     }
 
-    outline->loadOutline(currentSize, progress);
+    outline->loadOutline(file, currentSize, progress);
 
     file.close();
 

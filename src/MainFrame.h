@@ -106,6 +106,7 @@ public:
     void openFile(wxCommandEvent& event);
     void saveFile(wxCommandEvent& event);
     void saveFileAs(wxCommandEvent& event);
+    void exportCorkboard(wxCommandEvent& event);
 
     void editTitle(wxCommandEvent& event);
 
@@ -158,6 +159,9 @@ enum {
     MENU_Save,
     MENU_SaveAs,
     MENU_Quit,
+
+    MENU_ExportCorkboardPNG,
+    MENU_ExportCorkboardBMP,
 
     MENU_Update,
     MENU_ProjectName,

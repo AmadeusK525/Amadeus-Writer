@@ -39,6 +39,8 @@ private:
     ToolMode toolMode = modeDESIGN;
     bool isDraggingRight = false;
 
+    int currentImage = 1;
+
 public:
     Corkboard(wxWindow* parent);
 
@@ -51,8 +53,10 @@ public:
     ToolMode getToolMode() { return toolMode; }
     wxToolBar* getToolbar() { return toolBar; }
 
-    void save();
-    void load();
+    void exportToImage(wxBitmapType type);
+
+    void save(std::ofstream& out);
+    void load(std::ifstream& in);
     
     //friend class CorkboardCanvas;
 

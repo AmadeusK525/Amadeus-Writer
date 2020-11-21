@@ -106,10 +106,25 @@ void Corkboard::setToolMode(ToolMode mode) {
     toolMode = mode;
 }
 
-void Corkboard::save() {
+void Corkboard::exportToImage(wxBitmapType type) {
+    switch (type) {
+    case wxBITMAP_TYPE_PNG:
+        canvas->SaveCanvasToImage(MainFrame::currentDocFolder +
+            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".png", type);
+        break;
+    case wxBITMAP_TYPE_BMP:
+        canvas->SaveCanvasToImage(MainFrame::currentDocFolder +
+            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".bmp", type);
+        break;
+    }
+}
+
+void Corkboard::save(std::ofstream& out) {
+    out.write((char*)&currentImage, sizeof(int));
     canvas->SaveCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
 }
 
-void Corkboard::load() {
+void Corkboard::load(std::ifstream& in) {
+    in.read((char*)&currentImage, sizeof(int));
     canvas->LoadCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
 }
