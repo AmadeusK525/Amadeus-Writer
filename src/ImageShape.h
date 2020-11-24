@@ -18,7 +18,9 @@ public:
 
 	virtual void OnBeginHandle(wxSFShapeHandle& handle);
 	virtual void OnHandle(wxSFShapeHandle& handle);
-	//virtual void OnEndHandle(wxSFShapeHandle& handle);
+	virtual void OnEndHandle(wxSFShapeHandle& handle);
+
+	virtual void OnEndDrag(wxPoint& pos);
 
 	XS_DECLARE_CLONABLE_CLASS(ImageShape)
 };

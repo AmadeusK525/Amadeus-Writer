@@ -10,7 +10,7 @@ private:
 	wxArrayString m_lines{};
 
 	static bool countLines;
-	static bool clipRegion;
+	bool clipRegion = false;
 
 public:
 	XS_DECLARE_CLONABLE_CLASS(AutoWrapTextShape);
