@@ -23,6 +23,7 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
     toolBar->AddRadioTool(TOOL_Cursor, "", wxBITMAP_PNG(cursor), wxNullBitmap, "Default");
     toolBar->AddRadioTool(TOOL_NewNote, "", wxBITMAP_PNG(newNote), wxNullBitmap, "New note");
     toolBar->AddRadioTool(TOOL_NewImage, "", wxBITMAP_PNG(newImage), wxNullBitmap, "New image");
+    toolBar->AddRadioTool(TOOL_NewText, "", wxBITMAP_PNG(newText), wxNullBitmap, "New Text");
     toolBar->AddRadioTool(TOOL_NewConnection, "", wxBITMAP_PNG(connectionLine), wxNullBitmap, "New connection");
     toolBar->AddSeparator();
     toolBar->AddSeparator();
@@ -58,9 +59,15 @@ void Corkboard::onTool(wxCommandEvent& event) {
     case TOOL_NewImage:
         toolMode = modeIMAGE;
         break;
+
+    case TOOL_NewText:
+        toolMode = modeTEXT;
+        break;
+
     case TOOL_NewConnection:
         toolMode = modeCONNECTION;
         break;
+    
     case TOOL_CorkboardFullScreen:
         callFullScreen(event);
         break;
@@ -98,6 +105,9 @@ void Corkboard::setToolMode(ToolMode mode) {
     case modeIMAGE:
         toolBar->ToggleTool(TOOL_NewImage, true);
         break;
+    case modeTEXT:
+        toolBar->ToggleTool(TOOL_NewText, true);
+        break;
     case modeCONNECTION:
         toolBar->ToggleTool(TOOL_NewConnection, true);
         break;
@@ -110,11 +120,13 @@ void Corkboard::exportToImage(wxBitmapType type) {
     switch (type) {
     case wxBITMAP_TYPE_PNG:
         canvas->SaveCanvasToImage(MainFrame::currentDocFolder +
-            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".png", type);
+            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".png",
+            type, true, 1.0);
         break;
     case wxBITMAP_TYPE_BMP:
         canvas->SaveCanvasToImage(MainFrame::currentDocFolder +
-            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".bmp", type);
+            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".bmp",
+            type, true, 1.0);
         break;
     }
 }

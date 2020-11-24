@@ -7,8 +7,8 @@ ImageShape::ImageShape(): wxSFBitmapShape() {
 	
 }
 
-ImageShape::ImageShape(const ImageShape& other): wxSFBitmapShape(other) {
-	
+ImageShape::ImageShape(static ImageShape& other): wxSFBitmapShape(other) {
+	ratio = other.ratio;
 }
 
 ImageShape::~ImageShape() {}
@@ -17,13 +17,13 @@ void ImageShape::create(const wxString& path, wxBitmapType type) {
 	CreateFromFile(path, type);
 	wxImage image(path);
 	
-	int width = image.GetWidth();
-	int height = image.GetHeight();
-
-	ratio = (double)width / (double)height;
+	ratio = (double)m_Bitmap.GetWidth() / (double)m_Bitmap.GetHeight();
 }
 
 void ImageShape::OnBeginHandle(wxSFShapeHandle& handle){
+	if (ratio == 99999.9) {
+		ratio = (double)m_Bitmap.GetWidth() / (double)m_Bitmap.GetHeight();
+	}
 	wxSFBitmapShape::OnBeginHandle(handle);
 }
 

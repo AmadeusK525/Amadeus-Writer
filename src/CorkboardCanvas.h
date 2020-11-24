@@ -16,6 +16,7 @@ private:
 
 	bool m_isFullScreen = false;
 	bool m_isConnecting = false;
+	bool m_showShadows = false;
 
 	bool m_beginDraggingRight = false;
 	bool m_isDraggingRight = false;
