@@ -4,6 +4,7 @@
 #include "CharacterCreator.h"
 #include "CharacterShowcase.h"
 #include "LocationCreator.h"
+#include "Chapter.h"
 
 #include "wxmemdbg.h"
 
@@ -274,7 +275,7 @@ void MainFrame::newFile(wxCommandEvent& event) {
     // Updating everything that needs to be reset.
     characters.clear();
     locations.clear();
-    chaptersNote->getGrid()->clearAll();
+    chaptersNote->clearAll();
     MainNotebook::charList->DeleteAllItems();
     MainNotebook::locList->DeleteAllItems();
 
@@ -366,7 +367,7 @@ void MainFrame::saveFile(wxCommandEvent& event) {
         }
 
         // Same as the above but for chapters. No images are saved.
-        for (auto it = chaptersNote->getGrid()->chapters.begin(); it != chaptersNote->getGrid()->chapters.end(); it++) {
+        for (auto it = chaptersNote->chapters.begin(); it != chaptersNote->chapters.end(); it++) {
             it->save(file);
             progress->Update(currentSize++);
         }
@@ -678,7 +679,7 @@ void MainFrame::newChar(wxCommandEvent& event) {
 }
 
 void MainFrame::newChap(wxCommandEvent& event) {
-    ChapterCreator* create = new ChapterCreator(this, chaptersNote->getGrid());
+    ChapterCreator* create = new ChapterCreator(this, chaptersNote);
     create->Show();
     create->SetFocus();
     event.Skip();
@@ -896,12 +897,12 @@ void MainFrame::loadFile() {
         progress->Update(currentSize++);
     }
 
-    chaptersNote->getGrid()->clearAll();
+    chaptersNote->clearAll();
 
     for (int i = 0; i < saved[2]; i++) {
         Chapter chapter;
         chapter.load(file);
-        chaptersNote->getGrid()->chapters.push_back(chapter);
+        chaptersNote->chapters.push_back(chapter);
         chaptersNote->getGrid()->addButton();
 
         progress->Update(currentSize++);

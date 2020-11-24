@@ -29,18 +29,19 @@ END_EVENT_TABLE()
 
 namespace fs = boost::filesystem;
 
-ChapterWriter::ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb) : saveTimer(this, TIMER_Save), wordsTimer(this, TIMER_Words),
+ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int numb) :
+    saveTimer(this, TIMER_Save), wordsTimer(this, TIMER_Words),
     wxFrame(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxFRAME_FLOAT_ON_PARENT | wxDEFAULT_FRAME_STYLE) {
 
     wxRichTextBuffer::AddHandler(new wxRichTextXMLHandler);
-    this->parent = dynamic_cast<MainFrame*>(parent);
-    chaptersVec = &vec;
+    this->mainFrame = dynamic_cast<MainFrame*>(parent);
+    this->chapNote = notebook;
     chapterPos = numb;
 
     Hide();
     SetBackgroundColour(wxColour(100, 100, 100));
 
-    notebook = new ChapterWriterNotebook(this);
+    chapWriterNotebook = new ChapterWriterNotebook(this);
 
     wxNotebook* leftNotebook = new wxNotebook(this, -1);
 
@@ -155,7 +156,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb) : s
 
     wxBoxSizer* mainSizer = new wxBoxSizer(wxHORIZONTAL);
     mainSizer->Add(leftNotebook, wxSizerFlags(1).Expand());
-    mainSizer->Add(notebook, wxSizerFlags(4).Expand());
+    mainSizer->Add(chapWriterNotebook, wxSizerFlags(4).Expand());
     mainSizer->Add(rightPanel, wxSizerFlags(1).Expand());
 
     SetSizer(mainSizer);
@@ -176,11 +177,11 @@ ChapterWriter::ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb) : s
     statusBar->SetStatusText("Chapter up-to-date", 0);
     statusBar->SetStatusText("Number of words: 0", 1);
 
-    notebook->notesSize.x = (notebook->corkBoard->GetSize().x / 3) - 30;
-    notebook->notesSize.y = (notebook->corkBoard->GetSize().y / 4) - 10;
+    chapWriterNotebook->notesSize.x = (chapWriterNotebook->corkBoard->GetSize().x / 3) - 30;
+    chapWriterNotebook->notesSize.y = (chapWriterNotebook->corkBoard->GetSize().y / 4) - 10;
 
-    notebook->corkBoard->size = notebook->corkBoard->GetSize();
-    notebook->corkBoard->setImageAsIs(wxBitmap(wxBITMAP_PNG(corkBoard)).ConvertToImage());
+    chapWriterNotebook->corkBoard->size = chapWriterNotebook->corkBoard->GetSize();
+    chapWriterNotebook->corkBoard->setImageAsIs(wxBitmap(wxBITMAP_PNG(corkBoard)).ConvertToImage());
 
     loadChapter();
 
@@ -198,7 +199,7 @@ void ChapterWriter::clearNote(wxCommandEvent& event) {
 }
 
 void ChapterWriter::addNote(wxCommandEvent& event) {
-    notebook->addNote((string)note->GetValue(), (string)noteLabel->GetValue(), green);
+    chapWriterNotebook->addNote((string)note->GetValue(), (string)noteLabel->GetValue(), green);
     note->Clear();
     noteLabel->SetValue("New note");
     green = false;
@@ -379,18 +380,18 @@ void ChapterWriter::removeLocButtonPressed(wxCommandEvent& event) {
 }
 
 void ChapterWriter::nextChap(wxCommandEvent& event) {
-    if (chapterPos < chaptersVec->size()) {
+    if (chapterPos < chapNote->chapters.size()) {
         saveChapter();
         chapterPos++;
-        notebook->content->EndAllStyles();
+        chapWriterNotebook->content->EndAllStyles();
 
-        notebook->notes.clear();
-        if (notebook->notesSizer->GetItemCount() > 0)
-            notebook->notesSizer->Clear(true);
+        chapWriterNotebook->notes.clear();
+        if (chapWriterNotebook->notesSizer->GetItemCount() > 0)
+            chapWriterNotebook->notesSizer->Clear(true);
 
         loadChapter();
 
-        notebook->corkBoard->FitInside();
+        chapWriterNotebook->corkBoard->FitInside();
     }
     event.Skip();
 }
@@ -399,15 +400,15 @@ void ChapterWriter::prevChap(wxCommandEvent& event) {
     if (chapterPos > 0) {
         saveChapter();
         chapterPos--;
-        notebook->notes.clear();
+        chapWriterNotebook->notes.clear();
 
-        if (notebook->notesSizer->GetItemCount() > 0) {
-            notebook->notesSizer->Clear(true);
+        if (chapWriterNotebook->notesSizer->GetItemCount() > 0) {
+            chapWriterNotebook->notesSizer->Clear(true);
         }
 
         loadChapter();
 
-        notebook->corkBoard->FitInside();
+        chapWriterNotebook->corkBoard->FitInside();
     }
     event.Skip();
 }
@@ -415,7 +416,7 @@ void ChapterWriter::prevChap(wxCommandEvent& event) {
 void ChapterWriter::loadChapter() {
     wxBusyCursor busy;
 
-    auto it = chaptersVec->begin();
+    auto it = chapNote->chapters.begin();
     for (unsigned int i = 1; i < chapterPos; i++) {
         it++;
     }
@@ -424,37 +425,38 @@ void ChapterWriter::loadChapter() {
 
     SetTitle(it->name);
 
-    if (fs::exists(parent->currentDocFolder + "\\Files\\Chapter " +
+    if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Chapter " +
         std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml")) {
         
-        notebook->content->LoadFile(parent->currentDocFolder + "\\Files\\Chapter " +
+        chapWriterNotebook->content->LoadFile(mainFrame->currentDocFolder + "\\Files\\Chapter " +
             std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
     } else {
-        notebook->content->Clear();
+        chapWriterNotebook->content->Clear();
     }
 
-    notebook->content->SetSelectionRange(wxRichTextRange(notebook->content->GetLastPosition() - 1, notebook->content->GetLastPosition()));
+    chapWriterNotebook->content->SetSelectionRange(wxRichTextRange(chapWriterNotebook->content->GetLastPosition() - 1,
+        chapWriterNotebook->content->GetLastPosition()));
 
-    if (notebook->content->IsSelectionBold()) {
-        notebook->contentTool->ToggleTool(TOOL_Bold, true);
+    if (chapWriterNotebook->content->IsSelectionBold()) {
+        chapWriterNotebook->contentTool->ToggleTool(TOOL_Bold, true);
     } else {
-        notebook->contentTool->ToggleTool(TOOL_Bold, false);
+        chapWriterNotebook->contentTool->ToggleTool(TOOL_Bold, false);
     }
 
-    if (notebook->content->IsSelectionItalics()) {
-        notebook->contentTool->ToggleTool(TOOL_Italic, true);
+    if (chapWriterNotebook->content->IsSelectionItalics()) {
+        chapWriterNotebook->contentTool->ToggleTool(TOOL_Italic, true);
     } else {
-        notebook->contentTool->ToggleTool(TOOL_Italic, false);
+        chapWriterNotebook->contentTool->ToggleTool(TOOL_Italic, false);
     }
 
-    if (notebook->content->IsSelectionUnderlined()) {
-        notebook->contentTool->ToggleTool(TOOL_Underline, true);
+    if (chapWriterNotebook->content->IsSelectionUnderlined()) {
+        chapWriterNotebook->contentTool->ToggleTool(TOOL_Underline, true);
     } else {
-        notebook->contentTool->ToggleTool(TOOL_Underline, false);
+        chapWriterNotebook->contentTool->ToggleTool(TOOL_Underline, false);
     }
 
-    notebook->content->SelectNone();
-    notebook->content->SetCaretPosition(notebook->content->GetLastPosition() - 1);
+    chapWriterNotebook->content->SelectNone();
+    chapWriterNotebook->content->SetCaretPosition(chapWriterNotebook->content->GetLastPosition() - 1);
 
     summary->SetValue(it->summary);
 
@@ -466,7 +468,7 @@ void ChapterWriter::loadChapter() {
         addNote(wxCommandEvent());
     }
 
-    notebook->corkBoard->Layout();
+    chapWriterNotebook->corkBoard->Layout();
 
     charInChap->DeleteAllItems();
     charNames.clear();
@@ -493,22 +495,22 @@ void ChapterWriter::loadChapter() {
 }
 
 void ChapterWriter::saveChapter() {
-    thisChap->content = notebook->content->GetBuffer();
+    thisChap->content = chapWriterNotebook->content->GetBuffer();
     thisChap->summary = (string)summary->GetValue();
 
     thisChap->notes.clear();
-    for (unsigned int i = 0; i < notebook->notes.size(); i++) {
-        thisChap->notes.push_back(notebook->notes[i]);
+    for (unsigned int i = 0; i < chapWriterNotebook->notes.size(); i++) {
+        thisChap->notes.push_back(chapWriterNotebook->notes[i]);
     }
 
-    if (notebook->content->GetValue() != "") {
-        thisChap->content.SaveFile(parent->currentDocFolder + "\\Files\\Chapter " +
+    if (chapWriterNotebook->content->GetValue() != "") {
+        thisChap->content.SaveFile(mainFrame->currentDocFolder + "\\Files\\Chapter " +
             std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
     }
 }
 
 void ChapterWriter::countWords() {
-    string count = notebook->content->GetValue();
+    string count = chapWriterNotebook->content->GetValue();
 
     if (count != "") {
         int words = std::count(count.begin(), count.end(), ' ');
@@ -525,7 +527,7 @@ void ChapterWriter::timerEvent(wxTimerEvent& event) {
     countWords();
 
     if (this->IsShown())
-        parent->Show();
+        mainFrame->Show();
 
     statusBar->SetStatusText("Chapter up-to-date", 0);
 
@@ -534,7 +536,7 @@ void ChapterWriter::timerEvent(wxTimerEvent& event) {
 
 void ChapterWriter::onClose(wxCloseEvent& event) {
     saveChapter();
-    parent->saveFile(wxCommandEvent());
+    mainFrame->saveFile(wxCommandEvent());
     
     Destroy();
 }

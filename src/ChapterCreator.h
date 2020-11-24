@@ -1,3 +1,6 @@
+#ifndef CHAPTERCREATOR_H_
+#define CHAPTERCREATOR_H_
+
 #pragma once
 
 #include "wx/editlbox.h"
@@ -5,16 +8,12 @@
 #include <string>
 
 #include "DragList.h"
-#include "MainFrame.h"
 #include "ChaptersGrid.h"
-
-#ifndef CHAPTERCREATOR_H_
-#define CHAPTERCREATOR_H_
 
 class ChapterCreator: public wxFrame {
 private:
-    MainFrame* parent = nullptr;
-    ChaptersGrid* grid = nullptr;
+    MainFrame* mainFrame = nullptr;
+    ChaptersNotebook* notebook = nullptr;
 
     wxPanel* nchapPanel1 = nullptr;
     wxPanel* nchapPanel2 = nullptr;
@@ -35,7 +34,7 @@ private:
     bool firstNext = true; 
 
 public:
-    ChapterCreator(wxWindow* parent, ChaptersGrid* grid);
+    ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook);
 
     void next(wxCommandEvent& event);
     void back(wxCommandEvent& event);

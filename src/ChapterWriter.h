@@ -11,21 +11,19 @@
 #include <list>
 
 #include "ImagePanel.h"
-#include "MainFrame.h"
+#include "ChaptersNotebook.h"
 
 using std::string;
 using std::list;
 
-struct Chapter;
 struct ChapterWriterNotebook;
-class MainFrame;
 
 class ChapterWriter : wxFrame {
 private:
-    MainFrame* parent = nullptr;
+    MainFrame* mainFrame = nullptr;
     Chapter* thisChap = nullptr;
 
-    ChapterWriterNotebook* notebook = nullptr;
+    ChapterWriterNotebook* chapWriterNotebook = nullptr;
 
     wxTextCtrl* summary = nullptr;
     wxTextCtrl* note = nullptr;
@@ -47,7 +45,7 @@ private:
     wxButton* noteClear = nullptr;
     wxButton* noteAdd = nullptr;
 
-    list<Chapter>* chaptersVec = nullptr;
+    ChaptersNotebook* chapNote = nullptr;
     unsigned int chapterPos;
 
     wxTimer saveTimer;
@@ -59,7 +57,7 @@ public:
     wxStatusBar* statusBar = nullptr;
 
 public:
-    ChapterWriter(wxWindow* parent, list<Chapter>& vec, int numb);
+    ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int numb);
 
     void clearNote(wxCommandEvent& event);
     void addNote(wxCommandEvent& event);
