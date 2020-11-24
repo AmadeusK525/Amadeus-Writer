@@ -24,6 +24,7 @@ DragList::DragList(wxWindow* parent, const wxSize& size) :
 }
 
 void DragList::onLeftDown(wxMouseEvent& evt) {
+    //if (GetItemCount() > 1)
     state = DRAG_START;
 }
 
@@ -33,9 +34,6 @@ void DragList::onLeftUp(wxMouseEvent& evt) {
     int itemUnderMouse = HitTest(evtPos, listFlags), insert;
 
     if (state == DRAGGING) {
-        wxRect rect;
-        GetItemRect(itemUnderMouse, rect, wxLIST_RECT_BOUNDS);
-
         if (itemUnderMouse == -1) {
             if (evtPos.y > GetPosition().y) {
                 insert = GetItemCount();
@@ -44,6 +42,9 @@ void DragList::onLeftUp(wxMouseEvent& evt) {
             }
 
         } else {
+            wxRect rect;
+            GetItemRect(itemUnderMouse, rect, wxLIST_RECT_BOUNDS);
+
             if (evtPos.y > (rect.GetTop() + rect.GetHeight() / 2)) {
                 // below
                 insert = itemUnderMouse + 1;
