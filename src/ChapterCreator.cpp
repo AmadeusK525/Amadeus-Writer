@@ -1,4 +1,5 @@
 #include "ChapterCreator.h"
+#include "Chapter.h"
 
 #include "wxmemdbg.h"
 
@@ -13,12 +14,12 @@ EVT_CLOSE(ChapterCreator::checkClose)
 
 END_EVENT_TABLE()
 
-ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersGrid* grid) :
+ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook) :
     wxFrame(parent, wxID_ANY, "Create chapter", wxDefaultPosition, wxSize(500, 350), wxMINIMIZE_BOX | wxSYSTEM_MENU |
     wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT) {
 
-    this->parent = dynamic_cast<MainFrame*>(parent);
-    this->grid = grid;
+    this->mainFrame = dynamic_cast<MainFrame*>(parent);
+    this->notebook = notebook;
     this->CenterOnParent();
     this->SetBackgroundColour("WHITE");
 
@@ -31,7 +32,7 @@ ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersGrid* grid) :
     wxStaticText* label1 = new wxStaticText(nchapPanel1, wxID_ANY, "Name: ", wxPoint(45, 10), wxSize(50, 20), wxTE_READONLY | wxNO_BORDER);
     label1->SetFont(wxFont(wxFontInfo(12)));
     label1->SetBackgroundColour("WHITE");
-    nchapName = new wxTextCtrl(nchapPanel1, wxID_ANY, "Chapter " + std::to_string(grid->current), wxPoint(105, 10), wxSize(365, 25));
+    nchapName = new wxTextCtrl(nchapPanel1, wxID_ANY, "Chapter " + std::to_string(notebook->current), wxPoint(105, 10), wxSize(365, 25));
     nchapName->SetBackgroundColour(wxColour(200, 200, 200));
     nchapName->SetFont(wxFont(wxFontInfo(10)));
 
@@ -47,8 +48,8 @@ ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersGrid* grid) :
     nchapNext = new wxButton(nchapPanel1, BUTTON_NextChapter, "Next", wxPoint(285, 275), wxSize(90, 30));
     nchapCancel = new wxButton(nchapPanel1, BUTTON_CancelChapter, "Cancel", wxPoint(380, 275), wxSize(90, 30));
 
-    this->SetIcon(wxICON(chapterIcon));
-    this->Layout();
+    SetIcon(wxICON(chapterIcon));
+    Layout();
 
     nchapPanel2 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(500, 350));
     nchapPanel2->SetBackgroundColour("WHITE");
@@ -70,7 +71,7 @@ void ChapterCreator::next(wxCommandEvent& event) {
         nchapList->SetColumnWidth(0, nchapList->GetSize().x);
 
         int i = 0;
-        for (auto it = grid->chapters.begin(); it != grid->chapters.end(); it++) {
+        for (auto it = notebook->chapters.begin(); it != notebook->chapters.end(); it++) {
             nchapList->InsertItem(i, it->name);
             i++;
         }
@@ -119,7 +120,7 @@ void ChapterCreator::create(wxCommandEvent& event) {
     if (nchapName->GetValue() != "" && nchapName->IsModified()) {
         chapter.name = nchapName->GetValue();
     } else {
-        chapter.name = "Chapter " + std::to_string(grid->current);
+        chapter.name = "Chapter " + std::to_string(notebook->current);
     }
 
     chapter.summary = nchapSummary->GetValue();
@@ -128,7 +129,7 @@ void ChapterCreator::create(wxCommandEvent& event) {
 
     chapter.position = pos + 1;
 
-    grid->addChapter(chapter, pos);
+    notebook->addChapter(chapter, pos);
 
     Destroy();
 }

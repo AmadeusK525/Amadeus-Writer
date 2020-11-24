@@ -143,4 +143,6 @@ void Corkboard::load(std::ifstream& in) {
 
     if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml"))
         canvas->LoadCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
+    else
+        canvas->GetDiagramManager()->Clear();
 }
