@@ -28,7 +28,7 @@
   
   - When you save a project, a folder will be created in whatever directory you chose. Inside it, ther will be some more folders and a .amp file. To open it, you'll have to either right click it, choose "Open with..." and look for Amadeus or open the application, select "File", "Open File" and then choose that .amp file, which contains the necessary information for the project.
   
-  - One the outlining page, you'll see the corkboard. To move it around, drag it with the right mouse button. You can create notes and add images through the toolbar. To drag those, use the left mouse button. You can change the colors of the notes by right clicking the bar at the top of each one. To connect elements with nodes, left click the little white box and drag the node until you reach the back white box of another element. To clear connections, right click any box.
+  - One the outlining page, you'll see the corkboard. To move it around, drag it with the right mouse button. You can create notes, text and add images through the toolbar - select a mode, then left click the corkboard. To drag those, use the left mouse button. You can change the colors of the notes by right clicking the bar at the top of each one. To connect elements with nodes, choose the line mode at the toolbar and left click an element. This will start a connection, which can be finished by left clicking the target element. You can delete the connections by selecting them and hitting delete.
   
   - The program opens on a blank screen, which is the "Overview" page, the main page. I haven't designed it yet, so it may look weird initially. It'll be like the main hub, with useful information about the current state of the book, characters, etc.
   
