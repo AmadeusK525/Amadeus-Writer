@@ -91,10 +91,13 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		// Show shadows only on the topmost shapes.
 		ShowShadows(m_showShadows, wxSFShapeCanvas::shadowTOPMOST);
 
+		AutoWrapTextShape::willCountLines(true);
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
 		parent->setToolMode(modeDESIGN);
 		SaveCanvasState();
+		
+		MainFrame::isSaved = false;
 		break;
 	}
 	case modeIMAGE:
@@ -136,6 +139,8 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		Refresh(false);
 		SaveCanvasState();
 		parent->setToolMode(modeDESIGN);
+		
+		MainFrame::isSaved = false;
 		break;
 	}
 
@@ -159,6 +164,8 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		Refresh(false);
 		parent->setToolMode(modeDESIGN);
 		SaveCanvasState();
+		
+		MainFrame::isSaved = false;
 		break;
 	}
 	case modeCONNECTION:
@@ -302,6 +309,7 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 		if (m_isConnecting) {
 			event.m_keyCode = WXK_ESCAPE;
 		}
+		MainFrame::isSaved = false;
 	}
 
 	// Call default behaviour.
@@ -313,16 +321,28 @@ void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
 		connection->SetLinePen(wxPen(wxColour(150, 0, 0), 3));
 		connection->SetTrgArrow(CLASSINFO(wxSFSolidArrow));
 
-		connection->AcceptChild(wxT("wxSFTextShape"));
-		connection->AcceptChild(wxT("wxSFEditTextShape"));
+		connection->AcceptChild("wxSFTextShape");
+		connection->AcceptChild("wxSFEditTextShape");
 
-		connection->AcceptConnection(wxT("All"));
-		connection->AcceptSrcNeighbour(wxT("All"));
-		connection->AcceptTrgNeighbour(wxT("All"));
+		connection->AcceptConnection("NoteShape");
+		connection->AcceptConnection("ImageShape");
+		connection->AcceptConnection("wxSFEditTextShape");
+		connection->AcceptConnection("wxSFCurveShape");
 
-		//connection->SetDockPoint(sfDOCK)
+		connection->AcceptSrcNeighbour("NoteShape");
+		connection->AcceptSrcNeighbour("ImageShape");
+		connection->AcceptSrcNeighbour("wxSFEditTextShape");
+		connection->AcceptSrcNeighbour("wxSFCurveShape");
+
+		connection->AcceptTrgNeighbour("NoteShape");
+		connection->AcceptTrgNeighbour("ImageShape");
+		connection->AcceptTrgNeighbour("wxSFEditTextShape");
+		connection->AcceptTrgNeighbour("wxSFCurveShape");
+		//connection->AcceptSrcNeighbour("All");
+		//connection->AcceptTrgNeighbour("All");
 
 		m_isConnecting = false;
+		MainFrame::isSaved = false;
 	}
 
 	parent->setToolMode(modeDESIGN);

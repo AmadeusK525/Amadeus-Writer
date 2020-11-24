@@ -136,6 +136,8 @@ void NoteShape::OnHandle(wxSFShapeHandle& handle) {
 void NoteShape::OnEndHandle(wxSFShapeHandle& handle) {
 	willCountLines(true);
 	willClip(false);
+	
+	MainFrame::isSaved = false;
 	wxSFRoundRectShape::OnEndHandle(handle);
 }
 
@@ -146,5 +148,7 @@ void NoteShape::OnBeginDrag(const wxPoint& pos) {
 
 void NoteShape::OnEndDrag(const wxPoint& pos) {
 	willCountLines(true);
+
+	MainFrame::isSaved = false;
 	wxSFRoundRectShape::OnEndDrag(pos);
 }

@@ -4,7 +4,7 @@ XS_IMPLEMENT_CLONABLE_CLASS(AutoWrapTextShape,
 	wxSFEditTextShape);
 
 bool AutoWrapTextShape::countLines = true;
-bool AutoWrapTextShape::clipRegion = false;
+//bool AutoWrapTextShape::clipRegion = false;
 
 AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape() {
 	SetFill(bgColour);
@@ -31,16 +31,15 @@ void AutoWrapTextShape::UpdateRectSize() {
 
 void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 	dc.SetBrush(m_Fill);
-	dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
+	//dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
 
 	dc.SetTextForeground(m_TextColor);
 	dc.SetFont(m_Font);
 
-	//wxRealPoint pos = GetAbsolutePosition();
 	wxRect rect(GetBoundingBox());
 
 	if (clipRegion)
-		dc.SetClippingRegion(rect);
+		m_lines.Clear();
 
 	// Get wrapped text and draw all text lines
 	if (countLines && rect.width > 30) {
@@ -56,8 +55,8 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 		dc.DrawText(m_lines[i], rect.x, rect.y + i * m_nLineHeight);
 	}
 
-	if (clipRegion)
-		dc.DestroyClippingRegion();
+	//if (clipRegion)
+		//dc.DestroyClippingRegion();
 }
 
 void AutoWrapTextShape::OnLeftDoubleClick(wxPoint& pos) {
@@ -92,6 +91,7 @@ void AutoWrapTextShape::calcWrappedText(int& lenght, int& numberOfLines) {
 
 	int index = 0;
 	bool hasSpace;
+	bool hasNewLine;
 	bool isEqual;
 
 	while (numberOfLines > 0) {
@@ -106,6 +106,20 @@ void AutoWrapTextShape::calcWrappedText(int& lenght, int& numberOfLines) {
 				isEqual = fullString.Length() == m_sText.Length();
 				if (textSize.x >= lenght - 2 || isEqual) {
 					hasSpace = m_sText.Contains(" ");
+					/*hasNewLine = m_sText.Contains("\n");
+
+					if (hasNewLine) {
+						while (true) {
+							int where = m_sText.find_first_of("\n", 0);
+							m_sText.Remove(where, m_sText.Length() - where);
+							fullString.Remove(where);
+
+							if (m_sText.IsEmpty())
+								m_sText = " ";
+						}
+
+						hasSpace = false;
+					}*/
 
 					if (hasSpace) {
 						while (true) {

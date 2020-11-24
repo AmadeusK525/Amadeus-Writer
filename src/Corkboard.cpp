@@ -10,6 +10,8 @@
 
 #include "wxmemdbg.h"
 
+namespace fs = boost::filesystem;
+
 BEGIN_EVENT_TABLE(Corkboard, wxPanel)
 
 EVT_TOOL_RANGE(TOOL_Cursor, TOOL_CorkboardFullScreen, Corkboard::onTool)
@@ -138,5 +140,7 @@ void Corkboard::save(std::ofstream& out) {
 
 void Corkboard::load(std::ifstream& in) {
     in.read((char*)&currentImage, sizeof(int));
-    canvas->LoadCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
+
+    if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml"))
+        canvas->LoadCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
 }

@@ -70,3 +70,13 @@ void ImageShape::OnHandle(wxSFShapeHandle& handle) {
 
 	//Scale(ratio, ratio);
 }
+
+void ImageShape::OnEndHandle(wxSFShapeHandle& handle) {
+	MainFrame::isSaved = false;
+	wxSFBitmapShape::OnEndHandle(handle);
+}
+
+void ImageShape::OnEndDrag(wxPoint& pos) {
+	MainFrame::isSaved = false;
+	wxSFBitmapShape::OnEndDrag(pos);
+}
