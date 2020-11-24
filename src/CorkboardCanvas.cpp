@@ -27,7 +27,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 
 	// Edited default shadow.
 	SetShadowFill(wxBrush(wxColour(110, 70, 60)));
-	SetShadowOffset(wxRealPoint(4.5, 4.5));
+	//SetShadowOffset(wxRealPoint(4.5, 4.5));
 
 	// Disable mouse wheel scrolling so it can be used for zooming.
 	EnableScrolling(false, false);
@@ -89,7 +89,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		shape->AcceptTrgNeighbour("All");
 
 		// Show shadows only on the topmost shapes.
-		ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
+		ShowShadows(m_showShadows, wxSFShapeCanvas::shadowTOPMOST);
 
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
@@ -130,12 +130,35 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		}
 
 		// Show shadows only on the topmost shapes.
-		ShowShadows(true, wxSFShapeCanvas::shadowTOPMOST);
+		ShowShadows(m_showShadows, wxSFShapeCanvas::shadowTOPMOST);
 
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
 		SaveCanvasState();
 		parent->setToolMode(modeDESIGN);
+		break;
+	}
+
+	case modeTEXT:
+	{
+		wxSFEditTextShape* shape = (wxSFEditTextShape*)GetDiagramManager()->AddShape(CLASSINFO(wxSFEditTextShape),
+			event.GetPosition());
+
+		shape->AcceptConnection("All");
+		shape->AcceptSrcNeighbour("All");
+		shape->AcceptTrgNeighbour("All");
+
+		shape->RemoveStyle(wxSFEditTextShape::sfsSHOW_SHADOW);
+
+		shape->SetText("New text");
+		
+		// Show shadows only on the topmost shapes.
+		ShowShadows(m_showShadows, wxSFShapeCanvas::shadowTOPMOST);
+
+		// ... and then perform standard operations provided by the shape canvas:
+		Refresh(false);
+		parent->setToolMode(modeDESIGN);
+		SaveCanvasState();
 		break;
 	}
 	case modeCONNECTION:
@@ -155,7 +178,9 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 }
 
 void CorkboardCanvas::OnLeftUp(wxMouseEvent& event) {
-	AutoWrapTextShape::willCountLines(true);
+	//if (!m_isConnecting)
+		//AutoWrapTextShape::willCountLines(true);
+	
 	wxSFShapeCanvas::OnLeftUp(event);
 }
 
@@ -178,6 +203,7 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 	if (m_isDraggingRight) {
 		m_isDraggingRight = false;
 		SetCursor(wxCursor(wxCURSOR_DEFAULT));
+		//AutoWrapTextShape::willCountLines(true);
 	} else {
 		shapeForMenu = GetShapeUnderCursor();
 
@@ -220,6 +246,7 @@ void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 	// If right mouse button has been clicked, calculate drag and begin.
 
 	if (m_beginDraggingRight) {
+		AutoWrapTextShape::willCountLines(false);
 		m_isDraggingRight = true;
 		m_beginDraggingRight = false;
 		SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
@@ -282,8 +309,6 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 }
 
 void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
-	AutoWrapTextShape::willCountLines(true);
-
 	if (connection) {
 		connection->SetLinePen(wxPen(wxColour(150, 0, 0), 3));
 		connection->SetTrgArrow(CLASSINFO(wxSFSolidArrow));

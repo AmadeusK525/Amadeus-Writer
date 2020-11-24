@@ -23,6 +23,7 @@ enum ToolMode {
     modeDESIGN,
     modeNOTE,
     modeIMAGE,
+    modeTEXT,
     modeCONNECTION
 };
 
@@ -64,6 +65,7 @@ public:
         TOOL_Cursor,
         TOOL_NewNote,
         TOOL_NewImage,
+        TOOL_NewText,
         TOOL_NewConnection,
         TOOL_CorkboardFullScreen
     };

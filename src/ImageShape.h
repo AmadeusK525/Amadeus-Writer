@@ -7,11 +7,11 @@
 
 class ImageShape: public wxSFBitmapShape {
 private:
-	double ratio;
+	double ratio = 99999.9;
 
 public:
 	ImageShape();
-	ImageShape(const ImageShape& other);
+	ImageShape(static ImageShape& other);
 	virtual ~ImageShape();
 
 	void create(const wxString& path, wxBitmapType type = wxBITMAP_TYPE_ANY);
