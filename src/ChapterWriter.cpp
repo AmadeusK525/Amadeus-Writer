@@ -306,7 +306,7 @@ void ChapterWriter::addLocButtonPressed(wxCommandEvent& event) {
     int x = point.x;
     int y = point.y + locInChap->GetSize().y;
 
-    wxPopupTransientWindow* win = new wxPopupTransientWindow(locPanel, wxBORDER_RAISED);
+    wxPopupTransientWindow* win = new wxPopupTransientWindow(locPanel, wxBORDER_RAISED | wxPU_CONTAINS_CONTROLS);
 
     wxArrayString array(true);
     for (auto it = MainFrame::locations.begin(); it != MainFrame::locations.end(); it++) {
