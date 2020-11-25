@@ -200,10 +200,12 @@ void ChapterWriter::clearNote(wxCommandEvent& event) {
 }
 
 void ChapterWriter::addNote(wxCommandEvent& event) {
-    chapWriterNotebook->addNote((string)note->GetValue(), (string)noteLabel->GetValue(), green);
-    note->Clear();
-    noteLabel->SetValue("New note");
-    green = false;
+    if (!note->IsEmpty()) {
+        chapWriterNotebook->addNote((string)note->GetValue(), (string)noteLabel->GetValue(), green);
+        note->Clear();
+        noteLabel->SetValue("New note");
+        green = false;
+    }
 
     event.Skip();
 }
