@@ -1,3 +1,5 @@
+#ifndef CHAPTERWRITER_H_
+#define CHAPTERWRITER_H_
 #pragma once
 
 #include "wx/frame.h"
@@ -62,6 +64,8 @@ public:
     void clearNote(wxCommandEvent& event);
     void addNote(wxCommandEvent& event);
 
+    void test(wxMouseEvent& pos);
+
     void addCharButtonPressed(wxCommandEvent& event);
     void addLocButtonPressed(wxCommandEvent& event);
     void removeChar(wxCommandEvent& event);
@@ -92,6 +96,9 @@ enum {
     BUTTON_RemChar,
     BUTTON_RemLoc,
 
+    LIST_AddChar,
+    LIST_AddLoc,
+
     BUTTON_NoteAdd,
     BUTTON_NoteClear,
 
@@ -101,3 +108,5 @@ enum {
     TIMER_Save,
     TIMER_Words
 };
+
+#endif

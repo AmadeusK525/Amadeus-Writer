@@ -1,3 +1,5 @@
+#ifndef CHAPTER_H_
+#define CHAPTER_H_
 #pragma once
 
 #include "wx/richtext/richtextbuffer.h"
@@ -22,9 +24,12 @@ struct Chapter {
     vector<string> locations{};
     vector<Note> notes{};
 
+    string pointOfView = "";
+
     int position{};
 
     void save(std::ofstream& out);
     void load(std::ifstream& in);
 };
 
+#endif

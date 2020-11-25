@@ -903,6 +903,7 @@ void MainFrame::loadFile() {
         Chapter chapter;
         chapter.load(file);
         chaptersNote->chapters.push_back(chapter);
+        chaptersNote->addToList(chapter, i);
         chaptersNote->getGrid()->addButton();
 
         progress->Update(currentSize++);

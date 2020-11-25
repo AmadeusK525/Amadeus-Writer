@@ -25,7 +25,8 @@ public:
 public:
     ChaptersNotebook(wxWindow* parent);
 
-    void addChapter(Chapter& chapter, int& pos);
+    void addChapter(Chapter& chapter, int pos);
+    void addToList(Chapter& chapter, int pos);
 
     ChaptersGrid* getGrid() { return grid; }
     wxListView* getList() { return list; }

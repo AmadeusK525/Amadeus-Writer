@@ -2,8 +2,9 @@
 #include "Chapter.h"
 #include "ChapterWriterNotebook.h"
 
-#include "wx/popupwin.h"
-#include "wx/richtext/richtextxml.h"
+#include <wx/popupwin.h>
+#include <wx/listbox.h>
+#include <wx/richtext/richtextxml.h>
 
 #include "wxmemdbg.h"
 
@@ -85,7 +86,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
 
     locPanel = new wxPanel(leftPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
     locPanel->SetBackgroundColour(wxColour(210, 210, 210));
-    locInChap = new wxListView(locPanel, -1, wxDefaultPosition, wxDefaultSize, wxLC_HRULES | wxLC_REPORT | wxLC_SINGLE_SEL);
+    locInChap = new wxListView(locPanel, -1, wxDefaultPosition, wxDefaultSize, wxLC_HRULES | wxLC_REPORT);
     locInChap->InsertColumn(0, "Locations present in chapter");
 
     wxButton* addLocButton = new wxButton(locPanel, BUTTON_AddLoc, "Add");
@@ -207,33 +208,40 @@ void ChapterWriter::addNote(wxCommandEvent& event) {
     event.Skip();
 }
 
+void ChapterWriter::test(wxMouseEvent& pos) {
+    wxMessageBox("Hello");
+}
+
 void ChapterWriter::addCharButtonPressed(wxCommandEvent& event) {
     wxPoint point(charPanel->GetScreenPosition());
 
     int x = point.x;
     int y = point.y + charInChap->GetSize().y;
     
-    wxPopupTransientWindow* win = new wxPopupTransientWindow(charPanel, wxBORDER_RAISED);
+    wxPopupTransientWindow* win = new wxPopupTransientWindow(leftPanel, wxBORDER_RAISED | wxPU_CONTAINS_CONTROLS);
 
     wxArrayString array(true);
     for (auto it = MainFrame::characters.begin(); it != MainFrame::characters.end(); it++) {
         array.Add(it->second.name);
     }
 
-    wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize, array, wxLB_NEEDED_SB);
+    wxListBox* list = new wxListBox();
+    list->Create(win, LIST_AddChar, wxDefaultPosition, wxDefaultSize, array, wxLB_NEEDED_SB | wxLB_SINGLE);
     list->Bind(wxEVT_LISTBOX_DCLICK, &ChapterWriter::addChar, this);
 
     wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
-    siz->Add(list, 1, wxGROW);
+    siz->Add(list, wxSizerFlags(1).Expand());
     win->SetSizer(siz);
 
     win->SetPosition(wxPoint(x, y));
     win->SetSize(charPanel->GetSize());
 
-    win->Popup();
+    win->Popup(list);
 }
 
 void ChapterWriter::addChar(wxCommandEvent& event) {
+    wxMessageBox("Hello");
+
     string name = event.GetString();
     if (charInChap->FindItem(-1, name) == -1) {
         charNames.Add(name);
