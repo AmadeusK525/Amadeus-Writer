@@ -210,7 +210,6 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 	if (m_isDraggingRight) {
 		m_isDraggingRight = false;
 		SetCursor(wxCursor(wxCURSOR_DEFAULT));
-		//AutoWrapTextShape::willCountLines(true);
 	} else {
 		shapeForMenu = GetShapeUnderCursor();
 
@@ -310,6 +309,42 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 			event.m_keyCode = WXK_ESCAPE;
 		}
 		MainFrame::isSaved = false;
+		break;
+
+	case WXK_NUMPAD1:
+	case 49:
+	case 99:
+	case 67:
+		parent->setToolMode(modeDESIGN);
+		break;
+
+	case WXK_NUMPAD2:
+	case 50:
+	case 110:
+	case 78:
+		parent->setToolMode(modeNOTE);
+		break;
+
+	case WXK_NUMPAD3:
+	case 51:
+	case 105:
+	case 73:
+		parent->setToolMode(modeIMAGE);
+		break;
+	
+	case WXK_NUMPAD4:
+	case 52:
+	case 116:
+	case 84:
+		parent->setToolMode(modeTEXT);
+		break;
+
+	case WXK_NUMPAD5:
+	case 53:
+	case 108:
+	case 76:
+		parent->setToolMode(modeCONNECTION);
+		break;
 	}
 
 	// Call default behaviour.
