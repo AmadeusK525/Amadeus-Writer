@@ -240,8 +240,6 @@ void ChapterWriter::addCharButtonPressed(wxCommandEvent& event) {
 }
 
 void ChapterWriter::addChar(wxCommandEvent& event) {
-    wxMessageBox("Hello");
-
     string name = event.GetString();
     if (charInChap->FindItem(-1, name) == -1) {
         charNames.Add(name);
