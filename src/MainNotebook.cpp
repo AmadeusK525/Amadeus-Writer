@@ -54,8 +54,8 @@ MainNotebook::MainNotebook(wxWindow* parent, wxWindow* main) : wxNotebook(parent
     charShow = new CharacterShowcase(charFrame);
 
     wxBoxSizer* charSizer = new wxBoxSizer(wxHORIZONTAL);
-    charSizer->Add(charList, 4, wxGROW | wxLEFT | wxTOP | wxBOTTOM, 10);
-    charSizer->SetItemMinSize(size_t(0), wxSize());
+    charSizer->Add(charList, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
+    //charSizer->SetItemMinSize(size_t(0), wxSize());
     charSizer->Add(charShow, 3, wxGROW | wxBOTTOM |wxTOP, 10);
     charFrame->SetSizer(charSizer);
 

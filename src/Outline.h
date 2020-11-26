@@ -1,3 +1,5 @@
+#ifndef OUTLINE_H_
+#define OUTLINE_H_
 #pragma once
 
 #include "wx/notebook.h"
@@ -25,5 +27,8 @@ public:
     void loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog);
 
     Corkboard* getCorkboard() { return corkboard; }
+
+    void clearAll();
 };
 
+#endif

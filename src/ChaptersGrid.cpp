@@ -34,25 +34,6 @@ void ChaptersGrid::addButton() {
 }
 
 void ChaptersGrid::openChapter(wxCommandEvent& event) {
-    if (!boost::filesystem::is_directory(MainFrame::currentDocFolder + "\\Files")) {
-        wxMessageDialog* first = new wxMessageDialog(mainFrame, "It seems like you haven't saved your project yet.\nPlease do before writing any chapters.",
-            "Save before", wxOK | wxCANCEL | wxOK_DEFAULT);
-        first->SetOKCancelLabels("Save", "Cancel");
-        int aa = first->ShowModal();
-        if (aa == wxID_OK) {
-            mainFrame->saveFile(event);
-
-            if (!MainFrame::isSaved)
-                return;
-        } else {
-            event.Skip();
-            return;
-        }
-
-        if (first)
-            delete first;
-    }
-
     wxBusyCursor wait;
 
     int chapNumber = event.GetId() - 10000;

@@ -59,10 +59,8 @@ void Chapter::save(std::ofstream& out) {
         
         out.write((char*)&position, sizeof(int));
     }
-    if (!fs::exists(MainFrame::currentDocFolder + "\\Files\\Chapter " + std::to_string(position)))
-        fs::create_directory(MainFrame::currentDocFolder + "\\Files\\Chapter " + std::to_string(position));
 
-    content.SaveFile(MainFrame::currentDocFolder + "\\Files\\Chapter " + std::to_string(position) + "\\" + name + ".xml", wxRICHTEXT_TYPE_XML);
+    content.SaveFile(MainFrame::currentDocFolder + "\\Files\\Chapters\\" + std::to_string(position) + " - " + name + ".xml", wxRICHTEXT_TYPE_XML);
 }
 
 void Chapter::load(std::ifstream& in) {
@@ -133,8 +131,8 @@ void Chapter::load(std::ifstream& in) {
 
         in.read((char*)&position, sizeof(int));
 
-        if (boost::filesystem::exists(MainFrame::currentDocFolder + "\\Files\\Chapter " + std::to_string(position) + "\\" + name + ".xml")) {
-            content.LoadFile(MainFrame::currentDocFolder + "\\Files\\Chapter " + std::to_string(position) + "\\" + name + ".xml", wxRICHTEXT_TYPE_XML);
+        if (boost::filesystem::exists(MainFrame::currentDocFolder + "\\Files\\Chapters\\" + std::to_string(position) + " - " + name + ".xml")) {
+            content.LoadFile(MainFrame::currentDocFolder + "\\Files\\Chapters\\" + std::to_string(position) + " - " + name + ".xml", wxRICHTEXT_TYPE_XML);
         }
     }
 }

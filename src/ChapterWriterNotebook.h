@@ -55,6 +55,7 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     void onUpdateAlignCenter(wxUpdateUIEvent& event);
     void onUpdateAlignCenterJust(wxUpdateUIEvent& event);
     void onUpdateAlignRight(wxUpdateUIEvent& event);
+    void onUpdateFontSize(wxUpdateUIEvent& event);
 
     void setFontSize(wxCommandEvent& event);
 
