@@ -59,7 +59,7 @@ public:
     void save(std::ofstream& out);
     void load(std::ifstream& in);
     
-    //friend class CorkboardCanvas;
+    CorkboardCanvas* getCanvas() { return canvas; }
 
     enum {
         TOOL_Cursor,

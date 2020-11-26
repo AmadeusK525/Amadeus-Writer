@@ -26,6 +26,7 @@ EVT_UPDATE_UI(TOOL_AlignLeft, ChapterWriterNotebook::onUpdateAlignLeft)
 EVT_UPDATE_UI(TOOL_AlignCenter, ChapterWriterNotebook::onUpdateAlignCenter)
 EVT_UPDATE_UI(TOOL_AlignCenterJust, ChapterWriterNotebook::onUpdateAlignCenterJust)
 EVT_UPDATE_UI(TOOL_AlignRight, ChapterWriterNotebook::onUpdateAlignRight)
+EVT_UPDATE_UI(TOOL_FontSize, ChapterWriterNotebook::onUpdateFontSize)
 
 EVT_COMBOBOX(TOOL_FontSize, ChapterWriterNotebook::setFontSize)
 
@@ -44,7 +45,6 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
 
     content = new wxRichTextCtrl(mainPanel, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
         wxRE_MULTILINE | wxBORDER_NONE);
-    content->SetScrollRate(50, 50);
     wxRichTextBuffer::AddHandler(new wxRichTextPlainTextHandler);
 
     contentTool = new wxToolBar(mainPanel, -1, wxDefaultPosition, wxSize(-1, -1));
@@ -64,7 +64,7 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
         if (i > 12)
             i++;
 
-        sizes.Add(std::to_string(i) + " pts");
+        sizes.Add(std::to_string(i));
     }
     sizes.Add("36");
     sizes.Add("48");
@@ -169,8 +169,31 @@ void ChapterWriterNotebook::onUpdateAlignRight(wxUpdateUIEvent& event) {
     event.Check(content->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
 }
 
+void ChapterWriterNotebook::onUpdateFontSize(wxUpdateUIEvent& event) {
+    wxRichTextAttr attr;
+    content->GetStyle(content->GetInsertionPoint() - 1, attr);
+    string size(std::to_string(attr.GetFontSize()));
+
+    if (fontSize->GetValue() != size)
+        fontSize->SetValue(size);
+}
+
 void ChapterWriterNotebook::setFontSize(wxCommandEvent& event) {
-    content->BeginFontSize(event.GetInt());
+    content->SetFocus();
+    wxRichTextAttr attr;
+    attr.SetFlags(wxTEXT_ATTR_FONT_SIZE);
+    long size;
+    event.GetString().ToLong(&size);
+    attr.SetFontSize(size);
+
+    if (content->HasSelection()) {
+        content->SetStyleEx(content->GetSelectionRange(), attr,
+    wxRICHTEXT_SETSTYLE_WITH_UNDO | wxRICHTEXT_SETSTYLE_OPTIMIZE | wxRICHTEXT_SETSTYLE_CHARACTERS_ONLY);
+   } else {
+       wxRichTextAttr current = content->GetDefaultStyle();
+       current.Apply(attr);
+       content->SetDefaultStyle(current);
+   }
 }
 
 void ChapterWriterNotebook::addNote(std::string& noteContent, std::string& noteName, bool isDone) {

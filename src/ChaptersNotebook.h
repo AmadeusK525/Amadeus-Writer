@@ -28,6 +28,8 @@ public:
     void addChapter(Chapter& chapter, int pos);
     void addToList(Chapter& chapter, int pos);
 
+    void repositionChapters();
+
     ChaptersGrid* getGrid() { return grid; }
     wxListView* getList() { return list; }
 

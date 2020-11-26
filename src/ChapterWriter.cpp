@@ -433,38 +433,14 @@ void ChapterWriter::loadChapter() {
 
     SetTitle(it->name);
 
-    if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Chapter " +
-        std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml")) {
+    if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Chapters\\" +
+        std::to_string(thisChap->position) + " - " + thisChap->name + ".xml")) {
         
-        chapWriterNotebook->content->LoadFile(mainFrame->currentDocFolder + "\\Files\\Chapter " +
-            std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
+        chapWriterNotebook->content->LoadFile(mainFrame->currentDocFolder + "\\Files\\Chapters\\" +
+            std::to_string(thisChap->position) + " - " + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
     } else {
         chapWriterNotebook->content->Clear();
     }
-
-    chapWriterNotebook->content->SetSelectionRange(wxRichTextRange(chapWriterNotebook->content->GetLastPosition() - 1,
-        chapWriterNotebook->content->GetLastPosition()));
-
-    if (chapWriterNotebook->content->IsSelectionBold()) {
-        chapWriterNotebook->contentTool->ToggleTool(TOOL_Bold, true);
-    } else {
-        chapWriterNotebook->contentTool->ToggleTool(TOOL_Bold, false);
-    }
-
-    if (chapWriterNotebook->content->IsSelectionItalics()) {
-        chapWriterNotebook->contentTool->ToggleTool(TOOL_Italic, true);
-    } else {
-        chapWriterNotebook->contentTool->ToggleTool(TOOL_Italic, false);
-    }
-
-    if (chapWriterNotebook->content->IsSelectionUnderlined()) {
-        chapWriterNotebook->contentTool->ToggleTool(TOOL_Underline, true);
-    } else {
-        chapWriterNotebook->contentTool->ToggleTool(TOOL_Underline, false);
-    }
-
-    chapWriterNotebook->content->SelectNone();
-    chapWriterNotebook->content->SetCaretPosition(chapWriterNotebook->content->GetLastPosition() - 1);
 
     summary->SetValue(it->summary);
 
@@ -482,9 +458,6 @@ void ChapterWriter::loadChapter() {
     charNames.clear();
     for (unsigned int i = 0; i < thisChap->characters.size(); i++) {
         charNames.Add(thisChap->characters[i]);
-    }
-
-    for (unsigned int i = 0; i < thisChap->characters.size(); i++) {
         charInChap->InsertItem(i, charNames[i]);
     }
 
@@ -492,9 +465,6 @@ void ChapterWriter::loadChapter() {
     locNames.clear();
     for (unsigned int i = 0; i < thisChap->locations.size(); i++) {
         locNames.Add(thisChap->locations[i]);
-    }
-
-    for (unsigned int i = 0; i < thisChap->locations.size(); i++) {
         locInChap->InsertItem(i, locNames[i]);
     }
 
@@ -511,9 +481,9 @@ void ChapterWriter::saveChapter() {
         thisChap->notes.push_back(chapWriterNotebook->notes[i]);
     }
 
-    if (chapWriterNotebook->content->GetValue() != "") {
-        thisChap->content.SaveFile(mainFrame->currentDocFolder + "\\Files\\Chapter " +
-            std::to_string(thisChap->position) + "\\" + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
+    if (fs::exists(mainFrame->currentDocFolder + "\\Files\\Chapters\\")) {
+        thisChap->content.SaveFile(mainFrame->currentDocFolder + "\\Files\\Chapters\\" +
+            std::to_string(thisChap->position) + " - " + thisChap->name + ".xml", wxRICHTEXT_TYPE_XML);
     }
 }
 

@@ -2,6 +2,11 @@
 
 #include "ChaptersGrid.h"
 #include "Chapter.h"
+#include "MyApp.h"
+
+#include <wx\dir.h>
+
+namespace fs = boost::filesystem;
 
 ChaptersNotebook::ChaptersNotebook(wxWindow* parent) : wxNotebook(parent, -1) {
     grid = new ChaptersGrid(this);
@@ -18,7 +23,6 @@ ChaptersNotebook::ChaptersNotebook(wxWindow* parent) : wxNotebook(parent, -1) {
 }
 
 void ChaptersNotebook::addChapter(Chapter& chapter, int pos) {
-
     if (pos < current) {
         auto it = chapters.begin();
         for (int i = 0; i < pos; i++) {
@@ -31,9 +35,13 @@ void ChaptersNotebook::addChapter(Chapter& chapter, int pos) {
 
     // Redeclare all chapter positions  
     int i = 1;
-    for (auto it : chapters) {
-        it.position = i++;
+    for (auto it = chapters.begin(); it != chapters.end(); it++) {
+        it->position = i++;
     }
+
+    fs::remove_all(MainFrame::currentDocFolder + "\\Files\\Chapters");
+    fs::create_directory(MainFrame::currentDocFolder + "\\Files\\Chapters");
+    ((MainFrame*)(wxGetApp().GetTopWindow()))->saveFile(wxCommandEvent());
 
     MainFrame::saved[2]++;
     grid->addButton();
@@ -48,6 +56,11 @@ void ChaptersNotebook::addToList(Chapter& chapter, int pos) {
     list->SetItem(pos, 3, chapter.pointOfView);
 }
 
+void ChaptersNotebook::repositionChapters() {}
+
 void ChaptersNotebook::clearAll() {
+    chapters.clear();
+    current = 1;
     grid->clearAll();
+    list->DeleteAllItems();
 }

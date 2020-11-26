@@ -279,6 +279,9 @@ void MainFrame::newFile(wxCommandEvent& event) {
     MainNotebook::charList->DeleteAllItems();
     MainNotebook::locList->DeleteAllItems();
 
+    outline->clearAll();
+    chaptersNote->clearAll();
+
     // Clearing all paths and setting window title as generic.
     currentDocFolder = "a";
     currentDocFile = "";
@@ -436,6 +439,7 @@ void MainFrame::saveFileAs(wxCommandEvent& event) {
             fs::create_directory(currentImagePath + "\\Locations");
             fs::create_directory(currentImagePath + "\\Corkboard");
             fs::create_directory(currentDocFolder + "\\Files");
+            fs::create_directory(currentDocFolder + "\\Files\\Chapters");
             fs::create_directory(currentDocFolder + "\\Files\\Outline");
 
             currentDocFile = currentDocFolder + "\\" + currentTitle;
@@ -679,6 +683,24 @@ void MainFrame::newChar(wxCommandEvent& event) {
 }
 
 void MainFrame::newChap(wxCommandEvent& event) {
+    if (!fs::is_directory(currentDocFolder + "\\Files")) {
+        wxMessageDialog* first = new wxMessageDialog(this, "It seems like you haven't saved your project yet.\nPlease do before writing any chapters.",
+            "Save before", wxOK | wxCANCEL | wxOK_DEFAULT);
+        first->SetOKCancelLabels("Save", "Cancel");
+        int aa = first->ShowModal();
+        if (aa == wxID_OK) {
+           saveFile(event);
+
+            if (!isSaved)
+                return;
+        } else {
+            event.Skip();
+            return;
+        }
+
+        if (first)
+            delete first;
+    }
     ChapterCreator* create = new ChapterCreator(this, chaptersNote);
     create->Show();
     create->SetFocus();
