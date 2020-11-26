@@ -34,7 +34,6 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     saveTimer(this, TIMER_Save), wordsTimer(this, TIMER_Words),
     wxFrame(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxFRAME_FLOAT_ON_PARENT | wxDEFAULT_FRAME_STYLE) {
 
-    wxRichTextBuffer::AddHandler(new wxRichTextXMLHandler);
     this->mainFrame = dynamic_cast<MainFrame*>(parent);
     this->chapNote = notebook;
     chapterPos = numb;
@@ -405,7 +404,7 @@ void ChapterWriter::nextChap(wxCommandEvent& event) {
 }
 
 void ChapterWriter::prevChap(wxCommandEvent& event) {
-    if (chapterPos > 0) {
+    if (chapterPos > 1) {
         saveChapter();
         chapterPos--;
         chapWriterNotebook->notes.clear();
@@ -431,7 +430,7 @@ void ChapterWriter::loadChapter() {
 
     thisChap = &(*it);
 
-    SetTitle(it->name);
+    SetTitle(thisChap->name);
 
     if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Chapters\\" +
         std::to_string(thisChap->position) + " - " + thisChap->name + ".xml")) {
