@@ -8,7 +8,7 @@
 
 class MyApp: public wxApp {
 private:
-    MainFrame* mainWin = nullptr;
+    MainFrame* mainFrame = nullptr;
     wxLocale locale;
 
 public:
