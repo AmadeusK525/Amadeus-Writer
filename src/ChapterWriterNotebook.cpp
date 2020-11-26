@@ -31,6 +31,7 @@ EVT_UPDATE_UI(TOOL_FontSize, ChapterWriterNotebook::onUpdateFontSize)
 EVT_COMBOBOX(TOOL_FontSize, ChapterWriterNotebook::setFontSize)
 
 EVT_TEXT(TEXT_Content, ChapterWriterNotebook::setModified)
+EVT_RICHTEXT_CONSUMING_CHARACTER(TEXT_Content, ChapterWriterNotebook::onKeyDown)
 
 END_EVENT_TABLE()
 
@@ -109,6 +110,33 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
 void ChapterWriterNotebook::setModified(wxCommandEvent& event) {
     parent->statusBar->SetStatusText("Chapter modified. Autosaving soon...", 0);
 }
+
+void ChapterWriterNotebook::onKeyDown(wxRichTextEvent& event) {
+    if (wxGetKeyState(WXK_CONTROL)) {
+        switch (event.GetCharacter()) {
+        case 'n':
+        case 'N':
+        case 'b':
+        case 'B':
+            setBold(event);
+            break;
+
+        case 'i':
+        case 'I':
+            setItalic(event);
+            break;
+
+        case 's':
+        case 'S':
+        case 'u':
+        case 'U':
+            setUnderlined(event);
+            break;
+        }
+    }
+}
+
+void ChapterWriterNotebook::keyDown(wxKeyEvent& event) {}
 
 void ChapterWriterNotebook::setBold(wxCommandEvent& event) {
     content->ApplyBoldToSelection();

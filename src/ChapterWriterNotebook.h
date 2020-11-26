@@ -36,6 +36,8 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent);
 
     void setModified(wxCommandEvent& event);
+    void onKeyDown(wxRichTextEvent& event);
+    void keyDown(wxKeyEvent& event);
 
     void setBold(wxCommandEvent& event);
     void setItalic(wxCommandEvent& event);

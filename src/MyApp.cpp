@@ -5,9 +5,10 @@
 wxIMPLEMENT_APP(MyApp);
 
 bool MyApp::OnInit() {
+    locale.Init(wxLANGUAGE_PORTUGUESE_BRAZILIAN);
     wxInitAllImageHandlers();
 
-    MainFrame* mainFrame = new MainFrame("New Amadeus project", wxDefaultPosition, wxSize(800, 700));
+    mainFrame = new MainFrame("New Amadeus project", wxDefaultPosition, wxSize(800, 700));
     mainFrame->Show(true);
     SetTopWindow(mainFrame);
     
