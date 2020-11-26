@@ -34,19 +34,12 @@ void ChaptersNotebook::addChapter(Chapter& chapter, int pos) {
     }
 
     // Redeclare all chapter positions  
-    int i = 1;
-    for (auto it = chapters.begin(); it != chapters.end(); it++) {
-        it->position = i++;
-    }
-
-    fs::remove_all(MainFrame::currentDocFolder + "\\Files\\Chapters");
-    fs::create_directory(MainFrame::currentDocFolder + "\\Files\\Chapters");
-    ((MainFrame*)(wxGetApp().GetTopWindow()))->saveFile(wxCommandEvent());
+    repositionChapters();
 
     MainFrame::saved[2]++;
     grid->addButton();
     addToList(chapter, pos);
-    MainFrame::isSaved = false;
+    MainFrame::isSaved = true;
 }
 
 void ChaptersNotebook::addToList(Chapter& chapter, int pos) {
@@ -56,7 +49,16 @@ void ChaptersNotebook::addToList(Chapter& chapter, int pos) {
     list->SetItem(pos, 3, chapter.pointOfView);
 }
 
-void ChaptersNotebook::repositionChapters() {}
+void ChaptersNotebook::repositionChapters() {
+    int i = 1;
+    for (auto it = chapters.begin(); it != chapters.end(); it++) {
+        it->position = i++;
+    }
+
+    fs::remove_all(MainFrame::currentDocFolder + "\\Files\\Chapters");
+    fs::create_directory(MainFrame::currentDocFolder + "\\Files\\Chapters");
+    ((MainFrame*)(wxGetApp().GetTopWindow()))->saveFile(wxCommandEvent());
+}
 
 void ChaptersNotebook::clearAll() {
     chapters.clear();
