@@ -47,6 +47,12 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
         wxRE_MULTILINE | wxBORDER_NONE);
     wxRichTextBuffer::AddHandler(new wxRichTextPlainTextHandler);
 
+    wxRichTextAttr attr;
+    attr.SetFont(wxFontInfo(10));
+    attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
+    attr.SetLeftIndent(63, -63);
+    content->SetBasicStyle(attr);
+
     contentTool = new wxToolBar(mainPanel, -1, wxDefaultPosition, wxSize(-1, -1));
     //contentTool->SetBackgroundColour(wxColour(180, 40, 40));
     contentTool->AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(bold), wxBITMAP_PNG(bold), "Bold");

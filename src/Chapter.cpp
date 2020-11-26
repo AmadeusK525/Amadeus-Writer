@@ -131,8 +131,10 @@ void Chapter::load(std::ifstream& in) {
 
         in.read((char*)&position, sizeof(int));
 
-        if (boost::filesystem::exists(MainFrame::currentDocFolder + "\\Files\\Chapters\\" + std::to_string(position) + " - " + name + ".xml")) {
-            content.LoadFile(MainFrame::currentDocFolder + "\\Files\\Chapters\\" + std::to_string(position) + " - " + name + ".xml", wxRICHTEXT_TYPE_XML);
+        if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Chapters\\" +
+            std::to_string(position) + " - " + name + ".xml")) {
+            content.LoadFile(MainFrame::currentDocFolder + "\\Files\\Chapters\\" +
+                std::to_string(position) + " - " + name + ".xml", wxRICHTEXT_TYPE_XML);
         }
     }
 }

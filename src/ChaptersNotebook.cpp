@@ -33,13 +33,13 @@ void ChaptersNotebook::addChapter(Chapter& chapter, int pos) {
         chapters.push_back(chapter);
     }
 
-    // Redeclare all chapter positions  
-    repositionChapters();
-
     MainFrame::saved[2]++;
     grid->addButton();
     addToList(chapter, pos);
     MainFrame::isSaved = true;
+
+    // Redeclare all chapter positions  
+    repositionChapters();
 }
 
 void ChaptersNotebook::addToList(Chapter& chapter, int pos) {

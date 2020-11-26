@@ -6,6 +6,8 @@
 #include "LocationCreator.h"
 #include "Chapter.h"
 
+#include <wx\richtext\richtextxml.h>
+
 #include "wxmemdbg.h"
 
 #ifndef BOOST_FILESYSTEM_NO_DEPRECATED
@@ -231,6 +233,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     for (int i = 0; i < 4; i++) {
         saved.push_back(0);
     }
+
+    wxRichTextBuffer::AddHandler(new wxRichTextXMLHandler);
 
     // Initialize maximized
     Maximize();
