@@ -10,6 +10,15 @@
 
 namespace fs = boost::filesystem;
 
+bool Chapter::hasRedNote() {
+    for (int i = 0; i < notes.size(); i++) {
+        if (notes[i].isDone == false)
+            return true;
+    }
+
+    return false;
+}
+
 void Chapter::save(std::ofstream& out) {
     if (out.is_open()) {
         int size;

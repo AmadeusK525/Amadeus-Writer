@@ -136,8 +136,6 @@ void ChapterWriterNotebook::onKeyDown(wxRichTextEvent& event) {
     }
 }
 
-void ChapterWriterNotebook::keyDown(wxKeyEvent& event) {}
-
 void ChapterWriterNotebook::setBold(wxCommandEvent& event) {
     content->ApplyBoldToSelection();
     setModified(event);
@@ -230,6 +228,15 @@ void ChapterWriterNotebook::setFontSize(wxCommandEvent& event) {
    }
 }
 
+bool ChapterWriterNotebook::hasRedNote() {
+    for (int i = 0; i < notes.size(); i++) {
+        if (notes[i].isDone == false)
+            return true;
+    }
+
+    return false;
+}
+
 void ChapterWriterNotebook::addNote(std::string& noteContent, std::string& noteName, bool isDone) {
 
     wxPanel* notePanel = new wxPanel(corkBoard);
@@ -239,7 +246,7 @@ void ChapterWriterNotebook::addNote(std::string& noteContent, std::string& noteN
     noteLabel->SetBackgroundColour(wxColour(240, 240, 240));
     wxPanel* options = new wxPanel(notePanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     options->SetBackgroundColour(wxColour(200, 200, 200));
-    wxRichTextCtrl* note = new wxRichTextCtrl(notePanel, -1, noteContent, wxDefaultPosition, wxDefaultSize, wxRE_MULTILINE);
+    wxTextCtrl* note = new wxTextCtrl(notePanel, -1, noteContent, wxDefaultPosition, wxDefaultSize, wxRE_MULTILINE);
     note->SetBackgroundColour(wxColour(255, 250, 205));
 
     noteLabel->Bind(wxEVT_TEXT, &ChapterWriterNotebook::updateNoteLabel, this);
@@ -259,8 +266,8 @@ void ChapterWriterNotebook::addNote(std::string& noteContent, std::string& noteN
     b2->SetBackgroundColour(wxColour(0, 210, 0));
 
     wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
-    topSizer->Add(noteLabel, wxSizerFlags(8).Expand());
-    topSizer->Add(options, wxSizerFlags(1).Expand());
+    topSizer->Add(noteLabel, wxSizerFlags(8));
+    topSizer->Add(options, wxSizerFlags(1));
 
     wxBoxSizer* bsiz = new wxBoxSizer(wxHORIZONTAL);
     bsiz->Add(b1, wxSizerFlags(0));
@@ -325,6 +332,8 @@ void ChapterWriterNotebook::setRed(wxCommandEvent& event) {
 
         i++;
     }
+
+    parent->checkNotes();
 }
 
 void ChapterWriterNotebook::setGreen(wxCommandEvent& event) {
@@ -345,6 +354,8 @@ void ChapterWriterNotebook::setGreen(wxCommandEvent& event) {
 
         i++;
     }
+
+    parent->checkNotes();
 }
 
 void ChapterWriterNotebook::deleteNote(wxCommandEvent& event) {
@@ -370,6 +381,8 @@ void ChapterWriterNotebook::deleteNote(wxCommandEvent& event) {
 
         selNote = nullptr;
     }
+
+    parent->checkNotes();
 }
 
 void ChapterWriterNotebook::onNoteClick(wxMouseEvent& event) {

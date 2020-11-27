@@ -15,7 +15,7 @@ bool MyApp::OnInit() {
     // This catches the path to the executable (the first cmd line argument) and sets it.
     // It'll be used in the getLast() and setLast() functions.
     mainFrame->setExecPath((string)argv.GetArguments()[0]);
-
+    
     // This loads the file opened with "Open with..." and, if it fails,
     // it gets the most recent worked on project and loads it.
     if (argc > 1)

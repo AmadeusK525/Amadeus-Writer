@@ -31,11 +31,14 @@ private:
     wxTextCtrl* note = nullptr;
     wxTextCtrl* noteLabel = nullptr;
 
+    wxStaticText* noteCheck = nullptr;
+
     wxPanel* leftPanel = nullptr;
     wxPanel* locPanel = nullptr;
     wxPanel* charPanel = nullptr;
 
     wxBoxSizer* leftSizer = nullptr;
+    wxBoxSizer* rightSizer = nullptr;
 
     wxListView* charInChap = nullptr;
     wxListView* locInChap = nullptr;
@@ -64,7 +67,7 @@ public:
     void clearNote(wxCommandEvent& event);
     void addNote(wxCommandEvent& event);
 
-    void test(wxMouseEvent& pos);
+    void checkNotes();
 
     void addCharButtonPressed(wxCommandEvent& event);
     void addLocButtonPressed(wxCommandEvent& event);
