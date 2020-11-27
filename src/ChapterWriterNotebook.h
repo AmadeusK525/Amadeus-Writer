@@ -32,12 +32,10 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     wxPanel* selNote = nullptr;
     wxSize notesSize{};
 
-
     ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent);
 
     void setModified(wxCommandEvent& event);
     void onKeyDown(wxRichTextEvent& event);
-    void keyDown(wxKeyEvent& event);
 
     void setBold(wxCommandEvent& event);
     void setItalic(wxCommandEvent& event);
@@ -60,6 +58,8 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     void onUpdateFontSize(wxUpdateUIEvent& event);
 
     void setFontSize(wxCommandEvent& event);
+
+    bool hasRedNote();
 
     void addNote(std::string& note, std::string& noteName, bool isDone);
     void paintDots(wxPaintEvent& event);

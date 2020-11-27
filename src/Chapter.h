@@ -28,6 +28,8 @@ struct Chapter {
 
     int position{};
 
+    bool hasRedNote();
+
     void save(std::ofstream& out);
     void load(std::ifstream& in);
 };

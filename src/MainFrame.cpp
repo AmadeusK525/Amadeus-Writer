@@ -184,7 +184,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     viewMenu->AppendRadioItem(wxID_ANY, "&Dark theme");
     viewMenu->AppendRadioItem(-1, "&Light theme");
 
-    mainMenu->Append(fileMenu, "File");
+    mainMenu->Append(fileMenu, _("File"));
     mainMenu->Append(editMenu, "Edit");
     mainMenu->Append(viewMenu, "View");
     mainMenu->Append(projectMenu, "Project");
@@ -967,10 +967,11 @@ bool MainFrame::loadFileFromOpenWith(string& path) {
     }
 
     currentDocFile = path;
-
+    previousDocFile = currentDocFile;
     string temp(currentDocFile);
 
     currentDocFolder = temp.erase(path.size() - fileName.size() - 1);
+    previousDocFolder = currentDocFolder;
     currentImagePath = currentDocFolder + "\\Images";
     currentTitle = fileName;
     previousTitle = currentTitle;

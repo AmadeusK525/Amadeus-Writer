@@ -118,6 +118,11 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     wxPanel* rightPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
+    noteCheck = new wxStaticText(rightPanel, -1, "Nothing to show.", wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
+    noteCheck->SetBackgroundColour(wxColour(20, 20, 20));
+    noteCheck->SetForegroundColour(wxColour(255, 255, 255));
+    noteCheck->SetFont(wxFontInfo(10).Bold());
+
     noteLabel = new wxTextCtrl(rightPanel, -1, "New note", wxDefaultPosition, wxDefaultSize);
     noteLabel->SetBackgroundColour(wxColour(245, 245, 245));
     noteLabel->SetFont(wxFont(wxFontInfo(9)));
@@ -145,8 +150,9 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     wxButton* rightButton = new wxButton(rightPanel, BUTTON_NextChap, "", wxDefaultPosition, wxSize(25, 25));
     rightButton->SetBitmap(wxBITMAP_PNG(arrowRight));
 
-    wxBoxSizer* rightSizer = new wxBoxSizer(wxVERTICAL);
+    rightSizer = new wxBoxSizer(wxVERTICAL);
     rightSizer->AddStretchSpacer(2);
+    rightSizer->Add(noteCheck, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 8));
     rightSizer->Add(noteLabel, wxSizerFlags(0).Expand().Border(wxTOP | wxRIGHT | wxLEFT, 8));
     rightSizer->Add(note, wxSizerFlags(1).Expand().Border(wxRIGHT | wxLEFT, 8));
     rightSizer->Add(nbHolder, wxSizerFlags(0).Expand().Border(wxBOTTOM | wxRIGHT | wxLEFT, 9));
@@ -204,13 +210,28 @@ void ChapterWriter::addNote(wxCommandEvent& event) {
         note->Clear();
         noteLabel->SetValue("New note");
         green = false;
+
+        checkNotes();
     }
 
     event.Skip();
 }
 
-void ChapterWriter::test(wxMouseEvent& pos) {
-    wxMessageBox("Hello");
+void ChapterWriter::checkNotes() {
+    if (chapWriterNotebook->notes.size()) {
+        if (chapWriterNotebook->hasRedNote()) {
+            noteCheck->SetBackgroundColour(wxColour(120, 0, 0));
+            noteCheck->SetLabel("Unresolved notes!");
+        } else {
+            noteCheck->SetBackgroundColour(wxColour(0, 100, 0));
+            noteCheck->SetLabel("All notes resolved!");
+        }
+    } else {
+        noteCheck->SetBackgroundColour(wxColour(20, 20, 20));
+        noteCheck->SetLabel("No notes yet.");
+    }
+
+    rightSizer->Layout();
 }
 
 void ChapterWriter::addCharButtonPressed(wxCommandEvent& event) {
@@ -467,6 +488,7 @@ void ChapterWriter::loadChapter() {
         locInChap->InsertItem(i, locNames[i]);
     }
 
+    checkNotes();
     countWords();
     statusBar->SetStatusText("Chapter up-to-date", 0);
 }
