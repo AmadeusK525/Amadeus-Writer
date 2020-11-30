@@ -7,7 +7,7 @@ ImageShape::ImageShape(): wxSFBitmapShape() {
 	
 }
 
-ImageShape::ImageShape(static ImageShape& other): wxSFBitmapShape(other) {
+ImageShape::ImageShape(const ImageShape& other): wxSFBitmapShape(other) {
 	ratio = other.ratio;
 }
 
