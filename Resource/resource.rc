@@ -10,6 +10,8 @@ sceneIcon ICON "Assets\\AddScene.ico"
 characterIcon ICON "Assets\\AddCharacter.ico"
 locationIcon ICON "Assets\\AddLocation.ico"
 
+research ICON "Assets\\Research.ico"
+
 chapterPng RCDATA "Assets\\AddChapter.png"
 scenePng RCDATA "Assets\\AddScene.png"
 characterPng RCDATA "Assets\\AddCharacter.png"

@@ -28,6 +28,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, MainNotebook* notebook):
     wxFrame(parent, wxID_ANY, "Create character", wxDefaultPosition, wxSize(520, 585)
     , wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT) {
 
+    this->mainFrame = (MainFrame*)parent;
     this->notebook = notebook;
     this->CenterOnParent();
 
@@ -206,6 +207,7 @@ void CharacterCreator::backEdit(wxCommandEvent& event) {
 }
 
 void CharacterCreator::edit(wxCommandEvent& event) {
+    mainFrame->getOutline()->getOutlineFiles()->deleteCharacter(*charEdit);
 
     vector<string> vec = getValues();
     string temp;
@@ -213,7 +215,7 @@ void CharacterCreator::edit(wxCommandEvent& event) {
     if (ncFullName->IsModified() || charEdit->role != vec[6]) {
         notebook->removeCharName(charEdit->name);
         temp = charEdit->role;
-        MainFrame::characters.erase(charEdit->role + charEdit->name);
+        mainFrame->characters.erase(charEdit->role + charEdit->name);
         Character dummy;
         charEdit = &dummy;
     }
@@ -232,17 +234,17 @@ void CharacterCreator::edit(wxCommandEvent& event) {
 
     charEdit->image = ncImage;
 
-    if (ncFullName->IsModified() || charEdit->role != temp) {
+    if (ncFullName->IsModified() || charEdit->role != vec[6]) {
         notebook->addCharName(charEdit->name);
         MainFrame::characters[charEdit->role + charEdit->name] = *charEdit;
         notebook->setSearchAC(wxBookCtrlEvent());
     }
 
-    MainNotebook::updateLB();
-
+    notebook->updateLB();
     notebook->charShow->setData(charEdit->image, vec);
 
-    MainFrame::isSaved = false;
+    mainFrame->isSaved = false;
+    mainFrame->getOutline()->getOutlineFiles()->appendCharacter(*charEdit);
 
     this->Destroy();
 }
@@ -289,10 +291,7 @@ void CharacterCreator::removeImage(wxCommandEvent& event) {
 
 void CharacterCreator::create(wxCommandEvent& event) {
 
-    if (ncFullName->IsModified() || ncAge->IsModified() || ncNationality->IsModified() ||
-        ncHeight->IsModified() || ncNickname->IsModified() ||
-        ncAppearance->IsModified() || ncPersonality->IsModified() || ncBackstory->IsModified()) {
-
+    if (!ncFullName->IsEmpty()) {
         vector<string> vec = getValues();
 
         Character character;
@@ -310,16 +309,16 @@ void CharacterCreator::create(wxCommandEvent& event) {
 
         character.image = ncImage;
 
-        MainFrame::characters[vec[6] + vec[0]] = character;
+        mainFrame->characters[vec[6] + vec[0]] = character;
 
         MainNotebook::updateLB();
 
         notebook->addCharName(vec[0]);
         notebook->setSearchAC(wxBookCtrlEvent());
 
-        MainFrame::saved[0]++;
-
-        MainFrame::isSaved = false;
+        mainFrame->saved[0]++;
+        mainFrame->isSaved = false;
+        mainFrame->getOutline()->getOutlineFiles()->appendCharacter(character);
     }
 
     this->Destroy();

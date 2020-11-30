@@ -141,8 +141,10 @@ void Corkboard::save(std::ofstream& out) {
 void Corkboard::load(std::ifstream& in) {
     in.read((char*)&currentImage, sizeof(int));
 
-    if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml"))
+    if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml")) {
         canvas->LoadCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
-    else
+        canvas->SetScale(0.1);
+        canvas->RefreshCanvas(true, canvas->GetTotalBoundingBox());
+    } else
         canvas->GetDiagramManager()->Clear();
 }
