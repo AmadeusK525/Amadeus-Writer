@@ -89,6 +89,7 @@ public:
     MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 
     ChaptersNotebook* getNote() { return chaptersNote; }
+    Outline* getOutline() { return outline; }
 
     // These three go together when saving / loading. setLast writes to a file the path to the most recently
     // worked on project. When booting up the application, the getLast function will

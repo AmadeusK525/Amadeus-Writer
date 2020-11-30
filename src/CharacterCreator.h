@@ -41,6 +41,7 @@ private:
     Character* charEdit = nullptr;
 
     MainNotebook* notebook;
+    MainFrame* mainFrame;
 
 public:
     CharacterCreator(wxWindow* parent, MainNotebook* notebook);
