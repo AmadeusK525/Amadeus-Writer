@@ -88,9 +88,6 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     overview = new wxPanel(panel, -1);
     overview->Show();
 
-    mainSizer = new wxBoxSizer(wxHORIZONTAL);
-    mainSizer->Add(overview, 1, wxEXPAND);
-
     //Setting up notebook Elements page
     elements = new MainNotebook(panel, this);
     elements->Hide();
@@ -142,6 +139,13 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     outline = new Outline(panel);
     outline->Hide();
+
+    mainSizer = new wxBoxSizer(wxHORIZONTAL);
+    mainSizer->Add(overview, wxSizerFlags(1).Expand());
+    mainSizer->Add(elements, wxSizerFlags(1).Expand());
+    mainSizer->Add(chaptersNote, wxSizerFlags(1).Expand());
+    mainSizer->Add(release, wxSizerFlags(1).Expand());
+    mainSizer->Add(outline, wxSizerFlags(1).Expand());
 
     panel->SetSizer(mainSizer);
 
@@ -571,8 +575,6 @@ void MainFrame::notSaved(wxCommandEvent& event) {
 // Hide everything else. The search bar is only shown when the Elements page is visible.
 void MainFrame::onOverview(wxCommandEvent& event) {
     if (!overview->IsShown()) {
-        mainSizer->Add(overview, 1, wxGROW);
-        mainSizer->Remove(0);
         elements->Hide();
         chaptersNote->Hide();
         release->Hide();
@@ -595,8 +597,6 @@ void MainFrame::onOverview(wxCommandEvent& event) {
 void MainFrame::onElements(wxCommandEvent& event) {
 
     if (!elements->IsShown()) {
-        mainSizer->Add(elements, 1, wxGROW);
-        mainSizer->Remove(0);
         overview->Hide();
         chaptersNote->Hide();
         release->Hide();
@@ -617,8 +617,6 @@ void MainFrame::onElements(wxCommandEvent& event) {
 
 void MainFrame::onChapters(wxCommandEvent& event) {
     if (!chaptersNote->IsShown()) {
-        mainSizer->Add(chaptersNote, 1, wxGROW);
-        mainSizer->Remove(0);
         overview->Hide();
         release->Hide();
         elements->Hide();
@@ -638,8 +636,6 @@ void MainFrame::onChapters(wxCommandEvent& event) {
 
 void MainFrame::onRelease(wxCommandEvent& event) {
     if (!release->IsShown()) {
-        mainSizer->Add(release, 1, wxGROW, 5);
-        mainSizer->Remove(0);
         overview->Hide();
         elements->Hide();
         chaptersNote->Hide();
@@ -659,8 +655,6 @@ void MainFrame::onRelease(wxCommandEvent& event) {
 
 void MainFrame::onOutline(wxCommandEvent& event) {
     if (!outline->IsShown()) {
-        mainSizer->Add(outline, 1, wxGROW);
-        mainSizer->Remove(0);
         overview->Hide();
         release->Hide();
         elements->Hide();
