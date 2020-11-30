@@ -11,7 +11,7 @@ private:
 
 public:
 	ImageShape();
-	ImageShape(static ImageShape& other);
+	ImageShape(const ImageShape& other);
 	virtual ~ImageShape();
 
 	void create(const wxString& path, wxBitmapType type = wxBITMAP_TYPE_ANY);
