@@ -100,8 +100,8 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
     corkBoard->SetSizer(notesSizer);
     corkBoard->SetScrollRate(15, 15);
 
-    AddPage(mainPanel, "First View");
-    AddPage(corkBoard, "Chapter notes");
+    AddPage(mainPanel, "Main");
+    AddPage(corkBoard, "Notes");
 
     wxTimer timer(this, 12345);
     timer.Start(10000);
@@ -266,8 +266,8 @@ void ChapterWriterNotebook::addNote(std::string& noteContent, std::string& noteN
     b2->SetBackgroundColour(wxColour(0, 210, 0));
 
     wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
-    topSizer->Add(noteLabel, wxSizerFlags(8));
-    topSizer->Add(options, wxSizerFlags(1));
+    topSizer->Add(noteLabel, wxSizerFlags(8).Expand());
+    topSizer->Add(options, wxSizerFlags(1).Expand());
 
     wxBoxSizer* bsiz = new wxBoxSizer(wxHORIZONTAL);
     bsiz->Add(b1, wxSizerFlags(0));
