@@ -1,14 +1,16 @@
-#pragma once
 #ifndef LOCATIONCREATOR_H_
 #define LOCATIONCREATOR_H_
+#pragma once
 
-#include "wx/wx.h"
 #include "MainFrame.h"
 #include "ImagePanel.h"
 #include "Location.h"
 
 class LocationCreator: public wxFrame {
 private:
+    MainFrame* mainFrame = nullptr;
+    ElementsNotebook* notebook = nullptr;
+
     wxPanel* nlPanel1 = nullptr;
     wxPanel* nlPanel2 = nullptr;
     ImagePanel* nlImagePanel = nullptr;
@@ -36,8 +38,6 @@ private:
     wxButton* nlRemoveImage = nullptr;
 
     Location* locationEdit = nullptr;
-
-    ElementsNotebook* notebook = nullptr;
 
 public:
     LocationCreator(wxWindow* parent, ElementsNotebook* notebook);

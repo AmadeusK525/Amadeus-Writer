@@ -24,9 +24,9 @@ private:
 	vector<wxRichTextBuffer> charBuffers{};
 	vector<wxRichTextBuffer> locBuffers{};
 
-	vector<wxDataViewItem> researchFiles{};
-	vector<wxDataViewItem> charFiles{};
-	vector<wxDataViewItem> locFiles{};
+	vector<wxDataViewItem> researchItems{};
+	vector<wxDataViewItem> charItems{};
+	vector<wxDataViewItem> locItems{};
 
 	std::string current{""};
 
@@ -35,10 +35,10 @@ public:
 	void init();
 
 	void appendCharacter(Character& character);
-	//void appendLocation(Location& location);
+	void appendLocation(Location& location);
 
 	void deleteCharacter(Character& character);
-	void deleteLocations(Location& location);
+	void deleteLocation(Location& location);
 
 	void onSelectionChanged(wxDataViewEvent& event);
 	void onEditingStart(wxDataViewEvent& event);
@@ -47,6 +47,8 @@ public:
 
 	bool save();
 	bool load();
+
+	void clearAll();
 
 	DECLARE_EVENT_TABLE()
 };
