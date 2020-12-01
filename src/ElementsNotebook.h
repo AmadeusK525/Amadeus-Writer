@@ -8,7 +8,7 @@
 #include "CharacterShowcase.h"
 #include "LocationShowcase.h"
 
-class MainNotebook : public wxNotebook {
+class ElementsNotebook : public wxNotebook {
 private:
     wxWindow* parent = nullptr;
 
@@ -22,7 +22,7 @@ public:
     wxArrayString locNames{};
 
 public:
-    MainNotebook(wxWindow* parent, wxWindow* main);
+    ElementsNotebook(wxWindow* parent, wxWindow* main);
 
     void onCharRightClick(wxListEvent& event);
     void editCharName(wxListEvent& event);

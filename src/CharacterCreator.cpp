@@ -1,4 +1,7 @@
 #include "CharacterCreator.h"
+
+#include "OutlineFiles.h"
+
 #include "wx/listctrl.h"
 
 #include "wxmemdbg.h"
@@ -24,7 +27,7 @@ END_EVENT_TABLE()
 using std::string;
 using std::vector;
 
-CharacterCreator::CharacterCreator(wxWindow* parent, MainNotebook* notebook):
+CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook):
     wxFrame(parent, wxID_ANY, "Create character", wxDefaultPosition, wxSize(520, 585)
     , wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT) {
 
@@ -311,7 +314,7 @@ void CharacterCreator::create(wxCommandEvent& event) {
 
         mainFrame->characters[vec[6] + vec[0]] = character;
 
-        MainNotebook::updateLB();
+        ElementsNotebook::updateLB();
 
         notebook->addCharName(vec[0]);
         notebook->setSearchAC(wxBookCtrlEvent());

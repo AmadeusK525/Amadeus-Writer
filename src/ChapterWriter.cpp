@@ -8,7 +8,6 @@
 
 #include "wxmemdbg.h"
 
-
 BEGIN_EVENT_TABLE(ChapterWriter, wxFrame)
 
 EVT_BUTTON(BUTTON_NoteClear, ChapterWriter::clearNote)
@@ -189,6 +188,8 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     chapWriterNotebook->corkBoard->size = chapWriterNotebook->corkBoard->GetSize();
     chapWriterNotebook->corkBoard->setImageAsIs(wxBitmap(wxBITMAP_PNG(corkBoard)).ConvertToImage());
 
+    SetIcon(wxICON(amadeus));
+
     loadChapter();
 
     Show();
@@ -283,7 +284,7 @@ void ChapterWriter::addChar(wxCommandEvent& event) {
         if (mapIt->second.chapters == 1)
             mapIt->second.firstChap = chapterPos;
 
-        MainNotebook::updateLB();
+        ElementsNotebook::updateLB();
     }
 }
 
@@ -319,7 +320,7 @@ void ChapterWriter::removeChar(wxCommandEvent& event) {
         sel = charInChap->GetNextSelected(sel - 1);
     }
 
-    MainNotebook::updateLB();
+    ElementsNotebook::updateLB();
 }
 
 void ChapterWriter::addLocButtonPressed(wxCommandEvent& event) {
@@ -370,7 +371,7 @@ void ChapterWriter::addLoc(wxCommandEvent& event) {
         if (mapIt->second.chapters == 1)
             mapIt->second.firstChap = chapterPos;
 
-        MainNotebook::updateLB();
+        ElementsNotebook::updateLB();
     }
 }
 
@@ -404,7 +405,7 @@ void ChapterWriter::removeLocButtonPressed(wxCommandEvent& event) {
     sel = locInChap->GetNextSelected(sel + 1);
     }
 
-    MainNotebook::updateLB();
+    ElementsNotebook::updateLB();
 }
 
 void ChapterWriter::nextChap(wxCommandEvent& event) {

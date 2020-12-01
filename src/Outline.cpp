@@ -3,7 +3,8 @@
 #include <boost/filesystem.hpp>
 
 #include "MainFrame.h"
-#include "CorkboardCanvas.h"
+#include "Corkboard.h"
+#include "OutlineFiles.h"
 
 namespace fs = boost::filesystem;
 
@@ -30,11 +31,13 @@ void Outline::saveOutline(std::ofstream& out, int& progress, wxProgressDialog* d
 
 void Outline::loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog) {
     corkboard->load(in);
-    files->init();
+    files->load();
     dialog->Update(progress++);
 }
 
 void Outline::clearAll() {
     corkboard->getCanvas()->GetDiagramManager()->Clear();
     corkboard->getCanvas()->Refresh(true);
+
+    files->clearAll();
 }

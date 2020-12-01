@@ -4,7 +4,7 @@
 
 #include <wx\wxsf\wxShapeFramework.h>
 #include "AutoWrapTextShape.h"
-#include "CorkboardCanvas.h"
+#include "Corkboard.h"
 
 class NoteShape: public wxSFRoundRectShape {
 protected:

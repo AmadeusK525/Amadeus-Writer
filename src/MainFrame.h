@@ -20,7 +20,7 @@
 
 #include "Character.h"
 #include "Location.h"
-#include "MainNotebook.h"
+#include "ElementsNotebook.h"
 #include "Release.h"
 #include "ChaptersNotebook.h"
 #include "Outline.h"
@@ -42,7 +42,7 @@ private:
     wxPanel* panel = nullptr;
 
     wxPanel* overview = nullptr;
-    MainNotebook* elements = nullptr;
+    ElementsNotebook* elements = nullptr;
     ChaptersNotebook* chaptersNote = nullptr;
     Release* release = nullptr;
     Outline* outline = nullptr;

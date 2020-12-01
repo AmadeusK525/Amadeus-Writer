@@ -40,11 +40,11 @@ private:
 
     Character* charEdit = nullptr;
 
-    MainNotebook* notebook;
+    ElementsNotebook* notebook;
     MainFrame* mainFrame;
 
 public:
-    CharacterCreator(wxWindow* parent, MainNotebook* notebook);
+    CharacterCreator(wxWindow* parent, ElementsNotebook* notebook);
 
     std::vector<std::string> getValues();
 

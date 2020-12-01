@@ -23,7 +23,7 @@ END_EVENT_TABLE()
 using std::vector;
 using std::string;
 
-LocationCreator::LocationCreator(wxWindow* parent, MainNotebook* notebook) :
+LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     wxFrame(parent, wxID_ANY, "Create location", wxDefaultPosition, wxSize(655, 630),
     wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT) {
 
@@ -214,7 +214,7 @@ void LocationCreator::edit(wxCommandEvent& event) {
         notebook->setSearchAC(wxBookCtrlEvent());
     }
 
-    MainNotebook::updateLB();
+    ElementsNotebook::updateLB();
 
     MainFrame::isSaved = false;
 
@@ -280,7 +280,7 @@ void LocationCreator::create(wxCommandEvent& event) {
 
         MainFrame::saved[1] = MainFrame::locations.size();
 
-        MainNotebook::updateLB();
+        ElementsNotebook::updateLB();
 
         MainFrame::isSaved = false;
     }
