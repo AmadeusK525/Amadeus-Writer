@@ -1,37 +1,37 @@
-#include "MainNotebook.h"
+#include "ElementsNotebook.h"
 #include "MainFrame.h"
 #include "CharacterCreator.h"
 #include "LocationCreator.h"
 
 #include "wxmemdbg.h"
 
-BEGIN_EVENT_TABLE(MainNotebook, wxNotebook)
+BEGIN_EVENT_TABLE(ElementsNotebook, wxNotebook)
 
-EVT_LIST_ITEM_SELECTED(LIST_CharList, MainNotebook::charSelected)
-EVT_LIST_ITEM_DESELECTED(LIST_CharList, MainNotebook::charDeselected)
-EVT_LIST_ITEM_SELECTED(LIST_LocList, MainNotebook::locSelected)
-EVT_LIST_ITEM_DESELECTED(LIST_LocList, MainNotebook::locDeselected)
+EVT_LIST_ITEM_SELECTED(LIST_CharList, ElementsNotebook::charSelected)
+EVT_LIST_ITEM_DESELECTED(LIST_CharList, ElementsNotebook::charDeselected)
+EVT_LIST_ITEM_SELECTED(LIST_LocList, ElementsNotebook::locSelected)
+EVT_LIST_ITEM_DESELECTED(LIST_LocList, ElementsNotebook::locDeselected)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, MainNotebook::onCharRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_CharList, MainNotebook::openChar)
-EVT_MENU(LISTMENU_EditChar, MainNotebook::editChar)
-EVT_LIST_END_LABEL_EDIT(LIST_CharList, MainNotebook::editCharName)
-EVT_MENU(LISTMENU_DeleteChar, MainNotebook::deleteChar)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, ElementsNotebook::onCharRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_CharList, ElementsNotebook::openChar)
+EVT_MENU(LISTMENU_EditChar, ElementsNotebook::editChar)
+EVT_LIST_END_LABEL_EDIT(LIST_CharList, ElementsNotebook::editCharName)
+EVT_MENU(LISTMENU_DeleteChar, ElementsNotebook::deleteChar)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_LocList, MainNotebook::onLocRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_LocList, MainNotebook::openLoc)
-EVT_MENU(LISTMENU_EditLoc, MainNotebook::editLoc)
-EVT_MENU(LISTMENU_DeleteLoc, MainNotebook::deleteLoc)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_LocList, ElementsNotebook::onLocRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_LocList, ElementsNotebook::openLoc)
+EVT_MENU(LISTMENU_EditLoc, ElementsNotebook::editLoc)
+EVT_MENU(LISTMENU_DeleteLoc, ElementsNotebook::deleteLoc)
 
-EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, MainNotebook::setSearchAC)
+EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, ElementsNotebook::setSearchAC)
 
 END_EVENT_TABLE()
 
-wxListView* MainNotebook::charList;
-wxListView* MainNotebook::locList;
-wxListView* MainNotebook::itemsList;
+wxListView* ElementsNotebook::charList;
+wxListView* ElementsNotebook::locList;
+wxListView* ElementsNotebook::itemsList;
 
-MainNotebook::MainNotebook(wxWindow* parent, wxWindow* main) : wxNotebook(parent, NOTEBOOK_THIS) {
+ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNotebook(parent, NOTEBOOK_THIS) {
     this->parent = main;
 
     //Setting up first notebook tab with a characters list
@@ -95,14 +95,14 @@ MainNotebook::MainNotebook(wxWindow* parent, wxWindow* main) : wxNotebook(parent
     this->AddPage(itemsFrame, "Items");
 }
 
-void MainNotebook::onCharRightClick(wxListEvent& event) {
+void ElementsNotebook::onCharRightClick(wxListEvent& event) {
     wxMenu menu;
     menu.Append(LISTMENU_EditChar, "&Edit");
     menu.Append(LISTMENU_DeleteChar, "&Delete");
     PopupMenu(&menu, wxDefaultPosition);
 }
 
-void MainNotebook::editChar(wxCommandEvent& event) {
+void ElementsNotebook::editChar(wxCommandEvent& event) {
     auto it = MainFrame::characters.begin();
     for (int i = 0; i < charList->GetFirstSelected(); i++) {
         it++;
@@ -115,7 +115,7 @@ void MainNotebook::editChar(wxCommandEvent& event) {
     edit->setEdit(&it->second);
 }
 
-void MainNotebook::editCharName(wxListEvent& event) {
+void ElementsNotebook::editCharName(wxListEvent& event) {
     auto it = MainFrame::characters.begin();
     for (int i = 0; i < charList->GetFirstSelected(); i++) {
         it++;
@@ -124,7 +124,7 @@ void MainNotebook::editCharName(wxListEvent& event) {
     it->second.name = event.GetLabel();
 }
 
-void MainNotebook::deleteChar(wxCommandEvent& event) {
+void ElementsNotebook::deleteChar(wxCommandEvent& event) {
     long sel = charList->GetFirstSelected();
 
     wxMessageDialog* deleteCheck = new wxMessageDialog(parent, "Are you sure you want to delete '" + charList->GetItemText(sel) + "'?",
@@ -147,18 +147,18 @@ void MainNotebook::deleteChar(wxCommandEvent& event) {
     }
 }
 
-void MainNotebook::openChar(wxListEvent& event) {
+void ElementsNotebook::openChar(wxListEvent& event) {
     editChar(wxCommandEvent());
 }
 
-void MainNotebook::onLocRightClick(wxListEvent& event) {
+void ElementsNotebook::onLocRightClick(wxListEvent& event) {
     wxMenu menu;
     menu.Append(LISTMENU_EditLoc, "&Edit");
     menu.Append(LISTMENU_DeleteLoc, "Delete");
     PopupMenu(&menu, wxDefaultPosition);
 }
 
-void MainNotebook::editLoc(wxCommandEvent& event) {
+void ElementsNotebook::editLoc(wxCommandEvent& event) {
 
     auto it = MainFrame::locations.begin();
     for (int i = 0; i < locList->GetFirstSelected(); i++) {
@@ -172,7 +172,7 @@ void MainNotebook::editLoc(wxCommandEvent& event) {
     edit->setEdit(&it->second);
 }
 
-void MainNotebook::deleteLoc(wxCommandEvent& event) {
+void ElementsNotebook::deleteLoc(wxCommandEvent& event) {
     long sel = locList->GetFirstSelected();
 
     wxMessageDialog* deleteCheck = new wxMessageDialog(parent, "Are you sure you want to delete '" + locList->GetItemText(sel) + "'?",
@@ -195,11 +195,11 @@ void MainNotebook::deleteLoc(wxCommandEvent& event) {
     }
 }
 
-void MainNotebook::openLoc(wxListEvent& event) {
+void ElementsNotebook::openLoc(wxListEvent& event) {
     editLoc(wxCommandEvent());
 }
 
-void MainNotebook::charSelected(wxListEvent& event) {
+void ElementsNotebook::charSelected(wxListEvent& event) {
     long sel = charList->GetFirstSelected();
 
     auto it = MainFrame::characters.begin();
@@ -221,11 +221,11 @@ void MainNotebook::charSelected(wxListEvent& event) {
     charShow->setData(it->second.image, charData);
 }
 
-void MainNotebook::charDeselected(wxListEvent& event) {
+void ElementsNotebook::charDeselected(wxListEvent& event) {
     charShow->setData(wxImage(), vector<string>(10, ""));
 }
 
-void MainNotebook::locSelected(wxListEvent& event) {
+void ElementsNotebook::locSelected(wxListEvent& event) {
     long sel = locList->GetFirstSelected();
 
     auto it = MainFrame::locations.begin();
@@ -246,11 +246,11 @@ void MainNotebook::locSelected(wxListEvent& event) {
     locShow->setData(it->second.image, locData);
 }
 
-void MainNotebook::locDeselected(wxListEvent& event) {
+void ElementsNotebook::locDeselected(wxListEvent& event) {
     locShow->setData(wxImage(), vector<string>(5, ""));
 }
 
-void MainNotebook::updateLB() {
+void ElementsNotebook::updateLB() {
     charList->DeleteAllItems();
 
     int i = 0;
@@ -294,7 +294,7 @@ void MainNotebook::updateLB() {
     i = 0;
 }
 
-void MainNotebook::setSearchAC(wxBookCtrlEvent& event) {
+void ElementsNotebook::setSearchAC(wxBookCtrlEvent& event) {
     int sel = this->GetSelection();
 
     switch (sel) {
@@ -322,18 +322,18 @@ void MainNotebook::setSearchAC(wxBookCtrlEvent& event) {
     searchBar->Clear();
 }
 
-void MainNotebook::addCharName(string& name) {
+void ElementsNotebook::addCharName(string& name) {
     charNames.Add(name);
 }
 
-void MainNotebook::addLocName(string& name) {
+void ElementsNotebook::addLocName(string& name) {
     locNames.Add(name);
 }
 
-void MainNotebook::removeCharName(string& name) {
+void ElementsNotebook::removeCharName(string& name) {
     charNames.Remove(name);
 }
 
-void MainNotebook::removeLocName(string& name) {
+void ElementsNotebook::removeLocName(string& name) {
     locNames.Remove(name);
 }

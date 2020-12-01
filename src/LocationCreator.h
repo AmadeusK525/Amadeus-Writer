@@ -37,10 +37,10 @@ private:
 
     Location* locationEdit = nullptr;
 
-    MainNotebook* notebook = nullptr;
+    ElementsNotebook* notebook = nullptr;
 
 public:
-    LocationCreator(wxWindow* parent, MainNotebook* notebook);
+    LocationCreator(wxWindow* parent, ElementsNotebook* notebook);
 
     std::vector<std::string> getValues();
 

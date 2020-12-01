@@ -5,6 +5,7 @@
 #include "CharacterShowcase.h"
 #include "LocationCreator.h"
 #include "Chapter.h"
+#include "Corkboard.h"
 
 #include <wx\richtext\richtextxml.h>
 
@@ -89,7 +90,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     overview->Show();
 
     //Setting up notebook Elements page
-    elements = new MainNotebook(panel, this);
+    elements = new ElementsNotebook(panel, this);
     elements->Hide();
 
     wxPanel* panel2 = new wxPanel(mainPanel, wxID_ANY);
@@ -284,8 +285,8 @@ void MainFrame::newFile(wxCommandEvent& event) {
     characters.clear();
     locations.clear();
     chaptersNote->clearAll();
-    MainNotebook::charList->DeleteAllItems();
-    MainNotebook::locList->DeleteAllItems();
+    ElementsNotebook::charList->DeleteAllItems();
+    ElementsNotebook::locList->DeleteAllItems();
 
     outline->clearAll();
     chaptersNote->clearAll();
@@ -772,12 +773,8 @@ void MainFrame::corkboardFullScreen(bool doFullScreen, wxWindow* toolBar, wxWind
         if (!isFrameFullScreen)
             ShowFullScreen(false);
     }
-    
-    SetSizer(holderSizer);
 
     Layout();
-    Update();
-    Refresh(true);
 }
 
 void MainFrame::setLast() {
@@ -939,7 +936,7 @@ void MainFrame::loadFile() {
 
     elements->setSearchAC(wxBookCtrlEvent());
 
-    MainNotebook::updateLB();
+    ElementsNotebook::updateLB();
 
     progress->Update(progressSize);
     progress->Hide();
@@ -981,5 +978,5 @@ void MainFrame::setExecPath(string& path) {
 // I don't think I actually use this function since I made "updateLB" static,
 // will probably get rid of it after further investigating.
 void MainFrame::callUpdate(wxCommandEvent& event) {
-    MainNotebook::updateLB();
+    ElementsNotebook::updateLB();
 }

@@ -190,7 +190,7 @@
       <AdditionalIncludeDirectories>$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;.;$(WXWIN)\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxtiff.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>C:\wxSF\lib\vc_lib\;$(WXWIN)\lib\vc_lib;$(WXWIN)\lib\vc_lib\mswu;%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -433,7 +433,6 @@
     <ClCompile Include="src\Character.cpp" />
     <ClCompile Include="src\CharacterShowcase.cpp" />
     <ClCompile Include="src\Corkboard.cpp" />
-    <ClCompile Include="src\CorkboardCanvas.cpp" />
     <ClCompile Include="src\DragList.cpp" />
     <ClCompile Include="src\ImagePanel.cpp" />
     <ClCompile Include="src\ImageShape.cpp" />
@@ -441,7 +440,7 @@
     <ClCompile Include="src\LocationCreator.cpp" />
     <ClCompile Include="src\LocationShowcase.cpp" />
     <ClCompile Include="src\MainFrame.cpp" />
-    <ClCompile Include="src\MainNotebook.cpp" />
+    <ClCompile Include="src\ElementsNotebook.cpp" />
     <ClCompile Include="src\MyApp.cpp" />
     <ClCompile Include="src\CharacterCreator.cpp" />
     <ClCompile Include="src\Note.cpp" />
@@ -462,7 +461,6 @@
     <ClInclude Include="src\Character.h" />
     <ClInclude Include="src\CharacterShowcase.h" />
     <ClInclude Include="src\Corkboard.h" />
-    <ClInclude Include="src\CorkboardCanvas.h" />
     <ClInclude Include="src\DragList.h" />
     <ClInclude Include="src\ImagePanel.h" />
     <ClInclude Include="src\ImageShape.h" />
@@ -470,7 +468,7 @@
     <ClInclude Include="src\LocationCreator.h" />
     <ClInclude Include="src\LocationShowcase.h" />
     <ClInclude Include="src\MainFrame.h" />
-    <ClInclude Include="src\MainNotebook.h" />
+    <ClInclude Include="src\ElementsNotebook.h" />
     <ClInclude Include="src\MyApp.h" />
     <ClInclude Include="src\CharacterCreator.h" />
     <ClInclude Include="src\Note.h" />

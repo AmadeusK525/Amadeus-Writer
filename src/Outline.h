@@ -9,8 +9,9 @@
 
 #include <fstream>
 
-#include "Corkboard.h"
-#include "OutlineFiles.h"
+class Outline;
+class OutlineFiles;
+class Corkboard;
 
 class Outline : public wxNotebook {
 private:
