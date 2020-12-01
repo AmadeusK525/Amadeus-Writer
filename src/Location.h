@@ -6,7 +6,7 @@
 #include <string>
 
 struct Location {
-    std::string name{}, background{}, natural{}, arquitecture{},
+    std::string name{}, background{}, natural{}, architecture{},
         type{}, economy{}, culture{}, importance{};
 
     int chapters = 0;

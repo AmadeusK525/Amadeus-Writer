@@ -54,7 +54,7 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     label3->SetFont(wxFont(wxFontInfo(12).Bold()));
     nlNatural = new wxTextCtrl(nlPanel1, wxID_ANY, wxEmptyString, wxPoint(220, 95), wxSize(200, 205), wxTE_MULTILINE);
 
-    wxTextCtrl* label4 = new wxTextCtrl(nlPanel1, wxID_ANY, "Arquitecture", wxPoint(430, 70), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
+    wxTextCtrl* label4 = new wxTextCtrl(nlPanel1, wxID_ANY, "Architecture", wxPoint(430, 70), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
     label4->SetBackgroundColour(wxColor(230, 0, 20, 0));
     label4->SetFont(wxFont(wxFontInfo(12).Bold()));
     nlArquitecture = new wxTextCtrl(nlPanel1, wxID_ANY, wxEmptyString, wxPoint(430, 95), wxSize(200, 205), wxTE_MULTILINE);
@@ -143,7 +143,7 @@ void LocationCreator::setEdit(Location* location) {
     nlName->SetValue(location->name);
     nlHBack->SetValue(location->background);
     nlNatural->SetValue(location->natural);
-    nlArquitecture->SetValue(location->arquitecture);
+    nlArquitecture->SetValue(location->architecture);
 
     if (location->type == "Public") {
         nlPublic->SetValue(true);
@@ -200,7 +200,7 @@ void LocationCreator::edit(wxCommandEvent& event) {
     locationEdit->name = vec[0];
     locationEdit->background = vec[1];
     locationEdit->natural = vec[2];
-    locationEdit->arquitecture = vec[3];
+    locationEdit->architecture = vec[3];
     locationEdit->type = vec[4];
     locationEdit->economy = vec[5];
     locationEdit->culture = vec[6];
@@ -268,7 +268,7 @@ void LocationCreator::create(wxCommandEvent& event) {
         location.name = vec[0];
         location.background = vec[1];
         location.natural = vec[2];
-        location.arquitecture = vec[3];
+        location.architecture = vec[3];
         location.type = vec[4];
         location.economy = vec[5];
         location.culture = vec[6];

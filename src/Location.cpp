@@ -19,9 +19,9 @@ void Location::save(std::ofstream& out) {
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
         out.write(natural.c_str(), size);
 
-        size = arquitecture.size() + 1;
+        size = architecture.size() + 1;
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
-        out.write(arquitecture.c_str(), size);
+        out.write(architecture.c_str(), size);
 
         size = type.size() + 1;
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
@@ -72,7 +72,7 @@ void Location::load(std::ifstream& in) {
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
-        arquitecture = data;
+        architecture = data;
         delete data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));

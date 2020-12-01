@@ -237,7 +237,7 @@ void ElementsNotebook::locSelected(wxListEvent& event) {
     locData.push_back(it->second.name);
     locData.push_back(it->second.background);
     locData.push_back(it->second.natural);
-    locData.push_back(it->second.arquitecture);
+    locData.push_back(it->second.architecture);
     locData.push_back(it->second.type);
     locData.push_back(it->second.economy);
     locData.push_back(it->second.culture);
