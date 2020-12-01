@@ -1,5 +1,7 @@
 #include "LocationCreator.h"
 
+#include "OutlineFiles.h"
+
 #include "wxmemdbg.h"
 
 BEGIN_EVENT_TABLE(LocationCreator, wxFrame)
@@ -27,6 +29,7 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     wxFrame(parent, wxID_ANY, "Create location", wxDefaultPosition, wxSize(655, 630),
     wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT) {
 
+    this->mainFrame = (MainFrame*)parent;
     this->notebook = notebook;
     this->CenterOnParent();
 
@@ -186,13 +189,15 @@ void LocationCreator::backEdit(wxCommandEvent& event) {
 }
 
 void LocationCreator::edit(wxCommandEvent& event) {
+    mainFrame->getOutline()->getOutlineFiles()->deleteLocation(*locationEdit);
+
     vector<string> vec = getValues();
     string temp;
 
     if (nlName->IsModified() || locationEdit->importance != vec[7]) {
         notebook->removeLocName(locationEdit->name);
         temp = locationEdit->importance;
-        MainFrame::locations.erase(locationEdit->importance + locationEdit->name);
+        mainFrame->locations.erase(locationEdit->importance + locationEdit->name);
         Location dummy;
         locationEdit = &dummy;
     }
@@ -217,6 +222,7 @@ void LocationCreator::edit(wxCommandEvent& event) {
     ElementsNotebook::updateLB();
 
     MainFrame::isSaved = false;
+    mainFrame->getOutline()->getOutlineFiles()->appendLocation(*locationEdit);
 
     this->Destroy();
 }
@@ -258,8 +264,7 @@ void LocationCreator::removeImage(wxCommandEvent& event) {
 }
 
 void LocationCreator::create(wxCommandEvent& event) {
-    if (nlArquitecture->IsModified() || nlName->IsModified() || nlHBack->IsModified() ||
-        nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified()) {
+    if (!nlName->IsEmpty()) {
 
         std::vector<std::string> vec = getValues();
 
@@ -276,13 +281,13 @@ void LocationCreator::create(wxCommandEvent& event) {
 
         location.image = nlImage;
 
-        MainFrame::locations[vec [7] + vec[0]] = location;
-
-        MainFrame::saved[1] = MainFrame::locations.size();
+        mainFrame->locations[vec[7] + vec[0]] = location;
+        mainFrame->saved[1] = MainFrame::locations.size();
 
         ElementsNotebook::updateLB();
 
-        MainFrame::isSaved = false;
+        mainFrame->isSaved = false;
+        mainFrame->getOutline()->getOutlineFiles()->appendLocation(location);
     }
 
     Destroy();
