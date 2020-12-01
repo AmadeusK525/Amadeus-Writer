@@ -221,8 +221,9 @@ void LocationCreator::edit(wxCommandEvent& event) {
 
     ElementsNotebook::updateLB();
 
-    MainFrame::isSaved = false;
+    mainFrame->isSaved = false;
     mainFrame->getOutline()->getOutlineFiles()->appendLocation(*locationEdit);
+    mainFrame->Enable();
 
     this->Destroy();
 }
@@ -288,6 +289,7 @@ void LocationCreator::create(wxCommandEvent& event) {
 
         mainFrame->isSaved = false;
         mainFrame->getOutline()->getOutlineFiles()->appendLocation(location);
+        mainFrame->Enable();
     }
 
     Destroy();
@@ -301,15 +303,18 @@ void LocationCreator::checkClose(wxCloseEvent& event) {
         wxMessageDialog* check = new wxMessageDialog(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
 
         if (check->ShowModal() == wxID_YES) {
+            mainFrame->Enable();
             this->Destroy();
         } else {
             check->Destroy();
         }
     } else {
+        mainFrame->Enable();
         this->Destroy();
     }
 }
 
 void LocationCreator::cancel(wxCommandEvent& event) {
+    mainFrame->Enable();
     this->Destroy();
 }

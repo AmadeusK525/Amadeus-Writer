@@ -111,6 +111,7 @@ void ChapterCreator::back(wxCommandEvent& event) {
 }
 
 void ChapterCreator::cancel(wxCommandEvent& event) {
+    mainFrame->Enable();
     this->Destroy();
 }
 
@@ -131,6 +132,7 @@ void ChapterCreator::create(wxCommandEvent& event) {
 
     notebook->addChapter(chapter, pos);
 
+    mainFrame->Enable();
     Destroy();
 }
 
@@ -141,6 +143,7 @@ void ChapterCreator::checkClose(wxCloseEvent& event) {
 
         switch (check->ShowModal()) {
         case wxID_YES:
+            mainFrame->Enable();
             this->Destroy();
             break;
 
@@ -149,6 +152,7 @@ void ChapterCreator::checkClose(wxCloseEvent& event) {
             break;
         }
     } else {
+        mainFrame->Enable();
         this->Destroy();
     }
 }

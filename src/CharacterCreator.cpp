@@ -248,11 +248,13 @@ void CharacterCreator::edit(wxCommandEvent& event) {
 
     mainFrame->isSaved = false;
     mainFrame->getOutline()->getOutlineFiles()->appendCharacter(*charEdit);
+    mainFrame->Enable();
 
     this->Destroy();
 }
 
 void CharacterCreator::cancel(wxCommandEvent& event) {
+    mainFrame->Enable();
     this->Destroy();
 }
 
@@ -322,6 +324,7 @@ void CharacterCreator::create(wxCommandEvent& event) {
         mainFrame->saved[0]++;
         mainFrame->isSaved = false;
         mainFrame->getOutline()->getOutlineFiles()->appendCharacter(character);
+        mainFrame->Enable();
     }
 
     this->Destroy();
@@ -338,6 +341,7 @@ void CharacterCreator::checkClose(wxCloseEvent& event) {
 
         switch (check->ShowModal()) {
         case wxID_YES:
+            mainFrame->Enable();
             this->Destroy();
             break;
 
@@ -347,6 +351,7 @@ void CharacterCreator::checkClose(wxCloseEvent& event) {
         }
 
     } else {
+        mainFrame->Enable();
         this->Destroy();
     }
 }
