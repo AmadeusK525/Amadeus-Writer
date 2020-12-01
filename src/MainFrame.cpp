@@ -678,6 +678,7 @@ void MainFrame::newChar(wxCommandEvent& event) {
     CharacterCreator* create = new CharacterCreator(this, elements);
     create->Show();
     create->SetFocus();
+    Enable(false);
     event.Skip();
 }
 
@@ -703,12 +704,15 @@ void MainFrame::newChap(wxCommandEvent& event) {
     ChapterCreator* create = new ChapterCreator(this, chaptersNote);
     create->Show();
     create->SetFocus();
+    Enable(false);
     event.Skip();
 }
 
 void MainFrame::newLoc(wxCommandEvent& event) {
     LocationCreator* create = new LocationCreator(this, elements);
+    create->Show();
     create->SetFocus();
+    Enable(false);
     event.Skip();
 }
 
