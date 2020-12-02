@@ -11,31 +11,31 @@ private:
     MainFrame* mainFrame = nullptr;
     ElementsNotebook* notebook = nullptr;
 
-    wxPanel* nlPanel1 = nullptr;
-    wxPanel* nlPanel2 = nullptr;
+    wxPanel* nlPanel1 = nullptr,
+        * nlPanel2 = nullptr;
     ImagePanel* nlImagePanel = nullptr;
 
     wxImage nlImage;
 
-    wxTextCtrl* nlName = nullptr;
-    wxTextCtrl* nlHBack = nullptr;
-    wxTextCtrl* nlNatural = nullptr;
-    wxTextCtrl* nlArquitecture = nullptr;
-    wxTextCtrl* nlEconomy = nullptr;
-    wxTextCtrl* nlCulture = nullptr;
+    wxTextCtrl* nlName = nullptr,
+        * nlHBack = nullptr,
+        * nlNatural = nullptr,
+        * nlArquitecture = nullptr,
+        * nlEconomy = nullptr,
+        * nlCulture = nullptr;
 
-    wxButton* nlCancel = nullptr;
-    wxButton* nlNext = nullptr;
-    wxButton* nlBack = nullptr;
+    wxButton* nlCancel = nullptr,
+        * nlNext = nullptr,
+        * nlBack = nullptr;
 
-    wxRadioButton* nlPrivate = nullptr;
-    wxRadioButton* nlPublic = nullptr;
+    wxRadioButton* nlPrivate = nullptr,
+        * nlPublic = nullptr;
 
-    wxRadioButton* nlHigh = nullptr;
-    wxRadioButton* nlLow = nullptr;
+    wxRadioButton* nlHigh = nullptr,
+        * nlLow = nullptr;
 
-    wxButton* nlChooseImage = nullptr;
-    wxButton* nlRemoveImage = nullptr;
+    wxButton* nlChooseImage = nullptr,
+        * nlRemoveImage = nullptr;
 
     Location* locationEdit = nullptr;
 
