@@ -9,14 +9,9 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     role->SetBackgroundColour(wxColour(220, 220, 220));
     role->SetFont(wxFont(wxFontInfo(12).Bold()));
 
-    label1 = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxTE_CENTER | wxBORDER_SIMPLE);
-    label1->SetBackgroundColour(wxColour(250, 250, 250));
-    label1->SetFont(wxFont(wxFontInfo(12).Bold()));
-
-    wxBoxSizer* label1Sizer = new wxBoxSizer(wxHORIZONTAL);
-    label1Sizer->AddStretchSpacer(1);
-    label1Sizer->Add(label1, 4);
-    label1Sizer->AddStretchSpacer(1);
+    name = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxTE_CENTER | wxBORDER_SIMPLE);
+    name->SetBackgroundColour(wxColour(250, 250, 250));
+    name->SetFont(wxFont(wxFontInfo(12).Bold()));
 
     wxStaticText* label2 = new wxStaticText(this, -1, "Age:");
     label2->SetFont(wxFont(wxFontInfo(12).Bold()));
@@ -85,31 +80,27 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     backstory->SetFont(wxFont(wxFontInfo(9)));
     backstory->SetBackgroundColour(wxColour(225, 225, 225));
 
-    apbSizer = new wxBoxSizer(wxVERTICAL);
-    apbSizer->Add(label7, wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10));
-    apbSizer->Add(appearance, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
-    apbSizer->Add(label8, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10));
-    apbSizer->Add(personality, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
-    apbSizer->Add(label9, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10));
-    apbSizer->Add(backstory, wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10).Expand());
-
     image = new ImagePanel(this, wxDefaultPosition, wxSize(200, 200));
     image->SetBackgroundColour(wxColour(150, 150, 150));
     image->setBorderColour(wxColour(20, 20, 20));
+    image->Hide();
 
     vertical = new  wxBoxSizer(wxVERTICAL);
     vertical->Add(role, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM, 10));
     vertical->Add(image, wxSizerFlags(1).CenterHorizontal().Shaped());
     vertical->SetItemMinSize(1, wxSize(200, 200));
-    vertical->Add(label1Sizer, wxSizerFlags(0).Expand().Border(wxTOP | wxBOTTOM, 15));
+    vertical->Add(name, wxSizerFlags(0).Expand().Border(wxALL, 15));
     vertical->Add(firstLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM, 10));
     vertical->Add(secondLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM, 10));
-    vertical->Add(apbSizer, wxSizerFlags(0).Border(wxTOP, 10).Expand());
-
+    vertical->Add(label7, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
+    vertical->Add(appearance, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
+    vertical->Add(label8, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
+    vertical->Add(personality, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
+    vertical->Add(label9, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
+    vertical->Add(backstory, wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10).Expand());
+    
     SetSizer(vertical);
-
     this->FitInside();
-
     this->SetScrollRate(20, 20);
 
     appearance->SetCursor(wxCURSOR_DEFAULT);
@@ -118,12 +109,7 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
 }
 
 void CharacterShowcase::setData(wxImage& set, vector<string>& charData) {
-    if (set.IsOk())
-        image->setImage(set);
-    else
-        image->ClearBackground();
-
-    label1->SetLabel(charData[0]);
+    name->SetLabel(charData[0]);
     sex->SetLabel(charData[1]);
 
     if (charData[1] == "Female")
@@ -133,8 +119,6 @@ void CharacterShowcase::setData(wxImage& set, vector<string>& charData) {
     else
         sex->SetBackgroundColour(wxColour(220, 220, 220));
     
-    sex->Refresh();
-
     age->SetLabel(charData[2]);
     height->SetLabel(charData[4]);
     nat->SetLabel(charData[3]);
@@ -154,22 +138,31 @@ void CharacterShowcase::setData(wxImage& set, vector<string>& charData) {
 
     nol = appearance->GetNumberOfLines();
     if (nol > 5)
-        apbSizer->SetItemMinSize(size_t(1), wxSize(-1, nol * 16));
+        vertical->SetItemMinSize(size_t(6), wxSize(-1, nol * 16));
     else
-        apbSizer->SetItemMinSize(size_t(1), wxSize(-1, 80));
+        vertical->SetItemMinSize(size_t(6), wxSize(-1, 80));
 
     nol = personality->GetNumberOfLines();
     if (nol > 5)
-        apbSizer->SetItemMinSize(size_t(3), wxSize(-1, nol * 16));
+        vertical->SetItemMinSize(size_t(8), wxSize(-1, nol * 16));
     else
-        apbSizer->SetItemMinSize(size_t(3), wxSize(-1, 80));
+        vertical->SetItemMinSize(size_t(8), wxSize(-1, 80));
 
     nol = backstory->GetNumberOfLines();
     if (nol > 5)
-        apbSizer->SetItemMinSize(size_t(5), wxSize(-1, nol * 16));
+        vertical->SetItemMinSize(size_t(10), wxSize(-1, nol * 16));
     else
-        apbSizer->SetItemMinSize(size_t(5), wxSize(-1, 80));
+        vertical->SetItemMinSize(size_t(10), wxSize(-1, 80));
 
-    apbSizer->Layout();
+    if (set.IsOk()) {
+        image->setImage(set);
+        image->Show();
+    } else {
+        image->Hide();
+        image->ClearBackground();
+    }
+
+    vertical->Layout();
     FitInside();
+    Refresh();
 }

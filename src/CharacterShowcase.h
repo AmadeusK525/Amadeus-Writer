@@ -13,7 +13,7 @@ using std::vector;
 class CharacterShowcase : public wxScrolledWindow {
 private:
 	ImagePanel* image = nullptr;
-	wxStaticText* label1 = nullptr;
+	wxStaticText* name = nullptr;
 
 	wxStaticText* age = nullptr,
 		* sex = nullptr,
@@ -27,7 +27,6 @@ private:
 		* backstory = nullptr;
 
 	wxBoxSizer* vertical = nullptr;
-	wxBoxSizer* apbSizer = nullptr;
 
 public:
 	CharacterShowcase(wxWindow* parent);
