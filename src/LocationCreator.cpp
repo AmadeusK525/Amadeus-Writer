@@ -34,12 +34,12 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     this->CenterOnParent();
 
     nlPanel1 = new wxPanel(this, wxID_ANY);
-    nlPanel1->SetBackgroundColour("WHITE");
+    nlPanel1->SetBackgroundColour(wxColour(255, 255, 255));
 
     wxPanel* panel = new wxPanel(nlPanel1, wxID_ANY, wxPoint(80, 20), wxSize(130, 35));
     panel->SetBackgroundColour(wxColour(230, 0, 20));
 
-    wxTextCtrl* label1 = new wxTextCtrl(nlPanel1, wxID_ANY, "Name of location:", wxPoint(80, 25), wxSize(130, 25), wxTE_CENTER | wxTE_READONLY | wxNO_BORDER);
+    wxStaticText* label1 = new wxStaticText(nlPanel1, wxID_ANY, "Name of location:", wxPoint(80, 25), wxSize(130, 25), wxALIGN_CENTER | wxNO_BORDER);
     label1->SetBackgroundColour("WHITE");
     label1->SetFont(wxFont(wxFontInfo(12)));
 
@@ -47,48 +47,54 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     nlName->SetBackgroundColour(wxColour(200, 200, 200));
     nlName->SetFont(wxFont(wxFontInfo(10)));
 
-    wxTextCtrl* label2 = new wxTextCtrl(nlPanel1, wxID_ANY, "Historical background", wxPoint(10, 70), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
+    wxStaticText* label2 = new wxStaticText(nlPanel1, wxID_ANY, "Historical background", wxPoint(10, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_DOUBLE);
     label2->SetBackgroundColour(wxColour(230, 0, 20));
     label2->SetFont(wxFont(wxFontInfo(12).Bold()));
     nlHBack = new wxTextCtrl(nlPanel1, wxID_ANY, wxEmptyString, wxPoint(10, 95), wxSize(200, 205), wxTE_MULTILINE);
 
-    wxTextCtrl* label3 = new wxTextCtrl(nlPanel1, wxID_ANY, "Natural characteristics", wxPoint(220, 70), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
+    wxStaticText* label3 = new wxStaticText(nlPanel1, wxID_ANY, "Natural characteristics", wxPoint(220, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_DOUBLE);
     label3->SetBackgroundColour(wxColour(200, 200, 200));
     label3->SetFont(wxFont(wxFontInfo(12).Bold()));
     nlNatural = new wxTextCtrl(nlPanel1, wxID_ANY, wxEmptyString, wxPoint(220, 95), wxSize(200, 205), wxTE_MULTILINE);
 
-    wxTextCtrl* label4 = new wxTextCtrl(nlPanel1, wxID_ANY, "Architecture", wxPoint(430, 70), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
+    wxStaticText* label4 = new wxStaticText(nlPanel1, wxID_ANY, "Architecture", wxPoint(430, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_DOUBLE);
     label4->SetBackgroundColour(wxColor(230, 0, 20, 0));
     label4->SetFont(wxFont(wxFontInfo(12).Bold()));
     nlArquitecture = new wxTextCtrl(nlPanel1, wxID_ANY, wxEmptyString, wxPoint(430, 95), wxSize(200, 205), wxTE_MULTILINE);
 
-    wxTextCtrl* label5 = new wxTextCtrl(nlPanel1, wxID_ANY, "Space type", wxPoint(10, 310), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
+    wxStaticText* label5 = new wxStaticText(nlPanel1, wxID_ANY, "Space type", wxPoint(10, 310), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_DOUBLE);
     label5->SetBackgroundColour(wxColour(200, 200, 200));
     label5->SetFont(wxFont(wxFontInfo(12).Bold()));
 
     nlPrivate = new wxRadioButton(nlPanel1, wxID_ANY, "Private", wxPoint(10, 340), wxSize(100, 30), wxRB_GROUP);
     nlPrivate->SetFont(wxFont(wxFontInfo(11).Bold()));
+    //nlPrivate->SetForegroundColour(wxColour(250, 250, 250));
+    
     nlPublic = new wxRadioButton(nlPanel1, wxID_ANY, "Public", wxPoint(10, 370), wxSize(100, 30));
     nlPublic->SetFont(wxFont(wxFontInfo(11).Bold()));
+    //nlPublic->SetForegroundColour(wxColour(240, 240, 240));
 
-    wxTextCtrl* label6 = new wxTextCtrl(nlPanel1, wxID_ANY, "Economy", wxPoint(220, 310), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
-    label6->SetBackgroundColour(wxColor(230, 0, 20, 0));
+    wxStaticText* label6 = new wxStaticText(nlPanel1, wxID_ANY, "Economy", wxPoint(220, 310), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_DOUBLE);
+    label6->SetBackgroundColour(wxColour(230, 0, 20));
     label6->SetFont(wxFont(wxFontInfo(12).Bold()));
     nlEconomy = new wxTextCtrl(nlPanel1, wxID_ANY, wxEmptyString, wxPoint(220, 335), wxSize(200, 205), wxTE_MULTILINE);
 
-    wxTextCtrl* label7 = new wxTextCtrl(nlPanel1, wxID_ANY, "Culture", wxPoint(430, 310), wxSize(200, 25), wxTE_READONLY | wxTE_CENTER);
+    wxStaticText* label7 = new wxStaticText(nlPanel1, wxID_ANY, "Culture", wxPoint(430, 310), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_DOUBLE);
     label7->SetBackgroundColour(wxColour(200, 200, 200));
     label7->SetFont(wxFont(wxFontInfo(12).Bold()));
     nlCulture = new wxTextCtrl(nlPanel1, wxID_ANY, wxEmptyString, wxPoint(430, 335), wxSize(200, 205), wxTE_MULTILINE);
 
-    wxTextCtrl* label8 = new wxTextCtrl(nlPanel1, wxID_ANY, "Importance:", wxPoint(10, 555), wxSize(100, 25), wxTE_READONLY | wxTE_LEFT | wxNO_BORDER);
-    label8->SetBackgroundColour("WHITE");
-    label8->SetFont(wxFont(wxFontInfo(12)));
+    wxStaticText* label8 = new wxStaticText(nlPanel1, wxID_ANY, "Importance:", wxPoint(10, 555), wxSize(100, 25), wxALIGN_CENTER | wxBORDER_DOUBLE);
+    label8->SetBackgroundColour(wxColour(200, 200, 200));
+    label8->SetFont(wxFont(wxFontInfo(12).Bold()));
 
-    nlHigh = new wxRadioButton(nlPanel1, wxID_ANY, "High", wxPoint(110, 545), wxSize(60, 20), wxRB_GROUP);
+    nlHigh = new wxRadioButton(nlPanel1, wxID_ANY, "High", wxPoint(115, 545), wxSize(60, 20), wxRB_GROUP);
     nlHigh->SetFont(wxFont(wxFontInfo(10)));
-    nlLow = new wxRadioButton(nlPanel1, wxID_ANY, "Low", wxPoint(110, 565), wxSize(60, 20));
+    //nlHigh->SetForegroundColour(wxColour(240, 240, 240));
+
+    nlLow = new wxRadioButton(nlPanel1, wxID_ANY, "Low", wxPoint(115, 565), wxSize(60, 20));
     nlLow->SetFont(wxFont(wxFontInfo(10)));
+    //nlLow->SetForegroundColour(wxColour(240, 240, 240));
 
     nlNext = new wxButton(nlPanel1, BUTTON_NextLoc, "Next", wxPoint(440, 550), wxSize(90, 30));
     nlCancel = new wxButton(nlPanel1, BUTTON_CancelLoc, "Cancel", wxPoint(540, 550), wxSize(90, 30));
@@ -100,7 +106,7 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
 
     nlPanel2 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(655, 630));
     nlPanel2->Hide();
-    nlPanel2->SetBackgroundColour("WHITE");
+    nlPanel2->SetBackgroundColour(wxColour(255, 255, 255));
 
     nlBack = new wxButton(nlPanel2, BUTTON_BackLoc, "Back", wxPoint(15, 550), wxSize(90, 30));
 
