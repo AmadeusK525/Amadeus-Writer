@@ -240,13 +240,13 @@ void ElementsNotebook::locSelected(wxListEvent& event) {
 
     vector<string> locData;
     locData.push_back(it->second.name);
+    locData.push_back(it->second.importance);
     locData.push_back(it->second.background);
     locData.push_back(it->second.natural);
     locData.push_back(it->second.architecture);
-    locData.push_back(it->second.type);
     locData.push_back(it->second.economy);
     locData.push_back(it->second.culture);
-    locData.push_back(it->second.importance);
+    locData.push_back(it->second.type);
 
     locShow->setData(it->second.image, locData);
 }
