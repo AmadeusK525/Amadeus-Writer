@@ -15,7 +15,6 @@ using std::vector;
 class LocationShowcase : public wxScrolledWindow {
 private:
     ImagePanel* image = nullptr;
-
     wxStaticText* name = nullptr,
         * importance = nullptr,
         * type = nullptr;
@@ -26,7 +25,9 @@ private:
         * economy = nullptr,
         * culture = nullptr;
 
-    wxBoxSizer* vertical = nullptr;
+    wxBoxSizer* vertical = nullptr,
+        * firstColumn = nullptr,
+        * secondColumn = nullptr;
 
 public:
     LocationShowcase(wxWindow* parent);

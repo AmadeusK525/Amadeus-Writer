@@ -5,7 +5,7 @@
 LocationShowcase::LocationShowcase(wxWindow* parent) :
     wxScrolledWindow(parent, wxID_ANY) {
 
-    importance = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxALIGN_CENTER | wxBORDER_RAISED);
+    importance = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxALIGN_CENTER | wxBORDER_RAISED | wxST_NO_AUTORESIZE);
     importance->SetBackgroundColour(wxColour(220, 220, 220));
     importance->SetFont(wxFont(wxFontInfo(12).Bold()));
     
@@ -57,13 +57,13 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
     label6->SetFont(wxFontInfo(12).Bold());
     label6->SetBackgroundColour(wxColour(180, 180, 180));
     type = new wxStaticText(this, -1, "", wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
-    type->SetFont(wxFontInfo(10).Bold());
+    type->SetFont(wxFontInfo(11).Bold());
     type->SetBackgroundColour(wxColour(50, 50, 50));
     type->SetForegroundColour(wxColour(255, 255, 255));
     
     type->Hide();
 
-    wxBoxSizer* firstColumn = new wxBoxSizer(wxVERTICAL);
+    firstColumn = new wxBoxSizer(wxVERTICAL);
     firstColumn->Add(label1, wxSizerFlags(0));
     firstColumn->Add(background, wxSizerFlags(0).Expand().Border(wxBOTTOM, 20));
     firstColumn->Add(label3, wxSizerFlags(0));
@@ -71,7 +71,7 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
     firstColumn->Add(label5, wxSizerFlags(0));
     firstColumn->Add(culture, wxSizerFlags(0).Expand());
 
-    wxBoxSizer* secondColumn = new wxBoxSizer(wxVERTICAL);
+    secondColumn = new wxBoxSizer(wxVERTICAL);
     secondColumn->Add(label2, wxSizerFlags(0));
     secondColumn->Add(natural, wxSizerFlags(0).Expand().Border(wxBOTTOM, 20));
     secondColumn->Add(label4, wxSizerFlags(0));
@@ -98,8 +98,67 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
 
 void LocationShowcase::setData(wxImage& set, vector<string> locData) {
     image->Show(image->setImage(set));
-
     name->SetLabel(locData[0]);
+    
+    if (locData[1] == "High") {
+        importance->SetBackgroundColour(wxColour(230, 60, 60));
+        importance->SetLabel("Main");
+    } else {
+        importance->SetBackgroundColour(wxColour(220, 220, 220));
+
+        if (locData[1] == "Low")
+            importance->SetLabel("Secondary");
+        else
+            importance->SetLabel("");
+    }
+
+    background->SetValue(locData[2]);
+    natural->SetValue(locData[3]);
+    architecture->SetValue(locData[4]);
+    economy->SetValue(locData[5]);
+    culture->SetValue(locData[6]);
+
+    type->SetLabel(locData[7]);
+    if (locData[7] == "Private")
+        type->SetBackgroundColour(wxColour(0, 0, 100));
+    else if (locData[7] == "Public")
+        type->SetBackgroundColour(wxColour(100, 0, 0));
+    else
+        type->SetBackgroundColour(wxColour(50, 50, 50));
+
+    type->Show(!locData[7].empty());
+
+    int nol;
+
+    nol = background->GetNumberOfLines();
+    if (nol > 5)
+        firstColumn->SetItemMinSize(size_t(1), wxSize(-1, nol * 16));
+    else
+        firstColumn->SetItemMinSize(size_t(1), wxSize(-1, 80));
+
+    nol = natural->GetNumberOfLines();
+    if (nol > 5)
+        secondColumn->SetItemMinSize(size_t(1), wxSize(-1, nol * 16));
+    else
+        secondColumn->SetItemMinSize(size_t(1), wxSize(-1, 80));
+
+    nol = architecture->GetNumberOfLines();
+    if (nol > 5)
+        firstColumn->SetItemMinSize(size_t(3), wxSize(-1, nol * 16));
+    else
+        firstColumn->SetItemMinSize(size_t(3), wxSize(-1, 80));
+
+    nol = economy->GetNumberOfLines();
+    if (nol > 5)
+        secondColumn->SetItemMinSize(size_t(3), wxSize(-1, nol * 16));
+    else
+        secondColumn->SetItemMinSize(size_t(3), wxSize(-1, 80));
+
+    nol = culture->GetNumberOfLines();
+    if (nol > 5)
+        firstColumn->SetItemMinSize(size_t(5), wxSize(-1, nol * 16));
+    else
+        firstColumn->SetItemMinSize(size_t(5), wxSize(-1, 80));
 
     vertical->Layout();
     FitInside();
