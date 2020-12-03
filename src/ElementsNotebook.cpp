@@ -7,10 +7,10 @@
 
 BEGIN_EVENT_TABLE(ElementsNotebook, wxNotebook)
 
-EVT_LIST_ITEM_SELECTED(LIST_CharList, ElementsNotebook::charSelected)
-EVT_LIST_ITEM_DESELECTED(LIST_CharList, ElementsNotebook::charDeselected)
+EVT_LIST_ITEM_FOCUSED(LIST_CharList, ElementsNotebook::charSelected)
+//EVT_LIST_ITEM_DESELECTED(LIST_CharList, ElementsNotebook::charDeselected)
 EVT_LIST_ITEM_SELECTED(LIST_LocList, ElementsNotebook::locSelected)
-EVT_LIST_ITEM_DESELECTED(LIST_LocList, ElementsNotebook::locDeselected)
+//EVT_LIST_ITEM_DESELECTED(LIST_LocList, ElementsNotebook::locDeselected)
 
 EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, ElementsNotebook::onCharRightClick)
 EVT_LIST_ITEM_ACTIVATED(LIST_CharList, ElementsNotebook::openChar)
@@ -47,9 +47,8 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNoteboo
     charList->InsertColumn(4, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
     charList->InsertColumn(5, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
-    //charList->SetBackgroundColour(wxColour(40, 40, 40));
-    //charList->SetTextColour(wxColour(200, 200, 200));
-    //charList->SetFont(wxFont());
+    charList->EnableAlternateRowColours();
+    charList->SetAlternateRowColour(wxColour(220, 220, 220));
 
     charShow = new CharacterShowcase(charFrame);
 
@@ -202,6 +201,11 @@ void ElementsNotebook::openLoc(wxListEvent& event) {
 void ElementsNotebook::charSelected(wxListEvent& event) {
     long sel = charList->GetFirstSelected();
 
+    if (sel == -1) {
+        charShow->setData(wxImage(), vector<string>(10, ""));
+        return;
+    }
+
     auto it = MainFrame::characters.begin();
     for (int i = 0; i < sel; i++) {
         it++;
@@ -222,7 +226,8 @@ void ElementsNotebook::charSelected(wxListEvent& event) {
 }
 
 void ElementsNotebook::charDeselected(wxListEvent& event) {
-    charShow->setData(wxImage(), vector<string>(10, ""));
+    //if (charList->GetSelectedItemCount() == 0)
+        charShow->setData(wxImage(), vector<string>(10, ""));
 }
 
 void ElementsNotebook::locSelected(wxListEvent& event) {

@@ -20,16 +20,19 @@ void ImagePanel::setBorderColour(const wxColour& colour) {
 }
 
 
-void ImagePanel::setImage(wxImage& im) {
+bool ImagePanel::setImage(wxImage& im) {
     image = im;
 
     if (image.IsOk()) {
         newScale();
         SetBackgroundBitmap(image);
-        Refresh();
+
         Update();
+        Refresh();
+        return true;
     } else {
         ClearBackground();
+        return false;
     }
 }
 
