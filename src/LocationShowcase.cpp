@@ -90,6 +90,12 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
     vertical->Add(name, wxSizerFlags(0).Expand().Border(wxALL, 15));
     vertical->Add(horSizer, wxSizerFlags(1).Expand().Border(wxALL, 15));
 
+    background->SetCursor(wxCURSOR_DEFAULT);
+    natural->SetCursor(wxCURSOR_DEFAULT);
+    architecture->SetCursor(wxCURSOR_DEFAULT);
+    economy->SetCursor(wxCURSOR_DEFAULT);
+    culture->SetCursor(wxCURSOR_DEFAULT);
+
     SetSizer(vertical);
 
     this->FitInside();
