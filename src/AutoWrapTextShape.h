@@ -2,7 +2,7 @@
 #define AUTOWRAPTEXTSHAPE_H_
 #pragma once
 
-#include "wx\wxsf\wxShapeFramework.h"
+#include <wx\wxsf\wxShapeFramework.h>
 
 class AutoWrapTextShape : public wxSFEditTextShape {
 private:
