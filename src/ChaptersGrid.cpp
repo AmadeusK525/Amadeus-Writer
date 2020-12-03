@@ -38,6 +38,7 @@ void ChaptersGrid::openChapter(wxCommandEvent& event) {
 
     int chapNumber = event.GetId() - 10000;
     ChapterWriter* writer = new ChapterWriter(mainFrame, parent, chapNumber);
+    writer->Show();
 }
 
 void ChaptersGrid::clearAll() {

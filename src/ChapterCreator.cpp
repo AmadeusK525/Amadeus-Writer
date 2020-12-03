@@ -98,6 +98,8 @@ void ChapterCreator::next(wxCommandEvent& event) {
     nchapPanel1->Hide();
     nchapPanel2->Show();
     nchapNext->SetId(BUTTON_CreateChapter);
+
+    event.Skip();
 }
 
 void ChapterCreator::back(wxCommandEvent& event) {
@@ -108,11 +110,15 @@ void ChapterCreator::back(wxCommandEvent& event) {
     nchapPanel2->Hide();
     nchapPanel1->Show();
     nchapNext->SetId(BUTTON_NextChapter);
+   
+    event.Skip();
 }
 
 void ChapterCreator::cancel(wxCommandEvent& event) {
     mainFrame->Enable();
     this->Destroy();
+
+    event.Skip();
 }
 
 void ChapterCreator::create(wxCommandEvent& event) {
@@ -134,6 +140,8 @@ void ChapterCreator::create(wxCommandEvent& event) {
 
     mainFrame->Enable();
     Destroy();
+
+    event.Skip();
 }
 
 void ChapterCreator::checkClose(wxCloseEvent& event) {
@@ -155,4 +163,6 @@ void ChapterCreator::checkClose(wxCloseEvent& event) {
         mainFrame->Enable();
         this->Destroy();
     }
+
+    event.Skip();
 }

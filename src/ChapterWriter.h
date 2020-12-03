@@ -20,7 +20,7 @@ using std::list;
 
 struct ChapterWriterNotebook;
 
-class ChapterWriter : wxFrame {
+class ChapterWriter : public wxFrame {
 private:
     MainFrame* mainFrame = nullptr;
     Chapter* thisChap = nullptr;

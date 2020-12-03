@@ -198,6 +198,9 @@ void CharacterCreator::nextEdit(wxCommandEvent& event) {
     ncCancel->Reparent(ncPanel2);
     ncPanel1->Hide();
     ncPanel2->Show();
+    ncChooseImage->SetFocus();
+
+    event.Skip();
 }
 
 void CharacterCreator::backEdit(wxCommandEvent& event) {
@@ -207,6 +210,9 @@ void CharacterCreator::backEdit(wxCommandEvent& event) {
     ncNext->SetId(BUTTON_NextEdit);
     ncPanel2->Hide();
     ncPanel1->Show();
+    ncPanel1->SetFocus();
+
+    event.Skip();
 }
 
 void CharacterCreator::edit(wxCommandEvent& event) {
@@ -251,11 +257,14 @@ void CharacterCreator::edit(wxCommandEvent& event) {
     mainFrame->Enable();
 
     this->Destroy();
+
+    event.Skip();
 }
 
 void CharacterCreator::cancel(wxCommandEvent& event) {
     mainFrame->Enable();
     this->Destroy();
+    event.Skip();
 }
 
 void CharacterCreator::next(wxCommandEvent& event) {
@@ -265,6 +274,9 @@ void CharacterCreator::next(wxCommandEvent& event) {
     ncCancel->Reparent(ncPanel2);
     ncPanel1->Hide();
     ncPanel2->Show();
+    ncChooseImage->SetFocus();
+
+    event.Skip();
 }
 
 void CharacterCreator::back(wxCommandEvent& event) {
@@ -274,6 +286,8 @@ void CharacterCreator::back(wxCommandEvent& event) {
     ncNext->SetId(BUTTON_NextChar);
     ncPanel2->Hide();
     ncPanel1->Show();
+
+    event.Skip();
 }
 
 void CharacterCreator::setImage(wxCommandEvent& event) {
@@ -286,12 +300,16 @@ void CharacterCreator::setImage(wxCommandEvent& event) {
         ncImagePanel->setImage(ncImage);
         ncRemoveImage->Show();
     }
+
+    event.Skip();
 }
 
 void CharacterCreator::removeImage(wxCommandEvent& event) {
     ncImagePanel->ClearBackground();
     ncImage.Destroy();
     ncRemoveImage->Hide();
+
+    event.Skip();
 }
 
 void CharacterCreator::create(wxCommandEvent& event) {
@@ -328,6 +346,7 @@ void CharacterCreator::create(wxCommandEvent& event) {
     }
 
     this->Destroy();
+    event.Skip();
 }
 
 void CharacterCreator::checkClose(wxCloseEvent& event) {
@@ -354,4 +373,5 @@ void CharacterCreator::checkClose(wxCloseEvent& event) {
         mainFrame->Enable();
         this->Destroy();
     }
+    event.Skip();
 }
