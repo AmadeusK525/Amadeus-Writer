@@ -1,5 +1,5 @@
 #include "ImageShape.h"
-#include "CorkboardCanvas.h"
+#include "Corkboard.h"
 
 XS_IMPLEMENT_CLONABLE_CLASS(ImageShape, wxSFBitmapShape)
 

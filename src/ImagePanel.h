@@ -20,7 +20,7 @@ public:
     void adjustSize(const wxSize& size);
     void setBorderColour(const wxColour& colour);
 
-    void setImage(wxImage& image);
+    bool setImage(wxImage& image);
     void newScale();
 
     void setImageAsIs(wxImage& image);
