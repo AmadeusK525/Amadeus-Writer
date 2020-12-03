@@ -91,7 +91,7 @@ void AutoWrapTextShape::calcWrappedText(int& lenght, int& numberOfLines) {
 
 	int index = 0;
 	bool hasSpace;
-	bool hasNewLine;
+	//bool hasNewLine;
 	bool isEqual;
 
 	while (numberOfLines > 0) {
