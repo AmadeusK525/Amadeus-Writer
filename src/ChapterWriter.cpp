@@ -260,6 +260,7 @@ void ChapterWriter::addCharButtonPressed(wxCommandEvent& event) {
     win->SetSize(charPanel->GetSize());
 
     win->Popup(list);
+    event.Skip();
 }
 
 void ChapterWriter::addChar(wxCommandEvent& event) {
@@ -321,6 +322,7 @@ void ChapterWriter::removeChar(wxCommandEvent& event) {
     }
 
     ElementsNotebook::updateLB();
+    event.Skip();
 }
 
 void ChapterWriter::addLocButtonPressed(wxCommandEvent& event) {
@@ -347,6 +349,7 @@ void ChapterWriter::addLocButtonPressed(wxCommandEvent& event) {
     win->SetSize(locPanel->GetSize());
 
     win->Popup();
+    event.Skip();
 }
 
 void ChapterWriter::addLoc(wxCommandEvent& event) {
@@ -406,6 +409,7 @@ void ChapterWriter::removeLocButtonPressed(wxCommandEvent& event) {
     }
 
     ElementsNotebook::updateLB();
+    event.Skip();
 }
 
 void ChapterWriter::nextChap(wxCommandEvent& event) {
@@ -539,4 +543,5 @@ void ChapterWriter::onClose(wxCloseEvent& event) {
     mainFrame->saveFile(wxCommandEvent());
     
     Destroy();
+    event.Skip();
 }
