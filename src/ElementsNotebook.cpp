@@ -47,8 +47,8 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNoteboo
     charList->InsertColumn(4, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
     charList->InsertColumn(5, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
-    charList->EnableAlternateRowColours();
-    charList->SetAlternateRowColour(wxColour(220, 220, 220));
+    //charList->EnableAlternateRowColours();
+    //charList->SetAlternateRowColour(wxColour(220, 220, 220));
 
     charShow = new CharacterShowcase(charFrame);
 
@@ -94,14 +94,14 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNoteboo
     this->AddPage(itemsFrame, "Items");
 }
 
-void ElementsNotebook::onCharRightClick(wxListEvent& event) {
+void ElementsNotebook::onCharRightClick(wxListEvent& WXUNUSED(event)) {
     wxMenu menu;
     menu.Append(LISTMENU_EditChar, "&Edit");
     menu.Append(LISTMENU_DeleteChar, "&Delete");
     PopupMenu(&menu, wxDefaultPosition);
 }
 
-void ElementsNotebook::editChar(wxCommandEvent& event) {
+void ElementsNotebook::editChar(wxCommandEvent& WXUNUSED(event)) {
     auto it = MainFrame::characters.begin();
     for (int i = 0; i < charList->GetFirstSelected(); i++) {
         it++;
@@ -123,7 +123,7 @@ void ElementsNotebook::editCharName(wxListEvent& event) {
     it->second.name = event.GetLabel();
 }
 
-void ElementsNotebook::deleteChar(wxCommandEvent& event) {
+void ElementsNotebook::deleteChar(wxCommandEvent& WXUNUSED(event)) {
     long sel = charList->GetFirstSelected();
 
     wxMessageDialog* deleteCheck = new wxMessageDialog(parent, "Are you sure you want to delete '" + charList->GetItemText(sel) + "'?",
@@ -146,18 +146,18 @@ void ElementsNotebook::deleteChar(wxCommandEvent& event) {
     }
 }
 
-void ElementsNotebook::openChar(wxListEvent& event) {
+void ElementsNotebook::openChar(wxListEvent& WXUNUSED(event)) {
     editChar(wxCommandEvent());
 }
 
-void ElementsNotebook::onLocRightClick(wxListEvent& event) {
+void ElementsNotebook::onLocRightClick(wxListEvent& WXUNUSED(event)) {
     wxMenu menu;
     menu.Append(LISTMENU_EditLoc, "&Edit");
     menu.Append(LISTMENU_DeleteLoc, "Delete");
     PopupMenu(&menu, wxDefaultPosition);
 }
 
-void ElementsNotebook::editLoc(wxCommandEvent& event) {
+void ElementsNotebook::editLoc(wxCommandEvent& WXUNUSED(event)) {
 
     auto it = MainFrame::locations.begin();
     for (int i = 0; i < locList->GetFirstSelected(); i++) {
@@ -171,7 +171,7 @@ void ElementsNotebook::editLoc(wxCommandEvent& event) {
     edit->setEdit(&it->second);
 }
 
-void ElementsNotebook::deleteLoc(wxCommandEvent& event) {
+void ElementsNotebook::deleteLoc(wxCommandEvent& WXUNUSED(event)) {
     long sel = locList->GetFirstSelected();
 
     wxMessageDialog* deleteCheck = new wxMessageDialog(parent, "Are you sure you want to delete '" + locList->GetItemText(sel) + "'?",
@@ -225,12 +225,12 @@ void ElementsNotebook::charSelected(wxListEvent& event) {
     charShow->setData(it->second.image, charData);
 }
 
-void ElementsNotebook::charDeselected(wxListEvent& event) {
+void ElementsNotebook::charDeselected(wxListEvent& WXUNUSED(event)) {
     //if (charList->GetSelectedItemCount() == 0)
         charShow->setData(wxImage(), vector<string>(10, ""));
 }
 
-void ElementsNotebook::locSelected(wxListEvent& event) {
+void ElementsNotebook::locSelected(wxListEvent& WXUNUSED(event)) {
     long sel = locList->GetFirstSelected();
 
     auto it = MainFrame::locations.begin();
@@ -251,7 +251,7 @@ void ElementsNotebook::locSelected(wxListEvent& event) {
     locShow->setData(it->second.image, locData);
 }
 
-void ElementsNotebook::locDeselected(wxListEvent& event) {
+void ElementsNotebook::locDeselected(wxListEvent& WXUNUSED(event)) {
     locShow->setData(wxImage(), vector<string>(5, ""));
 }
 
@@ -299,7 +299,7 @@ void ElementsNotebook::updateLB() {
     i = 0;
 }
 
-void ElementsNotebook::setSearchAC(wxBookCtrlEvent& event) {
+void ElementsNotebook::setSearchAC(wxBookCtrlEvent& WXUNUSED(event)) {
     int sel = this->GetSelection();
 
     switch (sel) {

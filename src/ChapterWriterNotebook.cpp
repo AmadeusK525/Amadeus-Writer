@@ -107,9 +107,8 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
     timer.Start(10000);
 }
 
-void ChapterWriterNotebook::setModified(wxCommandEvent& event) {
+void ChapterWriterNotebook::setModified(wxCommandEvent& WXUNUSED(event)) {
     parent->statusBar->SetStatusText("Chapter modified. Autosaving soon...", 0);
-    event.Skip();
 }
 
 void ChapterWriterNotebook::onKeyDown(wxRichTextEvent& event) {
@@ -153,32 +152,30 @@ void ChapterWriterNotebook::setUnderlined(wxCommandEvent& event) {
 }
 
 void ChapterWriterNotebook::setAlignLeft(wxCommandEvent& event) {
-    content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));
-    event.Skip();
+    content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));    
+    setModified(event);
 }
 
 void ChapterWriterNotebook::setAlignCenter(wxCommandEvent& event) {
     content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
-    event.Skip();
+    setModified(event);
 }
 
 void ChapterWriterNotebook::setAlignCenterJust(wxCommandEvent& event) {
     content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
-    event.Skip();
+    setModified(event);
 }
 
 void ChapterWriterNotebook::setAlignRight(wxCommandEvent& event) {
     content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
-    event.Skip();
+    setModified(event);
 }
 
-void ChapterWriterNotebook::onFullScreen(wxCommandEvent& event) {
+void ChapterWriterNotebook::onFullScreen(wxCommandEvent& WXUNUSED(event)) {
     parent->toggleFullScreen();
-    event.Skip();
 }
 
-void ChapterWriterNotebook::onPageView(wxCommandEvent& event) {
-    event.Skip();
+void ChapterWriterNotebook::onPageView(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void ChapterWriterNotebook::onUpdateBold(wxUpdateUIEvent& event) {
@@ -209,15 +206,13 @@ void ChapterWriterNotebook::onUpdateAlignRight(wxUpdateUIEvent& event) {
     event.Check(content->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
 }
 
-void ChapterWriterNotebook::onUpdateFontSize(wxUpdateUIEvent& event) {
+void ChapterWriterNotebook::onUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event)) {
     wxRichTextAttr attr;
     content->GetStyle(content->GetInsertionPoint() - 1, attr);
     string size(std::to_string(attr.GetFontSize()));
 
     if (fontSize->GetValue() != size)
         fontSize->SetValue(size);
-
-    event.Skip();
 }
 
 void ChapterWriterNotebook::setFontSize(wxCommandEvent& event) {
@@ -368,7 +363,7 @@ void ChapterWriterNotebook::setGreen(wxCommandEvent& event) {
     parent->checkNotes();
 }
 
-void ChapterWriterNotebook::deleteNote(wxCommandEvent& event) {
+void ChapterWriterNotebook::deleteNote(wxCommandEvent& WXUNUSED(event)) {
     if (selNote) {
         wxPanel* sp;
 
@@ -393,7 +388,6 @@ void ChapterWriterNotebook::deleteNote(wxCommandEvent& event) {
     }
 
     parent->checkNotes();
-    event.Skip();
 }
 
 void ChapterWriterNotebook::onNoteClick(wxMouseEvent& event) {
