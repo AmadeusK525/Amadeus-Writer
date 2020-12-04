@@ -12,7 +12,7 @@ Outline::Outline(wxWindow* parent) : wxNotebook(parent, -1) {
     corkHolder = new wxPanel(this);
     corkboard = new Corkboard(corkHolder);
     timeline = new wxPanel(this);
-    files = new OutlineFiles(this);
+    files = new OutlineFilesPanel(this);
 
     // Hack for doing corkboard fullscreen
     corkHolderSizer = new wxBoxSizer(wxVERTICAL);
