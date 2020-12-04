@@ -175,7 +175,7 @@ void LocationCreator::setEdit(Location* location) {
     locationEdit = location;
 }
 
-void LocationCreator::nextEdit(wxCommandEvent& event) {
+void LocationCreator::nextEdit(wxCommandEvent& WXUNUSED(event)) {
     nlNext->SetId(BUTTON_CreateEditLoc);
     nlNext->Reparent(nlPanel2);
     nlCancel->Reparent(nlPanel2);
@@ -185,7 +185,7 @@ void LocationCreator::nextEdit(wxCommandEvent& event) {
     nlPanel2->Show();
 }
 
-void LocationCreator::backEdit(wxCommandEvent& event) {
+void LocationCreator::backEdit(wxCommandEvent& WXUNUSED(event)) {
     nlNext->Reparent(nlPanel1);
     nlNext->SetId(BUTTON_NextEditLoc);
     nlCancel->Reparent(nlPanel1);
@@ -194,7 +194,7 @@ void LocationCreator::backEdit(wxCommandEvent& event) {
     nlPanel1->Show();
 }
 
-void LocationCreator::edit(wxCommandEvent& event) {
+void LocationCreator::edit(wxCommandEvent& WXUNUSED(event)) {
     mainFrame->getOutline()->getOutlineFiles()->deleteLocation(*locationEdit);
 
     vector<string> vec = getValues();
@@ -234,7 +234,7 @@ void LocationCreator::edit(wxCommandEvent& event) {
     this->Destroy();
 }
 
-void LocationCreator::next(wxCommandEvent& event) {
+void LocationCreator::next(wxCommandEvent& WXUNUSED(event)) {
     nlNext->SetId(BUTTON_CreateLoc);
     nlNext->Reparent(nlPanel2);
     nlCancel->Reparent(nlPanel2);
@@ -243,7 +243,7 @@ void LocationCreator::next(wxCommandEvent& event) {
     nlPanel2->Show();
 }
 
-void LocationCreator::back(wxCommandEvent& event) {
+void LocationCreator::back(wxCommandEvent& WXUNUSED(event)) {
     nlNext->SetId(BUTTON_NextLoc);
     nlNext->Reparent(nlPanel1);
     nlCancel->Reparent(nlPanel1);
@@ -252,7 +252,7 @@ void LocationCreator::back(wxCommandEvent& event) {
     nlPanel1->Show();
 }
 
-void LocationCreator::setImage(wxCommandEvent& event) {
+void LocationCreator::setImage(wxCommandEvent& WXUNUSED(event)) {
     wxFileDialog* choose = new wxFileDialog(this, "Select a Image", wxEmptyString, wxEmptyString,
         "JPG (*.jpg)|*.jpg",
         wxFD_OPEN, wxDefaultPosition);
@@ -264,13 +264,13 @@ void LocationCreator::setImage(wxCommandEvent& event) {
     }
 }
 
-void LocationCreator::removeImage(wxCommandEvent& event) {
+void LocationCreator::removeImage(wxCommandEvent& WXUNUSED(event)) {
     nlImagePanel->ClearBackground();
     nlImage.Destroy();
     nlRemoveImage->Hide();
 }
 
-void LocationCreator::create(wxCommandEvent& event) {
+void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
     if (!nlName->IsEmpty()) {
 
         std::vector<std::string> vec = getValues();
@@ -301,7 +301,7 @@ void LocationCreator::create(wxCommandEvent& event) {
     Destroy();
 }
 
-void LocationCreator::checkClose(wxCloseEvent& event) {
+void LocationCreator::checkClose(wxCloseEvent& WXUNUSED(event)) {
 
     if (nlArquitecture->IsModified() || nlName->IsModified() || nlHBack->IsModified() ||
         nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified()) {
@@ -320,7 +320,7 @@ void LocationCreator::checkClose(wxCloseEvent& event) {
     }
 }
 
-void LocationCreator::cancel(wxCommandEvent& event) {
+void LocationCreator::cancel(wxCommandEvent& WXUNUSED(event)) {
     mainFrame->Enable();
     this->Destroy();
 }

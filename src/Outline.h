@@ -10,14 +10,14 @@
 #include <fstream>
 
 class Outline;
-class OutlineFiles;
+class OutlineFilesPanel;
 class Corkboard;
 
 class Outline : public wxNotebook {
 private:
     Corkboard* corkboard = nullptr;
     wxPanel* timeline = nullptr;
-    OutlineFiles* files = nullptr;
+    OutlineFilesPanel* files = nullptr;
 
 public:
     // Hack for doing corkboard fullscreen
@@ -31,7 +31,7 @@ public:
     void loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog);
 
     Corkboard* getCorkboard() { return corkboard; }
-    OutlineFiles* getOutlineFiles() { return files; }
+    OutlineFilesPanel* getOutlineFiles() { return files; }
 
     void clearAll();
 };
