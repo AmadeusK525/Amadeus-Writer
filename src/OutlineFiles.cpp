@@ -60,11 +60,11 @@ void OutlineTreeModel::deleteItem(const wxDataViewItem& item) {
 	// NOTE: OutlineTreeModelNode is only an array of _pointers_
 	//       thus removing the node from it doesn't result in freeing it
 	node->getParent()->getChildren().Remove(node);
+	wxDataViewItem parent(node->getParent());
 
 	// free the node
 	delete node;
 
-	wxDataViewItem parent(node->getParent());
 	ItemDeleted(parent, item);
 }
 
