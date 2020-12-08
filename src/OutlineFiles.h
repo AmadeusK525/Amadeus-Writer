@@ -116,6 +116,8 @@ private:
     OutlineTreeModelNode* m_characters;
     OutlineTreeModelNode* m_locations;
 
+    OulineTreeModelNodePtrArray otherRoots{};
+
 public:
     OutlineTreeModel();
     ~OutlineTreeModel() {
@@ -127,6 +129,11 @@ public:
 
         if (m_locations)
             delete m_locations;
+
+        for (int i = 0; i < otherRoots.GetCount(); i++) {
+            if (otherRoots.at(i))
+                delete otherRoots.at(i);
+        }
     }
 
     wxString getTitle(const wxDataViewItem& item) const;
