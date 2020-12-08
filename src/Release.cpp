@@ -11,7 +11,7 @@ END_EVENT_TABLE()
 
 Release::Release(wxWindow* parent) :
     wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN) {
-
+    SetBackgroundColour(wxColour(20, 20, 20));
 }
 
 Release::~Release() {

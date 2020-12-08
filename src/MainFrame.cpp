@@ -87,6 +87,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     panel->SetBackgroundColour("WHITE");
 
     overview = new wxPanel(panel, -1);
+    overview->SetBackgroundColour(wxColour(20, 20, 20));
     overview->Show();
 
     //Setting up notebook Elements page
