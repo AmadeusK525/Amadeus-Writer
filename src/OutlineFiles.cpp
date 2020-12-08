@@ -84,28 +84,52 @@ void OutlineTreeModel::deleteItem(const wxDataViewItem& item) {
 	ItemDeleted(parent, item);
 }
 
-bool OutlineTreeModel::reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent) {
-	wxDataViewItem oldParent((void*)item->getParent());
+bool OutlineTreeModel::reparent(OutlineTreeModelNode* itemNode, OutlineTreeModelNode* newParentNode) {
+	OutlineTreeModelNode* oldParentNode(itemNode->getParent());
 
-	if (item) {
-		item->reparent(newParent);
-		ItemDeleted(oldParent, wxDataViewItem((void*)item));
-		ItemAdded(wxDataViewItem((void*)newParent), wxDataViewItem((void*)item));
-		return true;
-	} else
+	wxDataViewItem item((void*)itemNode);
+	wxDataViewItem newParent((void*)newParentNode);
+	wxDataViewItem oldParent((void*)oldParentNode);
+
+
+	if (!itemNode)
 		return false;
+
+	itemNode->reparent(newParentNode);
+
+	if (!oldParentNode)
+		otherRoots.Remove(itemNode);
+
+	if (!newParentNode)
+		otherRoots.Add(itemNode);
+
+	ItemAdded(newParent, item);
+	ItemDeleted(oldParent, item);
+	return true;
 }
 
-bool OutlineTreeModel::reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent, int n) {
-	wxDataViewItem oldParent((void*)item->getParent());
-	
-	if (item) {
-		item->reparent(newParent, n);
-		ItemDeleted(oldParent, wxDataViewItem((void*)item));
-		ItemAdded(wxDataViewItem((void*)newParent), wxDataViewItem((void*)item));
-		return true;
-	} else
+bool OutlineTreeModel::reparent(OutlineTreeModelNode* itemNode, OutlineTreeModelNode* newParentNode, int n) {
+	OutlineTreeModelNode* oldParentNode(itemNode->getParent());
+
+	wxDataViewItem item((void*)itemNode);
+	wxDataViewItem newParent((void*)newParentNode);
+	wxDataViewItem oldParent((void*)oldParentNode);
+
+
+	if (!itemNode)
 		return false;
+
+	itemNode->reparent(newParentNode, n);
+
+	if (!oldParentNode)
+		otherRoots.Remove(itemNode);
+
+	if (!newParentNode)
+		otherRoots.Insert(itemNode, n);
+
+	ItemAdded(newParent, item);
+	ItemDeleted(oldParent, item);
+	return true;
 }
 
 bool OutlineTreeModel::reposition(wxDataViewItem& item, int n) {
@@ -178,14 +202,19 @@ unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 		array.Add(wxDataViewItem(m_research));
 		array.Add(wxDataViewItem(m_characters));
 		array.Add(wxDataViewItem(m_locations));
-		return 3;
+
+		for (int i = 0; i < otherRoots.GetCount(); i++) {
+			array.Add(wxDataViewItem(otherRoots.at(i)));
+		}
+
+		return 3 + otherRoots.GetCount();
 	}
 
-	if (node->getChildCount() == 0) {
+	unsigned int count = node->getChildCount();
+
+	if (count == 0) {
 		return 0;
 	}
-
-	unsigned int count = node->getChildren().GetCount();
 
 	for (unsigned int pos = 0; pos < count; pos++) {
 		OutlineTreeModelNode* child = node->getChildren().Item(pos);
@@ -441,22 +470,22 @@ void OutlineFilesPanel::deleteLocation(Location& location) {
 }
 
 void OutlineFilesPanel::onSelectionChanged(wxDataViewEvent& event) {
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)(event.GetItem().GetID());
-	OutlineTreeModelNode* parent = nullptr;
-	if (node)
-		parent = node->getParent();
+	wxDataViewItem item(event.GetItem());
 
-	if (parent == nullptr) {
+	if (outlineTreeModel->IsContainer(item)) {
 		content->Clear();
 		content->SetEditable(false);
 		return;
 	}
 
+	OutlineTreeModelNode* node = (OutlineTreeModelNode*)(item.GetID());
+
 	content->GetBuffer() = node->m_buffer;
 	content->Refresh();
+	wxDataViewItem parentItem(node->getParent());
 
-	if (parent == outlineTreeModel->getCharactersNode() ||
-		parent == outlineTreeModel->getLocationsNode())
+	if (outlineTreeModel->isCharacters(parentItem) ||
+		outlineTreeModel->isLocations(parentItem))
 		content->SetEditable(false);
 }
 
@@ -494,8 +523,17 @@ void OutlineFilesPanel::onDropPossible(wxDataViewEvent& event) {
 	if (event.GetDataFormat() != wxRichTextBufferDataObject::GetRichTextBufferFormatId()) {
 		nodeForDnD = nullptr;
 		event.Veto();
-	} else
-		event.SetDropEffect(wxDragMove);	// check 'move' drop effect
+	} else {
+		wxDataViewItem ht;
+		wxDataViewColumn* cht;
+
+		files->HitTest(event.GetPosition(), ht, cht);
+
+		if (outlineTreeModel->IsContainer(ht))
+			event.SetDropEffect(wxDragMove);
+		else
+			event.SetDropEffect(wxDragNone);
+	}
 }
 
 void OutlineFilesPanel::onDrop(wxDataViewEvent& event) {
@@ -531,8 +569,16 @@ void OutlineFilesPanel::onDrop(wxDataViewEvent& event) {
 		} else
 			wxLogMessage("Dropped on item. Nothing happened.");
 
-	} else
-		wxLogMessage("Not yet.");
+	} else {
+		if (nodeForDnD->getParent() != node) {
+			if (index == -1)
+				outlineTreeModel->reparent(nodeForDnD, nullptr);
+			else
+				outlineTreeModel->reparent(nodeForDnD, nullptr, index - 3);
+		}
+	}
+
+	files->Select(itemForDnD);
 }
 
 void OutlineFilesPanel::OnUnsplit(wxWindow* WXUNUSED(window)) {
