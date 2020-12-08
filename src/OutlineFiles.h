@@ -55,6 +55,35 @@ public:
         return m_isContainer;
     }
 
+    void reparent(OutlineTreeModelNode* newParent) {
+        if (m_parent)
+            m_parent->getChildren().Remove(this);
+        
+        m_parent = newParent;
+        
+        if (m_parent)
+            m_parent->append(this);
+    }
+
+    void reparent(OutlineTreeModelNode* newParent, int n) {
+        if (m_parent)
+            m_parent->getChildren().Remove(this);
+
+        m_parent = newParent;
+        
+        if (m_parent)
+            m_parent->insert(this, n);
+    }
+
+    void reposition(int n) {
+        if (m_parent)
+            m_parent->getChildren().Remove(this);
+        else
+            return;
+
+        m_parent->getChildren().Insert(this, n);
+    }
+
     OutlineTreeModelNode* getParent() {
         return m_parent;
     }
@@ -90,9 +119,14 @@ private:
 public:
     OutlineTreeModel();
     ~OutlineTreeModel() {
-        delete m_research;
-        delete m_characters;
-        delete m_locations;
+        if (m_research)
+            delete m_research;
+        
+        if (m_characters)
+            delete m_characters;
+
+        if (m_locations)
+            delete m_locations;
     }
 
     wxString getTitle(const wxDataViewItem& item) const;
@@ -119,9 +153,18 @@ public:
     wxDataViewItem addToCharacters(const string& title);
     wxDataViewItem addToLocations(const string& title);
 
+    bool isResearch(wxDataViewItem& item);
+    bool isCharacters(wxDataViewItem& item);
+    bool isLocations(wxDataViewItem& item);
+
     //void appendContainer(OutlineTreeModelNode* node);
 
     void deleteItem(const wxDataViewItem& item);
+
+    bool reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent);
+    bool reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent, int n);
+
+    bool reposition(wxDataViewItem& item, int n);
 
     // implementation of base class virtuals to define model
     virtual unsigned int GetColumnCount() const {
@@ -145,12 +188,16 @@ public:
 
 class OutlineFilesPanel : public wxSplitterWindow {
 private:
+    wxPanel* leftPanel = nullptr;
     wxDataViewCtrl* files = nullptr;
     wxRichTextCtrl* content = nullptr;
+    wxRichTextAttr basicAttr;
 
     wxToolBar* filesTB = nullptr, * contentTB = nullptr;
 
     wxObjectDataPtr<OutlineTreeModel> outlineTreeModel;
+    OutlineTreeModelNode* nodeForDnD = nullptr;
+    wxDataViewItem itemForDnD{};
 
     std::string current{ "" };
 
@@ -167,6 +214,9 @@ public:
     void onSelectionChanged(wxDataViewEvent& event);
     void onEditingStart(wxDataViewEvent& event);
     void onEditingEnd(wxDataViewEvent& event);
+    void onBeginDrag(wxDataViewEvent& event);
+    void onDropPossible(wxDataViewEvent& event);
+    void onDrop(wxDataViewEvent& event);
 
     virtual void OnUnsplit(wxWindow* window);
 
