@@ -5,33 +5,36 @@
 CharacterShowcase::CharacterShowcase(wxWindow* parent):
     wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL) {
 
+    wxFont font(wxFontInfo(12).Bold());
+    wxFont font2(wxFontInfo(11));
+
     role = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxALIGN_CENTER | wxBORDER_RAISED | wxST_NO_AUTORESIZE);
     role->SetBackgroundColour(wxColour(220, 220, 220));
-    role->SetFont(wxFontInfo(12).Bold());
+    role->SetFont(font);
 
     name = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxALIGN_CENTER | wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
     name->SetBackgroundColour(wxColour(250, 250, 250));
-    name->SetFont(wxFontInfo(12).Bold());
+    name->SetFont(font);
 
     wxStaticText* label1 = new wxStaticText(this, -1, "Age:");
-    label1->SetFont(wxFontInfo(12).Bold());
+    label1->SetFont(font);
     label1->SetBackgroundColour(wxColour(190, 190, 190));
     age = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(45, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
-    age->SetFont(wxFontInfo(11));
+    age->SetFont(font2);
     age->SetBackgroundColour(wxColour(225, 225, 225));
     
     wxStaticText* label2 = new wxStaticText(this, -1, "Sex:");
-    label2->SetFont(wxFontInfo(12).Bold());
+    label2->SetFont(font);
     label2->SetBackgroundColour(wxColour(190, 190, 190));
     sex = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
-    sex->SetFont(wxFontInfo(11));
+    sex->SetFont(font2);
     sex->SetBackgroundColour(wxColour(225, 225, 225));
 
     wxStaticText* label3 = new wxStaticText(this, -1, "Height:");
-    label3->SetFont(wxFontInfo(12).Bold());
+    label3->SetFont(font);
     label3->SetBackgroundColour(wxColour(190, 190, 190));
     height = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
-    height->SetFont(wxFontInfo(11));
+    height->SetFont(font2);
     height->SetBackgroundColour(wxColour(225, 225, 225));
 
     wxBoxSizer* firstLine = new wxBoxSizer(wxHORIZONTAL);
@@ -43,17 +46,17 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     firstLine->Add(height, wxSizerFlags(0).Border(wxRIGHT, 5));
 
     wxStaticText* label4 = new wxStaticText(this, -1, "Nickname:");
-    label4->SetFont(wxFontInfo(12).Bold());
+    label4->SetFont(font);
     label4->SetBackgroundColour(wxColour(190, 190, 190));
     nick = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
-    nick->SetFont(wxFontInfo(11));
+    nick->SetFont(font2);
     nick->SetBackgroundColour(wxColour(225, 225, 225));
     
     wxStaticText* label5 = new wxStaticText(this, -1, "Nationality:");
-    label5->SetFont(wxFontInfo(12).Bold());
+    label5->SetFont(font);
     label5->SetBackgroundColour(wxColour(190, 190, 190));
     nat = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(120, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
-    nat->SetFont(wxFontInfo(11));
+    nat->SetFont(font2);
     nat->SetBackgroundColour(wxColour(225, 225, 225));
 
     wxBoxSizer* secondLine = new wxBoxSizer(wxHORIZONTAL);
@@ -63,21 +66,21 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     secondLine->Add(nat, wxSizerFlags(0).Border(wxRIGHT, 5));
 
     wxStaticText* label6 = new wxStaticText(this, -1, "Appearance", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxST_NO_AUTORESIZE);
-    label6->SetFont(wxFontInfo(12).Bold());
+    label6->SetFont(font);
     label6->SetBackgroundColour(wxColour(180, 180, 180));
     appearance = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
     appearance->SetFont(wxFontInfo(9));
     appearance->SetBackgroundColour(wxColour(225, 225, 225));
 
     wxStaticText* label7 = new wxStaticText(this, -1, "Personality", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxST_NO_AUTORESIZE);
-    label7->SetFont(wxFontInfo(12).Bold());
+    label7->SetFont(font);
     label7->SetBackgroundColour(wxColour(180, 180, 180));
     personality = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
     personality->SetFont(wxFontInfo(9));
     personality->SetBackgroundColour(wxColour(225, 225, 225));
 
     wxStaticText* label8 = new wxStaticText(this, -1, "Backstory", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxST_NO_AUTORESIZE);
-    label8->SetFont(wxFontInfo(12).Bold());
+    label8->SetFont(font);
     label8->SetBackgroundColour(wxColour(180, 180, 180));
     backstory = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
     backstory->SetFont(wxFontInfo(9));

@@ -223,9 +223,10 @@ void LocationCreator::edit(wxCommandEvent& WXUNUSED(event)) {
         notebook->addLocName(locationEdit->name);
         MainFrame::locations[locationEdit->importance + locationEdit->name] = *locationEdit;
         notebook->setSearchAC(wxBookCtrlEvent());
+        notebook->updateLB();
     }
 
-    ElementsNotebook::updateLB();
+    notebook->locShow->setData(locationEdit->image, vec);
 
     mainFrame->isSaved = false;
     mainFrame->getOutline()->getOutlineFiles()->appendLocation(*locationEdit);

@@ -8,15 +8,20 @@
 
 namespace fs = boost::filesystem;
 
-ChaptersNotebook::ChaptersNotebook(wxWindow* parent) : wxNotebook(parent, -1) {
+ChaptersNotebook::ChaptersNotebook(wxWindow* parent) :
+    wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE) {
     grid = new ChaptersGrid(this);
     grid->SetBackgroundColour(wxColour(150, 0, 0));
 
-    list = new wxListView(this);
-    list->InsertColumn(0, "Name");
-    list->InsertColumn(1, "Characters");
-    list->InsertColumn(2, "Locations");
-    list->InsertColumn(3, "Point of View");
+    list = new wxListView(this, -1, wxDefaultPosition, wxDefaultSize,
+        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
+    list->InsertColumn(0, "Name", wxLIST_FORMAT_LEFT, FromDIP(180));
+    list->InsertColumn(1, "Characters", wxLIST_FORMAT_CENTER);
+    list->InsertColumn(2, "Locations", wxLIST_FORMAT_CENTER);
+    list->InsertColumn(3, "Point of View", wxLIST_FORMAT_CENTER, FromDIP(180));
+
+    list->SetBackgroundColour(wxColour(45, 45, 45));
+    list->SetForegroundColour(wxColour(245, 245, 245));
 
     AddPage(grid, "Grid");
     AddPage(list, "List");
