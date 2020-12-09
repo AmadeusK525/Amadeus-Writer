@@ -76,28 +76,14 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     Hide();
 
     mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
-    mainPanel->SetBackgroundColour(wxColour(150, 150, 150));
+    mainPanel->SetBackgroundColour(wxColour(40, 40, 40));
 
     holderSizer = new wxBoxSizer(wxHORIZONTAL);
     holderSizer->Add(mainPanel, wxSizerFlags(1).Expand());
     SetSizer(holderSizer);
 
-    panel = new wxPanel(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
-    panel->Show();
-    panel->SetBackgroundColour("WHITE");
-
-    overview = new wxPanel(panel, -1);
-    overview->SetBackgroundColour(wxColour(20, 20, 20));
-    overview->Show();
-
-    //Setting up notebook Elements page
-    elements = new ElementsNotebook(panel, this);
-    elements->Hide();
-
-    wxPanel* panel2 = new wxPanel(mainPanel, wxID_ANY);
-    panel2->SetBackgroundColour(wxColour(220, 220, 220));
-    pageSel = new wxPanel(panel2, wxID_ANY);
-    pageSel->SetBackgroundColour(wxColour(70, 70, 70));
+    pageSel = new wxPanel(mainPanel, wxID_ANY);
+    pageSel->SetBackgroundColour(wxColour(40, 40, 40));
 
     wxFont font(wxFontInfo(16).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
 
@@ -118,7 +104,6 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     button4->SetFont(font);
     button4->SetBackgroundColour(wxColour(255, 255, 255));
 
-
     buttonSizer = new wxBoxSizer(wxVERTICAL);
     buttonSizer->Add(button0, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
     buttonSizer->Add(button1, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
@@ -129,35 +114,32 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     pageSel->SetSizer(buttonSizer);
 
-    wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
-    pageSizer->Add(pageSel, 1, wxEXPAND | wxTOP | wxBOTTOM, 2);
-    panel2->SetSizer(pageSizer);
+    overview = new wxPanel(mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
+    overview->SetBackgroundColour(wxColour(20, 20, 20));
+    overview->Show();
 
-    chaptersNote = new ChaptersNotebook(panel);
+    //Setting up notebook Elements page
+    elements = new ElementsNotebook(mainPanel, this);
+    elements->Hide();
+
+    chaptersNote = new ChaptersNotebook(mainPanel);
     chaptersNote->Hide();
 
-    release = new Release(panel);
+    release = new Release(mainPanel);
     release->Hide();
 
-    outline = new Outline(panel);
+    outline = new Outline(mainPanel);
     outline->Hide();
 
     mainSizer = new wxBoxSizer(wxHORIZONTAL);
-    mainSizer->Add(overview, wxSizerFlags(1).Expand());
-    mainSizer->Add(elements, wxSizerFlags(1).Expand());
-    mainSizer->Add(chaptersNote, wxSizerFlags(1).Expand());
-    mainSizer->Add(release, wxSizerFlags(1).Expand());
-    mainSizer->Add(outline, wxSizerFlags(1).Expand());
-
-    panel->SetSizer(mainSizer);
-
-    wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
-    topSizer->SetMinSize(500, 400);
-    topSizer->Add(panel2, 1, wxGROW);
-    topSizer->Add(panel, 4, wxEXPAND);
+    mainSizer->Add(pageSel, wxSizerFlags(1).Expand());
+    mainSizer->Add(overview, wxSizerFlags(4).Expand());
+    mainSizer->Add(elements, wxSizerFlags(4).Expand());
+    mainSizer->Add(chaptersNote, wxSizerFlags(4).Expand());
+    mainSizer->Add(release, wxSizerFlags(4).Expand());
+    mainSizer->Add(outline, wxSizerFlags(4).Expand());
 
     // Create menus and such
-
     mainMenu = new wxMenuBar();
 
     fileMenu = new wxMenu();
@@ -225,8 +207,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     toolBar->Realize();
 
     ver = new wxBoxSizer(wxVERTICAL);
-    ver->Add(toolBar, 0, wxGROW);
-    ver->Add(topSizer, 1, wxGROW);
+    ver->Add(toolBar, wxSizerFlags(0).Expand());
+    ver->Add(mainSizer,wxSizerFlags(1).Expand());
     mainPanel->SetSizer(ver);
 
     SetIcon(wxICON(amadeus));
@@ -244,7 +226,6 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     // Initialize maximized
     Maximize();
-    elements->Hide();
     overview->Layout();
 
     Show();
