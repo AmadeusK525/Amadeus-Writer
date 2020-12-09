@@ -339,11 +339,12 @@ void MainFrame::saveFile(wxCommandEvent& event) {
             it->second.save(file);
 
             imagePath = currentImagePath + "\\Characters\\" + it->second.name + ".jpg";
-            if (fs::exists(imagePath) && !it->second.image.IsOk()) {
+            if (fs::exists(imagePath) && !it->second.image.IsOk())
                 fs::remove(imagePath);
-            } else {
-                it->second.image.SaveFile(imagePath);
-            }
+            else
+                if (it->second.image.IsOk())
+                    it->second.image.SaveFile(imagePath);
+
             progress->Update(currentSize++);
         }
 
@@ -352,11 +353,12 @@ void MainFrame::saveFile(wxCommandEvent& event) {
             it->second.save(file);
 
             imagePath = currentImagePath + "\\Locations\\" + it->second.name + ".jpg";
-            if (fs::exists(imagePath) && !it->second.image.IsOk()) {
+            if (fs::exists(imagePath) && !it->second.image.IsOk())
                 fs::remove(imagePath);
-            } else {
-                it->second.image.SaveFile(imagePath);
-            }
+            else
+                if (it->second.image.IsOk())
+                    it->second.image.SaveFile(imagePath);
+
             progress->Update(currentSize++);
         }
 
