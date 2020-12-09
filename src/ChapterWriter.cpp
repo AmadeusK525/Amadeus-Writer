@@ -44,30 +44,38 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     SetBackgroundColour(wxColour(100, 100, 100));
 
     chapWriterNotebook = new ChapterWriterNotebook(this);
+    //chapWriterNotebook->SetBackgroundColour(wxColour(20, 20, 20));
+    //chapWriterNotebook->SetForegroundColour(wxColour(20, 20, 20));
 
-    wxNotebook* leftNotebook = new wxNotebook(this, -1);
+    wxNotebook* leftNotebook = new wxNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 
-    leftPanel = new wxPanel(leftNotebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
+    leftPanel = new wxPanel(leftNotebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     leftPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
-    wxPanel* sumPanel = new wxPanel(leftPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
+    wxPanel* sumPanel = new wxPanel(leftPanel);
     sumPanel->SetBackgroundColour(wxColour(255, 255, 255));
 
     summary = new wxTextCtrl(sumPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    summary->SetBackgroundColour(wxColour(35, 35, 35));
+    summary->SetForegroundColour(wxColour(245, 245, 245));
 
-    wxStaticText* sumLabel = new wxStaticText(sumPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize);
+    wxStaticText* sumLabel = new wxStaticText(sumPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_DEFAULT);
     sumLabel->SetBackgroundColour(wxColour(150, 0, 0));
     sumLabel->SetFont(wxFont(wxFontInfo(10).Bold().AntiAliased()));
-    sumLabel->SetForegroundColour(wxColour(230, 230, 230));
+    sumLabel->SetForegroundColour(wxColour(255, 255, 255));
 
     wxBoxSizer* sumSizer = new wxBoxSizer(wxVERTICAL);
     sumSizer->Add(sumLabel, wxSizerFlags(0).Expand());
     sumSizer->Add(summary, wxSizerFlags(1).Expand());
     sumPanel->SetSizer(sumSizer);
 
-    charPanel = new wxPanel(leftPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
+    charPanel = new wxPanel(leftPanel, -1);
     charPanel->SetBackgroundColour(wxColour(210, 210, 210));
-    charInChap = new wxListView(charPanel, -1, wxDefaultPosition, wxDefaultSize, wxLC_HRULES | wxLC_REPORT);
+    charInChap = new wxListView(charPanel, -1, wxDefaultPosition, wxDefaultSize,
+        wxLC_HRULES | wxLC_REPORT | wxBORDER_NONE);
+
+    charInChap->SetBackgroundColour(wxColour(35, 35, 35));
+    charInChap->SetForegroundColour(wxColour(245, 245, 245));
     charInChap->InsertColumn(0, "Characters present in chapter");
 
     wxButton* addCharButton = new wxButton(charPanel, BUTTON_AddChar, "Add");
@@ -85,9 +93,13 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     charactersSizer->Add(charBSizer, wxSizerFlags(0).Expand());
     charPanel->SetSizer(charactersSizer);
 
-    locPanel = new wxPanel(leftPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
+    locPanel = new wxPanel(leftPanel, -1);
     locPanel->SetBackgroundColour(wxColour(210, 210, 210));
-    locInChap = new wxListView(locPanel, -1, wxDefaultPosition, wxDefaultSize, wxLC_HRULES | wxLC_REPORT);
+    locInChap = new wxListView(locPanel, -1, wxDefaultPosition, wxDefaultSize,
+        wxLC_HRULES | wxLC_REPORT | wxBORDER_NONE);
+
+    locInChap->SetBackgroundColour(wxColour(35, 35, 35));
+    locInChap->SetForegroundColour(wxColour(245, 245, 245));
     locInChap->InsertColumn(0, "Locations present in chapter");
 
     wxButton* addLocButton = new wxButton(locPanel, BUTTON_AddLoc, "Add");
@@ -117,7 +129,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     leftPanel->SetSizer(leftSizer);
     leftNotebook->AddPage(leftPanel,"Left");
 
-    wxPanel* rightPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
+    wxPanel* rightPanel = new wxPanel(this, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
     noteCheck = new wxStaticText(rightPanel, -1, "Nothing to show.", wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
@@ -471,7 +483,6 @@ void ChapterWriter::loadChapter() {
     }
 
     thisChap->content.SetBasicStyle(chapWriterNotebook->content->GetBasicStyle());
-
 
     summary->SetValue(it->summary);
 

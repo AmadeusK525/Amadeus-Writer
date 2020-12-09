@@ -39,7 +39,7 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNoteboo
     charFrame->SetBackgroundColour(wxColour(20, 20, 20));
 
     charList = new wxListView(charFrame, LIST_CharList, wxDefaultPosition, wxDefaultSize,
-        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES);
+        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
     charList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, 190);
     charList->InsertColumn(1, "Age", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
     charList->InsertColumn(2, "Sex", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
@@ -47,8 +47,8 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNoteboo
     charList->InsertColumn(4, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
     charList->InsertColumn(5, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
-    //charList->EnableAlternateRowColours();
-    //charList->SetAlternateRowColour(wxColour(220, 220, 220));
+    charList->SetBackgroundColour(wxColour(45, 45, 45));
+    charList->SetForegroundColour(wxColour(245, 245, 245));
 
     charShow = new CharacterShowcase(charFrame);
 
@@ -63,13 +63,16 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNoteboo
     //Setting up second notebook tab with a locations list
     wxPanel* locFrame = new wxPanel(this, wxID_ANY);
     locFrame->SetBackgroundColour(wxColour(20, 20, 20));
-    locList = new wxListView(locFrame, LIST_LocList, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_AUTOARRANGE | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL);
+    locList = new wxListView(locFrame, LIST_LocList, wxDefaultPosition, wxDefaultSize,
+        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
     locList->InsertColumn(0, "Name of location", wxLIST_FORMAT_CENTER, 150);
     locList->InsertColumn(1, "Space type", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
     locList->InsertColumn(2, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
     locList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
     locList->InsertColumn(4, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
+    locList->SetBackgroundColour(wxColour(45, 45, 45));
+    locList->SetForegroundColour(wxColour(245, 245, 245));
     locList->SetMinSize(wxSize(300, 400));
 
     locShow = new LocationShowcase(locFrame);
@@ -83,7 +86,10 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNoteboo
     //Setting up third notebook tab
     wxPanel* itemsFrame = new wxPanel(this, wxID_ANY);
     itemsFrame->SetBackgroundColour(wxColour(20, 20, 20));
-    itemsList = new wxListView(itemsFrame, LIST_ItemsList, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_AUTOARRANGE | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL);
+    itemsList = new wxListView(itemsFrame, LIST_ItemsList, wxDefaultPosition, wxDefaultSize,
+        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxBORDER_NONE);
+    itemsList->SetBackgroundColour(wxColour(45, 45, 45));
+    itemsList->SetForegroundColour(wxColour(245, 245, 245));
     itemsList->InsertColumn(0, "Name of item", wxLIST_FORMAT_CENTER, 120);
 
     itemsList->SetMinSize(wxSize(300, 400));
@@ -240,13 +246,13 @@ void ElementsNotebook::locSelected(wxListEvent& WXUNUSED(event)) {
 
     vector<string> locData;
     locData.push_back(it->second.name);
-    locData.push_back(it->second.importance);
     locData.push_back(it->second.background);
     locData.push_back(it->second.natural);
     locData.push_back(it->second.architecture);
+    locData.push_back(it->second.type);
     locData.push_back(it->second.economy);
     locData.push_back(it->second.culture);
-    locData.push_back(it->second.type);
+    locData.push_back(it->second.importance);
 
     locShow->setData(it->second.image, locData);
 }

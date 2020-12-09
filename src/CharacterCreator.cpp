@@ -247,9 +247,9 @@ void CharacterCreator::edit(wxCommandEvent& event) {
         notebook->addCharName(charEdit->name);
         MainFrame::characters[charEdit->role + charEdit->name] = *charEdit;
         notebook->setSearchAC(wxBookCtrlEvent());
+        notebook->updateLB();
     }
 
-    notebook->updateLB();
     notebook->charShow->setData(charEdit->image, vec);
 
     mainFrame->isSaved = false;
