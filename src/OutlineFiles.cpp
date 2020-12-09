@@ -266,7 +266,8 @@ OutlineFilesPanel::OutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(parent
 	files->EnableDropTarget(wxDataFormat(wxRichTextBufferDataObject::GetRichTextBufferFormatId()));
 	files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
 	files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
-
+	files->SetBackgroundColour(wxColour(250, 250, 250));
+	files->SetAlternateRowColour(wxColour(230, 230, 230));
 
 	outlineTreeModel = new OutlineTreeModel();
 	files->AssociateModel(outlineTreeModel.get());
