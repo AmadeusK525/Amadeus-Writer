@@ -470,6 +470,9 @@ void ChapterWriter::loadChapter() {
         chapWriterNotebook->content->GetBuffer() = thisChap->content;
     }
 
+    thisChap->content.SetBasicStyle(chapWriterNotebook->content->GetBasicStyle());
+
+
     summary->SetValue(it->summary);
 
     for (auto noteIt = it->notes.begin(); noteIt != it->notes.end(); noteIt++) {
@@ -503,6 +506,7 @@ void ChapterWriter::loadChapter() {
 
 void ChapterWriter::saveChapter() {
     thisChap->content = chapWriterNotebook->content->GetBuffer();
+    thisChap->content.SetBasicStyle(chapWriterNotebook->content->GetBasicStyle());
     thisChap->summary = (string)summary->GetValue();
 
     thisChap->notes.clear();
@@ -599,7 +603,9 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
     attr.SetFont(wxFontInfo(10));
     attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
     attr.SetLeftIndent(63, -63);
+    attr.SetTextColour(wxColour(245, 245, 245));
     content->SetBasicStyle(attr);
+    content->SetBackgroundColour(wxColour(35, 35, 35));
 
     contentTool = new wxToolBar(mainPanel, -1, wxDefaultPosition, wxSize(-1, -1));
     //contentTool->SetBackgroundColour(wxColour(180, 40, 40));
