@@ -427,7 +427,6 @@
     <ClCompile Include="src\Chapter.cpp" />
     <ClCompile Include="src\ChapterCreator.cpp" />
     <ClCompile Include="src\ChaptersNotebook.cpp" />
-    <ClCompile Include="src\ChapterWriterNotebook.cpp" />
     <ClCompile Include="src\ChaptersGrid.cpp" />
     <ClCompile Include="src\ChapterWriter.cpp" />
     <ClCompile Include="src\Character.cpp" />
@@ -455,7 +454,6 @@
     <ClInclude Include="src\Chapter.h" />
     <ClInclude Include="src\ChapterCreator.h" />
     <ClInclude Include="src\ChaptersNotebook.h" />
-    <ClInclude Include="src\ChapterWriterNotebook.h" />
     <ClInclude Include="src\ChaptersGrid.h" />
     <ClInclude Include="src\ChapterWriter.h" />
     <ClInclude Include="src\Character.h" />

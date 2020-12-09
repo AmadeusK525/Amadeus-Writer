@@ -2,18 +2,20 @@
 #define CHAPTERWRITER_H_
 #pragma once
 
-#include "wx/frame.h"
-#include "wx/sizer.h"
-#include "wx/button.h"
-#include "wx/panel.h"
-#include "wx/listctrl.h"
-#include "wx/textctrl.h"
+#include <wx\frame.h>
+#include <wx\wrapsizer.h>
+#include <wx\button.h>
+#include <wx\panel.h>
+#include <wx\listctrl.h>
+#include <wx\textctrl.h>
+#include <wx\aui\aui.h>
 
 #include <string>
 #include <list>
 
 #include "ImagePanel.h"
 #include "ChaptersNotebook.h"
+#include "Note.h"
 
 using std::string;
 using std::list;
@@ -111,5 +113,81 @@ enum {
     TIMER_Save,
     TIMER_Words
 };
+
+
+struct ChapterWriterNotebook : public wxAuiNotebook {
+    ChapterWriter* parent = nullptr;
+
+    wxToolBar* contentTool = nullptr;
+    wxComboBox* fontSize = nullptr;
+
+    wxRichTextCtrl* content = nullptr;
+    wxRichTextStyleSheet* styleSheet = nullptr;
+    std::vector<Note> notes;
+    ImagePanel* corkBoard = nullptr;
+
+    wxWrapSizer* notesSizer = nullptr;
+    wxPanel* selNote = nullptr;
+    wxSize notesSize{};
+
+    ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent);
+
+    void setModified(wxCommandEvent& event);
+    void onKeyDown(wxRichTextEvent& event);
+
+    void setBold(wxCommandEvent& event);
+    void setItalic(wxCommandEvent& event);
+    void setUnderlined(wxCommandEvent& event);
+    void setAlignLeft(wxCommandEvent& event);
+    void setAlignCenter(wxCommandEvent& event);
+    void setAlignCenterJust(wxCommandEvent& event);
+    void setAlignRight(wxCommandEvent& event);
+
+    void onFullScreen(wxCommandEvent& event);
+    void onPageView(wxCommandEvent& event);
+
+    void onUpdateBold(wxUpdateUIEvent& event);
+    void onUpdateItalic(wxUpdateUIEvent& event);
+    void onUpdateUnderline(wxUpdateUIEvent& event);
+    void onUpdateAlignLeft(wxUpdateUIEvent& event);
+    void onUpdateAlignCenter(wxUpdateUIEvent& event);
+    void onUpdateAlignCenterJust(wxUpdateUIEvent& event);
+    void onUpdateAlignRight(wxUpdateUIEvent& event);
+    void onUpdateFontSize(wxUpdateUIEvent& event);
+
+    void setFontSize(wxCommandEvent& event);
+
+    bool hasRedNote();
+
+    void addNote(std::string& note, std::string& noteName, bool isDone);
+    void paintDots(wxPaintEvent& event);
+    void setRed(wxCommandEvent& event);
+    void setGreen(wxCommandEvent& event);
+    void deleteNote(wxCommandEvent& event);
+
+    void onNoteClick(wxMouseEvent& event);
+
+    void updateNoteLabel(wxCommandEvent& event);
+    void updateNote(wxCommandEvent& event);
+
+    DECLARE_EVENT_TABLE()
+};
+
+enum {
+    TOOL_Bold,
+    TOOL_Italic,
+    TOOL_Underline,
+    TOOL_AlignLeft,
+    TOOL_AlignRight,
+    TOOL_AlignCenter,
+    TOOL_AlignCenterJust,
+    TOOL_FontSize,
+    TOOL_ChapterFullScreen,
+    TOOL_PageView,
+
+    MENU_Delete,
+    TEXT_Content
+};
+
 
 #endif
