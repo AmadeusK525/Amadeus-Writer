@@ -120,6 +120,7 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
 
     wxToolBar* contentTool = nullptr;
     wxComboBox* fontSize = nullptr;
+    wxSlider* contentScale = nullptr;
 
     wxRichTextCtrl* content = nullptr;
     wxRichTextStyleSheet* styleSheet = nullptr;
@@ -182,6 +183,7 @@ enum {
     TOOL_AlignCenter,
     TOOL_AlignCenterJust,
     TOOL_FontSize,
+    TOOL_ContentScale,
     TOOL_ChapterFullScreen,
     TOOL_PageView,
 

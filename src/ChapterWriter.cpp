@@ -41,7 +41,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     chapterPos = numb;
 
     Hide();
-    SetBackgroundColour(wxColour(100, 100, 100));
+    SetBackgroundColour(wxColour(10, 10, 10));
 
     chapWriterNotebook = new ChapterWriterNotebook(this);
     //chapWriterNotebook->SetBackgroundColour(wxColour(20, 20, 20));
@@ -55,11 +55,11 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     wxPanel* sumPanel = new wxPanel(leftPanel);
     sumPanel->SetBackgroundColour(wxColour(255, 255, 255));
 
-    summary = new wxTextCtrl(sumPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    summary = new wxTextCtrl(sumPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_SIMPLE);
     summary->SetBackgroundColour(wxColour(35, 35, 35));
     summary->SetForegroundColour(wxColour(245, 245, 245));
 
-    wxStaticText* sumLabel = new wxStaticText(sumPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_DEFAULT);
+    wxStaticText* sumLabel = new wxStaticText(sumPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     sumLabel->SetBackgroundColour(wxColour(150, 0, 0));
     sumLabel->SetFont(wxFont(wxFontInfo(10).Bold().AntiAliased()));
     sumLabel->SetForegroundColour(wxColour(255, 255, 255));
@@ -70,13 +70,21 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     sumPanel->SetSizer(sumSizer);
 
     charPanel = new wxPanel(leftPanel, -1);
-    charPanel->SetBackgroundColour(wxColour(210, 210, 210));
+    charPanel->SetBackgroundColour(wxColour(80, 80, 80));
+
+    wxStaticText* charInChapLabel = new wxStaticText(charPanel, -1, "Characters present in chapter",
+        wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE | wxBORDER_SIMPLE);
+    charInChapLabel->SetBackgroundColour(wxColour(25, 25, 25));
+    charInChapLabel->SetForegroundColour(wxColour(255, 255, 255));
+    charInChapLabel->SetFont(wxFontInfo(10).Bold());
+
     charInChap = new wxListView(charPanel, -1, wxDefaultPosition, wxDefaultSize,
-        wxLC_HRULES | wxLC_REPORT | wxBORDER_NONE);
+        wxLC_HRULES | wxLC_REPORT | wxLC_NO_HEADER | wxBORDER_NONE);
+    charInChap->SetMinSize(FromDIP(wxSize(150, 150)));
 
     charInChap->SetBackgroundColour(wxColour(35, 35, 35));
     charInChap->SetForegroundColour(wxColour(245, 245, 245));
-    charInChap->InsertColumn(0, "Characters present in chapter");
+    charInChap->InsertColumn(0, "Characters present in chapter", wxLIST_ALIGN_LEFT, FromDIP(10));
 
     wxButton* addCharButton = new wxButton(charPanel, BUTTON_AddChar, "Add");
     addCharButton->SetBackgroundColour(wxColour(240, 240, 240));
@@ -89,18 +97,26 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     charBSizer->Add(remCharButton);
 
     wxBoxSizer* charactersSizer = new wxBoxSizer(wxVERTICAL);
+    charactersSizer->Add(charInChapLabel, wxSizerFlags(0).Expand());
     charactersSizer->Add(charInChap, wxSizerFlags(1).Expand());
     charactersSizer->Add(charBSizer, wxSizerFlags(0).Expand());
     charPanel->SetSizer(charactersSizer);
 
     locPanel = new wxPanel(leftPanel, -1);
-    locPanel->SetBackgroundColour(wxColour(210, 210, 210));
-    locInChap = new wxListView(locPanel, -1, wxDefaultPosition, wxDefaultSize,
-        wxLC_HRULES | wxLC_REPORT | wxBORDER_NONE);
+    locPanel->SetBackgroundColour(wxColour(80, 80, 80));
 
+    wxStaticText* locInChapLabel = new wxStaticText(locPanel, -1, "Locations present in chapter",
+        wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE | wxBORDER_SIMPLE);
+    locInChapLabel->SetBackgroundColour(wxColour(25, 25, 25));
+    locInChapLabel->SetForegroundColour(wxColour(255, 255, 255));
+    locInChapLabel->SetFont(wxFontInfo(10).Bold());
+    locInChap = new wxListView(locPanel, -1, wxDefaultPosition, wxDefaultSize,
+        wxLC_HRULES | wxLC_REPORT | wxLC_NO_HEADER | wxBORDER_NONE);
+
+    locInChap->SetMinSize(FromDIP(wxSize(150, 150)));
     locInChap->SetBackgroundColour(wxColour(35, 35, 35));
     locInChap->SetForegroundColour(wxColour(245, 245, 245));
-    locInChap->InsertColumn(0, "Locations present in chapter");
+    locInChap->InsertColumn(0, "Locations present in chapter", wxLIST_ALIGN_LEFT, FromDIP(155));
 
     wxButton* addLocButton = new wxButton(locPanel, BUTTON_AddLoc, "Add");
     addLocButton->SetBackgroundColour(wxColour(240, 240, 240));
@@ -113,17 +129,18 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     locBSizer->Add(remLocButton);
 
     wxBoxSizer* locationsSizer = new wxBoxSizer(wxVERTICAL);
+    locationsSizer->Add(locInChapLabel, wxSizerFlags(0).Expand());
     locationsSizer->Add(locInChap, wxSizerFlags(1).Expand());
     locationsSizer->Add(locBSizer, wxSizerFlags(0).Expand());
     locPanel->SetSizer(locationsSizer);
 
-    wxButton* leftButton = new wxButton(leftPanel, BUTTON_PreviousChap, "", wxDefaultPosition, wxSize(25, 25));
+    wxButton* leftButton = new wxButton(leftPanel, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
     leftButton->SetBitmap(wxBITMAP_PNG(arrowLeft));
 
     leftSizer = new wxBoxSizer(wxVERTICAL);
-    leftSizer->Add(sumPanel, wxSizerFlags(1).Expand().Border(wxALL, 8));
-    leftSizer->Add(charPanel, wxSizerFlags(1).Expand().Border(wxALL, 8));
-    leftSizer->Add(locPanel, wxSizerFlags(1).Expand().Border(wxALL, 8));
+    leftSizer->Add(sumPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
+    leftSizer->Add(charPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
+    leftSizer->Add(locPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
     leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxRIGHT | wxBOTTOM, 8));
 
     leftPanel->SetSizer(leftSizer);
@@ -132,7 +149,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     wxPanel* rightPanel = new wxPanel(this, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
-    noteCheck = new wxStaticText(rightPanel, -1, "Nothing to show.", wxDefaultPosition, wxDefaultSize, wxBORDER_RAISED);
+    noteCheck = new wxStaticText(rightPanel, -1, "Nothing to show.", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     noteCheck->SetBackgroundColour(wxColour(20, 20, 20));
     noteCheck->SetForegroundColour(wxColour(255, 255, 255));
     noteCheck->SetFont(wxFontInfo(10).Bold());
@@ -161,7 +178,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
 
     nbHolder->SetSizer(nbSizer);
 
-    wxButton* rightButton = new wxButton(rightPanel, BUTTON_NextChap, "", wxDefaultPosition, wxSize(25, 25));
+    wxButton* rightButton = new wxButton(rightPanel, BUTTON_NextChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
     rightButton->SetBitmap(wxBITMAP_PNG(arrowRight));
 
     rightSizer = new wxBoxSizer(wxVERTICAL);
@@ -196,6 +213,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     statusBar = CreateStatusBar(3);
     statusBar->SetStatusText("Chapter up-to-date", 0);
     statusBar->SetStatusText("Number of words: 0", 1);
+    statusBar->SetBackgroundColour(wxColour(100, 100, 100));
 
     chapWriterNotebook->notesSize.x = (chapWriterNotebook->corkBoard->GetSize().x / 3) - 30;
     chapWriterNotebook->notesSize.y = (chapWriterNotebook->corkBoard->GetSize().y / 4) - 10;
@@ -644,8 +662,13 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
     fontSize = new wxComboBox(contentTool, TOOL_FontSize, "10", wxDefaultPosition, wxDefaultSize,
         sizes, wxCB_READONLY | wxCB_SIMPLE);
 
+    contentScale = new wxSlider(contentTool, TOOL_ContentScale, 100, 50, 300,
+        wxDefaultPosition, wxDefaultSize, wxSL_MIN_MAX_LABELS);
+
     contentTool->AddControl(fontSize);
     contentTool->AddStretchableSpace();
+    contentTool->AddControl(contentScale);
+    contentTool->AddSeparator();
     contentTool->AddCheckTool(TOOL_ChapterFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
     //contentTool->AddCheckTool()
 
