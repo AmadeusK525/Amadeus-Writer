@@ -35,9 +35,6 @@
     <ClCompile Include="src\ChapterWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChapterWriterNotebook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Character.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -110,9 +107,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ChapterWriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChapterWriterNotebook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Character.h">
