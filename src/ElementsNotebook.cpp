@@ -118,6 +118,8 @@ void ElementsNotebook::editChar(wxCommandEvent& WXUNUSED(event)) {
     edit->CenterOnParent();
 
     edit->setEdit(&it->second);
+
+    parent->Enable(false);
 }
 
 void ElementsNotebook::editCharName(wxListEvent& event) {
@@ -175,6 +177,8 @@ void ElementsNotebook::editLoc(wxCommandEvent& WXUNUSED(event)) {
     edit->CenterOnParent();
 
     edit->setEdit(&it->second);
+
+    parent->Enable(false);
 }
 
 void ElementsNotebook::deleteLoc(wxCommandEvent& WXUNUSED(event)) {

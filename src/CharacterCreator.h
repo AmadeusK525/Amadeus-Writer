@@ -43,8 +43,17 @@ private:
     ElementsNotebook* notebook;
     MainFrame* mainFrame;
 
+    wxBoxSizer* mainSiz = nullptr;
+
 public:
-    CharacterCreator(wxWindow* parent, ElementsNotebook* notebook);
+    CharacterCreator(wxWindow* parent,
+        ElementsNotebook* notebook,
+        long id =  wxID_ANY,
+        const string& label = "Create character",
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxSize(520, 585),
+        long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
+        wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
     std::vector<std::string> getValues();
 
