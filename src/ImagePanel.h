@@ -24,5 +24,7 @@ public:
     void newScale();
 
     void setImageAsIs(wxImage& image);
+
+    void clear();
 };
 
