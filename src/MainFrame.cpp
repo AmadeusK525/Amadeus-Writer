@@ -97,10 +97,10 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     wxButton* button2 = new wxButton(pageSel, BUTTON_Chapters, "Chapters");
     button2->SetFont(font);
     button2->SetBackgroundColour(wxColour(255, 255, 255));
-    wxButton* button3 = new wxButton(pageSel, BUTTON_Release, "Release");
+    wxButton* button3 = new wxButton(pageSel, BUTTON_Outline, "Outline");
     button3->SetFont(font);
     button3->SetBackgroundColour(wxColour(255, 255, 255));
-    wxButton* button4 = new wxButton(pageSel, BUTTON_Outline, "Outline");
+    wxButton* button4 = new wxButton(pageSel, BUTTON_Release, "Release");
     button4->SetFont(font);
     button4->SetBackgroundColour(wxColour(255, 255, 255));
 
@@ -108,8 +108,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     buttonSizer->Add(button0, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
     buttonSizer->Add(button1, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
     buttonSizer->Add(button2, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-    buttonSizer->Add(button4, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
     buttonSizer->Add(button3, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
+    buttonSizer->Add(button4, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
     buttonSizer->AddStretchSpacer(1);
 
     pageSel->SetSizer(buttonSizer);
@@ -181,7 +181,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     // Creating toolbar and setting tools
 
-    toolBar = new wxToolBar(mainPanel, wxID_ANY);
+    toolBar = new wxToolBar(mainPanel, -1);
     toolBar->SetBackgroundColour(wxColour(120, 120, 120));
 
     toolBar->AddTool(TOOL_NewChapter, wxEmptyString, wxBITMAP_PNG(chapterPng), "Add new chapter", wxITEM_NORMAL);
@@ -659,7 +659,7 @@ void MainFrame::onOutline(wxCommandEvent& event) {
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
 void MainFrame::newChar(wxCommandEvent& event) {
-    CharacterCreator* create = new CharacterCreator(this, elements);
+    CharacterCreator* create = new CharacterCreator(this, elements, -1, "Create character", wxDefaultPosition, FromDIP(wxSize(520, 585)));
     create->Show();
     create->SetFocus();
     Enable(false);
@@ -685,6 +685,7 @@ void MainFrame::newChap(wxCommandEvent& event) {
         if (first)
             delete first;
     }
+
     ChapterCreator* create = new ChapterCreator(this, chaptersNote);
     create->Show();
     create->SetFocus();

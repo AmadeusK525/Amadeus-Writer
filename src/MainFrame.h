@@ -112,7 +112,6 @@ public:
     void editTitle(wxCommandEvent& event);
 
     void fullScreen(wxCommandEvent& event);
-
     void newChar(wxCommandEvent& event);
     void newChap(wxCommandEvent& event);
     void newLoc(wxCommandEvent& event);
