@@ -9,7 +9,7 @@
   
 ## Contribute to the project
  
-  This is my first real public project, so I'm fairly new to GitHub. If you're a developer, feel free to contact me or just open Pull Requests and that'll be much appreciated. If you're a writer, you can download the application and test it's current features, leaving some feedback in the "Issues" section on suggestions of new features or improvements of existing ones.
+  This is my first real public project, so I'm fairly new to GitHub. If you're a developer, feel free to contact me or just open Pull Requests and that'll be much appreciated. If you're a writer, you can download the application and test it's current features, leaving some feedback in the "Discussions" section on suggestions of new features or improvements of existing ones.
   
 ## Where to get it
 
