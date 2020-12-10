@@ -22,18 +22,19 @@ void ImagePanel::setBorderColour(const wxColour& colour) {
 
 bool ImagePanel::setImage(wxImage& im) {
     image = im;
+    bool ok = image.IsOk();
 
-    if (image.IsOk()) {
+    if (ok)
         newScale();
-        SetBackgroundBitmap(image);
 
-        Update();
-        Refresh();
-        return true;
-    } else {
-        ClearBackground();
+    SetBackgroundBitmap(image);
+
+    if (!ok)
         return false;
-    }
+
+    Update();
+    Refresh();
+    return true;
 }
 
 void ImagePanel::newScale() {
@@ -76,4 +77,9 @@ void ImagePanel::setImageAsIs(wxImage& im) {
     image.Rescale(size.x, size.y);
     SetBackgroundBitmap(image);
     Refresh();
+}
+
+void ImagePanel::clear() {
+    ClearBackground();
+    image.Destroy();
 }
