@@ -14,12 +14,6 @@ OutlineTreeModel::OutlineTreeModel() {
 	m_locations = new OutlineTreeModelNode(nullptr, "Locations");
 }
 
-void OutlineTreeModel::init() {
-	//m_research = new OutlineTreeModelNode(nullptr, "Research");
-	//m_characters = new OutlineTreeModelNode(nullptr, "Characters");
-	//m_locations = new OutlineTreeModelNode(nullptr, "Locations");
-}
-
 wxString OutlineTreeModel::getTitle(const wxDataViewItem& item) const {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	if (!node)
@@ -107,9 +101,10 @@ void OutlineTreeModel::deleteItem(const wxDataViewItem& item) {
 	if (!node)      // happens if item.IsOk()==false
 		return;
 
-	if (node == m_research || node == m_characters || node == m_locations)
+	if (node == m_research || node == m_characters || node == m_locations) {
 		wxMessageBox("Cannot remove special folders!");
-
+		return;
+	}
 	// first remove the node from the parent's array of children;
 	// NOTE: OutlineTreeModelNode is only an array of _pointers_
 	//       thus removing the node from it doesn't result in freeing it
@@ -620,8 +615,46 @@ void OutlineFilesPanel::newFolder(wxCommandEvent& event) {
 	MainFrame::isSaved = false;
 }
 
+void OutlineFilesPanel::deleteItem(wxDataViewItem& item) {
+	wxDataViewItem parent = outlineTreeModel->GetParent(item);
+
+	if (outlineTreeModel->isResearch(item) || outlineTreeModel->isCharacters(item) ||
+		outlineTreeModel->isLocations(item) || outlineTreeModel->isCharacters(parent) ||
+		outlineTreeModel->isLocations(parent)) {
+		wxMessageBox("Cannot delete special items!");
+		return;
+	}
+
+	string msg = "'" + outlineTreeModel->getTitle(item) + "'";
+
+	if (outlineTreeModel->IsContainer(item))
+		msg.insert(0, "folder ");
+	else
+		msg.insert(0, "file ");
+
+	wxMessageDialog* dlg = new wxMessageDialog(nullptr,
+		"Are you sure you want to delete " + msg + "? This action cannot be undone.", "Warning",
+		wxYES_NO | wxNO_DEFAULT | wxICON_WARNING | wxCENTER);
+
+	if (dlg->ShowModal() == wxID_YES) {
+		outlineTreeModel->deleteItem(item);
+	}
+
+	if (dlg)
+		delete dlg;
+}
+
 void OutlineFilesPanel::onKeyDownDataView(wxKeyEvent& event) {
-	wxMessageBox("Key down on files. To do.");
+	switch (event.GetKeyCode()) {
+	case WXK_DELETE:
+		wxDataViewItem sel = files->GetSelection();
+
+		if (!sel.IsOk())
+			return;
+
+		deleteItem(sel);
+		break;
+	}
 }
 
 void OutlineFilesPanel::onRightDownDataView(wxMouseEvent& event) {
@@ -630,7 +663,19 @@ void OutlineFilesPanel::onRightDownDataView(wxMouseEvent& event) {
 	files->HitTest(event.GetPosition(), item, col);
 	files->Select(item);
 
-	wxMessageBox("Files right clicked. To do.");
+	wxMenu menu;
+	menu.Append(MENU_DeleteItem, "Delete");
+
+	menu.Bind(wxEVT_MENU, &OutlineFilesPanel::onMenuDataView, this);
+	PopupMenu(&menu);
+}
+
+void OutlineFilesPanel::onMenuDataView(wxCommandEvent& event) {
+	switch (event.GetId()) {
+	case MENU_DeleteItem:
+		deleteItem(files->GetSelection());
+		break;
+	}
 }
 
 void OutlineFilesPanel::onSelectionChanged(wxDataViewEvent& event) {
@@ -898,4 +943,5 @@ bool OutlineFilesPanel::load() {
 
 void OutlineFilesPanel::clearAll() {
 	outlineTreeModel->clear();
+	content->Clear();
 }
