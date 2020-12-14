@@ -5,6 +5,7 @@
 #include <wx\xml\xml.h>
 #include <wx\sstream.h>
 #include <wx\richtext\richtextxml.h>
+#include <wx\colordlg.h>
 
 namespace fs = boost::filesystem;
 
@@ -131,14 +132,14 @@ void OutlineTreeModel::deleteItem(const wxDataViewItem& item) {
 
 void OutlineTreeModel::setItemBackgroundColour(wxDataViewItem& item, wxColour& colour) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxDataViewItemAttr attr = node->getAttr();
+	wxDataViewItemAttr& attr = node->getAttr();
 
 	attr.SetBackgroundColour(colour);
 }
 
 void OutlineTreeModel::setItemForegroundColour(wxDataViewItem& item, wxColour& colour) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxDataViewItemAttr attr = node->getAttr();
+	wxDataViewItemAttr& attr = node->getAttr();
 
 	attr.SetColour(colour);
 }
@@ -647,12 +648,17 @@ void OutlineFilesPanel::deleteItem(wxDataViewItem& item) {
 void OutlineFilesPanel::onKeyDownDataView(wxKeyEvent& event) {
 	switch (event.GetKeyCode()) {
 	case WXK_DELETE:
+	{
 		wxDataViewItem sel = files->GetSelection();
 
 		if (!sel.IsOk())
 			return;
 
 		deleteItem(sel);
+		break;
+	}
+	default:
+		event.Skip();
 		break;
 	}
 }
@@ -664,6 +670,8 @@ void OutlineFilesPanel::onRightDownDataView(wxMouseEvent& event) {
 	files->Select(item);
 
 	wxMenu menu;
+	menu.Append(MENU_ChangeItemFgColour, "Change text color");
+	menu.Append(MENU_ChangeItemBgColour, "Change background color");
 	menu.Append(MENU_DeleteItem, "Delete");
 
 	menu.Bind(wxEVT_MENU, &OutlineFilesPanel::onMenuDataView, this);
@@ -671,9 +679,41 @@ void OutlineFilesPanel::onRightDownDataView(wxMouseEvent& event) {
 }
 
 void OutlineFilesPanel::onMenuDataView(wxCommandEvent& event) {
+	wxDataViewItem sel = files->GetSelection();
+	wxDataViewItemAttr attr;
+
+	outlineTreeModel->GetAttr(sel, 0, attr);
+
 	switch (event.GetId()) {
+	case MENU_ChangeItemFgColour:
+	{
+		wxColourData data;
+		data.SetColour(attr.GetColour());
+		wxColourDialog dlg(this, &data);
+
+		if (dlg.ShowModal() == wxID_OK) {
+			outlineTreeModel->setItemForegroundColour(sel, dlg.GetColourData().GetColour());
+		}
+		
+		MainFrame::isSaved = false;
+		break;
+	}
+	case MENU_ChangeItemBgColour:
+	{
+		wxColourData data;
+		data.SetColour(attr.GetColour());
+		wxColourDialog dlg(this, &data);
+
+		if (dlg.ShowModal() == wxID_OK) {
+			outlineTreeModel->setItemBackgroundColour(sel, dlg.GetColourData().GetColour());
+		}
+
+		MainFrame::isSaved = false;
+		break;
+	}
 	case MENU_DeleteItem:
 		deleteItem(files->GetSelection());
+		MainFrame::isSaved = false;
 		break;
 	}
 }
@@ -828,12 +868,12 @@ wxXmlNode* OutlineFilesPanel::getNodeWithChildren(wxDataViewItem& item) {
 	wxXmlNode* node = new wxXmlNode(wxXML_ELEMENT_NODE, "Folder");
 	node->AddAttribute("name", outlineTreeModel->getTitle(item));
 	node->AddAttribute("bg-color", attr.GetBackgroundColour().GetAsString());
+	node->AddAttribute("fg-color", attr.GetColour().GetAsString());
 
 	wxDataViewItemArray children;
 	outlineTreeModel->GetChildren(item, children);
 
 	string name;
-	string dummyName;
 	wxXmlNode* child;
 
 	for (int i = 0; i < children.GetCount(); i++) {
@@ -852,6 +892,8 @@ wxXmlNode* OutlineFilesPanel::getNodeWithChildren(wxDataViewItem& item) {
 		child = new wxXmlNode(node, wxXML_ELEMENT_NODE, "File");
 		child->AddAttribute("name", name);
 		child->AddAttribute("bg-color", attr.GetBackgroundColour().GetAsString());
+		child->AddAttribute("fg-color", attr.GetColour().GetAsString());
+		
 		child->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", buffer));
 	}
 
@@ -860,25 +902,36 @@ wxXmlNode* OutlineFilesPanel::getNodeWithChildren(wxDataViewItem& item) {
 
 void OutlineFilesPanel::deserializeNode(wxXmlNode* node, wxDataViewItem& parent) {
 	wxXmlNode* child = node->GetChildren();
-		
+	wxDataViewItem item;
+
 	if (node->GetName() == "File") {
 		wxString bufString = child->GetContent();
 		wxStringInputStream stream(bufString);
 
 		wxRichTextBuffer buffer;
 		buffer.LoadFile(stream, wxRICHTEXT_TYPE_XML);
-
-		outlineTreeModel->appendFile(parent, node->GetAttribute("name").ToStdString(), buffer);
+		item = outlineTreeModel->appendFile(parent, node->GetAttribute("name").ToStdString(), buffer);
 	} else if (node->GetName() == "Folder") {
 		if (child) {
-			wxDataViewItem item = outlineTreeModel->appendFolder(parent, node->GetAttribute("name").ToStdString());
+			item = outlineTreeModel->appendFolder(parent, node->GetAttribute("name").ToStdString());
 			while (child) {
 				deserializeNode(child, item);
 				child = child->GetNext();
 			}
 		} else
-			outlineTreeModel->appendFolder(parent, node->GetAttribute("name").ToStdString());
+			item = outlineTreeModel->appendFolder(parent, node->GetAttribute("name").ToStdString());
 	}
+
+	string colours;
+	wxColour colour;
+
+	colours = node->GetAttribute("bg-color");
+	colour.Set(colours);
+	outlineTreeModel->setItemBackgroundColour(item, colour);
+
+	colours = node->GetAttribute("fg-color");
+	colour.Set(colours);
+	outlineTreeModel->setItemForegroundColour(item, colour);
 }
 
 bool OutlineFilesPanel::save() {

@@ -127,10 +127,10 @@ public:
     }
     
     void append(OutlineTreeModelNode* child) {
-        m_children.Add(child);
+        m_children.push_back(child);
     }
     
-    unsigned int getChildCount() const {
+    int getChildCount() const {
         return m_children.GetCount();
     }
 };
@@ -292,6 +292,8 @@ enum {
     TOOL_NewFile,
     TOOL_NewFolder,
 
+    MENU_ChangeItemFgColour,
+    MENU_ChangeItemBgColour,
     MENU_DeleteItem
 };
 
