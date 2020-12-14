@@ -24,14 +24,14 @@ Outline::Outline(wxWindow* parent) : wxNotebook(parent, -1) {
     AddPage(files, "Files");
 }
 
-void Outline::saveOutline(std::ofstream& out, int& progress, wxProgressDialog* dialog) {
-    corkboard->save(out);
+void Outline::saveOutline(int& progress, wxProgressDialog* dialog) {
+    corkboard->save();
     dialog->Update(progress++);
     files->save();
 }
 
-void Outline::loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog) {
-    corkboard->load(in);
+void Outline::loadOutline(int& progress, wxProgressDialog* dialog) {
+    corkboard->load();
     files->load();
     dialog->Update(progress++);
 }

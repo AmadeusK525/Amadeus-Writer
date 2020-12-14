@@ -329,8 +329,8 @@ void MainFrame::saveFile(wxCommandEvent& event) {
         int progressSize = saved[0] + saved[1] + saved[2] + saved[3] + 1;
         int currentSize = 0;
 
-        wxProgressDialog* progress = new wxProgressDialog("Saving project...", currentDocFile, progressSize, this,
-            wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_SMOOTH);
+        wxProgressDialog progress("Saving project...", currentDocFile, progressSize, this,
+            wxPD_AUTO_HIDE | wxPD_SMOOTH);
 
         string imagePath;
 
@@ -347,7 +347,7 @@ void MainFrame::saveFile(wxCommandEvent& event) {
                 if (it->second.image.IsOk())
                     it->second.image.SaveFile(imagePath);
 
-            progress->Update(currentSize++);
+            progress.Update(currentSize++);
         }
 
         // Same as the above but for locations.
@@ -361,21 +361,21 @@ void MainFrame::saveFile(wxCommandEvent& event) {
                 if (it->second.image.IsOk())
                     it->second.image.SaveFile(imagePath);
 
-            progress->Update(currentSize++);
+            progress.Update(currentSize++);
         }
 
         // Same as the above but for chapters. No images are saved.
         for (auto it = chaptersNote->chapters.begin(); it != chaptersNote->chapters.end(); it++) {
             it->save(file);
-            progress->Update(currentSize++);
+            progress.Update(currentSize++);
         }
 
-        outline->saveOutline(file, currentSize, progress);
+        file.close();
 
         // This calls the save function of the outline page, which saves the corkboard
         // elements and will futurely save other stuff.
 
-        file.close();
+        outline->saveOutline(currentSize, &progress);
 
         // The following lines are just notes written in each directory warning the
         // user not to move stuff around, since that'll break the save system (which
@@ -396,8 +396,6 @@ void MainFrame::saveFile(wxCommandEvent& event) {
         note.open(currentDocFolder + "\\Files\\!!!Note!!!.txt", std::ios::out);
         note << "Please, NEVER change the names of the files nor move them somewhere else!";
         note.close();
-
-        progress->Destroy();
 
         // Sets save state as saved, updates the current title and all that good stuff.
         // The attribute "saveDialog" currently does nothing.
@@ -917,9 +915,9 @@ void MainFrame::loadFile() {
         progress->Update(currentSize++);
     }
 
-    outline->loadOutline(file, currentSize, progress);
-
     file.close();
+
+    outline->loadOutline(currentSize, progress);
 
     release->updateContent();
 

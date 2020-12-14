@@ -345,14 +345,18 @@ unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 BEGIN_EVENT_TABLE(OutlineFilesPanel, wxSplitterWindow)
 
 EVT_DATAVIEW_SELECTION_CHANGED(TREE_Files, OutlineFilesPanel::onSelectionChanged)
+
 EVT_DATAVIEW_ITEM_EDITING_STARTED(TREE_Files, OutlineFilesPanel::onEditingStart)
 EVT_DATAVIEW_ITEM_EDITING_DONE(TREE_Files, OutlineFilesPanel::onEditingEnd)
+
 EVT_DATAVIEW_ITEM_BEGIN_DRAG(TREE_Files, OutlineFilesPanel::onBeginDrag)
 EVT_DATAVIEW_ITEM_DROP_POSSIBLE(TREE_Files, OutlineFilesPanel::onDropPossible)
 EVT_DATAVIEW_ITEM_DROP(TREE_Files, OutlineFilesPanel::onDrop)
 
 EVT_TOOL(TOOL_NewFile, OutlineFilesPanel::newFile)
 EVT_TOOL(TOOL_NewFolder, OutlineFilesPanel::newFolder)
+
+EVT_TIMER(TIMER_OutlineFiles, OutlineFilesPanel::timerEvent)
 
 END_EVENT_TABLE()
 
@@ -388,7 +392,8 @@ OutlineFilesPanel::OutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(parent
 	outlineTreeModel = new OutlineTreeModel();
 	files->AssociateModel(outlineTreeModel.get());
 
-	wxDataViewTextRenderer* tr = new wxDataViewTextRenderer();
+	wxDataViewTextRenderer* tr = new wxDataViewTextRenderer(wxDataViewTextRenderer::GetDefaultType(),
+		wxDATAVIEW_CELL_EDITABLE);
 	wxDataViewColumn* column0 = new wxDataViewColumn("Files", tr, 0, FromDIP(200), wxALIGN_LEFT);
 	files->AppendColumn(column0);
 
@@ -402,6 +407,8 @@ OutlineFilesPanel::OutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(parent
 	leftPanel->SetMinSize(wxSize(20, -1));
 
 	SplitVertically(leftPanel, content, 200);
+
+	timer.Start(10000);
 }
 
 void OutlineFilesPanel::init() {
@@ -667,6 +674,10 @@ void OutlineFilesPanel::onRightDownDataView(wxMouseEvent& event) {
 	wxDataViewItem item;
 	wxDataViewColumn* col;
 	files->HitTest(event.GetPosition(), item, col);
+
+	if (!item.IsOk())
+		return;
+
 	files->Select(item);
 
 	wxMenu menu;
@@ -693,9 +704,9 @@ void OutlineFilesPanel::onMenuDataView(wxCommandEvent& event) {
 
 		if (dlg.ShowModal() == wxID_OK) {
 			outlineTreeModel->setItemForegroundColour(sel, dlg.GetColourData().GetColour());
+			MainFrame::isSaved = false;
 		}
 		
-		MainFrame::isSaved = false;
 		break;
 	}
 	case MENU_ChangeItemBgColour:
@@ -706,9 +717,9 @@ void OutlineFilesPanel::onMenuDataView(wxCommandEvent& event) {
 
 		if (dlg.ShowModal() == wxID_OK) {
 			outlineTreeModel->setItemBackgroundColour(sel, dlg.GetColourData().GetColour());
+			MainFrame::isSaved = false;
 		}
 
-		MainFrame::isSaved = false;
 		break;
 	}
 	case MENU_DeleteItem:
@@ -721,9 +732,12 @@ void OutlineFilesPanel::onMenuDataView(wxCommandEvent& event) {
 void OutlineFilesPanel::onSelectionChanged(wxDataViewEvent& event) {
 	wxDataViewItem item(event.GetItem());
 
+	saveCurrentBuffer();
+
 	if (outlineTreeModel->IsContainer(item)) {
 		content->Clear();
 		content->Disable();
+		curNode = nullptr;
 		return;
 	}
 
@@ -731,6 +745,7 @@ void OutlineFilesPanel::onSelectionChanged(wxDataViewEvent& event) {
 
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)(item.GetID());
 
+	node->m_buffer.SetBasicStyle(basicAttr);
 	content->GetBuffer() = node->m_buffer;
 	content->Refresh();
 	wxDataViewItem parentItem(node->getParent());
@@ -738,16 +753,28 @@ void OutlineFilesPanel::onSelectionChanged(wxDataViewEvent& event) {
 	if (outlineTreeModel->isCharacters(parentItem) ||
 		outlineTreeModel->isLocations(parentItem))
 		content->SetEditable(false);
+	else
+		content->SetEditable(true);
+
+	content->GetBuffer().Invalidate(wxRICHTEXT_ALL);
+	content->RecreateBuffer();
+	content->Refresh();
+
+	curNode = node;
 }
 
 void OutlineFilesPanel::onEditingStart(wxDataViewEvent& event) {
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)event.GetId();
-	string name = node->m_title;
+	wxDataViewItem item = event.GetItem();
+	wxDataViewItem parent = outlineTreeModel->GetParent(item);
 
-	if (name == "Research" || name == "Characters" || name == "Locations")
+	if (outlineTreeModel->isResearch(item) || outlineTreeModel->isCharacters(item) ||
+		outlineTreeModel->isLocations(item) || outlineTreeModel->isCharacters(parent) ||
+		outlineTreeModel->isLocations(parent)) {
 		event.Veto();
+		return;
+	}
 	else
-		files->EditItem(event.GetItem(), files->GetColumn(0));
+		event.Allow();
 }
 
 void OutlineFilesPanel::onEditingEnd(wxDataViewEvent& WXUNUSED(event)) {}
@@ -847,10 +874,10 @@ void OutlineFilesPanel::onDrop(wxDataViewEvent& event) {
 
 	} else {
 		if (nodeForDnD->getParent() != node) {
-			if (index == -1)
-				outlineTreeModel->reparent(nodeForDnD, nullptr);
+			if (index > 3)
+				outlineTreeModel->reparent(nodeForDnD, nullptr, index -3);
 			else
-				outlineTreeModel->reparent(nodeForDnD, nullptr, index - 3);
+				outlineTreeModel->reparent(nodeForDnD, nullptr);
 		}
 	}
 
@@ -861,7 +888,23 @@ void OutlineFilesPanel::OnUnsplit(wxWindow* WXUNUSED(window)) {
 	SplitVertically(leftPanel, content, 200);
 }
 
-wxXmlNode* OutlineFilesPanel::getNodeWithChildren(wxDataViewItem& item) {
+void OutlineFilesPanel::timerEvent(wxTimerEvent& event) {
+	saveCurrentBuffer();
+}
+
+void OutlineFilesPanel::saveCurrentBuffer() {
+	if (curNode) {
+		if (curNode->m_buffer.GetText() != content->GetBuffer().GetText()) {
+			curNode->m_buffer = content->GetBuffer();
+			MainFrame::isSaved = false;
+		}
+	}
+}
+
+wxXmlNode* OutlineFilesPanel::serializeFolder(wxDataViewItem& item) {
+	if (!outlineTreeModel->IsContainer(item))
+		return nullptr;
+
 	wxDataViewItemAttr attr;
 	outlineTreeModel->GetAttr(item, 0, attr);
 
@@ -878,24 +921,36 @@ wxXmlNode* OutlineFilesPanel::getNodeWithChildren(wxDataViewItem& item) {
 
 	for (int i = 0; i < children.GetCount(); i++) {
 		if (outlineTreeModel->IsContainer(children[i])) {
-			child = getNodeWithChildren(children[i]);
+			child = serializeFolder(children[i]);
 			node->AddChild(child);
 			continue;
 		}
 
-		wxString buffer;
-		wxStringOutputStream stream(&buffer);
-		outlineTreeModel->getBuffer(children[i]).SaveFile(stream, wxRICHTEXT_TYPE_XML);
-
-		name = outlineTreeModel->getTitle(children[i]);
-		outlineTreeModel->GetAttr(children[i], 0, attr);
-		child = new wxXmlNode(node, wxXML_ELEMENT_NODE, "File");
-		child->AddAttribute("name", name);
-		child->AddAttribute("bg-color", attr.GetBackgroundColour().GetAsString());
-		child->AddAttribute("fg-color", attr.GetColour().GetAsString());
-		
-		child->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", buffer));
+		node->AddChild(serializeFile(children[i]));
 	}
+
+	return node;
+}
+
+wxXmlNode* OutlineFilesPanel::serializeFile(wxDataViewItem& item) {
+	if (outlineTreeModel->IsContainer(item))
+		return nullptr;
+
+	wxXmlNode* node = new wxXmlNode(wxXML_ELEMENT_NODE, "File");
+	
+	wxDataViewItemAttr attr;
+	string name = outlineTreeModel->getTitle(item);
+	outlineTreeModel->GetAttr(item, 0, attr);
+
+	node->AddAttribute("name", name);
+	node->AddAttribute("bg-color", attr.GetBackgroundColour().GetAsString());
+	node->AddAttribute("fg-color", attr.GetColour().GetAsString());
+
+	wxString buffers;
+	wxStringOutputStream stream(&buffers);
+	outlineTreeModel->getBuffer(item).SaveFile(stream, wxRICHTEXT_TYPE_XML);
+
+	node->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", buffers));
 
 	return node;
 }
@@ -937,7 +992,8 @@ void OutlineFilesPanel::deserializeNode(wxXmlNode* node, wxDataViewItem& parent)
 bool OutlineFilesPanel::save() {
 	if (!fs::exists(MainFrame::currentDocFolder))
 		return false;
-
+	
+	saveCurrentBuffer();
 	wxXmlDocument doc;
 	
 	wxXmlNode* root = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "AO-Files");
@@ -947,7 +1003,10 @@ bool OutlineFilesPanel::save() {
 	outlineTreeModel->GetChildren(wxDataViewItem(nullptr), rootFiles);
 
 	for (int i = 0; i < rootFiles.GetCount(); i++) {
-		root->AddChild(getNodeWithChildren(rootFiles[i]));
+		if (outlineTreeModel->IsContainer(rootFiles[i]))
+			root->AddChild(serializeFolder(rootFiles[i]));
+		else
+			root->AddChild(serializeFile(rootFiles[i]));
 	}
 
 	if (doc.Save(MainFrame::currentDocFolder + "\\Files\\Outline\\OutlineFiles.xml"))
@@ -958,6 +1017,7 @@ bool OutlineFilesPanel::save() {
 
 bool OutlineFilesPanel::load() {
 	clearAll();
+	init();
 
 	wxXmlDocument doc;
 	if (!doc.Load(MainFrame::currentDocFolder + "\\Files\\Outline\\OutlineFiles.xml")) {
@@ -967,24 +1027,18 @@ bool OutlineFilesPanel::load() {
 
 	wxDataViewItemArray array;
 	array.Add(wxDataViewItem(outlineTreeModel->getResearchNode()));
-	array.Add(wxDataViewItem(outlineTreeModel->getCharactersNode()));
-	array.Add(wxDataViewItem(outlineTreeModel->getLocationsNode()));
+	//array.Add(wxDataViewItem(outlineTreeModel->getCharactersNode()));
+	//array.Add(wxDataViewItem(outlineTreeModel->getLocationsNode()));
 	
 	wxXmlNode* child = doc.GetRoot()->GetChildren();
 	wxXmlNode* child2 = child->GetChildren();
-
-	for (int i = 0; i < 3; i++) {
-		while (child2) {
-			deserializeNode(child2, array[i]);
-			child2 = child2->GetNext();
-		}
-
-		if (child)
-			child = child->GetNext();
-
-		if (child)
-			child2 = child->GetChildren();
+	
+	while (child2) {
+		deserializeNode(child2, wxDataViewItem(outlineTreeModel->getResearchNode()));
+		child2 = child2->GetNext();
 	}
+
+	child = child->GetNext()->GetNext()->GetNext();
 
 	while (child) {
 		deserializeNode(child, wxDataViewItem(nullptr));

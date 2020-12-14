@@ -27,8 +27,8 @@ public:
 public:
     Outline(wxWindow* parent);
 
-    void saveOutline(std::ofstream& out, int& progress, wxProgressDialog* dialog);
-    void loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog);
+    void saveOutline(int& progress, wxProgressDialog* dialog);
+    void loadOutline(int& progress, wxProgressDialog* dialog);
 
     Corkboard* getCorkboard() { return corkboard; }
     OutlineFilesPanel* getOutlineFiles() { return files; }
