@@ -869,6 +869,7 @@ void OutlineFilesPanel::onDrop(wxDataViewEvent& event) {
 				}
 			}
 
+			MainFrame::isSaved = false;
 		} else
 			wxLogMessage("Dropped on item. Nothing happened.");
 
@@ -879,6 +880,8 @@ void OutlineFilesPanel::onDrop(wxDataViewEvent& event) {
 			else
 				outlineTreeModel->reparent(nodeForDnD, nullptr);
 		}
+
+		MainFrame::isSaved = false;
 	}
 
 	files->Select(itemForDnD);
