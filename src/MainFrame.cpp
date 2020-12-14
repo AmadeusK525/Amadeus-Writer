@@ -8,6 +8,7 @@
 #include "Corkboard.h"
 
 #include <wx\richtext\richtextxml.h>
+#include <wx\richtext\richtexthtml.h>
 
 #include "wxmemdbg.h"
 
@@ -223,6 +224,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     }
 
     wxRichTextBuffer::AddHandler(new wxRichTextXMLHandler);
+    wxRichTextBuffer::AddHandler(new wxRichTextHTMLHandler);
 
     // Initialize maximized
     Maximize();

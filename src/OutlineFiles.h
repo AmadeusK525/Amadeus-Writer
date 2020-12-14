@@ -21,6 +21,8 @@ private:
     OutlineTreeModelNode* m_parent = nullptr;
     OulineTreeModelNodePtrArray   m_children{};
 
+    wxDataViewItemAttr attr{};
+
 public:     // public to avoid getters/setters
     wxRichTextBuffer m_buffer{};
     string m_title{};
@@ -33,21 +35,41 @@ public:
         m_title = title;
         m_buffer = buffer;
 
+        if (m_parent)
+            m_parent->append(this);
+
         m_isContainer = false;
+
+        attr.SetBackgroundColour(wxColour(250, 250, 250));
+        attr.SetColour(wxColour(20, 20, 20));
+        attr.SetBold(false);
+        attr.SetItalic(false);
+        attr.SetStrikethrough(false);
     }
 
     OutlineTreeModelNode(OutlineTreeModelNode* parent,
         const wxString& branch) {
- 
         m_parent = parent;
         m_title = branch;
+
+        if (m_parent)
+            m_parent->append(this);
+
         m_isContainer = true;
+
+        attr.SetBackgroundColour(wxColour(250, 250, 250));
+        attr.SetColour(wxColour(20, 20, 20));
+        attr.SetBold(false);
+        attr.SetItalic(false);
+        attr.SetStrikethrough(false);
     }
 
     ~OutlineTreeModelNode() {
         for (size_t i = 0; i < m_children.GetCount(); i++) {
             OutlineTreeModelNode* child = m_children[i];
-            delete child;
+
+            if (child)
+                delete child;
         }
     }
 
@@ -91,11 +113,15 @@ public:
     OulineTreeModelNodePtrArray& getChildren() {
         return m_children;
     }
-    
+
     OutlineTreeModelNode* getChild(unsigned int n) {
         return m_children.Item(n);
     }
-    
+
+    wxDataViewItemAttr& getAttr() {
+        return attr;
+    }
+
     void insert(OutlineTreeModelNode* child, unsigned int n) {
         m_children.Insert(child, n);
     }
@@ -136,7 +162,10 @@ public:
         }
     }
 
+    void init();
+
     wxString getTitle(const wxDataViewItem& item) const;
+    wxRichTextBuffer& getBuffer(const wxDataViewItem& item) const;
 
     OulineTreeModelNodePtrArray& getCharacters() {
         return m_characters->getChildren();
@@ -144,6 +173,10 @@ public:
 
     OulineTreeModelNodePtrArray& getLocations() {
         return m_locations->getChildren();
+    }
+
+    OutlineTreeModelNode* getResearchNode() {
+        return m_research;
     }
 
     OutlineTreeModelNode* getCharactersNode() {
@@ -160,18 +193,25 @@ public:
     wxDataViewItem addToCharacters(const string& title);
     wxDataViewItem addToLocations(const string& title);
 
+    wxDataViewItem appendFile(wxDataViewItem& parent, const string& name, const wxRichTextBuffer& buffer);
+    wxDataViewItem appendFolder(wxDataViewItem& parent, const string& name);
+
     bool isResearch(wxDataViewItem& item);
     bool isCharacters(wxDataViewItem& item);
     bool isLocations(wxDataViewItem& item);
 
-    //void appendContainer(OutlineTreeModelNode* node);
-
     void deleteItem(const wxDataViewItem& item);
 
+    void setItemBackgroundColour(wxDataViewItem& item, wxColour& colour);
+    void setItemForegroundColour(wxDataViewItem& item, wxColour& colour);
+    void setItemFont(wxDataViewItem& item, wxFont& font);
+        
     bool reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent);
     bool reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent, int n);
 
     bool reposition(wxDataViewItem& item, int n);
+
+    void clear();
 
     // implementation of base class virtuals to define model
     virtual unsigned int GetColumnCount() const {
@@ -191,6 +231,7 @@ public:
     virtual unsigned int GetChildren(const wxDataViewItem& parent,
         wxDataViewItemArray& array) const;
     virtual bool IsContainer(const wxDataViewItem& item) const;
+    virtual bool GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const;
 };
 
 class OutlineFilesPanel : public wxSplitterWindow {
@@ -218,15 +259,24 @@ public:
     void deleteCharacter(Character& character);
     void deleteLocation(Location& location);
 
+    void newFile(wxCommandEvent& event);
+    void newFolder(wxCommandEvent& event);
+
+    void onKeyDownDataView(wxKeyEvent& event);
+    void onRightDownDataView(wxMouseEvent& event);
+
     void onSelectionChanged(wxDataViewEvent& event);
     void onEditingStart(wxDataViewEvent& event);
     void onEditingEnd(wxDataViewEvent& event);
+    
     void onBeginDrag(wxDataViewEvent& event);
     void onDropPossible(wxDataViewEvent& event);
     void onDrop(wxDataViewEvent& event);
 
     virtual void OnUnsplit(wxWindow* window);
 
+    wxXmlNode* getNodeWithChildren(wxDataViewItem& item);
+    void deserializeNode(wxXmlNode* node, wxDataViewItem& parent);
     bool save();
     bool load();
 
@@ -236,7 +286,10 @@ public:
 };
 
 enum {
-    TREE_Files
+    TREE_Files,
+
+    TOOL_NewFile,
+    TOOL_NewFolder
 };
 
 #endif
