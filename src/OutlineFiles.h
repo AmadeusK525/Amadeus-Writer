@@ -162,8 +162,6 @@ public:
         }
     }
 
-    void init();
-
     wxString getTitle(const wxDataViewItem& item) const;
     wxRichTextBuffer& getBuffer(const wxDataViewItem& item) const;
 
@@ -262,8 +260,11 @@ public:
     void newFile(wxCommandEvent& event);
     void newFolder(wxCommandEvent& event);
 
+    void deleteItem(wxDataViewItem& item);
+
     void onKeyDownDataView(wxKeyEvent& event);
     void onRightDownDataView(wxMouseEvent& event);
+    void onMenuDataView(wxCommandEvent& event);
 
     void onSelectionChanged(wxDataViewEvent& event);
     void onEditingStart(wxDataViewEvent& event);
@@ -289,7 +290,9 @@ enum {
     TREE_Files,
 
     TOOL_NewFile,
-    TOOL_NewFolder
+    TOOL_NewFolder,
+
+    MENU_DeleteItem
 };
 
 #endif
