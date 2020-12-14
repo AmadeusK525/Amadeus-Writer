@@ -232,6 +232,19 @@ public:
     virtual bool GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const;
 };
 
+enum {
+    TREE_Files,
+
+    TOOL_NewFile,
+    TOOL_NewFolder,
+
+    MENU_ChangeItemFgColour,
+    MENU_ChangeItemBgColour,
+    MENU_DeleteItem,
+
+    TIMER_OutlineFiles
+};
+
 class OutlineFilesPanel : public wxSplitterWindow {
 private:
     wxPanel* leftPanel = nullptr;
@@ -242,10 +255,13 @@ private:
     wxToolBar* filesTB = nullptr, * contentTB = nullptr;
 
     wxObjectDataPtr<OutlineTreeModel> outlineTreeModel;
+
+    OutlineTreeModelNode* curNode = nullptr;
+
     OutlineTreeModelNode* nodeForDnD = nullptr;
     wxDataViewItem itemForDnD{};
 
-    std::string current{ "" };
+    wxTimer timer{ this, TIMER_OutlineFiles };
 
 public:
     OutlineFilesPanel(wxWindow* parent);
@@ -276,7 +292,11 @@ public:
 
     virtual void OnUnsplit(wxWindow* window);
 
-    wxXmlNode* getNodeWithChildren(wxDataViewItem& item);
+    void timerEvent(wxTimerEvent& event);
+    void saveCurrentBuffer();
+
+    wxXmlNode* serializeFolder(wxDataViewItem& item);
+    wxXmlNode* serializeFile(wxDataViewItem& item);
     void deserializeNode(wxXmlNode* node, wxDataViewItem& parent);
     bool save();
     bool load();
@@ -284,17 +304,6 @@ public:
     void clearAll();
 
     DECLARE_EVENT_TABLE()
-};
-
-enum {
-    TREE_Files,
-
-    TOOL_NewFile,
-    TOOL_NewFolder,
-
-    MENU_ChangeItemFgColour,
-    MENU_ChangeItemBgColour,
-    MENU_DeleteItem
 };
 
 #endif

@@ -61,8 +61,8 @@ public:
 
     void exportToImage(wxBitmapType type);
 
-    void save(std::ofstream& out);
-    void load(std::ifstream& in);
+    void save();
+    void load();
     
     CorkboardCanvas* getCanvas() { return canvas; }
 

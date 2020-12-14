@@ -126,28 +126,35 @@ void Corkboard::setToolMode(ToolMode mode) {
 }
 
 void Corkboard::exportToImage(wxBitmapType type) {
+	string name = "Corkboard";
+	string dummyName = name;
+
+	int i = 0;
+	while (fs::exists(MainFrame::currentDocFolder + "\\Images\\Corkboard\\" + dummyName)) {
+		dummyName = dummyName + " (" + std::to_string(i++) + ")";
+	}
+
+	name = dummyName;
+
     switch (type) {
     case wxBITMAP_TYPE_PNG:
         canvas->SaveCanvasToImage(MainFrame::currentDocFolder +
-            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".png",
+            "\\Images\\Corkboard\\" + name + ".png",
             type, true, 1.0);
         break;
     case wxBITMAP_TYPE_BMP:
         canvas->SaveCanvasToImage(MainFrame::currentDocFolder +
-            "\\Images\\Corkboard\\Corkboard " + std::to_string(currentImage++) + ".bmp",
+            "\\Images\\Corkboard\\" + name  + ".bmp",
             type, true, 1.0);
         break;
     }
 }
 
-void Corkboard::save(std::ofstream& out) {
-    out.write((char*)&currentImage, sizeof(int));
+void Corkboard::save() {
     canvas->SaveCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
 }
 
-void Corkboard::load(std::ifstream& in) {
-    in.read((char*)&currentImage, sizeof(int));
-
+void Corkboard::load() {
     if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml")) {
         canvas->LoadCanvas(MainFrame::currentDocFolder + "\\Files\\Outline\\Corkboard Canvas.xml");
         canvas->SetScale(0.1);
