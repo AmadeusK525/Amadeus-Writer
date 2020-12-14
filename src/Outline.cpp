@@ -27,6 +27,7 @@ Outline::Outline(wxWindow* parent) : wxNotebook(parent, -1) {
 void Outline::saveOutline(std::ofstream& out, int& progress, wxProgressDialog* dialog) {
     corkboard->save(out);
     dialog->Update(progress++);
+    files->save();
 }
 
 void Outline::loadOutline(std::ifstream& in, int& progress, wxProgressDialog* dialog) {
