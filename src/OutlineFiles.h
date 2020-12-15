@@ -198,6 +198,8 @@ public:
     bool isCharacters(wxDataViewItem& item);
     bool isLocations(wxDataViewItem& item);
 
+    bool isDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
+
     void deleteItem(const wxDataViewItem& item);
 
     void setItemBackgroundColour(wxDataViewItem& item, wxColour& colour);
