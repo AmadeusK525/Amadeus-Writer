@@ -8,9 +8,7 @@
 BEGIN_EVENT_TABLE(ElementsNotebook, wxNotebook)
 
 EVT_LIST_ITEM_FOCUSED(LIST_CharList, ElementsNotebook::charSelected)
-//EVT_LIST_ITEM_DESELECTED(LIST_CharList, ElementsNotebook::charDeselected)
 EVT_LIST_ITEM_SELECTED(LIST_LocList, ElementsNotebook::locSelected)
-//EVT_LIST_ITEM_DESELECTED(LIST_LocList, ElementsNotebook::locDeselected)
 
 EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, ElementsNotebook::onCharRightClick)
 EVT_LIST_ITEM_ACTIVATED(LIST_CharList, ElementsNotebook::openChar)

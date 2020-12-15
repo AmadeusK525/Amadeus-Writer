@@ -9,6 +9,7 @@
 
 #include <wx\richtext\richtextxml.h>
 #include <wx\richtext\richtexthtml.h>
+#include <wx/tglbtn.h>
 
 #include "wxmemdbg.h"
 
@@ -47,11 +48,11 @@ EVT_MENU(TOOL_FullScreen, MainFrame::fullScreen)
 
 EVT_MENU(wxID_ABOUT, MainFrame::about)
 
-EVT_BUTTON(BUTTON_Overview, MainFrame::onOverview)
-EVT_BUTTON(BUTTON_Elem, MainFrame::onElements)
-EVT_BUTTON(BUTTON_Chapters, MainFrame::onChapters)
-EVT_BUTTON(BUTTON_Release, MainFrame::onRelease)
-EVT_BUTTON(BUTTON_Outline, MainFrame::onOutline)
+EVT_BUTTON(BUTTON_Overview, MainFrame::onMainButtons)
+EVT_BUTTON(BUTTON_Elem, MainFrame::onMainButtons)
+EVT_BUTTON(BUTTON_Chapters, MainFrame::onMainButtons)
+EVT_BUTTON(BUTTON_Release, MainFrame::onMainButtons)
+EVT_BUTTON(BUTTON_Outline, MainFrame::onMainButtons)
 
 EVT_SEARCH(TOOL_Search, MainFrame::search)
 
@@ -88,57 +89,71 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     wxFont font(wxFontInfo(16).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
 
+    for (int i = 0; i < 5; i++)
+        buttons.push_back(nullptr);
+
     // These are the buttons located on the left pane.
-    wxButton* button0 = new wxButton(pageSel, BUTTON_Overview, "Overview");
-    button0->SetFont(font);
-    button0->SetBackgroundColour(wxColour(255, 255, 255));
-    wxButton* button1 = new wxButton(pageSel, BUTTON_Elem, "Elements");
-    button1->SetFont(font);
-    button1->SetBackgroundColour(wxColour(255, 255, 255));
-    wxButton* button2 = new wxButton(pageSel, BUTTON_Chapters, "Chapters");
-    button2->SetFont(font);
-    button2->SetBackgroundColour(wxColour(255, 255, 255));
-    wxButton* button3 = new wxButton(pageSel, BUTTON_Outline, "Outline");
-    button3->SetFont(font);
-    button3->SetBackgroundColour(wxColour(255, 255, 255));
-    wxButton* button4 = new wxButton(pageSel, BUTTON_Release, "Release");
-    button4->SetFont(font);
-    button4->SetBackgroundColour(wxColour(255, 255, 255));
+    buttons[0] = new wxButton(pageSel, BUTTON_Overview, "Overview");
+    buttons[0]->SetFont(font);
+    buttons[0]->SetBackgroundColour(wxColour(220, 255, 255));
+    
+    buttons[1] = new wxButton(pageSel, BUTTON_Elem, "Elements");
+    buttons[1]->SetFont(font);
+    buttons[1]->SetBackgroundColour(wxColour(255, 255, 255));
+    
+    buttons[2] = new wxButton(pageSel, BUTTON_Chapters, "Chapters");
+    buttons[2]->SetFont(font);
+    buttons[2]->SetBackgroundColour(wxColour(255, 255, 255));
+    
+    buttons[3] = new wxButton(pageSel, BUTTON_Outline, "Outline");
+    buttons[3]->SetFont(font);
+    buttons[3]->SetBackgroundColour(wxColour(255, 255, 255));
+    
+    buttons[4] = new wxButton(pageSel, BUTTON_Release, "Release");
+    buttons[4]->SetFont(font);
+    buttons[4]->SetBackgroundColour(wxColour(255, 255, 255));
 
     buttonSizer = new wxBoxSizer(wxVERTICAL);
-    buttonSizer->Add(button0, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-    buttonSizer->Add(button1, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-    buttonSizer->Add(button2, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-    buttonSizer->Add(button3, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-    buttonSizer->Add(button4, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
+    buttonSizer->Add(buttons[0], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
+    buttonSizer->Add(buttons[1], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
+    buttonSizer->Add(buttons[2], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
+    buttonSizer->Add(buttons[3], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
+    buttonSizer->Add(buttons[4], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
     buttonSizer->AddStretchSpacer(1);
 
     pageSel->SetSizer(buttonSizer);
 
-    overview = new wxPanel(mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN);
+    mainBook = new wxSimplebook(mainPanel);
+    mainBook->SetBackgroundColour(wxColour(40, 40, 40));
+
+    overview = new wxPanel(mainBook);
     overview->SetBackgroundColour(wxColour(20, 20, 20));
     overview->Show();
 
     //Setting up notebook Elements page
-    elements = new ElementsNotebook(mainPanel, this);
+    elements = new ElementsNotebook(mainBook, this);
     elements->Hide();
 
-    chaptersNote = new ChaptersNotebook(mainPanel);
+    chaptersNote = new ChaptersNotebook(mainBook);
     chaptersNote->Hide();
 
-    release = new Release(mainPanel);
+    outline = new Outline(mainBook);
+    outline->Hide();
+
+    release = new Release(mainBook);
     release->Hide();
 
-    outline = new Outline(mainPanel);
-    outline->Hide();
+    mainBook->ShowNewPage(overview);
+    mainBook->ShowNewPage(elements);
+    mainBook->ShowNewPage(chaptersNote);
+    mainBook->ShowNewPage(outline);
+    mainBook->ShowNewPage(release);
+
+    mainBook->ChangeSelection(0);
 
     mainSizer = new wxBoxSizer(wxHORIZONTAL);
     mainSizer->Add(pageSel, wxSizerFlags(1).Expand());
-    mainSizer->Add(overview, wxSizerFlags(4).Expand());
-    mainSizer->Add(elements, wxSizerFlags(4).Expand());
-    mainSizer->Add(chaptersNote, wxSizerFlags(4).Expand());
-    mainSizer->Add(release, wxSizerFlags(4).Expand());
-    mainSizer->Add(outline, wxSizerFlags(4).Expand());
+    mainSizer->Add(mainBook, wxSizerFlags(1).Expand());
 
     // Create menus and such
     mainMenu = new wxMenuBar();
@@ -555,106 +570,78 @@ void MainFrame::notSaved(wxCommandEvent& event) {
     event.Skip();
 }
 
+void MainFrame::onMainButtons(wxCommandEvent& event) {
+    int page;
+    bool showToolBar;
+    bool showSearch;
+
+    switch (event.GetId()) {
+    case BUTTON_Overview:
+        page = 0;
+        showToolBar = true;
+        showSearch = false;
+        break;
+    case BUTTON_Elem:
+        page = 1;
+        showToolBar = true;
+        showSearch = true;
+        break;
+    case BUTTON_Chapters:
+        page = 2;
+        showToolBar = true;
+        showSearch = false;
+        break;
+    case BUTTON_Outline:
+        page = 3;
+        showToolBar = true;
+        showSearch = false;
+        break;
+    case BUTTON_Release:
+        page = 4;
+        showToolBar = false;
+        showSearch = false;
+        break;
+    default:
+        page = 0;
+        showToolBar = true;
+        showSearch = false;
+        break;
+    }
+
+    for (int i = 0; i < 5; i++) {
+        if (i == page)
+            buttons[i]->SetBackgroundColour(wxColour(220, 255, 255));
+        else
+            buttons[i]->SetBackgroundColour(wxColour(255, 255, 255));
+    }
+
+    mainBook->ChangeSelection(page);
+    toolBar->Show(showToolBar);
+    elements->searchBar->Show(showSearch);
+    ver->Layout();
+}
+
 // These 5 "on******" functions are for swithcing the viewable panel when the buttons on the left pane are clicked;
 // They simply remove the shown panel from the sizer, add the requested one and
 // Hide everything else. The search bar is only shown when the Elements page is visible.
-void MainFrame::onOverview(wxCommandEvent& event) {
-    if (!overview->IsShown()) {
-        elements->Hide();
-        chaptersNote->Hide();
-        release->Hide();
-        outline->Hide();
-        overview->Show();
-
-        elements->searchBar->Hide();
-
-        if (ver->GetItemCount() == 1) {
-            ver->Insert(0, toolBar, wxSizerFlags(0).Expand());
-            toolBar->Show();
-        }
-
-    }
-
-    ver->Layout();
-    event.Skip();
+void MainFrame::onUpdateOverview(wxUpdateUIEvent& event) {
+    event.Check(mainBook->GetSelection() == 0);
 }
 
-void MainFrame::onElements(wxCommandEvent& event) {
-
-    if (!elements->IsShown()) {
-        overview->Hide();
-        chaptersNote->Hide();
-        release->Hide();
-        outline->Hide();
-        elements->Show();
-
-        if (ver->GetItemCount() == 1) {
-            ver->Insert(0, toolBar, wxSizerFlags(0).Expand());
-            toolBar->Show();
-        }
-
-        elements->searchBar->Show();
-    }
-
-    ver->Layout();
-    event.Skip();
+void MainFrame::onUpdateElements(wxUpdateUIEvent& event) {
+    event.Check(mainBook->GetSelection() == 1);
 }
 
-void MainFrame::onChapters(wxCommandEvent& event) {
-    if (!chaptersNote->IsShown()) {
-        overview->Hide();
-        release->Hide();
-        elements->Hide();
-        outline->Hide();
-        chaptersNote->Show();
-        elements->searchBar->Hide();
-
-        if (ver->GetItemCount() == 1) {
-            ver->Insert(0, toolBar, wxSizerFlags(0).Expand());
-            toolBar->Show();
-        }
-    }
-
-    ver->Layout();
-    event.Skip();
+void MainFrame::onUpdateChapters(wxUpdateUIEvent& event) {
+    event.Check(mainBook->GetSelection() == 2);
 }
 
-void MainFrame::onRelease(wxCommandEvent& event) {
-    if (!release->IsShown()) {
-        overview->Hide();
-        elements->Hide();
-        chaptersNote->Hide();
-        outline->Hide();
-        release->Show();
-        elements->searchBar->Hide();
-
-        if (ver->GetItemCount() == 2) {
-            ver->Remove(0);
-            toolBar->Hide();
-        }
-    }
-
-    ver->Layout();
-    event.Skip();
+void MainFrame::onUpdateOutline(wxUpdateUIEvent& event) {
+    event.Check(mainBook->GetSelection() == 3);
 }
 
-void MainFrame::onOutline(wxCommandEvent& event) {
-    if (!outline->IsShown()) {
-        overview->Hide();
-        release->Hide();
-        elements->Hide();
-        chaptersNote->Hide();
-        outline->Show();
-        elements->searchBar->Hide();
-
-        if (ver->GetItemCount() == 1) {
-            ver->Insert(0, toolBar, wxSizerFlags(0).Expand());
-            toolBar->Show();
-        }
-    }
-
-    ver->Layout();
-    event.Skip();
+void MainFrame::onUpdateRelease(wxUpdateUIEvent& event) {
+    event.Check(mainBook->GetSelection() == 4);
 }
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.

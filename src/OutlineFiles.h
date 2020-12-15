@@ -98,12 +98,12 @@ public:
     }
 
     void reposition(int n) {
-        if (m_parent)
+        /*if (m_parent)
             m_parent->getChildren().Remove(this);
         else
             return;
 
-        m_parent->getChildren().Insert(this, n);
+        m_parent->getChildren().Insert(this, n);*/
     }
 
     OutlineTreeModelNode* getParent() {

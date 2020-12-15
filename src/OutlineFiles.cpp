@@ -292,7 +292,7 @@ bool OutlineTreeModel::IsContainer(const wxDataViewItem& item) const {
 
 bool OutlineTreeModel::GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-
+	
 	if (node)
 		attr = node->getAttr();
 

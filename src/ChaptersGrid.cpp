@@ -2,12 +2,14 @@
 #include "ChapterWriter.h"
 #include "MainFrame.h"
 
+#include "MyApp.h"
+
 #include "wxmemdbg.h"
 
 ChaptersGrid::ChaptersGrid(wxWindow* parent): wxScrolledWindow(parent, wxID_ANY,
     wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN | wxTAB_TRAVERSAL) {
     this->parent = (ChaptersNotebook*)parent;
-    mainFrame = (MainFrame*)(parent->GetParent()->GetParent());
+    mainFrame = (MainFrame*)(wxGetApp().GetTopWindow());
 
     sizer = new wxWrapSizer(wxHORIZONTAL);
     sizer->SetMinSize(wxSize(300, 300));
