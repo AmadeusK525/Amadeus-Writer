@@ -97,6 +97,21 @@ bool OutlineTreeModel::isLocations(wxDataViewItem& item) {
 	return node == m_locations;
 }
 
+bool OutlineTreeModel::isDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
+	wxDataViewItem& parent = GetParent(descendant);
+
+	bool is = false;
+
+	while (parent.IsOk()) {
+		if (parent.GetID() == item.GetID())
+			is = true;
+
+		parent = GetParent(parent);
+	}
+
+	return is;
+}
+
 void OutlineTreeModel::deleteItem(const wxDataViewItem& item) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	if (!node)      // happens if item.IsOk()==false
@@ -820,27 +835,8 @@ void OutlineFilesPanel::onDrop(wxDataViewEvent& event) {
 	wxDataViewItem item(event.GetItem());
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 
-	int ipc = 0;
-	int cpc = 0;
-
-	OutlineTreeModelNode* dummy = node;
-
-	while (dummy) {
-		dummy = dummy->getParent();
-		ipc++;
-	}
-
-	dummy = nodeForDnD;
-
-	while (dummy) {
-		dummy = dummy->getParent();
-		cpc++;
-	}
-
-	bool isChild = ipc > cpc;
-
 	if (nodeForDnD == node || outlineTreeModel->isCharacters(item) ||
-		outlineTreeModel->isLocations(item) || isChild)
+		outlineTreeModel->isLocations(item) || outlineTreeModel->isDescendant(itemForDnD, item))
 		return;
 
 	if (event.GetDataFormat() != wxRichTextBufferDataObject::GetRichTextBufferFormatId()) {
