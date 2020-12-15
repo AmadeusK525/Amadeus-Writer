@@ -2,13 +2,10 @@
 #define CHAPTERWRITER_H_
 #pragma once
 
-#include <wx\frame.h>
-#include <wx\wrapsizer.h>
-#include <wx\button.h>
-#include <wx\panel.h>
-#include <wx\listctrl.h>
-#include <wx\textctrl.h>
+#include <wx\wx.h>
+#include <wx\richtext\richtextctrl.h>
 #include <wx\aui\aui.h>
+#include <wx\wrapsizer.h>
 
 #include <string>
 #include <list>

@@ -3,15 +3,8 @@
 
 #pragma once
 
-#include <wx/menu.h>
-#include <wx/textctrl.h>
-#include <wx/srchctrl.h>
-#include <wx/listctrl.h>
-#include <wx/notebook.h>
-#include <wx/gdicmn.h>
-#include <wx/aboutdlg.h>
-#include <wx/simplebook.h>
-#include <wx/progdlg.h>
+#include <wx\wx.h>
+#include <wx\simplebook.h>
 
 #include <map>
 #include <string>
@@ -20,10 +13,6 @@
 
 #include "Character.h"
 #include "Location.h"
-#include "ElementsNotebook.h"
-#include "Release.h"
-#include "ChaptersNotebook.h"
-#include "Outline.h"
 
 #include "boost/filesystem.hpp"
 
@@ -31,9 +20,9 @@ using std::string;
 using std::vector;
 
 // Declaring some classes which will be used later. If I don't, there are some issues when including them.
-class MainToolBar;
-class ChaptersGrid;
+class ElementsNotebook;
 class ChaptersNotebook;
+class Outline;
 class Release;
 
 class MainFrame : public wxFrame {
@@ -91,8 +80,8 @@ public:
 public:
     MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 
-    ChaptersNotebook* getNote() { return chaptersNote; }
-    Outline* getOutline() { return outline; }
+    ChaptersNotebook* getNote();
+    Outline* getOutline();
 
     // These three go together when saving / loading. setLast writes to a file the path to the most recently
     // worked on project. When booting up the application, the getLast function will
@@ -128,12 +117,6 @@ public:
     void notSaved(wxCommandEvent& event);
 
     void onMainButtons(wxCommandEvent& event);
-   
-    void onUpdateOverview(wxUpdateUIEvent& event);
-    void onUpdateElements(wxUpdateUIEvent& event);
-    void onUpdateChapters(wxUpdateUIEvent& event);
-    void onUpdateOutline(wxUpdateUIEvent& event);
-    void onUpdateRelease(wxUpdateUIEvent& event);
 
     void search(wxCommandEvent& event);
 

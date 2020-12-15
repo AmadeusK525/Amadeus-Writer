@@ -1,15 +1,20 @@
 #include "MainFrame.h"
-#include "ChapterCreator.h"
+
+#include "ElementsNotebook.h"
 #include "ChaptersGrid.h"
-#include "CharacterCreator.h"
-#include "CharacterShowcase.h"
-#include "LocationCreator.h"
-#include "Chapter.h"
+#include "Outline.h"
 #include "Corkboard.h"
+#include "Release.h"
+
+#include "ChapterCreator.h"
+#include "CharacterCreator.h"
+#include "LocationCreator.h"
+
+#include "Chapter.h"
 
 #include <wx\richtext\richtextxml.h>
 #include <wx\richtext\richtexthtml.h>
-#include <wx/tglbtn.h>
+#include <wx\aboutdlg.h>
 
 #include "wxmemdbg.h"
 
@@ -131,7 +136,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     overview->Show();
 
     //Setting up notebook Elements page
-    elements = new ElementsNotebook(mainBook, this);
+    elements = new ElementsNotebook(mainBook);
     elements->Hide();
 
     chaptersNote = new ChaptersNotebook(mainBook);
@@ -248,6 +253,14 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     Show();
 }
 
+ChaptersNotebook* MainFrame::getNote() {
+    return chaptersNote;
+}
+
+Outline* MainFrame::getOutline() {
+    return outline;
+}
+
 void MainFrame::newFile(wxCommandEvent& event) {
     // Checking whether the project is saved before starting a new one.
     if (!isSaved) {
@@ -341,9 +354,8 @@ void MainFrame::saveFile(wxCommandEvent& event) {
         int progressSize = saved[0] + saved[1] + saved[2] + saved[3] + 1;
         int currentSize = 0;
 
-        wxProgressDialog progress("Saving project...", currentDocFile, progressSize, this,
-            wxPD_AUTO_HIDE | wxPD_SMOOTH);
-
+        wxProgressDialog progress("Saving project...", currentDocFile, progressSize, this);
+        progress.Show(false);
         string imagePath;
 
         // This for loop calls the save funtion of each character and saves it, besides

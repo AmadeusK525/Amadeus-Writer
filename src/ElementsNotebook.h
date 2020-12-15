@@ -1,16 +1,20 @@
-#pragma once
-#include "wx/notebook.h"
-#include "wx/listctrl.h"
-#include "wx/srchctrl.h"
-#include "wx/editlbox.h"
-#include "wx/wx.h"
+#ifndef ELEMENTSNOTEBOOK_H_
+#define ELEMENTSNOTEBOOK_H_
 
-#include "CharacterShowcase.h"
-#include "LocationShowcase.h"
+#pragma once
+
+#include <wx\wx.h>
+#include <wx\listctrl.h>
+#include <wx\srchctrl.h>
+
+#include "MainFrame.h"
+
+class CharacterShowcase;
+class LocationShowcase;
 
 class ElementsNotebook : public wxNotebook {
 private:
-    wxWindow* parent = nullptr;
+    MainFrame* mainFrame = nullptr;
 
 public:
     CharacterShowcase* charShow = nullptr;
@@ -22,7 +26,7 @@ public:
     wxArrayString locNames{};
 
 public:
-    ElementsNotebook(wxWindow* parent, wxWindow* main);
+    ElementsNotebook(wxWindow* parent);
 
     void onCharRightClick(wxListEvent& event);
     void editCharName(wxListEvent& event);
@@ -70,3 +74,5 @@ enum {
     LISTMENU_EditLoc,
     LISTMENU_DeleteLoc
 };
+
+#endif

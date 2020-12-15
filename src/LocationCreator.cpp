@@ -1,5 +1,9 @@
 #include "LocationCreator.h"
 
+#include "ElementsNotebook.h"
+#include "LocationShowcase.h"
+
+#include "Outline.h"
 #include "OutlineFiles.h"
 
 #include "wxmemdbg.h"

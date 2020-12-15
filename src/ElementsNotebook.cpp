@@ -1,7 +1,13 @@
 #include "ElementsNotebook.h"
-#include "MainFrame.h"
+
 #include "CharacterCreator.h"
 #include "LocationCreator.h"
+#include "CharacterShowcase.h"
+#include "LocationShowcase.h"
+
+#include "Outline.h"
+#include "OutlineFiles.h"
+#include "MyApp.h"
 
 #include "wxmemdbg.h"
 
@@ -29,8 +35,8 @@ wxListView* ElementsNotebook::charList;
 wxListView* ElementsNotebook::locList;
 wxListView* ElementsNotebook::itemsList;
 
-ElementsNotebook::ElementsNotebook(wxWindow* parent, wxWindow* main) : wxNotebook(parent, NOTEBOOK_THIS) {
-    this->parent = main;
+ElementsNotebook::ElementsNotebook(wxWindow* parent) : wxNotebook(parent, NOTEBOOK_THIS) {
+    this->mainFrame = (MainFrame*)wxGetApp().GetTopWindow();
 
     //Setting up first notebook tab with a characters list
     wxPanel* charFrame = new wxPanel(this, PANEL_Char);
@@ -111,13 +117,13 @@ void ElementsNotebook::editChar(wxCommandEvent& WXUNUSED(event)) {
         it++;
     }
 
-    CharacterCreator* edit = new CharacterCreator(parent, this);
+    CharacterCreator* edit = new CharacterCreator(mainFrame, this);
     edit->SetTitle("Edit character - " + it->second.name);
     edit->CenterOnParent();
 
     edit->setEdit(&it->second);
 
-    parent->Enable(false);
+    mainFrame->Enable(false);
 }
 
 void ElementsNotebook::editCharName(wxListEvent& event) {
@@ -132,10 +138,10 @@ void ElementsNotebook::editCharName(wxListEvent& event) {
 void ElementsNotebook::deleteChar(wxCommandEvent& WXUNUSED(event)) {
     long sel = charList->GetFirstSelected();
 
-    wxMessageDialog* deleteCheck = new wxMessageDialog(parent, "Are you sure you want to delete '" + charList->GetItemText(sel) + "'?",
+    wxMessageDialog deleteCheck(mainFrame, "Are you sure you want to delete '" + charList->GetItemText(sel) + "'?",
         "Delete character", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
-
-    if (deleteCheck->ShowModal() == wxID_YES) {
+ 
+    if (deleteCheck.ShowModal() == wxID_YES) {
         charList->DeleteItem(sel);
 
         auto it = MainFrame::characters.begin();
@@ -145,6 +151,7 @@ void ElementsNotebook::deleteChar(wxCommandEvent& WXUNUSED(event)) {
 
         charNames.Remove(it->second.name);
 
+        mainFrame->getOutline()->getOutlineFiles()->deleteCharacter(it->second);
         MainFrame::characters.erase(it);
         MainFrame::saved[0] = MainFrame::characters.size();
 
@@ -170,19 +177,19 @@ void ElementsNotebook::editLoc(wxCommandEvent& WXUNUSED(event)) {
         it++;
     }
 
-    LocationCreator* edit = new LocationCreator(parent, this);
+    LocationCreator* edit = new LocationCreator(mainFrame, this);
     edit->SetTitle("Edit location - " + it->second.name);
     edit->CenterOnParent();
 
     edit->setEdit(&it->second);
 
-    parent->Enable(false);
+    mainFrame->Enable(false);
 }
 
 void ElementsNotebook::deleteLoc(wxCommandEvent& WXUNUSED(event)) {
     long sel = locList->GetFirstSelected();
 
-    wxMessageDialog* deleteCheck = new wxMessageDialog(parent, "Are you sure you want to delete '" + locList->GetItemText(sel) + "'?",
+    wxMessageDialog* deleteCheck = new wxMessageDialog(mainFrame, "Are you sure you want to delete '" + locList->GetItemText(sel) + "'?",
         "Delete character", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
 
     if (deleteCheck->ShowModal() == wxID_YES) {
@@ -195,6 +202,7 @@ void ElementsNotebook::deleteLoc(wxCommandEvent& WXUNUSED(event)) {
 
         locNames.Remove(it->second.name);
 
+        mainFrame->getOutline()->getOutlineFiles()->deleteLocation(it->second);
         MainFrame::locations.erase(it);
         MainFrame::saved[1] = MainFrame::locations.size();
 

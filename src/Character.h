@@ -3,12 +3,19 @@
 #include <wx/bitmap.h>
 
 #include <string>
+#include <vector>
 #include <fstream>
 
+using std::string;
+using std::vector;
+using std::pair;
+
 struct Character {
-    std::string name{}, sex{}, age{}, nat{},
+    string name{}, sex{}, age{}, nat{},
         height{}, nick{}, role{}, appearance{},
         personality{}, backstory{};
+
+    vector<pair<string, string>> custom{};
 
     unsigned int chapters = 0;
 

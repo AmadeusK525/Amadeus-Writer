@@ -762,7 +762,7 @@ void OutlineFilesPanel::onSelectionChanged(wxDataViewEvent& event) {
 
 	node->m_buffer.SetBasicStyle(basicAttr);
 	content->GetBuffer() = node->m_buffer;
-	content->Refresh();
+
 	wxDataViewItem parentItem(node->getParent());
 
 	if (outlineTreeModel->isCharacters(parentItem) ||

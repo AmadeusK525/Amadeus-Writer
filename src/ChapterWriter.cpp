@@ -1,9 +1,11 @@
 #include "ChapterWriter.h"
 #include "Chapter.h"
 
-#include <wx/popupwin.h>
-#include <wx/listbox.h>
-#include <wx/richtext/richtextxml.h>
+#include "ElementsNotebook.h"
+
+#include <wx\popupwin.h>
+#include <wx\listbox.h>
+#include <wx\richtext\richtextxml.h>
 
 #include "wxmemdbg.h"
 
