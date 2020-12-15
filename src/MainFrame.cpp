@@ -95,7 +95,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     // These are the buttons located on the left pane.
     buttons[0] = new wxButton(pageSel, BUTTON_Overview, "Overview");
     buttons[0]->SetFont(font);
-    buttons[0]->SetBackgroundColour(wxColour(220, 255, 255));
+    buttons[0]->SetBackgroundColour(wxColour(180, 120, 120));
     
     buttons[1] = new wxButton(pageSel, BUTTON_Elem, "Elements");
     buttons[1]->SetFont(font);
@@ -251,17 +251,16 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 void MainFrame::newFile(wxCommandEvent& event) {
     // Checking whether the project is saved before starting a new one.
     if (!isSaved) {
-        wxMessageDialog* saveBefore = new wxMessageDialog(this, "Do you want to save before creating a new project?",
+        wxMessageDialog saveBefore(this, "Do you want to save before creating a new project?",
             "New project", wxYES_NO | wxCANCEL | wxYES_DEFAULT | wxICON_EXCLAMATION);
 
-        switch (saveBefore->ShowModal()) {
-        case wxID_YES: {
+        switch (saveBefore.ShowModal()) {
+        case wxID_YES:
             saveFile(event);
             break;
-        }
 
         case wxID_NO:
-            saveBefore->Destroy();
+            saveBefore.Destroy();
             break;
 
         case wxID_CANCEL:
@@ -303,16 +302,16 @@ void MainFrame::newFile(wxCommandEvent& event) {
 }
 
 void MainFrame::openFile(wxCommandEvent& event) {
-    wxFileDialog* openDialog = new wxFileDialog(this, "Choose a file to open", wxEmptyString, wxEmptyString,
+    wxFileDialog openDialog(this, "Choose a file to open", wxEmptyString, wxEmptyString,
         "Amadeus Project files (*.amp)|*.amp",
         wxFD_OPEN, wxDefaultPosition);
 
-    if (openDialog->ShowModal() == wxID_OK) {
-        currentDocFile = openDialog->GetPath();
-        currentTitle = openDialog->GetFilename();
+    if (openDialog.ShowModal() == wxID_OK) {
+        currentDocFile = openDialog.GetPath();
+        currentTitle = openDialog.GetFilename();
         previousTitle = currentTitle;
 
-        currentDocFolder = openDialog->GetDirectory();
+        currentDocFolder = openDialog.GetDirectory();
         previousDocFolder = currentDocFolder;
 
         currentImagePath = currentDocFolder + "\\Images";
@@ -320,8 +319,6 @@ void MainFrame::openFile(wxCommandEvent& event) {
 
         setLast();
     }
-
-    openDialog->Destroy();
 }
 
 void MainFrame::saveFile(wxCommandEvent& event) {
@@ -425,18 +422,18 @@ void MainFrame::saveFile(wxCommandEvent& event) {
 }
 
 void MainFrame::saveFileAs(wxCommandEvent& event) {
-    wxFileDialog* saveDialog = new wxFileDialog(this, "Save file as...", wxEmptyString, wxEmptyString,
+    wxFileDialog saveDialog(this, "Save file as...", wxEmptyString, wxEmptyString,
         "Amadeus Project files (*.amp)|*.amp",
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
-    if (saveDialog->ShowModal() == wxID_OK) {
-        currentTitle = saveDialog->GetFilename();
-        currentDocFile = saveDialog->GetPath();
+    if (saveDialog.ShowModal() == wxID_OK) {
+        currentTitle = saveDialog.GetFilename();
+        currentDocFile = saveDialog.GetPath();
         currentDocFolder = currentDocFile;
         currentDocFolder.erase(currentDocFolder.size() - 4, string::npos);
 
         if (currentDocFile == previousDocFile) {
-            currentDocFolder = saveDialog->GetDirectory();
+            currentDocFolder = saveDialog.GetDirectory();
         } else {
             fs::create_directory(currentDocFolder);
 
@@ -455,9 +452,6 @@ void MainFrame::saveFileAs(wxCommandEvent& event) {
 
         saveFile(event);
     }
-
-    if (saveDialog)
-        delete saveDialog;
 
     event.Skip();
 }
@@ -479,10 +473,10 @@ void MainFrame::exportCorkboard(wxCommandEvent& event) {
 void MainFrame::onQuit(wxCloseEvent& event) {
 
     if (event.CanVeto() && !isSaved) {
-        wxMessageDialog* saveBefore = new wxMessageDialog(this, "Project has been modified and not saved.\nDo you want to save before quitting?",
+        wxMessageDialog saveBefore(this, "Project has been modified and not saved.\nDo you want to save before quitting?",
             "Quit", wxYES_NO | wxCANCEL | wxYES_DEFAULT | wxICON_EXCLAMATION);
 
-        switch (saveBefore->ShowModal()) {
+        switch (saveBefore.ShowModal()) {
         case wxID_YES: {
             saveFile(wxCommandEvent());
 
@@ -491,19 +485,14 @@ void MainFrame::onQuit(wxCloseEvent& event) {
             } else {
                 event.Veto();
             }
-
-            saveBefore->Destroy();
-
             break;
         }
 
         case wxID_NO:
-            saveBefore->Destroy();
             Destroy();
             break;
 
         case wxID_CANCEL:
-            saveBefore->Destroy();
             break;
         }
     } else {
@@ -519,18 +508,18 @@ void MainFrame::editTitle(wxCommandEvent& event) {
     string temp(currentTitle);
     temp.erase(currentTitle.size() - 4, string::npos);
 
-    wxTextEntryDialog* newTitle = new wxTextEntryDialog(this, "Change project name - '" +
+    wxTextEntryDialog newTitle(this, "Change project name - '" +
         temp + "':", "New title", "Teste");
 
-    if (newTitle->ShowModal() == wxID_OK) {
-        currentTitle = newTitle->GetValue() + ".amp";
+    if (newTitle.ShowModal() == wxID_OK) {
+        currentTitle = newTitle.GetValue() + ".amp";
         this->SetTitle(currentTitle);
 
         fs::rename(currentDocFile, currentDocFolder + "\\" + currentTitle);
         currentDocFile = currentDocFolder + "\\" + currentTitle;
 
         currentDocFolder.erase(currentDocFolder.size() - previousTitle.size() + 4, string::npos);
-        currentDocFolder += newTitle->GetValue();
+        currentDocFolder += newTitle.GetValue();
 
         fs::rename(previousDocFolder, currentDocFolder);
 
@@ -610,7 +599,7 @@ void MainFrame::onMainButtons(wxCommandEvent& event) {
 
     for (int i = 0; i < 5; i++) {
         if (i == page)
-            buttons[i]->SetBackgroundColour(wxColour(220, 255, 255));
+            buttons[i]->SetBackgroundColour(wxColour(180, 120, 120));
         else
             buttons[i]->SetBackgroundColour(wxColour(255, 255, 255));
     }
@@ -619,29 +608,6 @@ void MainFrame::onMainButtons(wxCommandEvent& event) {
     toolBar->Show(showToolBar);
     elements->searchBar->Show(showSearch);
     ver->Layout();
-}
-
-// These 5 "on******" functions are for swithcing the viewable panel when the buttons on the left pane are clicked;
-// They simply remove the shown panel from the sizer, add the requested one and
-// Hide everything else. The search bar is only shown when the Elements page is visible.
-void MainFrame::onUpdateOverview(wxUpdateUIEvent& event) {
-    event.Check(mainBook->GetSelection() == 0);
-}
-
-void MainFrame::onUpdateElements(wxUpdateUIEvent& event) {
-    event.Check(mainBook->GetSelection() == 1);
-}
-
-void MainFrame::onUpdateChapters(wxUpdateUIEvent& event) {
-    event.Check(mainBook->GetSelection() == 2);
-}
-
-void MainFrame::onUpdateOutline(wxUpdateUIEvent& event) {
-    event.Check(mainBook->GetSelection() == 3);
-}
-
-void MainFrame::onUpdateRelease(wxUpdateUIEvent& event) {
-    event.Check(mainBook->GetSelection() == 4);
 }
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
