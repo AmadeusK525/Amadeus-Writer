@@ -10,7 +10,7 @@
 #include <wx/notebook.h>
 #include <wx/gdicmn.h>
 #include <wx/aboutdlg.h>
-#include <wx/toolbook.h>
+#include <wx/simplebook.h>
 #include <wx/progdlg.h>
 
 #include <map>
@@ -44,10 +44,13 @@ private:
     wxPanel* overview = nullptr;
     ElementsNotebook* elements = nullptr;
     ChaptersNotebook* chaptersNote = nullptr;
-    Release* release = nullptr;
     Outline* outline = nullptr;
+    Release* release = nullptr;
 
+    vector<wxButton*> buttons;
     wxPanel* pageSel = nullptr;
+
+    wxSimplebook* mainBook = nullptr;
 
     wxBoxSizer* holderSizer = nullptr;
     bool isFrameFullScreen = false;
@@ -59,7 +62,7 @@ private:
     wxMenu* helpMenu = nullptr;
 
     //These are paths used for loading stuff, saving, etc.
-    string currentDocFile = "";
+    string currentDocFile = "dummy";
     string previousDocFile = "dummy";
     string previousDocFolder = "dummy";
     string currentImagePath = "";
@@ -124,11 +127,13 @@ public:
 
     void notSaved(wxCommandEvent& event);
 
-    void onOverview(wxCommandEvent& event);
-    void onElements(wxCommandEvent& event);
-    void onChapters(wxCommandEvent& event);
-    void onRelease(wxCommandEvent& event);
-    void onOutline(wxCommandEvent& event);
+    void onMainButtons(wxCommandEvent& event);
+   
+    void onUpdateOverview(wxUpdateUIEvent& event);
+    void onUpdateElements(wxUpdateUIEvent& event);
+    void onUpdateChapters(wxUpdateUIEvent& event);
+    void onUpdateOutline(wxUpdateUIEvent& event);
+    void onUpdateRelease(wxUpdateUIEvent& event);
 
     void search(wxCommandEvent& event);
 
