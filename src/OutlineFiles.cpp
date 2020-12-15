@@ -619,7 +619,7 @@ void OutlineFilesPanel::newFile(wxCommandEvent& event) {
 	if (outlineTreeModel->isCharacters(sel) || outlineTreeModel->isLocations(sel))
 		return;
 
-	outlineTreeModel->appendFile(sel, "New file", wxRichTextBuffer());
+	files->Select(outlineTreeModel->appendFile(sel, "New file", wxRichTextBuffer()));
 	MainFrame::isSaved = false;
 }
 
@@ -634,7 +634,7 @@ void OutlineFilesPanel::newFolder(wxCommandEvent& event) {
 	if (outlineTreeModel->isCharacters(sel) || outlineTreeModel->isLocations(sel))
 		return;
 
-	outlineTreeModel->appendFolder(sel, "New folder");
+	files->Select(outlineTreeModel->appendFolder(sel, "New folder"));
 	MainFrame::isSaved = false;
 }
 
