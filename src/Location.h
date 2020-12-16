@@ -6,15 +6,17 @@
 #include <string>
 
 struct Location {
-    std::string name{}, background{}, natural{}, architecture{},
-        type{}, economy{}, culture{}, importance{};
+    std::string name{""}, background{""}, natural{""}, architecture{""},
+        type{""}, economy{""}, culture{""}, importance{""};
+
+    vector<pair<string, string>> custom{};
 
     int chapters = 0;
 
     bool hasAppeared = false;
     int firstChap = 0;
 
-    wxImage image;
+    wxImage image{};
 
     void save(std::ofstream& out);
     void load(std::ifstream& in);
