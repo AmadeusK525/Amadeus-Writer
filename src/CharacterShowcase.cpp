@@ -141,24 +141,25 @@ void CharacterShowcase::setData(Character& character) {
     backstory->SetValue(character.backstory);
 
     int nol;
+    wxSize size(-1, 80);
 
     nol = appearance->GetNumberOfLines();
     if (nol > 5)
-        vertical->SetItemMinSize(6, wxSize(-1, nol * appearance->GetCharHeight() + 5));
+        appearance->SetMinSize(wxSize(-1, nol * appearance->GetCharHeight() + 5));
     else
-        vertical->SetItemMinSize(6, wxSize(-1, 80));
+        appearance->SetMinSize(size);
 
     nol = personality->GetNumberOfLines();
     if (nol > 5)
-        vertical->SetItemMinSize(8, wxSize(-1, nol * personality->GetCharHeight() + 5));
+        personality->SetMinSize(wxSize(-1, nol * personality->GetCharHeight() + 5));
     else
-        vertical->SetItemMinSize(8, wxSize(-1, 80));
+        personality->SetMinSize(size);
 
     nol = backstory->GetNumberOfLines();
     if (nol > 5)
-        vertical->SetItemMinSize(10, wxSize(-1, nol * backstory->GetCharHeight() + 5));
+        backstory->SetMinSize(wxSize(-1, nol * backstory->GetCharHeight() + 5));
     else
-        vertical->SetItemMinSize(10, wxSize(-1, 80));
+        backstory->SetMinSize(size);
 
     image->Show(image->setImage(character.image));
 
@@ -184,7 +185,7 @@ void CharacterShowcase::setData(Character& character) {
             label->SetBackgroundColour(wxColour(180, 180, 180));
 
             wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
-                wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
+                size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
             content->SetFont(wxFontInfo(9));
             content->SetBackgroundColour(wxColour(225, 225, 225));
             content->SetCursor(wxCURSOR_DEFAULT);
@@ -199,17 +200,17 @@ void CharacterShowcase::setData(Character& character) {
         custom[i].second->SetLabel(character.custom[i].second);
     }
 
-    vertical->Layout();
     vertical->FitInside(this);
-    
+
     for (auto it : custom) {
         nol = it.second->GetNumberOfLines();
         if (nol > 5) {
-         //   vertical->SetItemMinSize(i, FromDIP(wxSize(-1, nol * content->GetCharHeight() + 5)));
+            it.second->SetMinSize(wxSize(-1, nol * it.second->GetCharHeight() + 5));
         } else {
-         //   vertical->SetItemMinSize(i, wxSize(-1, 80));
+            it.second->SetMinSize(wxSize(-1, 80));
         }
     }
 
+    vertical->FitInside(this);
     Refresh();
 }
