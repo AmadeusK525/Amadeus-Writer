@@ -11,11 +11,11 @@ using std::vector;
 using std::pair;
 
 struct Character {
-    string name{}, sex{}, age{}, nat{},
-        height{}, nick{}, role{}, appearance{},
-        personality{}, backstory{};
+    string name{""}, sex{""}, age{""}, nat{""},
+        height{""}, nick{""}, role{""}, appearance{""},
+        personality{""}, backstory{""};
 
-    vector<pair<string, string>> custom{};
+    vector<pair<string, string>> custom{0};
 
     unsigned int chapters = 0;
 

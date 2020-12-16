@@ -67,9 +67,10 @@ public:
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
     vector<string> getValues();
+    vector<pair<string, string>> getCustom();
 
     void setEdit(Character* character);
-    void edit(wxCommandEvent& event);
+    void doEdit(wxCommandEvent& event);
 
     void addCustomAttr(wxCommandEvent& event);
     void removeCustomAttr(wxCommandEvent& event);
