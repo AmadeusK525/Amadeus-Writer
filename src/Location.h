@@ -1,12 +1,19 @@
+#ifndef LOCATION_H_
+#define LOCATION_H_
 #pragma once
 
 #include "wx/bitmap.h"
 
 #include <fstream>
 #include <string>
+#include <vector>
+
+using std::vector;
+using std::string;
+using std::pair;
 
 struct Location {
-    std::string name{""}, background{""}, natural{""}, architecture{""},
+    string name{""}, background{""}, natural{""}, architecture{""},
         type{""}, economy{""}, culture{""}, importance{""};
 
     vector<pair<string, string>> custom{};
@@ -22,3 +29,4 @@ struct Location {
     void load(std::ifstream& in);
 };
 
+#endif

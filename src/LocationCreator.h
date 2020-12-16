@@ -12,15 +12,16 @@ private:
     ElementsNotebook* notebook = nullptr;
 
     wxPanel* nlPanel1 = nullptr,
-        * nlPanel2 = nullptr;
-    ImagePanel* nlImagePanel = nullptr;
+        * nlPanel3 = nullptr;
+    wxScrolledWindow* nlPanel2 = nullptr;
 
+    ImagePanel* nlImagePanel = nullptr;
     wxImage nlImage;
 
     wxTextCtrl* nlName = nullptr,
         * nlHBack = nullptr,
         * nlNatural = nullptr,
-        * nlArquitecture = nullptr,
+        * nlArchitecture = nullptr,
         * nlEconomy = nullptr,
         * nlCulture = nullptr;
 
