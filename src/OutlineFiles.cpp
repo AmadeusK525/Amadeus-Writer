@@ -437,9 +437,7 @@ void OutlineFilesPanel::init() {
 		appendLocation(it->second);
 }
 
-void OutlineFilesPanel::appendCharacter(Character& character) {
-	wxDataViewItem item = outlineTreeModel->addToCharacters(character.name);
-	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
+void OutlineFilesPanel::generateCharacterBuffer(Character& character, wxRichTextBuffer& buffer) {
 	buffer.SetBasicStyle(content->GetBasicStyle());
 	buffer.BeginSuppressUndo();
 
@@ -514,12 +512,19 @@ void OutlineFilesPanel::appendCharacter(Character& character) {
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.backstory, nullptr);
 	}
 
+	for (auto it : character.custom) {
+		if (it.second != "") {
+			buffer.BeginBold();
+			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n" + it.first + ":\n", nullptr);
+			buffer.EndBold();
+			buffer.InsertTextWithUndo(buffer.GetText().size(), it.second, nullptr);
+		}
+	}
+
 	buffer.SetName(character.name);
 }
 
-void OutlineFilesPanel::appendLocation(Location& location) {
-	wxDataViewItem item = outlineTreeModel->addToLocations(location.name);
-	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
+void OutlineFilesPanel::generateLocationBuffer(Location& location, wxRichTextBuffer& buffer) {
 	buffer.SetBasicStyle(content->GetBasicStyle());
 	buffer.BeginSuppressUndo();
 
@@ -542,7 +547,7 @@ void OutlineFilesPanel::appendLocation(Location& location) {
 	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nImportance: ", nullptr);
 	buffer.EndBold();
 	buffer.InsertTextWithUndo(buffer.GetText().size(), location.importance, nullptr);
-	
+
 	buffer.BeginBold();
 	buffer.InsertTextWithUndo(buffer.GetText().size(), "\nSpace type: ", nullptr);
 	buffer.EndBold();
@@ -584,6 +589,20 @@ void OutlineFilesPanel::appendLocation(Location& location) {
 	}
 
 	buffer.SetName(location.name);
+}
+
+void OutlineFilesPanel::appendCharacter(Character& character) {
+	wxDataViewItem item = outlineTreeModel->addToCharacters(character.name);
+	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
+
+	generateCharacterBuffer(character, buffer);
+}
+
+void OutlineFilesPanel::appendLocation(Location& location) {
+	wxDataViewItem item = outlineTreeModel->addToLocations(location.name);
+	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
+	
+	generateLocationBuffer(location, buffer);
 }
 
 void OutlineFilesPanel::deleteCharacter(Character& character) {
