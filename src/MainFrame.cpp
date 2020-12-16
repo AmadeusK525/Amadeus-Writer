@@ -100,7 +100,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     // These are the buttons located on the left pane.
     buttons[0] = new wxButton(pageSel, BUTTON_Overview, "Overview");
     buttons[0]->SetFont(font);
-    buttons[0]->SetBackgroundColour(wxColour(180, 120, 120));
+    buttons[0]->SetBackgroundColour(wxColour(130, 0, 0));
+    buttons[0]->SetForegroundColour(wxColour(245, 245, 245));
     
     buttons[1] = new wxButton(pageSel, BUTTON_Elem, "Elements");
     buttons[1]->SetFont(font);
@@ -610,10 +611,13 @@ void MainFrame::onMainButtons(wxCommandEvent& event) {
     }
 
     for (int i = 0; i < 5; i++) {
-        if (i == page)
-            buttons[i]->SetBackgroundColour(wxColour(180, 120, 120));
-        else
+        if (i == page) {
+            buttons[i]->SetBackgroundColour(wxColour(130, 0, 0));
+            buttons[i]->SetForegroundColour(wxColour(245, 245, 245));
+        } else {
             buttons[i]->SetBackgroundColour(wxColour(255, 255, 255));
+            buttons[i]->SetForegroundColour(wxColour(10, 10, 10));
+        }
     }
 
     mainBook->ChangeSelection(page);
