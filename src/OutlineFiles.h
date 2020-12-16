@@ -269,6 +269,8 @@ public:
     OutlineFilesPanel(wxWindow* parent);
     void init();
 
+    void generateCharacterBuffer(Character& character, wxRichTextBuffer& buffer);
+    void generateLocationBuffer(Location& location, wxRichTextBuffer& buffer);
     void appendCharacter(Character& character);
     void appendLocation(Location& location);
 
