@@ -1,39 +1,50 @@
-#pragma once
-
 #ifndef CHARACTERCREATOR_H_
 #define CHARACTERCREATOR_H_
 
-#include "wx/wx.h"
+#pragma once
+
+#include <wx\wx.h>
+#include <wx\scrolwin.h>
+
 #include "Character.h"
 #include "ImagePanel.h"
 #include "MainFrame.h"
 
 class CharacterCreator: public wxFrame {
 private:
-    wxPanel* ncPanel1 = nullptr;
-    wxPanel* ncPanel2 = nullptr;
-    ImagePanel* ncImagePanel = nullptr;
+    wxPanel* ncPanel1 = nullptr,
+        * ncPanel3 = nullptr;
+    wxScrolledWindow* ncPanel2 = nullptr;
 
+    ImagePanel* ncImagePanel = nullptr;
     wxImage ncImage;
 
-    wxTextCtrl* ncFullName = nullptr;
-    wxTextCtrl* ncNickname = nullptr;
-    wxTextCtrl* ncAge = nullptr;
-    wxTextCtrl* ncNationality = nullptr;
-    wxTextCtrl* ncHeight = nullptr;
-    wxTextCtrl* ncBackstory = nullptr;
-    wxTextCtrl* ncAppearance = nullptr;
-    wxTextCtrl* ncPersonality = nullptr;
+    wxStaticText* label8 = nullptr;
 
-    wxRadioButton* male = nullptr;
-    wxRadioButton* female = nullptr;
+    wxTextCtrl* ncFullName = nullptr,
+        * ncNickname = nullptr,
+        * ncAge = nullptr,
+        * ncNationality = nullptr,
+        * ncHeight = nullptr,
+        * ncBackstory = nullptr,
+        * ncAppearance = nullptr,
+        * ncPersonality = nullptr;
 
-    wxRadioButton* main = nullptr;
-    wxRadioButton* secon = nullptr;
+    vector<pair<wxTextCtrl*, wxTextCtrl*>> ncCustom{};
+    vector<wxButton*> minusButtons{};
+
+    wxRadioButton* ncMale = nullptr;
+    wxRadioButton* ncFemale = nullptr;
+
+    wxRadioButton* ncMain = nullptr;
+    wxRadioButton* ncSecon = nullptr;
 
     wxButton* ncBack = nullptr;
     wxButton* ncCancel = nullptr;
     wxButton* ncNext = nullptr;
+
+    wxButton* ncAddCustom = nullptr;
+    wxBoxSizer* ncp2Sizer = nullptr;
 
     wxButton* ncChooseImage = nullptr;
     wxButton* ncRemoveImage = nullptr;
@@ -55,12 +66,13 @@ public:
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-    std::vector<std::string> getValues();
+    vector<string> getValues();
 
     void setEdit(Character* character);
-    void nextEdit(wxCommandEvent& event);
-    void backEdit(wxCommandEvent& event);
     void edit(wxCommandEvent& event);
+
+    void addCustomAttr(wxCommandEvent& event);
+    void removeCustomAttr(wxCommandEvent& event);
 
     void cancel(wxCommandEvent& event);
     void next(wxCommandEvent& event);
@@ -77,12 +89,23 @@ public:
 enum {
     BUTTON_CharRemoveImage,
     BUTTON_CharImage,
+    
     BUTTON_CancelChar,
-    BUTTON_BackEdit,
-    BUTTON_BackChar,
+    
+    BUTTON_BackEdit1,
+    BUTTON_BackEdit2,
+    
+    BUTTON_BackChar1,
+    BUTTON_BackChar2,
+    
     BUTTON_CreateEdit,
-    BUTTON_NextEdit,
-    BUTTON_NextChar,
+    
+    BUTTON_NextEdit1,
+    BUTTON_NextEdit2,
+    
+    BUTTON_NextChar1,
+    BUTTON_NextChar2,
+    
     BUTTON_CreateChar
 };
 

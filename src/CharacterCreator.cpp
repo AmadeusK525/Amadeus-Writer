@@ -1,21 +1,17 @@
 #include "CharacterCreator.h"
+#include "MyApp.h"
 
+#include "ElementsNotebook.h"
+#include "CharacterShowcase.h"
+
+#include "Outline.h"
 #include "OutlineFiles.h"
 
-#include "wx/listctrl.h"
+#include <wx\listctrl.h>
 
 #include "wxmemdbg.h"
 
 BEGIN_EVENT_TABLE(CharacterCreator, wxFrame)
-
-EVT_BUTTON(BUTTON_CancelChar, CharacterCreator::cancel)
-EVT_BUTTON(BUTTON_CreateChar, CharacterCreator::create)
-EVT_BUTTON(BUTTON_NextChar, CharacterCreator::next)
-EVT_BUTTON(BUTTON_BackChar, CharacterCreator::back)
-
-EVT_BUTTON(BUTTON_NextEdit, CharacterCreator::nextEdit)
-EVT_BUTTON(BUTTON_BackEdit, CharacterCreator::backEdit)
-EVT_BUTTON(BUTTON_CreateEdit, CharacterCreator::edit)
 
 EVT_BUTTON(BUTTON_CharImage, CharacterCreator::setImage)
 EVT_BUTTON(BUTTON_CharRemoveImage, CharacterCreator::removeImage)
@@ -30,9 +26,9 @@ using std::vector;
 CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     long id, const string& label, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, label, pos, size
-    , style) {
+    , style | wxRESIZE_BORDER) {
 
-    this->mainFrame = (MainFrame*)parent;
+    this->mainFrame = (MainFrame*)wxGetApp().GetTopWindow();
     this->notebook = notebook;
     this->CenterOnParent();
 
@@ -44,11 +40,13 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 
     wxString choice[] = { "Male", "Female" };
 
+    wxFont font10(wxFontInfo(10));
+
     ncFullName = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(70, 10), wxSize(420, 25),
         wxBORDER_SIMPLE);
     ncFullName->SetBackgroundColour(wxColour(70, 70, 70));
     ncFullName->SetForegroundColour(wxColour(250, 250, 250));
-    ncFullName->SetFont(wxFont(wxFontInfo(10)));
+    ncFullName->SetFont(font10);
     wxStaticText* label1 = new wxStaticText(ncPanel1, wxID_ANY, "Name:", wxPoint(10, 10), wxSize(50, 25),
         wxNO_BORDER | wxALIGN_LEFT);
     label1->SetFont(wxFont(wxFontInfo(12)));
@@ -59,16 +57,16 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     firstLine->Add(label1, wxSizerFlags(0).Border(wxRIGHT, 10));
     firstLine->Add(ncFullName, wxSizerFlags(1));
 
-    male = new wxRadioButton(ncPanel1, wxID_ANY, "Male", wxPoint(60, 40), wxSize(60, 20), wxRB_GROUP);
-    male->SetFont(wxFont(wxFontInfo(10)));
-    male->SetForegroundColour(wxColour(245, 245, 245));
-    female = new wxRadioButton(ncPanel1, wxID_ANY, "Female", wxPoint(60, 60), wxSize(60, 20));
-    female->SetFont(wxFont(wxFontInfo(10)));
-    female->SetForegroundColour(wxColour(245, 245, 245));
+    ncMale = new wxRadioButton(ncPanel1, wxID_ANY, "Male", wxPoint(60, 40), wxSize(60, 20), wxRB_GROUP);
+    ncMale->SetFont(font10);
+    ncMale->SetForegroundColour(wxColour(245, 245, 245));
+    ncFemale = new wxRadioButton(ncPanel1, wxID_ANY, "Female", wxPoint(60, 60), wxSize(60, 20));
+    ncFemale->SetFont(font10);
+    ncFemale->SetForegroundColour(wxColour(245, 245, 245));
 
     wxBoxSizer* btnHolderSizer1 = new wxBoxSizer(wxVERTICAL);
-    btnHolderSizer1->Add(male, wxSizerFlags(0).Left());
-    btnHolderSizer1->Add(female, wxSizerFlags(0).Left());
+    btnHolderSizer1->Add(ncMale, wxSizerFlags(0).Left());
+    btnHolderSizer1->Add(ncFemale, wxSizerFlags(0).Left());
 
     wxStaticText* label2 = new wxStaticText(ncPanel1, wxID_ANY, "Sex:", wxPoint(10, 50), wxSize(40, 25),
         wxNO_BORDER | wxALIGN_LEFT);
@@ -80,7 +78,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
         wxBORDER_SIMPLE);
     ncAge->SetBackgroundColour(wxColour(70, 70, 70));
     ncAge->SetForegroundColour(wxColour(250, 250, 250));
-    ncAge->SetFont(wxFont(wxFontInfo(10)));
+    ncAge->SetFont(font10);
     wxStaticText* label3 = new wxStaticText(ncPanel1, wxID_ANY, "Age:", wxPoint(130, 50), wxSize(40, 25),
         wxNO_BORDER | wxALIGN_LEFT);
     label3->SetBackgroundColour(wxColour(40, 40, 40));
@@ -91,7 +89,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
         wxBORDER_SIMPLE);
     ncNationality->SetBackgroundColour(wxColour(70, 70, 70));
     ncNationality->SetForegroundColour(wxColour(250, 250, 250));
-    ncNationality->SetFont(wxFont(wxFontInfo(10)));
+    ncNationality->SetFont(font10);
     wxStaticText* label4 = new wxStaticText(ncPanel1, wxID_ANY, "Nationality: ", wxPoint(240, 50), wxSize(90, 25),
         wxNO_BORDER | wxALIGN_LEFT);
     label4->SetBackgroundColour(wxColour(40, 40, 40));
@@ -110,7 +108,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
         wxBORDER_SIMPLE);
     ncHeight->SetBackgroundColour(wxColour(70, 70, 70));
     ncHeight->SetForegroundColour(wxColour(250, 250, 250));
-    ncHeight->SetFont(wxFont(wxFontInfo(10)));
+    ncHeight->SetFont(font10);
     wxStaticText* label5 = new wxStaticText(ncPanel1, wxID_ANY, "Height: ", wxPoint(10, 90), wxSize(55, 25),
         wxNO_BORDER | wxALIGN_LEFT);
     label5->SetBackgroundColour(wxColour(40, 40, 40));
@@ -121,19 +119,19 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
         wxBORDER_SIMPLE);
     ncNickname->SetBackgroundColour(wxColour(70, 70, 70));
     ncNickname->SetForegroundColour(wxColour(250, 250, 250));
-    ncNickname->SetFont(wxFont(wxFontInfo(10)));
+    ncNickname->SetFont(font10);
     wxStaticText* label6 = new wxStaticText(ncPanel1, wxID_ANY, "Nickname: ", wxPoint(145, 90), wxSize(90, 25),
         wxNO_BORDER | wxALIGN_LEFT);
     label6->SetBackgroundColour(wxColour(40, 40, 40));
     label6->SetForegroundColour(wxColour(240, 240, 240));
     label6->SetFont(wxFont(wxFontInfo(12)));
 
-    main = new wxRadioButton(ncPanel1, wxID_ANY, "Main", wxPoint(395, 80), wxSize(60, 20), wxRB_GROUP);
-    main->SetFont(wxFont(wxFontInfo(10)));
-    main->SetForegroundColour(wxColour(245, 245, 245));
-    secon = new wxRadioButton(ncPanel1, wxID_ANY, "Secondary", wxPoint(395, 100), wxSize(100, 20));
-    secon->SetFont(wxFont(wxFontInfo(10)));
-    secon->SetForegroundColour(wxColour(245, 245, 245));
+    ncMain = new wxRadioButton(ncPanel1, wxID_ANY, "Main", wxPoint(395, 80), wxSize(60, 20), wxRB_GROUP);
+    ncMain->SetFont(font10);
+    ncMain->SetForegroundColour(wxColour(245, 245, 245));
+    ncSecon = new wxRadioButton(ncPanel1, wxID_ANY, "Secondary", wxPoint(395, 100), wxSize(100, 20));
+    ncSecon->SetFont(font10);
+    ncSecon->SetForegroundColour(wxColour(245, 245, 245));
 
     wxStaticText* label7 = new wxStaticText(ncPanel1, wxID_ANY, "Role: ", wxPoint(345, 90), wxSize(50, 25),
         wxNO_BORDER | wxALIGN_LEFT);
@@ -142,8 +140,8 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     label7->SetFont(wxFont(wxFontInfo(12)));
     
     wxBoxSizer* btnHolderSizer2 = new wxBoxSizer(wxVERTICAL);
-    btnHolderSizer2->Add(main, wxSizerFlags(0).Left());
-    btnHolderSizer2->Add(secon, wxSizerFlags(0).Left());
+    btnHolderSizer2->Add(ncMain, wxSizerFlags(0).Left());
+    btnHolderSizer2->Add(ncSecon, wxSizerFlags(0).Left());
 
     wxBoxSizer* thirdLine = new wxBoxSizer(wxHORIZONTAL);
     thirdLine->Add(label5, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 5));
@@ -153,7 +151,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     thirdLine->Add(label7, wxSizerFlags(0).CenterVertical().Border(wxLEFT, 6));
     thirdLine->Add(btnHolderSizer2, wxSizerFlags(0).CenterVertical());
 
-    wxStaticText* label8 = new wxStaticText(ncPanel1, wxID_ANY, "Appearance", wxPoint(15, 145), wxSize(475, -1),
+    label8 = new wxStaticText(ncPanel1, wxID_ANY, "Appearance", wxPoint(15, 145), wxSize(475, -1),
         wxBORDER_SIMPLE | wxALIGN_LEFT);
     label8->SetBackgroundColour(wxColour(230, 0, 20));
     label8->SetFont(wxFont(wxFontInfo(13).Bold()));
@@ -171,9 +169,9 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     ncPersonality->SetBackgroundColour(wxColour(70, 70, 70));
     ncPersonality->SetForegroundColour(wxColour(250, 250, 250));
 
-    wxStaticText* label10 = new wxStaticText(ncPanel1, wxID_ANY, "Backstory", wxPoint(15, 385), wxSize(475, -1),
+    wxStaticText* label10 = new wxStaticText(ncPanel1, wxID_ANY, "Backstory", wxDefaultPosition, wxDefaultSize,
         wxBORDER_SIMPLE | wxALIGN_LEFT);
-    label10->SetBackgroundColour(wxColor(230, 0, 20));
+    label10->SetBackgroundColour(wxColour(230, 0, 20));
     label10->SetFont(wxFont(wxFontInfo(13).Bold()));
     ncBackstory = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(15, 410), wxSize(475, 85),
         wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -183,9 +181,13 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     wxPanel* btnPanel = new wxPanel(this);
     btnPanel->SetBackgroundColour(wxColour(40, 40, 40));
 
-    ncNext = new wxButton(btnPanel, BUTTON_NextChar, "Next", wxPoint(300, 505), wxSize(90, 30));
-    ncBack = new wxButton(btnPanel, BUTTON_BackChar, "Back", wxPoint(15, 505), wxSize(90, 30));
+    ncNext = new wxButton(btnPanel, BUTTON_NextChar1, "Next", wxPoint(300, 505), wxSize(90, 30));
+    ncBack = new wxButton(btnPanel, BUTTON_BackChar1, "Back", wxPoint(15, 505), wxSize(90, 30));
     ncCancel = new wxButton(btnPanel, BUTTON_CancelChar, "Cancel", wxPoint(400, 505), wxSize(90, 30));
+
+    ncNext->Bind(wxEVT_BUTTON, &CharacterCreator::next, this);
+    ncBack->Bind(wxEVT_BUTTON, &CharacterCreator::back, this);
+    ncCancel->Bind(wxEVT_BUTTON, &CharacterCreator::cancel, this);
 
     ncBack->Hide();
 
@@ -217,14 +219,38 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     SetIcon(wxICON(characterIcon));
     this->Layout();
 
-    ncPanel2 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(520, 585));
+    ncPanel2 = new wxScrolledWindow(this);
     ncPanel2->Hide();
     ncPanel2->SetBackgroundColour(wxColour(40, 40, 40));
 
-    ncChooseImage = new wxButton(ncPanel2, BUTTON_CharImage, "Choose image file", wxPoint(285, 415), wxSize(150, 30));
-    ncRemoveImage = new wxButton(ncPanel2, BUTTON_CharRemoveImage, "Remove", wxPoint(75, 415), wxSize(100, 30));
+    wxStaticText* customLabel = new wxStaticText(ncPanel2, -1, "Custom attributes");
+    customLabel->SetFont(wxFontInfo(14).Bold());
+    customLabel->SetForegroundColour(wxColour(240, 240, 240));
+
+    ncAddCustom = new wxButton(ncPanel2, -1, "", wxDefaultPosition, wxSize(25, 25));
+    ncAddCustom->SetBitmap(wxBITMAP_PNG(plus));
+    ncAddCustom->Bind(wxEVT_BUTTON, &CharacterCreator::addCustomAttr, this);
+
+    wxBoxSizer* customHorSiz = new wxBoxSizer(wxHORIZONTAL);
+    customHorSiz->Add(customLabel, wxSizerFlags(1));
+    customHorSiz->AddStretchSpacer(1);
+    customHorSiz->Add(ncAddCustom, wxSizerFlags(0));
+
+    ncp2Sizer = new wxBoxSizer(wxVERTICAL);
+    ncp2Sizer->Add(customHorSiz, wxSizerFlags(0).Expand().Border(wxALL, 10));
+
+    ncPanel2->SetSizer(ncp2Sizer);
+    ncPanel2->FitInside();
+    ncPanel2->SetScrollRate(20, 20);
+        
+    ncPanel3 = new wxPanel(this);
+    ncPanel3->Hide();
+    ncPanel3->SetBackgroundColour(wxColour(40, 40, 40));
+
+    ncChooseImage = new wxButton(ncPanel3, BUTTON_CharImage, "Choose image file", wxPoint(285, 415), wxSize(150, 30));
+    ncRemoveImage = new wxButton(ncPanel3, BUTTON_CharRemoveImage, "Remove", wxPoint(75, 415), wxSize(100, 30));
     ncRemoveImage->Hide();
-    ncImagePanel = new ImagePanel(ncPanel2, wxPoint(75, 40), wxSize(360, 360));
+    ncImagePanel = new ImagePanel(ncPanel3, wxPoint(75, 40), wxSize(360, 360));
     ncImagePanel->setBorderColour(wxColour(40, 40, 40));
 
     wxBoxSizer* btnSizer2 = new wxBoxSizer(wxHORIZONTAL);
@@ -232,17 +258,18 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     btnSizer2->AddStretchSpacer(1);
     btnSizer2->Add(ncChooseImage, wxSizerFlags(0));
 
-    wxBoxSizer* verSizer2 = new wxBoxSizer(wxVERTICAL);
-    verSizer2->Add(ncImagePanel, wxSizerFlags(0).Border(wxTOP, 40).CenterHorizontal());
-    verSizer2->AddStretchSpacer(1);
-    verSizer2->Add(btnSizer2, wxSizerFlags(0).Expand());
-    verSizer2->AddStretchSpacer(3);
+    wxBoxSizer* verSizer3 = new wxBoxSizer(wxVERTICAL);
+    verSizer3->Add(ncImagePanel, wxSizerFlags(0).Border(wxTOP, 40).CenterHorizontal());
+    verSizer3->AddStretchSpacer(1);
+    verSizer3->Add(btnSizer2, wxSizerFlags(0).Expand());
+    verSizer3->AddStretchSpacer(3);
 
-    ncPanel2->SetSizer(verSizer2);
+    ncPanel3->SetSizer(verSizer3);
 
     mainSiz = new wxBoxSizer(wxVERTICAL);
     mainSiz->Add(ncPanel1, wxSizerFlags(1).Expand());
-    mainSiz->Add(ncPanel2, wxSizerFlags(1).Expand().Border(wxLEFT | wxRIGHT, 75));
+    mainSiz->Add(ncPanel2, wxSizerFlags(1).Expand());
+    mainSiz->Add(ncPanel3, wxSizerFlags(1).Expand().Border(wxLEFT | wxRIGHT, 75));
     mainSiz->Add(btnPanel, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
 
     SetSizer(mainSiz);
@@ -254,10 +281,10 @@ vector<string> CharacterCreator::getValues() {
 
     vec.push_back((std::string)ncFullName->GetValue());
 
-    if (male->GetValue()) {
-        vec.push_back((std::string)male->GetLabel());
+    if (ncMale->GetValue()) {
+        vec.push_back((std::string)ncMale->GetLabel());
     } else {
-        vec.push_back((std::string)female->GetLabel());
+        vec.push_back((std::string)ncFemale->GetLabel());
     }
 
     vec.push_back((std::string)ncAge->GetValue());
@@ -265,10 +292,10 @@ vector<string> CharacterCreator::getValues() {
     vec.push_back((std::string)ncHeight->GetValue());
     vec.push_back((std::string)ncNickname->GetValue());
     
-    if (main->GetValue()) {
-        vec.push_back((std::string)main->GetLabel());
+    if (ncMain->GetValue()) {
+        vec.push_back((std::string)ncMain->GetLabel());
     } else {
-        vec.push_back((std::string)secon->GetLabel());
+        vec.push_back((std::string)ncSecon->GetLabel());
     }
 
     vec.push_back((std::string)ncAppearance->GetValue());
@@ -279,12 +306,13 @@ vector<string> CharacterCreator::getValues() {
 }
 
 void CharacterCreator::setEdit(Character* character) {
-    ncNext->SetId(BUTTON_NextEdit);
+    ncNext->SetId(BUTTON_NextEdit1);
+    ncBack->SetId(BUTTON_BackEdit1);
 
     ncFullName->SetValue(character->name);
 
     if (character->sex == "Female") {
-        female->SetValue(true);
+        ncFemale->SetValue(true);
     }
     ncAge->SetValue(character->age);
     ncNationality->SetValue(character->nat);
@@ -292,7 +320,7 @@ void CharacterCreator::setEdit(Character* character) {
     ncNickname->SetValue(character->nick);
 
     if (character->role == "Secondary") {
-        secon->SetValue(true);
+        ncSecon->SetValue(true);
     }
 
     ncAppearance->SetValue(character->appearance);
@@ -309,31 +337,6 @@ void CharacterCreator::setEdit(Character* character) {
     charEdit = character;
 
     this->Show(true);
-}
-
-void CharacterCreator::nextEdit(wxCommandEvent& event) {
-    ncNext->SetId(BUTTON_CreateEdit);
-    ncNext->SetLabel("Ok");
-    ncBack->SetId(BUTTON_BackEdit);
-    ncBack->Show();
-    ncPanel1->Hide();
-    ncPanel2->Show();
-    ncChooseImage->SetFocus();
-
-    mainSiz->Layout();
-    event.Skip();
-}
-
-void CharacterCreator::backEdit(wxCommandEvent& event) {
-    ncNext->SetLabel("Next");
-    ncNext->SetId(BUTTON_NextEdit);
-    ncBack->Hide();
-    ncPanel2->Hide();
-    ncPanel1->Show();
-    ncPanel1->SetFocus();
-
-    mainSiz->Layout();
-    event.Skip();
 }
 
 void CharacterCreator::edit(wxCommandEvent& event) {
@@ -382,6 +385,65 @@ void CharacterCreator::edit(wxCommandEvent& event) {
     event.Skip();
 }
 
+void CharacterCreator::addCustomAttr(wxCommandEvent& event) {
+    wxSize size(label8->GetSize());
+
+    wxTextCtrl* label = new wxTextCtrl(ncPanel2, -1, "Title",
+        wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
+    wxTextCtrl* content = new wxTextCtrl(ncPanel2, -1, "", wxDefaultPosition,
+        wxSize(-1, 85), wxTE_MULTILINE | wxBORDER_SIMPLE);
+
+    content->SetBackgroundColour(wxColour(70, 70, 70));
+    content->SetForegroundColour(wxColour(250, 250, 250));
+    label->SetBackgroundColour(wxColour(230, 0, 20));
+    label->SetFont(wxFontInfo(13).Bold());
+
+    wxButton* minus = new wxButton(ncPanel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
+    minus->SetBitmap(wxBITMAP_PNG(minus));
+    minus->Bind(wxEVT_BUTTON, &CharacterCreator::removeCustomAttr, this);
+    
+    wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
+    topSizer->Add(label, wxSizerFlags(1));
+    topSizer->Add(minus, 0);
+
+    ncp2Sizer->Add(topSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxTOP | wxRIGHT, 15));
+    ncp2Sizer->Add(content, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
+
+    ncp2Sizer->FitInside(ncPanel2);
+
+    ncCustom.push_back(pair<wxTextCtrl*, wxTextCtrl*>(label, content));
+    minusButtons.push_back(minus);
+}
+
+void CharacterCreator::removeCustomAttr(wxCommandEvent& event) {
+    wxButton* minus = (wxButton*)event.GetEventObject();
+
+    auto it1 = ncCustom.begin();
+    auto it2 = minusButtons.begin();
+    int i = 0;
+
+    for (it2 = minusButtons.begin(); it2 != minusButtons.end(); it2++) {
+        if (*it2 == minus)
+            break;
+
+        it1++;
+        i++;
+    }
+    i = (i * 2) + 1;
+
+    ncp2Sizer->Remove(i);
+    ncp2Sizer->Remove(i);
+
+    it1->first->Destroy();
+    it1->second->Destroy();
+    ncCustom.erase(it1);
+
+    (*it2)->Destroy();
+    minusButtons.erase(it2);
+
+    mainSiz->Layout();
+}
+
 void CharacterCreator::cancel(wxCommandEvent& event) {
     mainFrame->Enable();
     this->Destroy();
@@ -389,23 +451,86 @@ void CharacterCreator::cancel(wxCommandEvent& event) {
 }
 
 void CharacterCreator::next(wxCommandEvent& event) {
-    ncNext->SetLabel("Create");
-    ncNext->SetId(BUTTON_CreateChar);
-    ncBack->Show();
-    ncPanel1->Hide();
-    ncPanel2->Show();
-    ncChooseImage->SetFocus();
+    bool show1 = false, show2 = false, show3 = false;
+
+    switch (event.GetId()) {
+    case BUTTON_NextChar1:
+        ncNext->SetId(BUTTON_NextChar2);
+        ncBack->Show();
+        show2 = true;
+        break;
+
+    case BUTTON_NextChar2:
+        ncNext->SetId(BUTTON_CreateChar);
+        ncNext->SetLabel("Create");
+        ncBack->SetId(BUTTON_BackChar2);
+        show3 = true;
+        break;
+
+    case BUTTON_NextEdit1:
+        ncNext->SetId(BUTTON_NextEdit2);
+        ncBack->Show();
+        show2 = true;
+        break;
+
+    case BUTTON_NextEdit2:
+        ncNext->SetId(BUTTON_CreateEdit);
+        ncNext->SetLabel("Ok");
+        ncBack->SetId(BUTTON_BackEdit2);
+        show3 = true;
+        break;
+
+    case BUTTON_CreateChar:
+        create(event);
+        return;
+
+    case BUTTON_CreateEdit:
+        edit(event);
+        return;
+    }
+
+    ncPanel1->Show(show1);
+    ncPanel2->Show(show2);
+    ncPanel3->Show(show3);
 
     mainSiz->Layout();
     event.Skip();
 }
 
 void CharacterCreator::back(wxCommandEvent& event) {
-    ncNext->SetLabel("Next");
-    ncNext->SetId(BUTTON_NextChar);
-    ncBack->Hide();
-    ncPanel2->Hide();
-    ncPanel1->Show();
+    bool show1 = false, show2 = false, show3 = false;
+
+    switch (event.GetId()) {
+    case BUTTON_BackChar1:
+        ncNext->SetId(BUTTON_NextChar1);
+        ncBack->Hide();
+        show1 = true;
+        break;
+
+    case BUTTON_BackChar2:
+        ncNext->SetLabel("Next");
+        ncNext->SetId(BUTTON_NextChar2);
+        ncBack->SetId(BUTTON_BackChar1);
+        show2 = true;
+        break;
+
+    case BUTTON_BackEdit1:
+        ncNext->SetId(BUTTON_NextEdit1);
+        ncBack->Hide();
+        show1 = true;
+        break;
+
+    case BUTTON_BackEdit2:
+        ncNext->SetId(BUTTON_NextEdit2);
+        ncNext->SetLabel("Next");
+        ncBack->SetId(BUTTON_BackEdit1);
+        show2 = true;
+        break;
+    }
+
+    ncPanel1->Show(show1);
+    ncPanel2->Show(show2);
+    ncPanel3->Show(show3);
 
     mainSiz->Layout();
     event.Skip();
@@ -469,9 +594,9 @@ void CharacterCreator::create(wxCommandEvent& event) {
         mainFrame->saved[0]++;
         mainFrame->isSaved = false;
         mainFrame->getOutline()->getOutlineFiles()->appendCharacter(character);
-        mainFrame->Enable();
     }
 
+    mainFrame->Enable();
     this->Destroy();
     event.Skip();
 }
