@@ -29,6 +29,8 @@ resetCenter RCDATA "Assets\\ResetCenter.png"
 
 arrowRight RCDATA "Assets\\ArrowRight.png"
 arrowLeft RCDATA "Assets\\ArrowLeft.png"
+plus RCDATA "Assets\\PlusIcon.png"
+minus RCDATA "Assets\\MinusIcon.png"
 
 leftAlign RCDATA "Assets\\AlignLeft.png"
 centerAlign RCDATA "Assets\\AlignCenter.png"
