@@ -28,7 +28,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     wxFrame(parent, id, label, pos, size
     , style | wxRESIZE_BORDER) {
 
-    this->mainFrame = (MainFrame*)wxGetApp().GetTopWindow();
+    this->mainFrame = (MainFrame*)(wxGetApp().GetTopWindow());
     this->notebook = notebook;
     this->CenterOnParent();
 
@@ -276,31 +276,41 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 }
 
 vector<string> CharacterCreator::getValues() {
+    vector<string> vec;
 
-    std::vector<std::string> vec;
-
-    vec.push_back((std::string)ncFullName->GetValue());
+    vec.push_back(ncFullName->GetValue().ToStdString());
 
     if (ncMale->GetValue()) {
-        vec.push_back((std::string)ncMale->GetLabel());
+        vec.push_back(ncMale->GetLabel().ToStdString());
     } else {
-        vec.push_back((std::string)ncFemale->GetLabel());
+        vec.push_back(ncFemale->GetLabel().ToStdString());
     }
 
-    vec.push_back((std::string)ncAge->GetValue());
-    vec.push_back((std::string)ncNationality->GetValue());
-    vec.push_back((std::string)ncHeight->GetValue());
-    vec.push_back((std::string)ncNickname->GetValue());
+    vec.push_back(ncAge->GetValue().ToStdString());
+    vec.push_back(ncNationality->GetValue().ToStdString());
+    vec.push_back(ncHeight->GetValue().ToStdString());
+    vec.push_back(ncNickname->GetValue().ToStdString());
     
     if (ncMain->GetValue()) {
-        vec.push_back((std::string)ncMain->GetLabel());
+        vec.push_back(ncMain->GetLabel().ToStdString());
     } else {
-        vec.push_back((std::string)ncSecon->GetLabel());
+        vec.push_back(ncSecon->GetLabel().ToStdString());
     }
 
-    vec.push_back((std::string)ncAppearance->GetValue());
-    vec.push_back((std::string)ncPersonality->GetValue());
-    vec.push_back((std::string)ncBackstory->GetValue());
+    vec.push_back(ncAppearance->GetValue().ToStdString());
+    vec.push_back(ncPersonality->GetValue().ToStdString());
+    vec.push_back(ncBackstory->GetValue().ToStdString());
+
+    return vec;
+}
+
+vector<pair<string, string>> CharacterCreator::getCustom() {
+    vector<pair<string, string>> vec;
+
+    for (auto it : ncCustom) {
+        pair<string, string> pair(it.first->GetValue(), it.second->GetValue());
+        vec.push_back(pair);
+    }
 
     return vec;
 }
@@ -327,6 +337,15 @@ void CharacterCreator::setEdit(Character* character) {
     ncPersonality->SetValue(character->personality);
     ncBackstory->SetValue(character->backstory);
 
+    int i = 0;
+    for (auto it : character->custom) {
+        addCustomAttr(wxCommandEvent());
+        ncCustom[i].first->SetValue(it.first);
+        ncCustom[i].second->SetValue(it.second);
+    
+        i++;
+    }
+
     ncImage = character->image;
 
     if (ncImage.IsOk()) {
@@ -339,10 +358,10 @@ void CharacterCreator::setEdit(Character* character) {
     this->Show(true);
 }
 
-void CharacterCreator::edit(wxCommandEvent& event) {
+void CharacterCreator::doEdit(wxCommandEvent& event) {
     mainFrame->getOutline()->getOutlineFiles()->deleteCharacter(*charEdit);
 
-    vector<string> vec = getValues();
+    vector<string>& vec = getValues();
     string temp;
 
     if (ncFullName->IsModified() || charEdit->role != vec[6]) {
@@ -367,6 +386,8 @@ void CharacterCreator::edit(wxCommandEvent& event) {
 
     charEdit->image = ncImage;
 
+    charEdit->custom = getCustom();
+
     if (ncFullName->IsModified() || charEdit->role != vec[6]) {
         notebook->addCharName(charEdit->name);
         MainFrame::characters[charEdit->role + charEdit->name] = *charEdit;
@@ -374,7 +395,7 @@ void CharacterCreator::edit(wxCommandEvent& event) {
     }
 
     notebook->updateLB();
-    notebook->charShow->setData(charEdit->image, vec);
+    notebook->charShow->setData(*charEdit);
 
     mainFrame->isSaved = false;
     mainFrame->getOutline()->getOutlineFiles()->appendCharacter(*charEdit);
@@ -420,19 +441,13 @@ void CharacterCreator::removeCustomAttr(wxCommandEvent& event) {
 
     auto it1 = ncCustom.begin();
     auto it2 = minusButtons.begin();
-    int i = 0;
 
     for (it2 = minusButtons.begin(); it2 != minusButtons.end(); it2++) {
         if (*it2 == minus)
             break;
 
         it1++;
-        i++;
     }
-    i = (i * 2) + 1;
-
-    ncp2Sizer->Remove(i);
-    ncp2Sizer->Remove(i);
 
     it1->first->Destroy();
     it1->second->Destroy();
@@ -485,7 +500,7 @@ void CharacterCreator::next(wxCommandEvent& event) {
         return;
 
     case BUTTON_CreateEdit:
-        edit(event);
+        doEdit(event);
         return;
     }
 
@@ -565,9 +580,8 @@ void CharacterCreator::removeImage(wxCommandEvent& event) {
 }
 
 void CharacterCreator::create(wxCommandEvent& event) {
-
     if (!ncFullName->IsEmpty()) {
-        vector<string> vec = getValues();
+        vector<string>& vec = getValues();
 
         Character character;
         character.name = vec[0];
@@ -584,6 +598,8 @@ void CharacterCreator::create(wxCommandEvent& event) {
 
         character.image = ncImage;
 
+        character.custom = getCustom();
+
         mainFrame->characters[vec[6] + vec[0]] = character;
 
         ElementsNotebook::updateLB();
@@ -594,6 +610,9 @@ void CharacterCreator::create(wxCommandEvent& event) {
         mainFrame->saved[0]++;
         mainFrame->isSaved = false;
         mainFrame->getOutline()->getOutlineFiles()->appendCharacter(character);
+    } else {
+        wxMessageBox("You can't create a character without a name.");
+        return;
     }
 
     mainFrame->Enable();

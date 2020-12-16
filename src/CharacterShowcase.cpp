@@ -103,10 +103,10 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     vertical->Add(label7, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
     vertical->Add(personality, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
     vertical->Add(label8, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
-    vertical->Add(backstory, wxSizerFlags(0).Border(wxLEFT | wxRIGHT, 10).Expand());
+    vertical->Add(backstory, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
     
     SetSizer(vertical);
-    this->FitInside();
+    vertical->FitInside(this);
     this->SetScrollRate(20, 20);
 
     appearance->SetCursor(wxCURSOR_DEFAULT);
@@ -114,55 +114,102 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     backstory->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void CharacterShowcase::setData(wxImage& set, vector<string>& charData) {
-    name->SetLabel(charData[0]);
-    sex->SetLabel(charData[1]);
+void CharacterShowcase::setData(Character& character) {
+    name->SetLabel(character.name);
+    sex->SetLabel(character.sex);
 
-    if (charData[1] == "Female")
+    if (character.sex == "Female")
         sex->SetBackgroundColour(wxColour(255, 182, 193));
-    else if (charData[1] == "Male")
+    else if (character.sex == "Male")
         sex->SetBackgroundColour(wxColour(139, 186, 255));
     else
         sex->SetBackgroundColour(wxColour(220, 220, 220));
     
-    age->SetLabel(charData[2]);
-    height->SetLabel(charData[4]);
-    nat->SetLabel(charData[3]);
-    nick->SetLabel(charData[5]);
-    role->SetLabel(charData[6]);
+    age->SetLabel(character.age);
+    height->SetLabel(character.height);
+    nat->SetLabel(character.nat);
+    nick->SetLabel(character.nick);
+    role->SetLabel(character.role);
 
-    if (charData[6] == "Main")
+    if (character.role == "Main")
         role->SetBackgroundColour(wxColour(230, 60, 60));
     else
         role->SetBackgroundColour(wxColour(220, 220, 220));
 
-    appearance->SetValue(charData[7]);
-    personality->SetValue(charData[8]);
-    backstory->SetValue(charData[9]);
+    appearance->SetValue(character.appearance);
+    personality->SetValue(character.personality);
+    backstory->SetValue(character.backstory);
 
     int nol;
 
     nol = appearance->GetNumberOfLines();
     if (nol > 5)
-        vertical->SetItemMinSize(size_t(6), wxSize(-1, nol * 16));
+        vertical->SetItemMinSize(6, wxSize(-1, nol * appearance->GetCharHeight() + 5));
     else
-        vertical->SetItemMinSize(size_t(6), wxSize(-1, 80));
+        vertical->SetItemMinSize(6, wxSize(-1, 80));
 
     nol = personality->GetNumberOfLines();
     if (nol > 5)
-        vertical->SetItemMinSize(size_t(8), wxSize(-1, nol * 16));
+        vertical->SetItemMinSize(8, wxSize(-1, nol * personality->GetCharHeight() + 5));
     else
-        vertical->SetItemMinSize(size_t(8), wxSize(-1, 80));
+        vertical->SetItemMinSize(8, wxSize(-1, 80));
 
     nol = backstory->GetNumberOfLines();
     if (nol > 5)
-        vertical->SetItemMinSize(size_t(10), wxSize(-1, nol * 16));
+        vertical->SetItemMinSize(10, wxSize(-1, nol * backstory->GetCharHeight() + 5));
     else
-        vertical->SetItemMinSize(size_t(10), wxSize(-1, 80));
+        vertical->SetItemMinSize(10, wxSize(-1, 80));
 
-    image->Show(image->setImage(set));
+    image->Show(image->setImage(character.image));
+
+    int tcsize = custom.size();
+    int ccsize = character.custom.size();
+
+    if (tcsize > ccsize) {
+        auto it = custom.end();
+        it--;
+
+        for (int i = tcsize - 1; i > ccsize - 1; i--) {
+            custom[i].first->Destroy();
+            custom[i].second->Destroy();
+            custom.erase(it--);
+        }
+    }
+
+    for (int i = 0; i < character.custom.size(); i++) {
+        if (i >= tcsize) {
+            wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
+                wxDefaultSize, wxBORDER_DOUBLE | wxST_NO_AUTORESIZE);
+            label->SetFont(wxFontInfo(12).Bold());
+            label->SetBackgroundColour(wxColour(180, 180, 180));
+
+            wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
+                wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
+            content->SetFont(wxFontInfo(9));
+            content->SetBackgroundColour(wxColour(225, 225, 225));
+            content->SetCursor(wxCURSOR_DEFAULT);
+
+            vertical->Add(label, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
+            vertical->Add(content, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
+
+            custom.push_back(pair<wxStaticText*, wxTextCtrl*>(label, content));
+        }
+
+        custom[i].first->SetLabel(character.custom[i].first);
+        custom[i].second->SetLabel(character.custom[i].second);
+    }
 
     vertical->Layout();
-    FitInside();
+    vertical->FitInside(this);
+    
+    for (auto it : custom) {
+        nol = it.second->GetNumberOfLines();
+        if (nol > 5) {
+         //   vertical->SetItemMinSize(i, FromDIP(wxSize(-1, nol * content->GetCharHeight() + 5)));
+        } else {
+         //   vertical->SetItemMinSize(i, wxSize(-1, 80));
+        }
+    }
+
     Refresh();
 }

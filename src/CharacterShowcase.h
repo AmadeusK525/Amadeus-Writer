@@ -1,14 +1,16 @@
 #pragma once
 
-#include "string"
-#include "vector"
+#include <string>
+#include <vector>
 
-#include "wx/wx.h"
+#include <wx/wx.h>
 
+#include "Character.h"
 #include "ImagePanel.h"
 
 using std::string;
 using std::vector;
+using std::pair;
 
 class CharacterShowcase : public wxScrolledWindow {
 private:
@@ -26,11 +28,13 @@ private:
 		* personality = nullptr,
 		* backstory = nullptr;
 
+	vector<pair<wxStaticText*, wxTextCtrl*>> custom{};
+
 	wxBoxSizer* vertical = nullptr;
 
 public:
 	CharacterShowcase(wxWindow* parent);
 
-	void setData(wxImage& image, vector<string>& charData);
+	void setData(Character& character);
 };
 

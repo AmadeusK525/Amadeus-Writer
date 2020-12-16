@@ -59,7 +59,7 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent) : wxNotebook(parent, NOTEBO
     wxBoxSizer* charSizer = new wxBoxSizer(wxHORIZONTAL);
     charSizer->Add(charList, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
     //charSizer->SetItemMinSize(size_t(0), wxSize());
-    charSizer->Add(charShow, 3, wxGROW | wxBOTTOM |wxTOP, 10);
+    charSizer->Add(charShow, 3, wxGROW |wxTOP, 10);
     charFrame->SetSizer(charSizer);
 
     this->AddPage(charFrame, "Characters");
@@ -218,7 +218,7 @@ void ElementsNotebook::charSelected(wxListEvent& event) {
     long sel = charList->GetFirstSelected();
 
     if (sel == -1) {
-        charShow->setData(wxImage(), vector<string>(10, ""));
+        charShow->setData(Character());
         return;
     }
 
@@ -226,24 +226,12 @@ void ElementsNotebook::charSelected(wxListEvent& event) {
     for (int i = 0; i < sel; i++) {
         it++;
     }
-    vector<string> charData;
-    charData.push_back(it->second.name);
-    charData.push_back(it->second.sex);
-    charData.push_back(it->second.age);
-    charData.push_back(it->second.nat);
-    charData.push_back(it->second.height);
-    charData.push_back(it->second.nick);
-    charData.push_back(it->second.role);
-    charData.push_back(it->second.appearance);
-    charData.push_back(it->second.personality);
-    charData.push_back(it->second.backstory);
-
-    charShow->setData(it->second.image, charData);
+    charShow->setData(it->second);
 }
 
 void ElementsNotebook::charDeselected(wxListEvent& WXUNUSED(event)) {
     //if (charList->GetSelectedItemCount() == 0)
-        charShow->setData(wxImage(), vector<string>(10, ""));
+        //charShow->setData(wxImage(), vector<string>(10, ""));
 }
 
 void ElementsNotebook::locSelected(wxListEvent& WXUNUSED(event)) {
