@@ -285,6 +285,21 @@ vector<string> LocationCreator::getValues() {
     return vec;
 }
 
+vector<pair<string, string>> LocationCreator::getCustom() {
+    vector<pair<string, string>> vec;
+    
+    string content;
+    string label;
+    for (auto it : nlCustom) {
+        label = it.first->GetValue();
+        content = it.second->GetValue();
+     
+        vec.push_back(pair<string, string>(label, content));
+    }
+
+    return vec;
+}
+
 void LocationCreator::setEdit(Location* location) {
     nlNext->SetId(BUTTON_NextEditLoc1);
 
@@ -555,6 +570,8 @@ void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
 
         location.image = nlImage;
 
+        location.custom = getCustom();
+
         mainFrame->locations[vec[7] + vec[0]] = location;
         mainFrame->saved[1] = MainFrame::locations.size();
 
@@ -562,6 +579,9 @@ void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
 
         mainFrame->isSaved = false;
         mainFrame->getOutline()->getOutlineFiles()->appendLocation(location);
+    } else {
+        wxMessageBox("You can't create a location with no name!");
+        return;
     }
 
     mainFrame->Enable();
