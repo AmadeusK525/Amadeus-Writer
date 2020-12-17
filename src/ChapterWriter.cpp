@@ -634,6 +634,7 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
     attr.SetFont(wxFontInfo(10));
     attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
     attr.SetLeftIndent(63, -63);
+    //attr.SetRightIndent(63);
     attr.SetTextColour(wxColour(245, 245, 245));
     content->SetBasicStyle(attr);
     content->SetBackgroundColour(wxColour(35, 35, 35));
