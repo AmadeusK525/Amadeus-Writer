@@ -14,20 +14,20 @@ using std::vector;
 
 class LocationShowcase : public wxScrolledWindow {
 private:
-    ImagePanel* image = nullptr;
-    wxStaticText* name = nullptr,
-        * importance = nullptr,
-        * type = nullptr;
+    ImagePanel* m_image = nullptr;
+    wxStaticText* m_name = nullptr,
+        * m_importance = nullptr,
+        * m_type = nullptr;
 
-    wxTextCtrl * background = nullptr,
-        * natural = nullptr,
-        * architecture = nullptr,
-        * economy = nullptr,
-        * culture = nullptr;
+    wxTextCtrl* m_background = nullptr,
+        * m_natural = nullptr,
+        * m_architecture = nullptr,
+        * m_economy = nullptr,
+        * m_culture = nullptr;
 
-    wxBoxSizer* vertical = nullptr,
-        * firstColumn = nullptr,
-        * secondColumn = nullptr;
+    wxBoxSizer* m_vertical = nullptr,
+        * m_firstColumn = nullptr,
+        * m_secondColumn = nullptr;
 
 public:
     LocationShowcase(wxWindow* parent);
