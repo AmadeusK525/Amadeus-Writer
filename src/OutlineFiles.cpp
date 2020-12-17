@@ -588,6 +588,15 @@ void OutlineFilesPanel::generateLocationBuffer(Location& location, wxRichTextBuf
 		buffer.InsertTextWithUndo(buffer.GetText().size(), location.culture, nullptr);
 	}
 
+	for (auto it : location.custom) {
+		if (it.second != "") {
+			buffer.BeginBold();
+			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n" + it.first + ":\n", nullptr);
+			buffer.EndBold();
+			buffer.InsertTextWithUndo(buffer.GetText().size(), it.second, nullptr);
+		}
+	}
+
 	buffer.SetName(location.name);
 }
 
