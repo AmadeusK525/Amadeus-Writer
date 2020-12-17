@@ -319,10 +319,17 @@ void LocationCreator::setEdit(Location* location) {
         nlLow->SetValue(true);
     }
 
-    nlImage = location->image;
-    nlImagePanel->setImage(nlImage);
+    int i = 0;
+    for (auto it : location->custom) {
+        addCustomAttr(wxCommandEvent());
+        nlCustom[i].first->SetValue(it.first);
+        nlCustom[i].second->SetValue(it.second);
 
-    if (nlImage.IsOk()) {
+        i++;
+    }
+
+    nlImage = location->image;
+    if (nlImagePanel->setImage(nlImage)) {
         nlRemoveImage->Show();
     }
 
@@ -352,6 +359,8 @@ void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
     m_locationEdit->culture = vec[6];
     m_locationEdit->importance = vec[7];
 
+    m_locationEdit->custom = getCustom();
+
     m_locationEdit->image = nlImage;
 
     if (nlName->IsModified() || m_locationEdit->importance != temp) {
@@ -361,7 +370,7 @@ void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
         notebook->updateLB();
     }
 
-    notebook->locShow->setData(m_locationEdit->image, vec);
+    notebook->locShow->setData(*m_locationEdit);
 
     mainFrame->isSaved = false;
     mainFrame->getOutline()->getOutlineFiles()->appendLocation(*m_locationEdit);
