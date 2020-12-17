@@ -40,15 +40,15 @@ private:
 
     Location* locationEdit = nullptr;
 
+    wxBoxSizer* mainSiz = nullptr;
+
 public:
     LocationCreator(wxWindow* parent, ElementsNotebook* notebook);
 
     std::vector<std::string> getValues();
 
     void setEdit(Location* location);
-    void nextEdit(wxCommandEvent& event);
-    void backEdit(wxCommandEvent& event);
-    void edit(wxCommandEvent& event);
+    void doEdit(wxCommandEvent& event);
 
     void setImage(wxCommandEvent& event);
     void removeImage(wxCommandEvent& event);
@@ -67,10 +67,14 @@ enum {
     BUTTON_ChooseImageLoc,
     BUTTON_CancelLoc,
     BUTTON_CreateEditLoc,
-    BUTTON_BackEditLoc,
-    BUTTON_BackLoc,
-    BUTTON_NextEditLoc,
-    BUTTON_NextLoc,
+    BUTTON_BackEditLoc1,
+    BUTTON_BackEditLoc2,
+    BUTTON_BackLoc1,
+    BUTTON_BackLoc2,
+    BUTTON_NextEditLoc1,
+    BUTTON_NextEditLoc2,
+    BUTTON_NextLoc1,
+    BUTTON_NextLoc2,
     BUTTON_CreateLoc
 };
 
