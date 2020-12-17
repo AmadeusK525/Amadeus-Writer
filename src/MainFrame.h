@@ -127,7 +127,7 @@ public:
 
 enum {
 
-    MAIN_Panel,
+    MAIN_Panel = wxID_HIGHEST + 1,
 
     MENU_NewChapter,
     MENU_NewScene,

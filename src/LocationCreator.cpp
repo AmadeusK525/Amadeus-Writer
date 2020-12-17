@@ -15,15 +15,6 @@ BEGIN_EVENT_TABLE(LocationCreator, wxFrame)
 
 EVT_CLOSE(LocationCreator::checkClose)
 
-EVT_BUTTON(BUTTON_NextLoc, LocationCreator::next)
-EVT_BUTTON(BUTTON_BackLoc, LocationCreator::back)
-EVT_BUTTON(BUTTON_CreateLoc, LocationCreator::create)
-EVT_BUTTON(BUTTON_CancelLoc, LocationCreator::cancel)
-
-EVT_BUTTON(BUTTON_NextEditLoc, LocationCreator::nextEdit)
-EVT_BUTTON(BUTTON_BackEditLoc, LocationCreator::backEdit)
-EVT_BUTTON(BUTTON_CreateEditLoc, LocationCreator::edit)
-
 EVT_BUTTON(BUTTON_ChooseImageLoc, LocationCreator::setImage)
 EVT_BUTTON(BUTTON_RemoveImageLoc, LocationCreator::removeImage)
 
@@ -44,12 +35,13 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
 
     nlPanel1 = new wxPanel(this, wxID_ANY);
     nlPanel1->SetBackgroundColour(wxColour(40, 40, 40));
+    nlPanel1->Show();
 
     wxPanel* panel = new wxPanel(nlPanel1, wxID_ANY, wxPoint(80, 20), wxSize(130, 35));
     panel->SetBackgroundColour(wxColour(230, 0, 20));
 
-    wxStaticText* label1 = new wxStaticText(nlPanel1, wxID_ANY, "Name of location:",
-        wxPoint(80, 25), wxSize(130, 25), wxALIGN_CENTER | wxNO_BORDER);
+    wxStaticText* label1 = new wxStaticText(panel, wxID_ANY, "Name of location:",
+        wxDefaultPosition, wxSize(200, 25), wxALIGN_CENTER | wxALIGN_CENTER_VERTICAL | wxNO_BORDER);
     label1->SetBackgroundColour(wxColour(40, 40, 40));
     label1->SetForegroundColour(wxColour(240, 240, 240));
     label1->SetFont(wxFont(wxFontInfo(12)));
@@ -58,7 +50,16 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
         wxSize(330, 25), wxBORDER_SIMPLE);
     nlName->SetBackgroundColour(wxColour(70, 70, 70));
     nlName->SetForegroundColour(wxColour(240, 240, 240));
+
     nlName->SetFont(wxFont(wxFontInfo(10)));
+    
+    wxBoxSizer* siz = new wxBoxSizer(wxHORIZONTAL);
+    siz->Add(label1, wxSizerFlags(1).CenterVertical());
+    panel->SetSizer(siz);
+
+    wxBoxSizer* firstLine = new wxBoxSizer(wxHORIZONTAL);
+    firstLine->Add(panel, wxSizerFlags(0).Border(wxRIGHT, 10));
+    firstLine->Add(nlName, wxSizerFlags(1).CenterVertical());
 
     wxStaticText* label2 = new wxStaticText(nlPanel1, wxID_ANY, "Historical background",
         wxPoint(10, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
@@ -68,6 +69,8 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
         wxSize(200, 205), wxTE_MULTILINE | wxBORDER_SIMPLE);
     nlHBack->SetBackgroundColour(wxColour(70, 70, 70));
     nlHBack->SetForegroundColour(wxColour(240, 240, 240));
+
+    nlHBack->AlwaysShowScrollbars(false, false);
 
     wxStaticText* label3 = new wxStaticText(nlPanel1, wxID_ANY, "Natural characteristics",
         wxPoint(220, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
@@ -131,24 +134,100 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     nlLow->SetFont(wxFont(wxFontInfo(10)));
     nlLow->SetForegroundColour(wxColour(245, 245, 245));
 
-    nlNext = new wxButton(nlPanel1, BUTTON_NextLoc, "Next", wxPoint(440, 550), wxSize(90, 30));
-    nlCancel = new wxButton(nlPanel1, BUTTON_CancelLoc, "Cancel", wxPoint(540, 550), wxSize(90, 30));
+    wxBoxSizer* hlSizer = new wxBoxSizer(wxVERTICAL);
+    hlSizer->Add(nlHigh, wxSizerFlags(0));
+    hlSizer->Add(nlLow, wxSizerFlags(0));
 
-    SetIcon(wxICON(locationIcon));
+    wxBoxSizer* imSizer = new wxBoxSizer(wxHORIZONTAL);
+    imSizer->Add(label8, wxSizerFlags(0).CenterVertical());
+    imSizer->AddSpacer(5);
+    imSizer->Add(hlSizer, wxSizerFlags(0).Expand());
 
-    this->Layout();
-    this->Show();
+    wxBoxSizer* siz2 = new wxBoxSizer(wxVERTICAL);
+    siz2->Add(nlPrivate, wxSizerFlags(0).Left());
+    siz2->Add(nlPublic, wxSizerFlags(0).Left());
+    siz2->AddStretchSpacer(1);
+    siz2->Add(imSizer, wxSizerFlags(0));
+
+    wxBoxSizer* firstColumn = new wxBoxSizer(wxVERTICAL);
+    firstColumn->Add(label2, wxSizerFlags(0).Expand());
+    firstColumn->Add(nlHBack, wxSizerFlags(1).Expand());
+    firstColumn->AddSpacer(10);
+    firstColumn->Add(label5, wxSizerFlags(0).Expand());
+    firstColumn->Add(siz2, wxSizerFlags(1).Expand());
+
+    wxBoxSizer* secondColumn = new wxBoxSizer(wxVERTICAL);
+    secondColumn->Add(label3, wxSizerFlags(0).Expand());
+    secondColumn->Add(nlNatural, wxSizerFlags(1).Expand());
+    secondColumn->AddSpacer(10);
+    secondColumn->Add(label6, wxSizerFlags(0).Expand());
+    secondColumn->Add(nlEconomy, wxSizerFlags(1).Expand());
+
+    wxBoxSizer* thirdColumn = new wxBoxSizer(wxVERTICAL);
+    thirdColumn->Add(label4, wxSizerFlags(0).Expand());
+    thirdColumn->Add(nlArchitecture, wxSizerFlags(1).Expand());
+    thirdColumn->AddSpacer(10);
+    thirdColumn->Add(label7, wxSizerFlags(0).Expand());
+    thirdColumn->Add(nlCulture, wxSizerFlags(1).Expand());
+
+    wxBoxSizer* horSizer = new wxBoxSizer(wxHORIZONTAL);
+    horSizer->Add(firstColumn, wxSizerFlags(1).Expand());
+    horSizer->AddSpacer(10);
+    horSizer->Add(secondColumn, wxSizerFlags(1).Expand());
+    horSizer->AddSpacer(10);
+    horSizer->Add(thirdColumn, wxSizerFlags(1).Expand());
+
+    wxBoxSizer* verSizer1 = new wxBoxSizer(wxVERTICAL);
+    verSizer1->Add(firstLine, wxSizerFlags(0).CenterHorizontal().Border(wxTOP, 20));
+    verSizer1->Add(horSizer, wxSizerFlags(1).Expand().Border(wxALL, 10));
+
+    nlPanel1->SetSizer(verSizer1);
+
+    nlPanel2 = new wxScrolledWindow(this);
+    nlPanel2->Hide();
+    nlPanel2->SetBackgroundColour(wxColour(40, 40, 40));
 
     nlPanel3 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(655, 630));
     nlPanel3->Hide();
     nlPanel3->SetBackgroundColour(wxColour(40, 40, 40));
 
-    nlBack = new wxButton(nlPanel3, BUTTON_BackLoc, "Back", wxPoint(15, 550), wxSize(90, 30));
-
     nlChooseImage = new wxButton(nlPanel3, BUTTON_ChooseImageLoc, "Choose image file", wxPoint(355, 430), wxSize(150, 30));
     nlRemoveImage = new wxButton(nlPanel3, BUTTON_RemoveImageLoc, "Remove", wxPoint(135, 430), wxSize(100, 30));
     nlRemoveImage->Hide();
     nlImagePanel = new ImagePanel(nlPanel3, wxPoint(135, 40), wxSize(370, 370));
+
+    wxPanel* btnPan = new wxPanel(this);
+
+    nlNext = new wxButton(btnPan, BUTTON_NextLoc1, "Next", wxPoint(440, 550), wxSize(90, 30));
+    nlCancel = new wxButton(btnPan, BUTTON_CancelLoc, "Cancel", wxPoint(540, 550), wxSize(90, 30));
+    nlBack = new wxButton(btnPan, BUTTON_BackLoc2, "Back", wxPoint(15, 550), wxSize(90, 30));
+
+    nlNext->Bind(wxEVT_BUTTON, &LocationCreator::next, this);
+    nlBack->Bind(wxEVT_BUTTON, &LocationCreator::back, this);
+    nlCancel->Bind(wxEVT_BUTTON, &LocationCreator::cancel, this);
+
+    nlBack->Hide();
+
+    wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+    btnSizer->Add(nlBack, wxSizerFlags());
+    btnSizer->AddStretchSpacer();
+    btnSizer->Add(nlNext, wxSizerFlags());
+    btnSizer->AddSpacer(10);
+    btnSizer->Add(nlCancel, wxSizerFlags());
+
+    btnPan->SetSizer(btnSizer);
+
+    mainSiz = new wxBoxSizer(wxVERTICAL);
+    mainSiz->Add(nlPanel1, wxSizerFlags(1).Expand());
+    mainSiz->Add(nlPanel2, wxSizerFlags(1).Expand());
+    mainSiz->Add(nlPanel3, wxSizerFlags(1).Expand());
+    mainSiz->Add(btnPan, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM | wxRIGHT, 10));
+
+    SetSizer(mainSiz);
+    SetIcon(wxICON(locationIcon));
+
+    mainSiz->Layout();
+    this->Show();
 }
 
 vector<string> LocationCreator::getValues() {
@@ -182,7 +261,7 @@ vector<string> LocationCreator::getValues() {
 }
 
 void LocationCreator::setEdit(Location* location) {
-    nlNext->SetId(BUTTON_NextEditLoc);
+    nlNext->SetId(BUTTON_NextEditLoc1);
 
     nlName->SetValue(location->name);
     nlHBack->SetValue(location->background);
@@ -210,26 +289,7 @@ void LocationCreator::setEdit(Location* location) {
     locationEdit = location;
 }
 
-void LocationCreator::nextEdit(wxCommandEvent& WXUNUSED(event)) {
-    nlNext->SetId(BUTTON_CreateEditLoc);
-    nlNext->Reparent(nlPanel3);
-    nlCancel->Reparent(nlPanel3);
-    nlBack->SetId(BUTTON_BackEditLoc);
-    nlNext->SetLabel("Ok");
-    nlPanel1->Hide();
-    nlPanel3->Show();
-}
-
-void LocationCreator::backEdit(wxCommandEvent& WXUNUSED(event)) {
-    nlNext->Reparent(nlPanel1);
-    nlNext->SetId(BUTTON_NextEditLoc);
-    nlCancel->Reparent(nlPanel1);
-    nlNext->SetLabel("Next");
-    nlPanel3->Hide();
-    nlPanel1->Show();
-}
-
-void LocationCreator::edit(wxCommandEvent& WXUNUSED(event)) {
+void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
     mainFrame->getOutline()->getOutlineFiles()->deleteLocation(*locationEdit);
 
     vector<string> vec = getValues();
@@ -270,22 +330,90 @@ void LocationCreator::edit(wxCommandEvent& WXUNUSED(event)) {
     this->Destroy();
 }
 
-void LocationCreator::next(wxCommandEvent& WXUNUSED(event)) {
-    nlNext->SetId(BUTTON_CreateLoc);
-    nlNext->Reparent(nlPanel3);
-    nlCancel->Reparent(nlPanel3);
-    nlNext->SetLabel("Create");
-    nlPanel1->Hide();
-    nlPanel3->Show();
+void LocationCreator::next(wxCommandEvent& event) {
+    bool show1 = false, show2 = false, show3 = false;
+
+    switch (event.GetId()) {
+    case BUTTON_NextLoc1:
+        nlNext->SetId(BUTTON_NextLoc2);
+        nlBack->Show();
+        show2 = true;
+        break;
+
+    case BUTTON_NextLoc2:
+        nlNext->SetId(BUTTON_CreateLoc);
+        nlNext->SetLabel("Create");
+        nlBack->SetId(BUTTON_BackLoc2);
+        show3 = true;
+        break;
+
+    case BUTTON_NextEditLoc1:
+        nlNext->SetId(BUTTON_NextLoc2);
+        nlBack->Show();
+        show2 = true;
+        break;
+
+    case BUTTON_NextEditLoc2:
+        nlNext->SetId(BUTTON_CreateEditLoc);
+        nlNext->SetLabel("Ok");
+        nlBack->SetId(BUTTON_BackEditLoc2);
+        show3 = true;
+        break;
+
+    case BUTTON_CreateLoc:
+        create(event);
+        return;
+
+    case BUTTON_CreateEditLoc:
+        doEdit(event);
+        return;
+    }
+
+    nlPanel1->Show(show1);
+    nlPanel2->Show(show2);
+    nlPanel3->Show(show3);
+
+    mainSiz->Layout();
+    event.Skip();
 }
 
-void LocationCreator::back(wxCommandEvent& WXUNUSED(event)) {
-    nlNext->SetId(BUTTON_NextLoc);
-    nlNext->Reparent(nlPanel1);
-    nlCancel->Reparent(nlPanel1);
-    nlNext->SetLabel("Next");
-    nlPanel3->Hide();
-    nlPanel1->Show();
+void LocationCreator::back(wxCommandEvent& event) {
+    bool show1 = false, show2 = false, show3 = false;
+
+    switch (event.GetId()) {
+    case BUTTON_BackLoc1:
+        nlNext->SetId(BUTTON_NextLoc1);
+        nlBack->Hide();
+        show1 = true;
+        break;
+
+    case BUTTON_BackLoc2:
+        nlNext->SetLabel("Next");
+        nlNext->SetId(BUTTON_NextLoc2);
+        nlBack->SetId(BUTTON_BackLoc1);
+        show2 = true;
+        break;
+
+    case BUTTON_BackEditLoc1:
+        nlNext->SetId(BUTTON_NextLoc1);
+        nlBack->Hide();
+        show1 = true;
+        break;
+
+    case BUTTON_BackEditLoc2:
+        nlNext->SetId(BUTTON_NextEditLoc2);
+        nlNext->SetLabel("Next");
+        nlBack->SetId(BUTTON_BackEditLoc1);
+        show2 = true;
+        break;
+    }
+
+    nlPanel1->Show(show1);
+    nlPanel2->Show(show2);
+    nlPanel3->Show(show3);
+
+    mainSiz->Layout();
+    event.Skip();
 }
 
 void LocationCreator::setImage(wxCommandEvent& WXUNUSED(event)) {
@@ -331,9 +459,9 @@ void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
 
         mainFrame->isSaved = false;
         mainFrame->getOutline()->getOutlineFiles()->appendLocation(location);
-        mainFrame->Enable();
     }
 
+    mainFrame->Enable();
     Destroy();
 }
 
