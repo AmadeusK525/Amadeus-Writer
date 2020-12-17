@@ -8,9 +8,11 @@
 #include <wx/wx.h>
 
 #include "ImagePanel.h"
+#include "Location.h"
 
 using std::string;
 using std::vector;
+using std::pair;
 
 class LocationShowcase : public wxScrolledWindow {
 private:
@@ -29,10 +31,14 @@ private:
         * m_firstColumn = nullptr,
         * m_secondColumn = nullptr;
 
+    vector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
+
+    bool m_first = true;
+
 public:
     LocationShowcase(wxWindow* parent);
 
-    void setData(wxImage& set, vector<string> locData);
+    void setData(Location& location);
 };
 
 #endif

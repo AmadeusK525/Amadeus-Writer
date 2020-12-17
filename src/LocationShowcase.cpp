@@ -72,7 +72,7 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
     m_firstColumn->Add(label3, wxSizerFlags(0));
     m_firstColumn->Add(m_architecture, wxSizerFlags(0).Expand().Border(wxBOTTOM, 20));
     m_firstColumn->Add(label5, wxSizerFlags(0));
-    m_firstColumn->Add(m_culture, wxSizerFlags(0).Expand());
+    m_firstColumn->Add(m_culture, wxSizerFlags(0).Expand().Border(wxBOTTOM, 20));
 
     m_secondColumn = new wxBoxSizer(wxVERTICAL);
     m_secondColumn->Add(label2, wxSizerFlags(0));
@@ -80,7 +80,8 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
     m_secondColumn->Add(label4, wxSizerFlags(0));
     m_secondColumn->Add(m_economy, wxSizerFlags(0).Expand().Border(wxBOTTOM, 20));
     m_secondColumn->Add(label6, wxSizerFlags(0).Expand().Border(wxBOTTOM, 5));
-    m_secondColumn->Add(m_type, wxSizerFlags(0).CenterHorizontal());
+    m_secondColumn->Add(m_type, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM, 72));
+    //m_secondColumn->AddStretchSpacer(1);
 
     wxBoxSizer* horSizer = new wxBoxSizer(wxHORIZONTAL);
     horSizer->Add(m_firstColumn, wxSizerFlags(1).Expand().Border(wxRIGHT, 10));
@@ -105,71 +106,105 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
     this->SetScrollRate(15, 15);
 }
 
-void LocationShowcase::setData(wxImage& set, vector<string> locData) {
-    m_image->Show(m_image->setImage(set));
-    m_name->SetLabel(locData[0]);
+void LocationShowcase::setData(Location& location) {
+    m_image->Show(m_image->setImage(location.image));
+    m_name->SetLabel(location.name);
     
-    if (locData[7] == "High") {
+    if (location.importance == "High") {
         m_importance->SetBackgroundColour(wxColour(230, 60, 60));
         m_importance->SetLabel("Main");
     } else {
         m_importance->SetBackgroundColour(wxColour(220, 220, 220));
 
-        if (locData[7] == "Low")
+        if (location.importance == "Low")
             m_importance->SetLabel("Secondary");
         else
             m_importance->SetLabel("");
     }
 
-    m_background->SetValue(locData[1]);
-    m_natural->SetValue(locData[2]);
-    m_architecture->SetValue(locData[3]);
-    m_economy->SetValue(locData[5]);
-    m_culture->SetValue(locData[6]);
+    m_background->SetValue(location.background);
+    m_natural->SetValue(location.natural);
+    m_architecture->SetValue(location.architecture);
+    m_economy->SetValue(location.economy);
+    m_culture->SetValue(location.culture);
 
-    m_type->SetLabel(locData[4]);
-    if (locData[4] == "Private")
+    m_type->SetLabel(location.type);
+    if (location.type == "Private")
         m_type->SetBackgroundColour(wxColour(0, 0, 100));
-    else if (locData[4] == "Public")
+    else if (location.type == "Public")
         m_type->SetBackgroundColour(wxColour(100, 0, 0));
     else
         m_type->SetBackgroundColour(wxColour(50, 50, 50));
 
-    m_type->Show(!locData[4].empty());
+    m_type->Show(!location.type.empty());
 
-    int nol;
+    int tcsize = m_custom.size();
+    int ccsize = location.custom.size();
 
-    nol = m_background->GetNumberOfLines();
-    if (nol > 5)
-        m_firstColumn->SetItemMinSize(size_t(1), wxSize(-1, nol * 16));
-    else
-        m_firstColumn->SetItemMinSize(size_t(1), wxSize(-1, 80));
+    if (tcsize > ccsize) {
+        auto it = m_custom.end() - 1;
 
-    nol = m_natural->GetNumberOfLines();
-    if (nol > 5)
-        m_secondColumn->SetItemMinSize(size_t(1), wxSize(-1, nol * 16));
-    else
-        m_secondColumn->SetItemMinSize(size_t(1), wxSize(-1, 80));
+        for (int i = (tcsize - 1); i > (ccsize - 1); i--) {
+            m_custom[i].first->Destroy();
+            m_custom[i].second->Destroy();
+            m_custom.erase(it--);
 
-    nol = m_architecture->GetNumberOfLines();
-    if (nol > 5)
-        m_firstColumn->SetItemMinSize(size_t(3), wxSize(-1, nol * 16));
-    else
-        m_firstColumn->SetItemMinSize(size_t(3), wxSize(-1, 80));
+            m_first = !m_first;
+        }
+    }
 
-    nol = m_economy->GetNumberOfLines();
-    if (nol > 5)
-        m_secondColumn->SetItemMinSize(size_t(3), wxSize(-1, nol * 16));
-    else
-        m_secondColumn->SetItemMinSize(size_t(3), wxSize(-1, 80));
+    wxSize size(-1, 80);
 
-    nol = m_culture->GetNumberOfLines();
-    if (nol > 5)
-        m_firstColumn->SetItemMinSize(size_t(5), wxSize(-1, nol * 16));
-    else
-        m_firstColumn->SetItemMinSize(size_t(5), wxSize(-1, 80));
+    wxWindowList list;
+    list.Append(m_background);
+    list.Append(m_natural);
+    list.Append(m_architecture);
+    list.Append(m_economy);
+    list.Append(m_culture);
+
+    for (int i = 0; i < location.custom.size(); i++) {
+        if (i >= tcsize) {
+            wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
+                wxDefaultSize, wxBORDER_DOUBLE);
+            label->SetFont(wxFontInfo(12).Bold());
+            label->SetBackgroundColour(wxColour(180, 180, 180));
+
+            wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
+                size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
+            content->SetFont(wxFontInfo(9));
+            content->SetBackgroundColour(wxColour(225, 225, 225));
+            content->SetCursor(wxCURSOR_DEFAULT);
+
+            if (m_first) {
+                m_firstColumn->Add(label, wxSizerFlags(0).Left());
+                m_firstColumn->Add(content, wxSizerFlags(0).Border(wxBOTTOM, 20).Expand());
+            } else {
+                m_secondColumn->Add(label, wxSizerFlags(0).Left());
+                m_secondColumn->Add(content, wxSizerFlags(0).Border(wxBOTTOM, 20).Expand());
+            }
+
+            m_first = !m_first;
+            m_custom.push_back(pair<wxStaticText*, wxTextCtrl*>(label, content));
+        }
+
+        m_custom[i].first->SetLabel(location.custom[i].first);
+        m_custom[i].second->SetLabel(location.custom[i].second);
+
+        list.Append(m_custom[i].second);
+    }
 
     m_vertical->FitInside(this);
-    m_vertical->Layout();
+
+    int nol;
+    for (auto it : list) {
+        nol = ((wxTextCtrl*)it)->GetNumberOfLines();
+
+        if (nol > 5)
+            it->SetMinSize(wxSize(-1, nol * it->GetCharHeight() + 5));
+        else
+            it->SetMinSize(size);
+    }
+
+    m_vertical->FitInside(this);
     Refresh();
 }
