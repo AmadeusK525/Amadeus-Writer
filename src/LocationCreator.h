@@ -58,7 +58,8 @@ private:
 public:
     LocationCreator(wxWindow* parent, ElementsNotebook* notebook);
 
-    std::vector<std::string> getValues();
+    vector<string> getValues();
+    vector<pair<string, string>> getCustom();
 
     void setEdit(Location* location);
     void doEdit(wxCommandEvent& event);
