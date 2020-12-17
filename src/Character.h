@@ -1,3 +1,5 @@
+#ifndef CHARACTER_H_
+#define CHARACTER_H_
 #pragma once
 
 #include <wx/bitmap.h>
@@ -28,4 +30,4 @@ struct Character {
     void save(std::ofstream& out);
     void load(std::ifstream& in);
 };
-
+#endif
