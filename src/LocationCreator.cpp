@@ -459,7 +459,7 @@ void LocationCreator::removeImage(wxCommandEvent& WXUNUSED(event)) {
     nlRemoveImage->Hide();
 }
 
-void LocationCreator::addCustomAttr(wxCommandEvent& event) {
+void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
     wxPanel* panel = new wxPanel(nlPanel2);
     wxSize size(label6->GetSize());
     wxSize size2(nlArchitecture->GetSize());
@@ -477,6 +477,7 @@ void LocationCreator::addCustomAttr(wxCommandEvent& event) {
 
     wxButton* minus = new wxButton(panel, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
     minus->SetBitmap(wxBITMAP_PNG(minus));
+    minus->Bind(wxEVT_BUTTON, &LocationCreator::removeCustomAttr, this);
 
     wxBoxSizer* hor = new wxBoxSizer(wxHORIZONTAL);
     hor->Add(label, wxSizerFlags(1));
@@ -489,7 +490,29 @@ void LocationCreator::addCustomAttr(wxCommandEvent& event) {
     panel->SetSizer(ver);
 
     customSizer->Add(panel, wxSizerFlags(0).Border(wxALL, 5));
+    mainSiz->Layout();
 
+    nlCustom.push_back(pair<wxTextCtrl*, wxTextCtrl*>(label, content));
+    minusButtons.push_back(minus);
+}
+
+void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
+    wxButton* minus = (wxButton*)event.GetEventObject();
+
+    auto it1 = nlCustom.begin();
+    auto it2 = minusButtons.begin();
+
+    for (it2 = minusButtons.begin(); it2 != minusButtons.end(); it2++) {
+        if (*it2 == minus)
+            break;
+
+        it1++;
+    }
+
+    nlCustom.erase(it1);
+    minusButtons.erase(it2);
+
+    minus->GetParent()->Destroy();
     mainSiz->Layout();
 }
 

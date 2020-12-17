@@ -48,7 +48,8 @@ private:
 
     Location* locationEdit = nullptr;
 
-    vector<pair<wxTextCtrl*, wxTextCtrl*>> custom{};
+    vector<pair<wxTextCtrl*, wxTextCtrl*>> nlCustom{};
+    vector<wxButton*> minusButtons{};
 
     wxStaticText* label6 = nullptr;
     wxWrapSizer* customSizer = nullptr;
@@ -66,6 +67,7 @@ public:
     void removeImage(wxCommandEvent& event);
 
     void addCustomAttr(wxCommandEvent& event);
+    void removeCustomAttr(wxCommandEvent& event);
 
     void checkClose(wxCloseEvent& event);
     void next(wxCommandEvent& event);
