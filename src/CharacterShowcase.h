@@ -14,23 +14,23 @@ using std::pair;
 
 class CharacterShowcase : public wxScrolledWindow {
 private:
-	ImagePanel* image = nullptr;
-	wxStaticText* name = nullptr;
+	ImagePanel* m_image = nullptr;
+	wxStaticText* m_name = nullptr;
 
-	wxStaticText* age = nullptr,
-		* sex = nullptr,
-		* nat = nullptr,
-		* height = nullptr,
-		* nick = nullptr,
-		* role = nullptr;
+	wxStaticText* m_age = nullptr,
+		* m_sex = nullptr,
+		* m_nat = nullptr,
+		* m_height = nullptr,
+		* m_nick = nullptr,
+		* m_role = nullptr;
 
-	wxTextCtrl* appearance = nullptr,
-		* personality = nullptr,
-		* backstory = nullptr;
+	wxTextCtrl* m_appearance = nullptr,
+		* m_personality = nullptr,
+		* m_backstory = nullptr;
 
-	vector<pair<wxStaticText*, wxTextCtrl*>> custom{};
+	vector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 
-	wxBoxSizer* vertical = nullptr;
+	wxBoxSizer* m_vertical = nullptr;
 
 public:
 	CharacterShowcase(wxWindow* parent);
