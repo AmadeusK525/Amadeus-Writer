@@ -46,14 +46,14 @@ private:
     wxButton* nlChooseImage = nullptr,
         * nlRemoveImage = nullptr;
 
-    Location* locationEdit = nullptr;
+    Location* m_locationEdit = nullptr;
 
     vector<pair<wxTextCtrl*, wxTextCtrl*>> nlCustom{};
-    vector<wxButton*> minusButtons{};
+    vector<wxButton*> m_minusButtons{};
 
     wxStaticText* label6 = nullptr;
-    wxWrapSizer* customSizer = nullptr;
-    wxBoxSizer* mainSiz = nullptr;
+    wxWrapSizer* m_customSizer = nullptr;
+    wxBoxSizer* m_mainSiz = nullptr;
 
 public:
     LocationCreator(wxWindow* parent, ElementsNotebook* notebook);
