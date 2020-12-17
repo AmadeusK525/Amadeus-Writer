@@ -103,7 +103,7 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     nlPublic->SetFont(wxFont(wxFontInfo(11).Bold()));
     nlPublic->SetForegroundColour(wxColour(240, 240, 240));
 
-    wxStaticText* label6 = new wxStaticText(nlPanel1, wxID_ANY, "Economy",
+    label6 = new wxStaticText(nlPanel1, wxID_ANY, "Economy",
         wxPoint(220, 310), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
     label6->SetBackgroundColour(wxColour(230, 0, 20));
     label6->SetFont(wxFont(wxFontInfo(12).Bold()));
@@ -186,6 +186,31 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     nlPanel2 = new wxScrolledWindow(this);
     nlPanel2->Hide();
     nlPanel2->SetBackgroundColour(wxColour(40, 40, 40));
+    nlPanel2->SetScrollRate(20, 20);
+
+    wxStaticText* customLabel = new wxStaticText(nlPanel2, -1, "Custom attributes");
+    customLabel->SetBackgroundColour(wxColour(40, 40, 40));
+    customLabel->SetForegroundColour(wxColour(245, 245, 245));
+    customLabel->SetFont(wxFontInfo(15).Bold());
+
+    wxButton* addCustom = new wxButton(nlPanel2, -1, "", wxDefaultPosition, wxSize(25, 25));
+    addCustom->SetBitmap(wxBITMAP_PNG(plus));
+    addCustom->Bind(wxEVT_BUTTON, &LocationCreator::addCustomAttr, this);
+
+    wxBoxSizer* p2line = new wxBoxSizer(wxHORIZONTAL);
+    p2line->Add(customLabel, wxSizerFlags());
+    p2line->AddStretchSpacer();
+    p2line->Add(addCustom, wxSizerFlags());
+
+    customSizer = new wxWrapSizer(wxHORIZONTAL);
+
+    wxBoxSizer* p2ver = new wxBoxSizer(wxVERTICAL);
+    p2ver->Add(p2line, wxSizerFlags().Expand().Border(wxALL, 10));
+    p2ver->AddSpacer(10);
+    p2ver->Add(customSizer, wxSizerFlags(1).Expand().Border(wxLEFT, 5));
+
+    nlPanel2->SetSizer(p2ver);
+    p2ver->FitInside(nlPanel2);
 
     nlPanel3 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(655, 630));
     nlPanel3->Hide();
@@ -221,7 +246,7 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     mainSiz->Add(nlPanel1, wxSizerFlags(1).Expand());
     mainSiz->Add(nlPanel2, wxSizerFlags(1).Expand());
     mainSiz->Add(nlPanel3, wxSizerFlags(1).Expand());
-    mainSiz->Add(btnPan, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM | wxRIGHT, 10));
+    mainSiz->Add(btnPan, wxSizerFlags(0).Expand().Border(wxALL, 10));
 
     SetSizer(mainSiz);
     SetIcon(wxICON(locationIcon));
@@ -432,6 +457,40 @@ void LocationCreator::removeImage(wxCommandEvent& WXUNUSED(event)) {
     nlImagePanel->ClearBackground();
     nlImage.Destroy();
     nlRemoveImage->Hide();
+}
+
+void LocationCreator::addCustomAttr(wxCommandEvent& event) {
+    wxPanel* panel = new wxPanel(nlPanel2);
+    wxSize size(label6->GetSize());
+    wxSize size2(nlArchitecture->GetSize());
+
+    wxTextCtrl* label = new wxTextCtrl(panel, -1, "Title",
+        wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE | wxTE_CENTER);
+    wxTextCtrl* content = new wxTextCtrl(panel, -1, "", wxDefaultPosition,
+        wxSize(size2.x - 10, size2.y), wxTE_MULTILINE | wxBORDER_SIMPLE);
+
+    content->SetBackgroundColour(wxColour(70, 70, 70));
+    content->SetForegroundColour(wxColour(250, 250, 250));
+
+    label->SetBackgroundColour(wxColour(230, 0, 20));
+    label->SetFont(wxFontInfo(13).Bold());
+
+    wxButton* minus = new wxButton(panel, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
+    minus->SetBitmap(wxBITMAP_PNG(minus));
+
+    wxBoxSizer* hor = new wxBoxSizer(wxHORIZONTAL);
+    hor->Add(label, wxSizerFlags(1));
+    hor->Add(minus, wxSizerFlags(0).Expand());
+
+    wxBoxSizer* ver = new wxBoxSizer(wxVERTICAL);
+    ver->Add(hor, wxSizerFlags(0).Expand());
+    ver->Add(content, wxSizerFlags(1).Expand());
+
+    panel->SetSizer(ver);
+
+    customSizer->Add(panel, wxSizerFlags(0).Border(wxALL, 5));
+
+    mainSiz->Layout();
 }
 
 void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
