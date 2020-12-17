@@ -6,6 +6,14 @@
 #include "ImagePanel.h"
 #include "Location.h"
 
+#include <wx\wrapsizer.h>
+
+#include <vector>
+
+using std::string;
+using std::vector;
+using std::pair;
+
 class LocationCreator: public wxFrame {
 private:
     MainFrame* mainFrame = nullptr;
@@ -40,6 +48,10 @@ private:
 
     Location* locationEdit = nullptr;
 
+    vector<pair<wxTextCtrl*, wxTextCtrl*>> custom{};
+
+    wxStaticText* label6 = nullptr;
+    wxWrapSizer* customSizer = nullptr;
     wxBoxSizer* mainSiz = nullptr;
 
 public:
@@ -52,6 +64,8 @@ public:
 
     void setImage(wxCommandEvent& event);
     void removeImage(wxCommandEvent& event);
+
+    void addCustomAttr(wxCommandEvent& event);
 
     void checkClose(wxCloseEvent& event);
     void next(wxCommandEvent& event);
