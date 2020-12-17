@@ -68,6 +68,7 @@ public:
 
     void addCustomAttr(wxCommandEvent& event);
     void removeCustomAttr(wxCommandEvent& event);
+    void recolorCustoms();
 
     void checkClose(wxCloseEvent& event);
     void next(wxCommandEvent& event);

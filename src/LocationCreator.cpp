@@ -472,7 +472,7 @@ void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
     content->SetBackgroundColour(wxColour(70, 70, 70));
     content->SetForegroundColour(wxColour(250, 250, 250));
 
-    label->SetBackgroundColour(wxColour(230, 0, 20));
+    label->SetBackgroundColour(wxColour(200, 200, 200));
     label->SetFont(wxFontInfo(13).Bold());
 
     wxButton* minus = new wxButton(panel, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
@@ -494,6 +494,9 @@ void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 
     nlCustom.push_back(pair<wxTextCtrl*, wxTextCtrl*>(label, content));
     minusButtons.push_back(minus);
+
+    recolorCustoms();
+    Refresh();
 }
 
 void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
@@ -514,6 +517,24 @@ void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
 
     minus->GetParent()->Destroy();
     mainSiz->Layout();
+
+    recolorCustoms();
+    Refresh();
+}
+
+void LocationCreator::recolorCustoms() {
+    wxColour red(230, 0, 20);
+    wxColour grey(200, 200, 200);
+
+    bool doRed = true;
+    for (auto it : nlCustom) {
+        if (doRed)
+            it.first->SetBackgroundColour(red);
+        else
+            it.first->SetBackgroundColour(grey);
+
+        doRed = !doRed;
+    }
 }
 
 void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
