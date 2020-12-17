@@ -39,6 +39,19 @@ void Location::save(std::ofstream& out) {
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
         out.write(importance.c_str(), size);
 
+        size = custom.size();
+        out.write(reinterpret_cast<char*>(&size), sizeof(int));
+
+        for (int i = 0; i < custom.size(); i++) {
+            size = custom[i].first.size() + 1;
+            out.write(reinterpret_cast<char*>(&size), sizeof(int));
+            out.write(custom[i].first.c_str(), size);
+
+            size = custom[i].second.size() + 1;
+            out.write(reinterpret_cast<char*>(&size), sizeof(int));
+            out.write(custom[i].second.c_str(), size);
+        }
+
         out.write((char*)&chapters, sizeof(int));
 
         out.write((char*)&firstChap, sizeof(int));
@@ -98,6 +111,25 @@ void Location::load(std::ifstream& in) {
         in.read(data, size);
         importance = data;
         delete data;
+
+        in.read(reinterpret_cast<char*>(&size), sizeof(int));
+
+        int size2;
+        for (int i = 0; i < size; i++) {
+            custom.push_back(pair<string, string>(string(), string()));
+
+            in.read(reinterpret_cast<char*>(&size2), sizeof(int));
+            data = new char[size2];
+            in.read(data, size2);
+            custom[i].first = data;
+            delete data;
+
+            in.read(reinterpret_cast<char*>(&size2), sizeof(int));
+            data = new char[size2];
+            in.read(data, size2);
+            custom[i].second = data;
+            delete data;
+        }
 
         in.read((char*)&chapters, sizeof(int));
 
