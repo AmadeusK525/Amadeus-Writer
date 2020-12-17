@@ -202,12 +202,12 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
     p2line->AddStretchSpacer();
     p2line->Add(addCustom, wxSizerFlags());
 
-    customSizer = new wxWrapSizer(wxHORIZONTAL);
+    m_customSizer = new wxWrapSizer(wxHORIZONTAL);
 
     wxBoxSizer* p2ver = new wxBoxSizer(wxVERTICAL);
     p2ver->Add(p2line, wxSizerFlags().Expand().Border(wxALL, 10));
     p2ver->AddSpacer(10);
-    p2ver->Add(customSizer, wxSizerFlags(1).Expand().Border(wxLEFT, 5));
+    p2ver->Add(m_customSizer, wxSizerFlags(1).Expand().Border(wxLEFT, 5));
 
     nlPanel2->SetSizer(p2ver);
     p2ver->FitInside(nlPanel2);
@@ -242,16 +242,16 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook) :
 
     btnPan->SetSizer(btnSizer);
 
-    mainSiz = new wxBoxSizer(wxVERTICAL);
-    mainSiz->Add(nlPanel1, wxSizerFlags(1).Expand());
-    mainSiz->Add(nlPanel2, wxSizerFlags(1).Expand());
-    mainSiz->Add(nlPanel3, wxSizerFlags(1).Expand());
-    mainSiz->Add(btnPan, wxSizerFlags(0).Expand().Border(wxALL, 10));
+    m_mainSiz = new wxBoxSizer(wxVERTICAL);
+    m_mainSiz->Add(nlPanel1, wxSizerFlags(1).Expand());
+    m_mainSiz->Add(nlPanel2, wxSizerFlags(1).Expand());
+    m_mainSiz->Add(nlPanel3, wxSizerFlags(1).Expand());
+    m_mainSiz->Add(btnPan, wxSizerFlags(0).Expand().Border(wxALL, 10));
 
-    SetSizer(mainSiz);
+    SetSizer(m_mainSiz);
     SetIcon(wxICON(locationIcon));
 
-    mainSiz->Layout();
+    m_mainSiz->Layout();
     this->Show();
 }
 
@@ -311,45 +311,45 @@ void LocationCreator::setEdit(Location* location) {
         nlRemoveImage->Show();
     }
 
-    locationEdit = location;
+    m_locationEdit = location;
 }
 
 void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
-    mainFrame->getOutline()->getOutlineFiles()->deleteLocation(*locationEdit);
+    mainFrame->getOutline()->getOutlineFiles()->deleteLocation(*m_locationEdit);
 
     vector<string> vec = getValues();
     string temp;
 
-    if (nlName->IsModified() || locationEdit->importance != vec[7]) {
-        notebook->removeLocName(locationEdit->name);
-        temp = locationEdit->importance;
-        mainFrame->locations.erase(locationEdit->importance + locationEdit->name);
+    if (nlName->IsModified() || m_locationEdit->importance != vec[7]) {
+        notebook->removeLocName(m_locationEdit->name);
+        temp = m_locationEdit->importance;
+        mainFrame->locations.erase(m_locationEdit->importance + m_locationEdit->name);
         Location dummy;
-        locationEdit = &dummy;
+        m_locationEdit = &dummy;
     }
 
-    locationEdit->name = vec[0];
-    locationEdit->background = vec[1];
-    locationEdit->natural = vec[2];
-    locationEdit->architecture = vec[3];
-    locationEdit->type = vec[4];
-    locationEdit->economy = vec[5];
-    locationEdit->culture = vec[6];
-    locationEdit->importance = vec[7];
+    m_locationEdit->name = vec[0];
+    m_locationEdit->background = vec[1];
+    m_locationEdit->natural = vec[2];
+    m_locationEdit->architecture = vec[3];
+    m_locationEdit->type = vec[4];
+    m_locationEdit->economy = vec[5];
+    m_locationEdit->culture = vec[6];
+    m_locationEdit->importance = vec[7];
 
-    locationEdit->image = nlImage;
+    m_locationEdit->image = nlImage;
 
-    if (nlName->IsModified() || locationEdit->importance != temp) {
-        notebook->addLocName(locationEdit->name);
-        MainFrame::locations[locationEdit->importance + locationEdit->name] = *locationEdit;
+    if (nlName->IsModified() || m_locationEdit->importance != temp) {
+        notebook->addLocName(m_locationEdit->name);
+        MainFrame::locations[m_locationEdit->importance + m_locationEdit->name] = *m_locationEdit;
         notebook->setSearchAC(wxBookCtrlEvent());
         notebook->updateLB();
     }
 
-    notebook->locShow->setData(locationEdit->image, vec);
+    notebook->locShow->setData(m_locationEdit->image, vec);
 
     mainFrame->isSaved = false;
-    mainFrame->getOutline()->getOutlineFiles()->appendLocation(*locationEdit);
+    mainFrame->getOutline()->getOutlineFiles()->appendLocation(*m_locationEdit);
     mainFrame->Enable();
 
     this->Destroy();
@@ -398,7 +398,7 @@ void LocationCreator::next(wxCommandEvent& event) {
     nlPanel2->Show(show2);
     nlPanel3->Show(show3);
 
-    mainSiz->Layout();
+    m_mainSiz->Layout();
     event.Skip();
 }
 
@@ -437,7 +437,7 @@ void LocationCreator::back(wxCommandEvent& event) {
     nlPanel2->Show(show2);
     nlPanel3->Show(show3);
 
-    mainSiz->Layout();
+    m_mainSiz->Layout();
     event.Skip();
 }
 
@@ -489,11 +489,11 @@ void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 
     panel->SetSizer(ver);
 
-    customSizer->Add(panel, wxSizerFlags(0).Border(wxALL, 5));
-    mainSiz->Layout();
+    m_customSizer->Add(panel, wxSizerFlags(0).Border(wxALL, 5));
+    m_mainSiz->Layout();
 
     nlCustom.push_back(pair<wxTextCtrl*, wxTextCtrl*>(label, content));
-    minusButtons.push_back(minus);
+    m_minusButtons.push_back(minus);
 
     recolorCustoms();
     Refresh();
@@ -503,9 +503,9 @@ void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
     wxButton* minus = (wxButton*)event.GetEventObject();
 
     auto it1 = nlCustom.begin();
-    auto it2 = minusButtons.begin();
+    auto it2 = m_minusButtons.begin();
 
-    for (it2 = minusButtons.begin(); it2 != minusButtons.end(); it2++) {
+    for (it2 = m_minusButtons.begin(); it2 != m_minusButtons.end(); it2++) {
         if (*it2 == minus)
             break;
 
@@ -513,10 +513,10 @@ void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
     }
 
     nlCustom.erase(it1);
-    minusButtons.erase(it2);
+    m_minusButtons.erase(it2);
 
     minus->GetParent()->Destroy();
-    mainSiz->Layout();
+    m_mainSiz->Layout();
 
     recolorCustoms();
     Refresh();
