@@ -167,10 +167,9 @@ void CharacterShowcase::setData(Character& character) {
     int ccsize = character.custom.size();
 
     if (tcsize > ccsize) {
-        auto it = custom.end();
-        it--;
+        auto it = custom.end() - 1;
 
-        for (int i = tcsize - 1; i > ccsize - 1; i--) {
+        for (int i = (tcsize - 1); i > (ccsize - 1); i--) {
             custom[i].first->Destroy();
             custom[i].second->Destroy();
             custom.erase(it--);
