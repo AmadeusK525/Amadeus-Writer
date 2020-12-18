@@ -229,11 +229,6 @@ void ElementsNotebook::charSelected(wxListEvent& event) {
     charShow->setData(it->second);
 }
 
-void ElementsNotebook::charDeselected(wxListEvent& WXUNUSED(event)) {
-    //if (charList->GetSelectedItemCount() == 0)
-        //charShow->setData(wxImage(), vector<string>(10, ""));
-}
-
 void ElementsNotebook::locSelected(wxListEvent& WXUNUSED(event)) {
     long sel = locList->GetFirstSelected();
 
@@ -243,10 +238,6 @@ void ElementsNotebook::locSelected(wxListEvent& WXUNUSED(event)) {
     }
 
     locShow->setData(it->second);
-}
-
-void ElementsNotebook::locDeselected(wxListEvent& WXUNUSED(event)) {
-    //locShow->setData(Location());
 }
 
 void ElementsNotebook::updateLB() {

@@ -40,9 +40,7 @@ public:
     void openLoc(wxListEvent& event);
 
     void charSelected(wxListEvent& event);
-    void charDeselected(wxListEvent& event);
     void locSelected(wxListEvent& event);
-    void locDeselected(wxListEvent& event);
 
     void setSearchAC(wxBookCtrlEvent& event);
     void addCharName(string& name);
