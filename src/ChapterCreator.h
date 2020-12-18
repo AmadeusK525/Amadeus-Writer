@@ -10,28 +10,30 @@
 #include "DragList.h"
 #include "ChaptersGrid.h"
 
+using std::string;
+
 class ChapterCreator: public wxFrame {
 private:
-    MainFrame* mainFrame = nullptr;
-    ChaptersNotebook* notebook = nullptr;
+    MainFrame* m_mainFrame = nullptr;
+    ChaptersNotebook* m_notebook = nullptr;
 
-    wxPanel* nchapPanel1 = nullptr;
-    wxPanel* nchapPanel2 = nullptr;
+    wxPanel* m_nchapPanel1 = nullptr;
+    wxPanel* m_nchapPanel2 = nullptr;
 
-    wxStaticText* mainLabel = nullptr;
+    wxStaticText* m_mainLabel = nullptr;
 
-    wxTextCtrl* nchapName = nullptr;
-    wxTextCtrl* nchapSummary = nullptr;
+    wxTextCtrl* m_nchapName = nullptr;
+    wxTextCtrl* m_nchapSummary = nullptr;
 
-    DragList* nchapList = nullptr;
+    DragList* m_nchapList = nullptr;
 
-    wxButton* nchapNext = nullptr;
-    wxButton* nchapBack = nullptr;
-    wxButton* nchapCancel = nullptr;
+    wxButton* m_nchapNext = nullptr;
+    wxButton* m_nchapBack = nullptr;
+    wxButton* m_nchapCancel = nullptr;
 
-    std::string tempName{};
+    string m_tempName{};
 
-    bool firstNext = true; 
+    bool m_firstNext = true;
 
 public:
     ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook);
@@ -54,7 +56,5 @@ enum {
     BUTTON_BackChapter,
     BUTTON_CreateChapter,
 };
-
-
 
 #endif
