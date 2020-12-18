@@ -524,6 +524,7 @@ void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
+    Freeze();
     wxButton* minus = (wxButton*)event.GetEventObject();
 
     auto it1 = nlCustom.begin();
@@ -543,7 +544,7 @@ void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
     m_mainSiz->Layout();
 
     recolorCustoms();
-    Refresh();
+    Thaw();
 }
 
 void LocationCreator::recolorCustoms() {

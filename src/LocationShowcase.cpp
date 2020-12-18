@@ -107,7 +107,7 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
 }
 
 void LocationShowcase::setData(Location& location) {
-    m_image->Show(m_image->setImage(location.image));
+    Freeze();
     m_name->SetLabel(location.name);
     
     if (location.importance == "High") {
@@ -166,14 +166,8 @@ void LocationShowcase::setData(Location& location) {
         if (i >= tcsize) {
             wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
                 wxDefaultSize, wxBORDER_DOUBLE);
-            label->SetFont(wxFontInfo(12).Bold());
-            label->SetBackgroundColour(wxColour(180, 180, 180));
-
             wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
                 size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
-            content->SetFont(wxFontInfo(9));
-            content->SetBackgroundColour(wxColour(225, 225, 225));
-            content->SetCursor(wxCURSOR_DEFAULT);
 
             if (m_first) {
                 m_firstColumn->Add(label, wxSizerFlags(0).Left());
@@ -182,6 +176,13 @@ void LocationShowcase::setData(Location& location) {
                 m_secondColumn->Add(label, wxSizerFlags(0).Left());
                 m_secondColumn->Add(content, wxSizerFlags(0).Border(wxBOTTOM, 20).Expand());
             }
+
+            label->SetFont(wxFontInfo(12).Bold());
+            label->SetBackgroundColour(wxColour(180, 180, 180));
+
+            content->SetFont(wxFontInfo(9));
+            content->SetBackgroundColour(wxColour(225, 225, 225));
+            content->SetCursor(wxCURSOR_DEFAULT);
 
             m_first = !m_first;
             m_custom.push_back(pair<wxStaticText*, wxTextCtrl*>(label, content));
@@ -205,6 +206,7 @@ void LocationShowcase::setData(Location& location) {
             it->SetMinSize(size);
     }
 
+    m_image->Show(m_image->setImage(location.image));
     m_vertical->FitInside(this);
-    Refresh();
+    Thaw();
 }
