@@ -115,6 +115,7 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
 }
 
 void CharacterShowcase::setData(Character& character) {
+    Freeze();
     m_name->SetLabel(character.name);
     m_sex->SetLabel(character.sex);
 
@@ -200,5 +201,5 @@ void CharacterShowcase::setData(Character& character) {
     }
 
     m_vertical->FitInside(this);
-    Refresh();
+    Thaw();
 }
