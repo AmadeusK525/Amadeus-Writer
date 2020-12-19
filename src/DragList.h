@@ -14,7 +14,6 @@ private:
     wxWindow* parent = nullptr;
 
 public:
-    wxDragImage* dragImage = nullptr;
     std::string tempName{};
 
     typedef enum {
@@ -32,10 +31,10 @@ private:
     void onMouseMotion(wxMouseEvent& evt);
     void endDragging();
 
-    void selectItem(wxMouseEvent& evt);
-
 public:
     DragList(wxWindow* parent, const wxSize& size);
+
+    void selectItem(wxMouseEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };
