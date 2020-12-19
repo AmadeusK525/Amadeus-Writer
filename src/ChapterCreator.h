@@ -17,19 +17,21 @@ private:
     MainFrame* m_mainFrame = nullptr;
     ChaptersNotebook* m_notebook = nullptr;
 
-    wxPanel* m_nchapPanel1 = nullptr;
-    wxPanel* m_nchapPanel2 = nullptr;
+    wxPanel* m_nchapPanel1 = nullptr,
+        * m_nchapPanel2 = nullptr;
 
-    wxStaticText* m_mainLabel = nullptr;
+    wxPanel* m_btnPanel = nullptr;
 
     wxTextCtrl* m_nchapName = nullptr;
     wxTextCtrl* m_nchapSummary = nullptr;
 
     DragList* m_nchapList = nullptr;
 
-    wxButton* m_nchapNext = nullptr;
-    wxButton* m_nchapBack = nullptr;
-    wxButton* m_nchapCancel = nullptr;
+    wxButton* m_nchapNext = nullptr,
+        * m_nchapBack = nullptr,
+        * m_nchapCancel = nullptr;
+
+    wxBoxSizer* m_mainHor = nullptr;
 
     string m_tempName{};
 
