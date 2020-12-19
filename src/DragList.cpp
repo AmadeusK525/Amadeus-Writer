@@ -1,5 +1,8 @@
 #include "DragList.h"
 
+#include <wx\dcbuffer.h>
+#include <wx\wx.h>
+
 #include "wxmemdbg.h"
 
 BEGIN_EVENT_TABLE(DragList, wxListView)
@@ -13,18 +16,18 @@ EVT_MOTION(DragList::onMouseMotion)
 END_EVENT_TABLE()
 
 DragList::DragList(wxWindow* parent, const wxSize& size) :
-    wxListView(parent, -1, wxDefaultPosition, size, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxBORDER_DOUBLE) {
+    wxListView(parent, -1, wxDefaultPosition, size, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxBORDER_SIMPLE) {
     this->parent = parent;
 
-    posMarker = new wxPanel(this, -1, wxPoint(0, GetSize().y / 2), wxSize(size.x, 2));
+    posMarker = new wxPanel(this, -1, wxPoint(0, GetSize().y / 2));
     posMarker->Hide();
+    posMarker->Enable(false);
     posMarker->SetBackgroundColour(wxColour(10, 10, 10, 100));
 
     SetDoubleBuffered(true);
 }
 
 void DragList::onLeftDown(wxMouseEvent& evt) {
-    //if (GetItemCount() > 1)
     state = DRAG_START;
 }
 
@@ -56,11 +59,12 @@ void DragList::onLeftUp(wxMouseEvent& evt) {
         InsertItem(insert, tempName);
         selectItem(evt);
     }
+
     endDragging();
 }
 
 void DragList::onLeaveWindow(wxMouseEvent& evt) {
-    if (dragImage) {
+    if (state == DRAGGING) {
         endDragging();
         InsertItem(previous, tempName);
         selectItem(evt);
@@ -68,7 +72,6 @@ void DragList::onLeaveWindow(wxMouseEvent& evt) {
 }
 
 void DragList::onMouseMotion(wxMouseEvent& evt) {
-    this;
     wxPoint evtPos = evt.GetPosition();
     int listFlags = wxLIST_HITTEST_ONITEMICON | wxLIST_HITTEST_ONITEMLABEL | wxLIST_HITTEST_ONITEMSTATEICON;
 
@@ -77,21 +80,12 @@ void DragList::onMouseMotion(wxMouseEvent& evt) {
         itemDragging = HitTest(evtPos, listFlags);
         if (itemDragging == FindItem(-1, tempName)) {
             previous = itemDragging;
-            // create dragImage
-            if (dragImage) {
-                delete dragImage;
-            }
-
-            dragImage = new wxDragImage(GetItemText(itemDragging));
-
-            // position the dragImage right on top of the dragged item and
-            // start dragging
+            
             wxRect rect;
-            GetItemRect(itemDragging, rect, wxLIST_RECT_BOUNDS);
-            dragImage->BeginDrag(evtPos - rect.GetLeftTop(), this);
-            dragImage->Show();
+            GetItemRect(previous, rect, wxLIST_RECT_BOUNDS);
 
             posMarker->SetPosition(rect.GetTopLeft());
+            posMarker->SetSize(GetSize().x, 2);
 
             state = DRAGGING;
             SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
@@ -119,8 +113,6 @@ void DragList::onMouseMotion(wxMouseEvent& evt) {
             posMarker->SetPosition(rect.GetTopLeft());
         }
 
-        dragImage->Hide();
-
         if (posMarker->GetPosition().y > 20) {
             posMarker->Show();
         } else {
@@ -129,21 +121,11 @@ void DragList::onMouseMotion(wxMouseEvent& evt) {
 
         Refresh(false);
         Update();
-
-        dragImage->Show();
-        dragImage->Move(evtPos);
     }
 }
 
-
 void DragList::endDragging() {
     state = DRAG_NONE;
-
-    if (dragImage) {
-        dragImage->EndDrag();
-        delete dragImage;
-        dragImage = nullptr;
-    }
 
     posMarker->Hide();
     posMarker->SetPosition(wxPoint(0, GetSize().y / 2));
