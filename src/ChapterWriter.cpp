@@ -215,6 +215,7 @@ ChapterWriter::ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int n
     statusBar = CreateStatusBar(3);
     statusBar->SetStatusText("Chapter up-to-date", 0);
     statusBar->SetStatusText("Number of words: 0", 1);
+    statusBar->SetStatusText("Zoom: 100%", 2);
     statusBar->SetBackgroundColour(wxColour(100, 100, 100));
 
     chapWriterNotebook->notesSize.x = (chapWriterNotebook->corkBoard->GetSize().x / 3) - 30;
@@ -598,6 +599,7 @@ EVT_TOOL(TOOL_AlignCenter, ChapterWriterNotebook::setAlignCenter)
 EVT_TOOL(TOOL_AlignCenterJust, ChapterWriterNotebook::setAlignCenterJust)
 EVT_TOOL(TOOL_AlignRight, ChapterWriterNotebook::setAlignRight)
 
+EVT_SLIDER(TOOL_ContentScale, ChapterWriterNotebook::onZoom)
 EVT_TOOL(TOOL_ChapterFullScreen, ChapterWriterNotebook::onFullScreen)
 EVT_TOOL(TOOL_PageView, ChapterWriterNotebook::onPageView)
 
@@ -759,6 +761,13 @@ void ChapterWriterNotebook::setAlignCenterJust(wxCommandEvent& event) {
 void ChapterWriterNotebook::setAlignRight(wxCommandEvent& event) {
     content->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
     setModified(event);
+}
+
+void ChapterWriterNotebook::onZoom(wxCommandEvent& event) {
+    int zoom = event.GetInt();
+
+    content->SetScale((double)zoom / 100.0, true);
+    parent->statusBar->SetStatusText(wxString("Zoom: ") << zoom << "%", 2);
 }
 
 void ChapterWriterNotebook::onFullScreen(wxCommandEvent& WXUNUSED(event)) {

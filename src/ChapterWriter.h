@@ -141,6 +141,8 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     void setAlignCenterJust(wxCommandEvent& event);
     void setAlignRight(wxCommandEvent& event);
 
+    void onZoom(wxCommandEvent& event);
+
     void onFullScreen(wxCommandEvent& event);
     void onPageView(wxCommandEvent& event);
 
