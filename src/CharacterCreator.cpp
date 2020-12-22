@@ -408,7 +408,7 @@ void CharacterCreator::doEdit(wxCommandEvent& event) {
         n++;
     }
 
-    notebook->locList->Select(n);
+    notebook->charList->Select(n);
 
     mainFrame->isSaved = false;
     mainFrame->getOutline()->getOutlineFiles()->appendCharacter(*charEdit);
