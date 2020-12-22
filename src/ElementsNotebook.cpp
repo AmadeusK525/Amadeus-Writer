@@ -70,10 +70,9 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent) : wxNotebook(parent, NOTEBO
     locList = new wxListView(locFrame, LIST_LocList, wxDefaultPosition, wxDefaultSize,
         wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
     locList->InsertColumn(0, "Name of location", wxLIST_FORMAT_CENTER, 150);
-    locList->InsertColumn(1, "Space type", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    locList->InsertColumn(2, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    locList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-    locList->InsertColumn(4, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    locList->InsertColumn(1, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    locList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    locList->InsertColumn(3, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
     locList->SetBackgroundColour(wxColour(45, 45, 45));
     locList->SetForegroundColour(wxColour(245, 245, 245));
@@ -82,8 +81,8 @@ ElementsNotebook::ElementsNotebook(wxWindow* parent) : wxNotebook(parent, NOTEBO
     locShow = new LocationShowcase(locFrame);
 
     wxBoxSizer* locSizer = new wxBoxSizer(wxHORIZONTAL);
-    locSizer->Add(locList, 1, wxGROW | wxLEFT | wxTOP | wxBOTTOM, 10);
-    locSizer->Add(locShow, 1, wxGROW | wxTOP | wxBOTTOM, 10);
+    locSizer->Add(locList, 4, wxGROW | wxLEFT | wxTOP | wxBOTTOM, 10);
+    locSizer->Add(locShow, 5, wxGROW | wxTOP | wxBOTTOM, 10);
     locFrame->SetSizer(locSizer);
     this->AddPage(locFrame, "Locations");
 
@@ -117,7 +116,8 @@ void ElementsNotebook::editChar(wxCommandEvent& WXUNUSED(event)) {
         it++;
     }
 
-    CharacterCreator* edit = new CharacterCreator(mainFrame, this);
+    CharacterCreator* edit = new CharacterCreator(mainFrame, this, -1,
+        "Create character", wxDefaultPosition, FromDIP(wxSize(550, 650)));
     edit->SetTitle("Edit character - " + it->second.name);
     edit->CenterOnParent();
 
@@ -177,7 +177,9 @@ void ElementsNotebook::editLoc(wxCommandEvent& WXUNUSED(event)) {
         it++;
     }
 
-    LocationCreator* edit = new LocationCreator(mainFrame, this);
+    LocationCreator* edit = new LocationCreator(mainFrame, this, -1, wxDefaultPosition,
+        FromDIP(wxSize(900, 650)));
+
     edit->SetTitle("Edit location - " + it->second.name);
     edit->CenterOnParent();
 
@@ -268,14 +270,13 @@ void ElementsNotebook::updateLB() {
 
     for (auto it = MainFrame::locations.begin(); it != MainFrame::locations.end(); it++) {
         locList->InsertItem(i, it->second.name);
-        locList->SetItem(i, 1, it->second.type);
-        locList->SetItem(i, 2, it->second.importance);
-        locList->SetItem(i, 4, std::to_string(it->second.chapters));
+        locList->SetItem(i, 1, it->second.importance);
+        locList->SetItem(i, 3, std::to_string(it->second.chapters));
 
         if (it->second.hasAppeared) {
-            locList->SetItem(i, 3, "Chapter " + std::to_string(it->second.firstChap));
+            locList->SetItem(i, 2, "Chapter " + std::to_string(it->second.firstChap));
         } else {
-            locList->SetItem(i, 3, "-");
+            locList->SetItem(i, 2, "-");
         }
 
         i++;

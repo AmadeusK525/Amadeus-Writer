@@ -27,18 +27,16 @@ private:
     wxImage nlImage;
 
     wxTextCtrl* nlName = nullptr,
-        * nlHBack = nullptr,
+        * nlGeneral = nullptr,
         * nlNatural = nullptr,
         * nlArchitecture = nullptr,
+        * nlPolitics = nullptr,
         * nlEconomy = nullptr,
         * nlCulture = nullptr;
 
     wxButton* nlCancel = nullptr,
         * nlNext = nullptr,
         * nlBack = nullptr;
-
-    wxRadioButton* nlPrivate = nullptr,
-        * nlPublic = nullptr;
 
     wxRadioButton* nlHigh = nullptr,
         * nlLow = nullptr;
@@ -56,7 +54,13 @@ private:
     wxBoxSizer* m_mainSiz = nullptr;
 
 public:
-    LocationCreator(wxWindow* parent, ElementsNotebook* notebook);
+    LocationCreator(wxWindow* parent,
+        ElementsNotebook* notebook,
+        wxWindowID id,
+        const wxPoint& pos,
+        const wxSize& size,
+        long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
+        wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
     vector<string> getValues();
     vector<pair<string, string>> getCustom();

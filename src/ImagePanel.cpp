@@ -46,30 +46,14 @@ void ImagePanel::newScale() {
     int neww;
     int newh;
 
-    int xpos;
-    int ypos;
-
-    if (width > height) {
-        scale = (float)height / width;
-
-        neww = size.x;
-        newh = size.x * scale;
-
-        xpos = 0;
-        ypos = (size.y - newh) / 2;
-
-    } else {
-        scale = (float)width / height;
-
-        newh = size.y;
-        neww = size.y * scale;
-
-        xpos = (size.x - neww) / 2;
-        ypos = 0;
-    }
+    scale = (float)width / height;
+    newh = size.y;
+    neww = size.y * scale;
 
     image.Rescale(neww, newh, wxIMAGE_QUALITY_HIGH);
-    image.Resize(size, wxPoint(xpos, ypos), colour.Red(), colour.Green(), colour.Blue());
+
+    SetSize(wxSize(neww, newh));
+    SetMinSize(wxSize(neww, newh));
 }
 
 void ImagePanel::setImageAsIs(wxImage& im) {

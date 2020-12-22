@@ -17,6 +17,15 @@ private:
 	ImagePanel* m_image = nullptr;
 	wxStaticText* m_name = nullptr;
 
+	wxStaticText* m_ageLabel = nullptr,
+		* m_sexLabel = nullptr,
+		* m_natLabel = nullptr,
+		* m_heightLabel = nullptr,
+		* m_nickLabel = nullptr,
+		* m_appLabel = nullptr,
+		* m_perLabel = nullptr,
+		* m_bsLabel = nullptr;
+
 	wxStaticText* m_age = nullptr,
 		* m_sex = nullptr,
 		* m_nat = nullptr,

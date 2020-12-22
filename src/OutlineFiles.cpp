@@ -441,73 +441,90 @@ void OutlineFilesPanel::generateCharacterBuffer(Character& character, wxRichText
 	buffer.SetBasicStyle(content->GetBasicStyle());
 	buffer.BeginSuppressUndo();
 
+	int begin = 0;
+
 	if (character.image.IsOk()) {
 		wxImage image = character.image;
 		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
 
-		image.Rescale(200, 200 / ratio, wxIMAGE_QUALITY_HIGH);
+		if (ratio > 1)
+			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
+		else
+			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
+
+		buffer.BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
 		buffer.AddImage(image);
+		buffer.EndAlignment();
+
+		begin += 2;
 	}
 
-	buffer.BeginFontSize(14);
+	buffer.BeginFontSize(16);
 	buffer.BeginBold();
-	buffer.InsertTextWithUndo(2, "\nName: ", nullptr);
+	buffer.InsertTextWithUndo(begin, "\nName: ", nullptr);
 	buffer.EndBold();
+	buffer.InsertTextWithUndo(buffer.GetText().size(), " " + character.name, nullptr);
 	buffer.EndFontSize();
-	buffer.InsertTextWithUndo(buffer.GetText().size(), character.name, nullptr);
+
+	string separator("\n\n");
 
 	if (character.age != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nAge: ", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), separator + "Age: ", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.age, nullptr);
+		separator = "\n";
 	}
 
 	if (character.sex != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\nSex: ", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), separator + "Sex: ", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.sex, nullptr);
+		separator = "\n";
 	}
 
 	if (character.height != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\nHeight: ", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), separator + "Height: ", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.height, nullptr);
+		separator = "\n";
 	}
 
 	if (character.nick != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\nNickname: ", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), separator + "Nickname: ", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.nick, nullptr);
+		separator = "\n";
 	}
 
 	if (character.nat != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\nNationality: ", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), separator + "Nationality: ", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.nat, nullptr);
+		separator = "\n";
 	}
 
 	if (character.appearance != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nAppearance:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nAppearance:\n", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.appearance, nullptr);
 	}
 
 	if (character.personality != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nPersonality:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nPersonality:\n", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.personality, nullptr);
 	}
 
 	if (character.backstory != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nBackstory:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nBackstory:\n", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.backstory, nullptr);
 	}
@@ -515,7 +532,7 @@ void OutlineFilesPanel::generateCharacterBuffer(Character& character, wxRichText
 	for (auto it : character.custom) {
 		if (it.second != "") {
 			buffer.BeginBold();
-			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n" + it.first + ":\n", nullptr);
+			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
 			buffer.EndBold();
 			buffer.InsertTextWithUndo(buffer.GetText().size(), it.second, nullptr);
 		}
@@ -532,58 +549,66 @@ void OutlineFilesPanel::generateLocationBuffer(Location& location, wxRichTextBuf
 		wxImage image = location.image;
 		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
 
-		image.Rescale(200, 200 / ratio, wxIMAGE_QUALITY_HIGH);
+		if (ratio > 1)
+			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
+		else 
+			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
+
+		buffer.BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
 		buffer.AddImage(image);
+		buffer.EndAlignment();
 	}
 
-	buffer.BeginFontSize(14);
+	buffer.BeginFontSize(16);
 	buffer.BeginBold();
 	buffer.InsertTextWithUndo(2, "\nName: ", nullptr);
 	buffer.EndBold();
+	buffer.InsertTextWithUndo(buffer.GetText().size(), " " + location.name, nullptr);
 	buffer.EndFontSize();
-	buffer.InsertTextWithUndo(buffer.GetText().size(), location.name, nullptr);
 
 	buffer.BeginBold();
 	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nImportance: ", nullptr);
 	buffer.EndBold();
 	buffer.InsertTextWithUndo(buffer.GetText().size(), location.importance, nullptr);
 
-	buffer.BeginBold();
-	buffer.InsertTextWithUndo(buffer.GetText().size(), "\nSpace type: ", nullptr);
-	buffer.EndBold();
-	buffer.InsertTextWithUndo(buffer.GetText().size(), location.type, nullptr);
-
-	if (location.background != "") {
+	if (location.general != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nHistorical background:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nGeneral:\n", nullptr);
 		buffer.EndBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), location.background, nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), location.general, nullptr);
 	}
 
 	if (location.natural != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nNatural characteristics:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nNatural characteristics:\n", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), location.natural, nullptr);
 	}
 
 	if (location.architecture != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nArchitecture:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nArchitecture:\n", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), location.architecture, nullptr);
 	}
 
+	if (location.politics != "") {
+		buffer.BeginBold();
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nPolitics:\n", nullptr);
+		buffer.EndBold();
+		buffer.InsertTextWithUndo(buffer.GetText().size(), location.politics, nullptr);
+	}
+
 	if (location.economy != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nEconomy:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nEconomy:\n", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), location.economy, nullptr);
 	}
 
 	if (location.culture != "") {
 		buffer.BeginBold();
-		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nCulture:\n", nullptr);
+		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nCulture:\n", nullptr);
 		buffer.EndBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), location.culture, nullptr);
 	}
@@ -591,7 +616,7 @@ void OutlineFilesPanel::generateLocationBuffer(Location& location, wxRichTextBuf
 	for (auto it : location.custom) {
 		if (it.second != "") {
 			buffer.BeginBold();
-			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n" + it.first + ":\n", nullptr);
+			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
 			buffer.EndBold();
 			buffer.InsertTextWithUndo(buffer.GetText().size(), it.second, nullptr);
 		}
@@ -618,6 +643,11 @@ void OutlineFilesPanel::deleteCharacter(Character& character) {
 	OulineTreeModelNodePtrArray& characters = outlineTreeModel->getCharacters();
 	for (int i = 0; i < characters.Count(); i++) {
 		if (characters[i]->m_title == character.name) {
+			if (curNode == characters[i]) {
+				curNode = nullptr;
+				content->Clear();
+			}
+
 			wxDataViewItem item(characters[i]);
 			outlineTreeModel->deleteItem(item);
 			return;
@@ -629,6 +659,11 @@ void OutlineFilesPanel::deleteLocation(Location& location) {
 	OulineTreeModelNodePtrArray& locations = outlineTreeModel->getLocations();
 	for (int i = 0; i < locations.Count(); i++) {
 		if (locations[i]->m_title == location.name) {
+			if (curNode == locations[i]) {
+				curNode = nullptr;
+				content->Clear();
+			}
+
 			wxDataViewItem item(locations[i]);
 			outlineTreeModel->deleteItem(item);
 			return;
