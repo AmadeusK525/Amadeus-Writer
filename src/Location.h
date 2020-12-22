@@ -13,8 +13,8 @@ using std::string;
 using std::pair;
 
 struct Location {
-    string name{""}, background{""}, natural{""}, architecture{""},
-        type{""}, economy{""}, culture{""}, importance{""};
+    string name{""}, general{""}, natural{""}, architecture{""},
+        politics{""}, economy{""}, culture{""}, importance{""};
 
     vector<pair<string, string>> custom{};
 

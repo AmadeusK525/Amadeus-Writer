@@ -628,7 +628,8 @@ void MainFrame::onMainButtons(wxCommandEvent& event) {
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
 void MainFrame::newChar(wxCommandEvent& event) {
-    CharacterCreator* create = new CharacterCreator(this, elements, -1, "Create character", wxDefaultPosition, FromDIP(wxSize(520, 585)));
+    CharacterCreator* create = new CharacterCreator(this, elements, -1,
+        "Create character", wxDefaultPosition, FromDIP(wxSize(550, 650)));
     create->Show();
     create->SetFocus();
     Enable(false);
@@ -663,7 +664,8 @@ void MainFrame::newChap(wxCommandEvent& event) {
 }
 
 void MainFrame::newLoc(wxCommandEvent& event) {
-    LocationCreator* create = new LocationCreator(this, elements);
+    LocationCreator* create = new LocationCreator(this, elements, -1, wxDefaultPosition,
+        FromDIP(wxSize(900, 650)));
     create->Show();
     create->SetFocus();
     Enable(false);

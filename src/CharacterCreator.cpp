@@ -32,10 +32,14 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     this->notebook = notebook;
     this->CenterOnParent();
 
-    SetBackgroundColour(wxColour(40, 40, 40));
+    wxColour dark(60, 60, 60);
+    wxColour darker(40, 40, 40);
+    wxColour txtCol(255, 255, 255);
+
+    SetBackgroundColour(darker);
 
     ncPanel1 = new wxPanel(this, wxID_ANY);
-    ncPanel1->SetBackgroundColour(wxColour(40, 40, 40));
+    ncPanel1->SetBackgroundColour(darker);
     ncPanel1->Show(true);
 
     wxString choice[] = { "Male", "Female" };
@@ -44,14 +48,14 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 
     ncFullName = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(70, 10), wxSize(420, 25),
         wxBORDER_SIMPLE);
-    ncFullName->SetBackgroundColour(wxColour(70, 70, 70));
+    ncFullName->SetBackgroundColour(dark);
     ncFullName->SetForegroundColour(wxColour(250, 250, 250));
     ncFullName->SetFont(font10);
     wxStaticText* label1 = new wxStaticText(ncPanel1, wxID_ANY, "Name:", wxPoint(10, 10), wxSize(50, 25),
         wxNO_BORDER | wxALIGN_LEFT);
     label1->SetFont(wxFont(wxFontInfo(12)));
-    label1->SetBackgroundColour(wxColour(40, 40, 40));
-    label1->SetForegroundColour(wxColour(240, 240, 240));
+    label1->SetBackgroundColour(darker);
+    label1->SetForegroundColour(txtCol);
 
     wxBoxSizer* firstLine = new wxBoxSizer(wxHORIZONTAL);
     firstLine->Add(label1, wxSizerFlags(0).Border(wxRIGHT, 10));
@@ -70,30 +74,30 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 
     wxStaticText* label2 = new wxStaticText(ncPanel1, wxID_ANY, "Sex:", wxPoint(10, 50), wxSize(40, 25),
         wxNO_BORDER | wxALIGN_LEFT);
-    label2->SetBackgroundColour(wxColour(40, 40, 40));
-    label2->SetForegroundColour(wxColour(240, 240, 240));
+    label2->SetBackgroundColour(darker);
+    label2->SetForegroundColour(txtCol);
     label2->SetFont(wxFont(wxFontInfo(13)));
 
     ncAge = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(180, 50), wxSize(50, 25),
         wxBORDER_SIMPLE);
-    ncAge->SetBackgroundColour(wxColour(70, 70, 70));
+    ncAge->SetBackgroundColour(dark);
     ncAge->SetForegroundColour(wxColour(250, 250, 250));
     ncAge->SetFont(font10);
     wxStaticText* label3 = new wxStaticText(ncPanel1, wxID_ANY, "Age:", wxPoint(130, 50), wxSize(40, 25),
         wxNO_BORDER | wxALIGN_LEFT);
-    label3->SetBackgroundColour(wxColour(40, 40, 40));
-    label3->SetForegroundColour(wxColour(240, 240, 240));
+    label3->SetBackgroundColour(darker);
+    label3->SetForegroundColour(txtCol);
     label3->SetFont(wxFont(wxFontInfo(12)));
 
     ncNationality = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(335, 50), wxSize(155, 25),
         wxBORDER_SIMPLE);
-    ncNationality->SetBackgroundColour(wxColour(70, 70, 70));
+    ncNationality->SetBackgroundColour(dark);
     ncNationality->SetForegroundColour(wxColour(250, 250, 250));
     ncNationality->SetFont(font10);
     wxStaticText* label4 = new wxStaticText(ncPanel1, wxID_ANY, "Nationality: ", wxPoint(240, 50), wxSize(90, 25),
         wxNO_BORDER | wxALIGN_LEFT);
-    label4->SetBackgroundColour(wxColour(40, 40, 40));
-    label4->SetForegroundColour(wxColour(240, 240, 240));
+    label4->SetBackgroundColour(darker);
+    label4->SetForegroundColour(txtCol);
     label4->SetFont(wxFont(wxFontInfo(12)));
 
     wxBoxSizer* secondLine = new wxBoxSizer(wxHORIZONTAL);
@@ -106,24 +110,24 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 
     ncHeight = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(75, 90), wxSize(60, 25),
         wxBORDER_SIMPLE);
-    ncHeight->SetBackgroundColour(wxColour(70, 70, 70));
+    ncHeight->SetBackgroundColour(dark);
     ncHeight->SetForegroundColour(wxColour(250, 250, 250));
     ncHeight->SetFont(font10);
     wxStaticText* label5 = new wxStaticText(ncPanel1, wxID_ANY, "Height: ", wxPoint(10, 90), wxSize(55, 25),
         wxNO_BORDER | wxALIGN_LEFT);
-    label5->SetBackgroundColour(wxColour(40, 40, 40));
-    label5->SetForegroundColour(wxColour(240, 240, 240));
+    label5->SetBackgroundColour(darker);
+    label5->SetForegroundColour(txtCol);
     label5->SetFont(wxFont(wxFontInfo(12)));
 
     ncNickname = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(235, 90), wxSize(100, 25),
         wxBORDER_SIMPLE);
-    ncNickname->SetBackgroundColour(wxColour(70, 70, 70));
+    ncNickname->SetBackgroundColour(dark);
     ncNickname->SetForegroundColour(wxColour(250, 250, 250));
     ncNickname->SetFont(font10);
     wxStaticText* label6 = new wxStaticText(ncPanel1, wxID_ANY, "Nickname: ", wxPoint(145, 90), wxSize(90, 25),
         wxNO_BORDER | wxALIGN_LEFT);
-    label6->SetBackgroundColour(wxColour(40, 40, 40));
-    label6->SetForegroundColour(wxColour(240, 240, 240));
+    label6->SetBackgroundColour(darker);
+    label6->SetForegroundColour(txtCol);
     label6->SetFont(wxFont(wxFontInfo(12)));
 
     ncMain = new wxRadioButton(ncPanel1, wxID_ANY, "Main", wxPoint(395, 80), wxSize(60, 20), wxRB_GROUP);
@@ -135,8 +139,8 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 
     wxStaticText* label7 = new wxStaticText(ncPanel1, wxID_ANY, "Role: ", wxPoint(345, 90), wxSize(50, 25),
         wxNO_BORDER | wxALIGN_LEFT);
-    label7->SetBackgroundColour(wxColour(40, 40, 40));
-    label7->SetForegroundColour(wxColour(240, 240, 240));
+    label7->SetBackgroundColour(darker);
+    label7->SetForegroundColour(txtCol);
     label7->SetFont(wxFont(wxFontInfo(12)));
     
     wxBoxSizer* btnHolderSizer2 = new wxBoxSizer(wxVERTICAL);
@@ -145,9 +149,9 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 
     wxBoxSizer* thirdLine = new wxBoxSizer(wxHORIZONTAL);
     thirdLine->Add(label5, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 5));
-    thirdLine->Add(ncHeight, wxSizerFlags(1).CenterVertical().Border(wxRIGHT, 15));
+    thirdLine->Add(ncHeight, wxSizerFlags(2).CenterVertical().Border(wxRIGHT, 15));
     thirdLine->Add(label6, wxSizerFlags(0).CenterVertical());
-    thirdLine->Add(ncNickname, wxSizerFlags(1).CenterVertical());
+    thirdLine->Add(ncNickname, wxSizerFlags(3).CenterVertical());
     thirdLine->Add(label7, wxSizerFlags(0).CenterVertical().Border(wxLEFT, 6));
     thirdLine->Add(btnHolderSizer2, wxSizerFlags(0).CenterVertical());
 
@@ -157,7 +161,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     label8->SetFont(wxFont(wxFontInfo(13).Bold()));
     ncAppearance = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(15, 170), wxSize(475, 85),
         wxTE_MULTILINE | wxBORDER_SIMPLE);
-    ncAppearance->SetBackgroundColour(wxColour(70, 70, 70));
+    ncAppearance->SetBackgroundColour(dark);
     ncAppearance->SetForegroundColour(wxColour(250, 250, 250));
 
     wxStaticText* label9 = new wxStaticText(ncPanel1, wxID_ANY, "Personality", wxPoint(15, 265), wxSize(475, -1),
@@ -166,7 +170,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     label9->SetFont(wxFont(wxFontInfo(13).Bold()));
     ncPersonality = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(15, 290), wxSize(475, 85),
         wxTE_MULTILINE | wxBORDER_SIMPLE);
-    ncPersonality->SetBackgroundColour(wxColour(70, 70, 70));
+    ncPersonality->SetBackgroundColour(dark);
     ncPersonality->SetForegroundColour(wxColour(250, 250, 250));
 
     wxStaticText* label10 = new wxStaticText(ncPanel1, wxID_ANY, "Backstory", wxDefaultPosition, wxDefaultSize,
@@ -175,11 +179,11 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
     label10->SetFont(wxFont(wxFontInfo(13).Bold()));
     ncBackstory = new wxTextCtrl(ncPanel1, wxID_ANY, wxEmptyString, wxPoint(15, 410), wxSize(475, 85),
         wxTE_MULTILINE | wxBORDER_SIMPLE);
-    ncBackstory->SetBackgroundColour(wxColour(70, 70, 70));
+    ncBackstory->SetBackgroundColour(dark);
     ncBackstory->SetForegroundColour(wxColour(250, 250, 250));
 
     wxPanel* btnPanel = new wxPanel(this);
-    btnPanel->SetBackgroundColour(wxColour(40, 40, 40));
+    btnPanel->SetBackgroundColour(darker);
 
     ncNext = new wxButton(btnPanel, BUTTON_NextChar1, "Next", wxPoint(300, 505), wxSize(90, 30));
     ncBack = new wxButton(btnPanel, BUTTON_BackChar1, "Back", wxPoint(15, 505), wxSize(90, 30));
@@ -221,7 +225,7 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
 
     ncPanel2 = new wxScrolledWindow(this);
     ncPanel2->Hide();
-    ncPanel2->SetBackgroundColour(wxColour(40, 40, 40));
+    ncPanel2->SetBackgroundColour(darker);
 
     wxStaticText* customLabel = new wxStaticText(ncPanel2, -1, "Custom attributes");
     customLabel->SetFont(wxFontInfo(14).Bold());
@@ -245,13 +249,13 @@ CharacterCreator::CharacterCreator(wxWindow* parent, ElementsNotebook* notebook,
         
     ncPanel3 = new wxPanel(this);
     ncPanel3->Hide();
-    ncPanel3->SetBackgroundColour(wxColour(40, 40, 40));
+    ncPanel3->SetBackgroundColour(darker);
 
     ncChooseImage = new wxButton(ncPanel3, BUTTON_CharImage, "Choose image file", wxPoint(285, 415), wxSize(150, 30));
     ncRemoveImage = new wxButton(ncPanel3, BUTTON_CharRemoveImage, "Remove", wxPoint(75, 415), wxSize(100, 30));
     ncRemoveImage->Hide();
     ncImagePanel = new ImagePanel(ncPanel3, wxPoint(75, 40), wxSize(360, 360));
-    ncImagePanel->setBorderColour(wxColour(40, 40, 40));
+    ncImagePanel->setBorderColour(darker);
 
     wxBoxSizer* btnSizer2 = new wxBoxSizer(wxHORIZONTAL);
     btnSizer2->Add(ncRemoveImage, wxSizerFlags(0));
@@ -395,7 +399,16 @@ void CharacterCreator::doEdit(wxCommandEvent& event) {
     }
 
     notebook->updateLB();
-    notebook->charShow->setData(*charEdit);
+
+    int n = 0;
+    for (auto it : mainFrame->characters) {
+        if (charEdit->name == it.second.name)
+            break;
+
+        n++;
+    }
+
+    notebook->locList->Select(n);
 
     mainFrame->isSaved = false;
     mainFrame->getOutline()->getOutlineFiles()->appendCharacter(*charEdit);
@@ -407,15 +420,16 @@ void CharacterCreator::doEdit(wxCommandEvent& event) {
 }
 
 void CharacterCreator::addCustomAttr(wxCommandEvent& event) {
+    Freeze();
     wxSize size(label8->GetSize());
 
     wxTextCtrl* label = new wxTextCtrl(ncPanel2, -1, "Title",
         wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
     wxTextCtrl* content = new wxTextCtrl(ncPanel2, -1, "", wxDefaultPosition,
-        wxSize(-1, 85), wxTE_MULTILINE | wxBORDER_SIMPLE);
+        wxSize(-1, ncAppearance->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
 
-    content->SetBackgroundColour(wxColour(70, 70, 70));
-    content->SetForegroundColour(wxColour(250, 250, 250));
+    content->SetBackgroundColour(wxColour(60, 60, 60));
+    content->SetForegroundColour(wxColour(255, 255, 255));
     label->SetBackgroundColour(wxColour(230, 0, 20));
     label->SetFont(wxFontInfo(13).Bold());
 
@@ -434,9 +448,12 @@ void CharacterCreator::addCustomAttr(wxCommandEvent& event) {
 
     ncCustom.push_back(pair<wxTextCtrl*, wxTextCtrl*>(label, content));
     minusButtons.push_back(minus);
+
+    Thaw();
 }
 
 void CharacterCreator::removeCustomAttr(wxCommandEvent& event) {
+    Freeze();
     wxButton* minus = (wxButton*)event.GetEventObject();
 
     auto it1 = ncCustom.begin();
@@ -457,6 +474,8 @@ void CharacterCreator::removeCustomAttr(wxCommandEvent& event) {
     minusButtons.erase(it2);
 
     mainSiz->Layout();
+
+    Thaw();
 }
 
 void CharacterCreator::cancel(wxCommandEvent& event) {
@@ -552,18 +571,15 @@ void CharacterCreator::back(wxCommandEvent& event) {
 }
 
 void CharacterCreator::setImage(wxCommandEvent& event) {
-    wxFileDialog* choose = new wxFileDialog(this, "Select an image", wxEmptyString, wxEmptyString,
+    wxFileDialog choose(this, "Select an image", wxEmptyString, wxEmptyString,
         "JPG, JPEG and PNG(*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
         wxFD_OPEN, wxDefaultPosition);
 
-    if (choose->ShowModal() == wxID_OK) {
-        ncImage.LoadFile(choose->GetPath(), wxBITMAP_TYPE_ANY);
+    if (choose.ShowModal() == wxID_OK) {
+        ncImage.LoadFile(choose.GetPath(), wxBITMAP_TYPE_ANY);
         ncImagePanel->setImage(ncImage);
         ncRemoveImage->Show();
     }
-
-    if (choose)
-        delete choose;
 
     mainSiz->Layout();
     event.Skip();

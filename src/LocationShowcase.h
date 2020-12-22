@@ -17,13 +17,21 @@ using std::pair;
 class LocationShowcase : public wxScrolledWindow {
 private:
     ImagePanel* m_image = nullptr;
-    wxStaticText* m_name = nullptr,
-        * m_importance = nullptr,
-        * m_type = nullptr;
 
-    wxTextCtrl* m_background = nullptr,
+    wxStaticText* m_generalLabel = nullptr,
+        * m_natLabel = nullptr,
+        * m_archLabel = nullptr,
+        * m_poliLabel = nullptr,
+        * m_ecoLabel = nullptr,
+        * m_culLabel = nullptr;
+
+    wxStaticText* m_name = nullptr,
+        * m_importance = nullptr;
+
+    wxTextCtrl* m_general = nullptr,
         * m_natural = nullptr,
         * m_architecture = nullptr,
+        * m_politics = nullptr,
         * m_economy = nullptr,
         * m_culture = nullptr;
 

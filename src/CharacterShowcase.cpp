@@ -8,101 +8,104 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
     wxFont font(wxFontInfo(12).Bold());
     wxFont font2(wxFontInfo(11));
 
-    m_role = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxALIGN_CENTER | wxBORDER_RAISED | wxST_NO_AUTORESIZE);
+    m_role = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxALIGN_CENTER | wxBORDER_RAISED );
     m_role->SetBackgroundColour(wxColour(220, 220, 220));
     m_role->SetFont(font);
 
-    m_name = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxALIGN_CENTER | wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
+    m_name = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxALIGN_CENTER | wxBORDER_SIMPLE);
     m_name->SetBackgroundColour(wxColour(250, 250, 250));
     m_name->SetFont(font);
 
-    wxStaticText* label1 = new wxStaticText(this, -1, "Age:");
-    label1->SetFont(font);
-    label1->SetBackgroundColour(wxColour(190, 190, 190));
-    m_age = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(45, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
+    m_ageLabel = new wxStaticText(this, -1, "Age:");
+    m_ageLabel->SetFont(font);
+    m_ageLabel->SetBackgroundColour(wxColour(190, 190, 190));
+    m_age = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(45, 20), wxBORDER_SIMPLE);
     m_age->SetFont(font2);
     m_age->SetBackgroundColour(wxColour(225, 225, 225));
     
-    wxStaticText* label2 = new wxStaticText(this, -1, "Sex:");
-    label2->SetFont(font);
-    label2->SetBackgroundColour(wxColour(190, 190, 190));
-    m_sex = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
+    m_sexLabel = new wxStaticText(this, -1, "Sex:");
+    m_sexLabel->SetFont(font);
+    m_sexLabel->SetBackgroundColour(wxColour(190, 190, 190));
+    m_sex = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE);
     m_sex->SetFont(font2);
     m_sex->SetBackgroundColour(wxColour(225, 225, 225));
 
-    wxStaticText* label3 = new wxStaticText(this, -1, "Height:");
-    label3->SetFont(font);
-    label3->SetBackgroundColour(wxColour(190, 190, 190));
-    m_height = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
+    m_heightLabel = new wxStaticText(this, -1, "Height:");
+    m_heightLabel->SetFont(font);
+    m_heightLabel->SetBackgroundColour(wxColour(190, 190, 190));
+    m_height = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE);
     m_height->SetFont(font2);
     m_height->SetBackgroundColour(wxColour(225, 225, 225));
 
     wxBoxSizer* firstLine = new wxBoxSizer(wxHORIZONTAL);
-    firstLine->Add(label1, wxSizerFlags(0).Border(wxLEFT, 10));
+    firstLine->Add(m_ageLabel, wxSizerFlags(0).Border(wxLEFT, 10));
     firstLine->Add(m_age, wxSizerFlags(1));
-    firstLine->Add(label2, wxSizerFlags(0).Border(wxLEFT, 20));
+    firstLine->Add(m_sexLabel, wxSizerFlags(0).Border(wxLEFT, 20));
     firstLine->Add(m_sex, wxSizerFlags(2));
-    firstLine->Add(label3, wxSizerFlags(0).Border(wxLEFT, 20));
+    firstLine->Add(m_heightLabel, wxSizerFlags(0).Border(wxLEFT, 20));
     firstLine->Add(m_height, wxSizerFlags(2).Border(wxRIGHT, 5));
 
-    wxStaticText* label4 = new wxStaticText(this, -1, "Nickname:");
-    label4->SetFont(font);
-    label4->SetBackgroundColour(wxColour(190, 190, 190));
-    m_nick = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
+    m_nickLabel = new wxStaticText(this, -1, "Nickname:");
+    m_nickLabel->SetFont(font);
+    m_nickLabel->SetBackgroundColour(wxColour(190, 190, 190));
+    m_nick = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 20), wxBORDER_SIMPLE);
     m_nick->SetFont(font2);
     m_nick->SetBackgroundColour(wxColour(225, 225, 225));
     
-    wxStaticText* label5 = new wxStaticText(this, -1, "Nationality:");
-    label5->SetFont(font);
-    label5->SetBackgroundColour(wxColour(190, 190, 190));
-    m_nat = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(120, 20), wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
+    m_natLabel = new wxStaticText(this, -1, "Nationality:");
+    m_natLabel->SetFont(font);
+    m_natLabel->SetBackgroundColour(wxColour(190, 190, 190));
+    m_nat = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(120, 20), wxBORDER_SIMPLE);
     m_nat->SetFont(font2);
     m_nat->SetBackgroundColour(wxColour(225, 225, 225));
 
     wxBoxSizer* secondLine = new wxBoxSizer(wxHORIZONTAL);
-    secondLine->Add(label4, wxSizerFlags(0).Border(wxLEFT, 10));
+    secondLine->Add(m_nickLabel, wxSizerFlags(0));
     secondLine->Add(m_nick, wxSizerFlags(1));
-    secondLine->Add(label5, wxSizerFlags(0).Border(wxLEFT, 20));
-    secondLine->Add(m_nat, wxSizerFlags(1).Border(wxRIGHT, 5));
+    secondLine->Add(m_natLabel, wxSizerFlags(0).Border(wxLEFT, 20));
+    secondLine->Add(m_nat, wxSizerFlags(1));
 
-    wxStaticText* label6 = new wxStaticText(this, -1, "Appearance", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxST_NO_AUTORESIZE);
-    label6->SetFont(font);
-    label6->SetBackgroundColour(wxColour(180, 180, 180));
-    m_appearance = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
+    m_appLabel = new wxStaticText(this, -1, "Appearance", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE);
+    m_appLabel->SetFont(font);
+    m_appLabel->SetBackgroundColour(wxColour(180, 180, 180));
+    m_appearance = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
+        wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
     m_appearance->SetFont(wxFontInfo(9));
     m_appearance->SetBackgroundColour(wxColour(225, 225, 225));
 
-    wxStaticText* label7 = new wxStaticText(this, -1, "Personality", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxST_NO_AUTORESIZE);
-    label7->SetFont(font);
-    label7->SetBackgroundColour(wxColour(180, 180, 180));
-    m_personality = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
+    m_perLabel = new wxStaticText(this, -1, "Personality", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE);
+    m_perLabel->SetFont(font);
+    m_perLabel->SetBackgroundColour(wxColour(180, 180, 180));
+    m_personality = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
+        wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
     m_personality->SetFont(wxFontInfo(9));
     m_personality->SetBackgroundColour(wxColour(225, 225, 225));
 
-    wxStaticText* label8 = new wxStaticText(this, -1, "Backstory", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE | wxST_NO_AUTORESIZE);
-    label8->SetFont(font);
-    label8->SetBackgroundColour(wxColour(180, 180, 180));
-    m_backstory = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80), wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
+    m_bsLabel = new wxStaticText(this, -1, "Backstory", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE);
+    m_bsLabel->SetFont(font);
+    m_bsLabel->SetBackgroundColour(wxColour(180, 180, 180));
+    m_backstory = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
+        wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
     m_backstory->SetFont(wxFontInfo(9));
     m_backstory->SetBackgroundColour(wxColour(225, 225, 225));
 
-    m_image = new ImagePanel(this, wxDefaultPosition, wxSize(200, 200));
+    m_image = new ImagePanel(this, wxDefaultPosition, wxSize(180, 180));
     m_image->SetBackgroundColour(wxColour(150, 150, 150));
     m_image->setBorderColour(wxColour(20, 20, 20));
     m_image->Hide();
 
     m_vertical = new  wxBoxSizer(wxVERTICAL);
     m_vertical->Add(m_role, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM, 10));
-    m_vertical->Add(m_image, wxSizerFlags(0).CenterHorizontal().Shaped());
+    m_vertical->Add(m_image, wxSizerFlags(0).CenterHorizontal());
     m_vertical->SetItemMinSize(1, wxSize(200, 200));
     m_vertical->Add(m_name, wxSizerFlags(0).Expand().Border(wxALL, 15));
-    m_vertical->Add(firstLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM, 10));
-    m_vertical->Add(secondLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM, 10));
-    m_vertical->Add(label6, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
+    m_vertical->Add(firstLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM | wxLEFT | wxRIGHT, 10));
+    m_vertical->Add(secondLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM | wxLEFT | wxRIGHT, 10));
+    m_vertical->Add(m_appLabel, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
     m_vertical->Add(m_appearance, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
-    m_vertical->Add(label7, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
+    m_vertical->Add(m_perLabel, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
     m_vertical->Add(m_personality, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
-    m_vertical->Add(label8, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
+    m_vertical->Add(m_bsLabel, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
     m_vertical->Add(m_backstory, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
     
     SetSizer(m_vertical);
@@ -141,6 +144,24 @@ void CharacterShowcase::setData(Character& character) {
     m_personality->SetValue(character.personality);
     m_backstory->SetValue(character.backstory);
 
+    m_age->Show(character.age != "");
+    m_ageLabel->Show(character.age != "");
+    m_sex->Show(character.sex != "");
+    m_sexLabel->Show(character.sex != "");
+    m_height->Show(character.height != "");
+    m_heightLabel->Show(character.height != "");
+    m_nat->Show(character.nat != "");
+    m_natLabel->Show(character.nat != "");
+    m_nick->Show(character.nick != "");
+    m_nickLabel->Show(character.nick != "");
+    m_role->Show(character.role != "");
+    m_appearance->Show(character.appearance != "");
+    m_appLabel->Show(character.appearance != "");
+    m_personality->Show(character.personality != "");
+    m_perLabel->Show(character.personality != "");
+    m_backstory->Show(character.backstory != "");
+    m_bsLabel->Show(character.backstory != "");
+
     m_image->Show(m_image->setImage(character.image));
 
     int tcsize = m_custom.size();
@@ -171,7 +192,7 @@ void CharacterShowcase::setData(Character& character) {
             label->SetBackgroundColour(wxColour(180, 180, 180));
 
             wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
-                size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL);
+                size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
             content->SetFont(wxFontInfo(9));
             content->SetBackgroundColour(wxColour(225, 225, 225));
             content->SetCursor(wxCURSOR_DEFAULT);
@@ -185,6 +206,9 @@ void CharacterShowcase::setData(Character& character) {
         list.Append(m_custom[i].second);
         m_custom[i].first->SetLabel(character.custom[i].first);
         m_custom[i].second->SetLabel(character.custom[i].second);
+
+        m_custom[i].first->Show(character.custom[i].second != "");
+        m_custom[i].second->Show(character.custom[i].second != "");
     }
 
     m_vertical->Layout();
@@ -192,12 +216,14 @@ void CharacterShowcase::setData(Character& character) {
 
     int nol;
     for (auto it : list) {
-        nol = ((wxTextCtrl*)it)->GetNumberOfLines();
+        if (it->IsShown()) {
+            nol = ((wxTextCtrl*)it)->GetNumberOfLines();
 
-        if (nol > 5)
-            it->SetMinSize(wxSize(-1, nol * it->GetCharHeight() + 5));
-        else
-            it->SetMinSize(size);
+            if (nol > 5)
+                it->SetMinSize(wxSize(-1, nol * it->GetCharHeight() + 5));
+            else
+                it->SetMinSize(size);
+        }
     }
 
     m_vertical->FitInside(this);

@@ -11,9 +11,9 @@ void Location::save(std::ofstream& out) {
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
         out.write(name.c_str(), size);
 
-        size = background.size() + 1;
+        size = general.size() + 1;
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
-        out.write(background.c_str(), size);
+        out.write(general.c_str(), size);
 
         size = natural.size() + 1;
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
@@ -23,9 +23,9 @@ void Location::save(std::ofstream& out) {
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
         out.write(architecture.c_str(), size);
 
-        size = type.size() + 1;
+        size = politics.size() + 1;
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
-        out.write(type.c_str(), size);
+        out.write(politics.c_str(), size);
 
         size = economy.size() + 1;
         out.write(reinterpret_cast<char*>(&size), sizeof(int));
@@ -73,7 +73,7 @@ void Location::load(std::ifstream& in) {
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
-        background = data;
+        general = data;
         delete data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
@@ -91,7 +91,7 @@ void Location::load(std::ifstream& in) {
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
-        type = data;
+        politics = data;
         delete data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
