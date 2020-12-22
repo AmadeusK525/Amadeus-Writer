@@ -389,7 +389,7 @@ void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
         n++;
     }
 
-    notebook->charList->Select(n);
+    notebook->locList->Select(n);
 
     mainFrame->isSaved = false;
     mainFrame->Enable();
