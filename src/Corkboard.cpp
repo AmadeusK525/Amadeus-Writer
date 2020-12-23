@@ -410,6 +410,11 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 	event.Skip();
 }
 
+void CorkboardCanvas::OnUpdateVirtualSize(wxRect& vrtrect) {
+	vrtrect.width += 500;
+	vrtrect.height += 500;
+}
+
 void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 	// If right mouse button has been clicked, calculate drag and begin.
 

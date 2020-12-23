@@ -112,6 +112,7 @@ public:
 	virtual void OnRightDown(wxMouseEvent& event);
 	virtual void OnRightUp(wxMouseEvent& event);
 
+	virtual void OnUpdateVirtualSize(wxRect& vrtrect);
 	virtual void OnMouseMove(wxMouseEvent& event);
 	virtual void OnMouseWheel(wxMouseEvent& event);
 	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
