@@ -19,7 +19,7 @@ WX_DEFINE_ARRAY_PTR(OutlineTreeModelNode*, OulineTreeModelNodePtrArray);
 class OutlineTreeModelNode {
 private:
     OutlineTreeModelNode* m_parent = nullptr;
-    OulineTreeModelNodePtrArray   m_children{};
+    OulineTreeModelNodePtrArray m_children{};
 
     wxDataViewItemAttr attr{};
 

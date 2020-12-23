@@ -8,6 +8,8 @@
 #include <vector>
 #include <fstream>
 
+#include "Chapter.h"
+
 using std::string;
 using std::vector;
 using std::pair;
@@ -19,6 +21,7 @@ struct Character {
 
     vector<pair<string, string>> custom{0};
 
+    ChapterPtrArray chaps{};
     unsigned int chapters = 0;
 
     unsigned int firstChap = 0;

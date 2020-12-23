@@ -296,10 +296,8 @@ void MainFrame::newFile(wxCommandEvent& event) {
     // Updating everything that needs to be reset.
     characters.clear();
     locations.clear();
-    chaptersNote->clearAll();
-    ElementsNotebook::charList->DeleteAllItems();
-    ElementsNotebook::locList->DeleteAllItems();
 
+    elements->clearAll();
     outline->clearAll();
     chaptersNote->clearAll();
 

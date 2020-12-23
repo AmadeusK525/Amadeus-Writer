@@ -2,11 +2,13 @@
 #define LOCATION_H_
 #pragma once
 
-#include "wx/bitmap.h"
+#include <wx\bitmap.h>
 
 #include <fstream>
 #include <string>
 #include <vector>
+
+#include "Chapter.h"
 
 using std::vector;
 using std::string;
@@ -18,6 +20,7 @@ struct Location {
 
     vector<pair<string, string>> custom{};
 
+    ChapterPtrArray chaps{};
     int chapters = 0;
 
     bool hasAppeared = false;

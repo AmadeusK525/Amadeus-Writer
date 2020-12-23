@@ -366,14 +366,12 @@ void CharacterCreator::doEdit(wxCommandEvent& event) {
     mainFrame->getOutline()->getOutlineFiles()->deleteCharacter(*charEdit);
 
     vector<string>& vec = getValues();
-    string temp;
 
-    if (ncFullName->IsModified() || charEdit->role != vec[6]) {
+    bool dif = charEdit->name != vec[0] || charEdit->role != vec[6];
+    if (dif) {
         notebook->removeCharName(charEdit->name);
-        temp = charEdit->role;
         mainFrame->characters.erase(charEdit->role + charEdit->name);
-        Character dummy;
-        charEdit = &dummy;
+        charEdit = &Character();
     }
 
     charEdit->name = vec[0];
@@ -392,7 +390,7 @@ void CharacterCreator::doEdit(wxCommandEvent& event) {
 
     charEdit->custom = getCustom();
 
-    if (ncFullName->IsModified() || charEdit->role != vec[6]) {
+    if (dif) {
         notebook->addCharName(charEdit->name);
         MainFrame::characters[charEdit->role + charEdit->name] = *charEdit;
         notebook->setSearchAC(wxBookCtrlEvent());
@@ -408,6 +406,7 @@ void CharacterCreator::doEdit(wxCommandEvent& event) {
         n++;
     }
 
+    notebook->charShow->setData(*charEdit);
     notebook->charList->Select(n);
 
     mainFrame->isSaved = false;

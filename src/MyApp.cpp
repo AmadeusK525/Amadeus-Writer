@@ -5,7 +5,7 @@
 wxIMPLEMENT_APP(MyApp);
 
 bool MyApp::OnInit() {
-    locale.Init(wxLANGUAGE_PORTUGUESE_BRAZILIAN);
+    locale.Init(wxLANGUAGE_DEFAULT);
     wxInitAllImageHandlers();
 
     mainFrame = new MainFrame("New Amadeus project", wxDefaultPosition, wxSize(800, 700));

@@ -2,10 +2,8 @@
 #define CHAPTER_H_
 #pragma once
 
-#include "wx/richtext/richtextbuffer.h"
+#include <wx\richtext\richtextbuffer.h>
 
-#include "Character.h"
-#include "Location.h"
 #include "Note.h"
 
 #include <string>
@@ -15,23 +13,25 @@ using std::string;
 using std::vector;
 
 struct Chapter {
-    string name{};
-    string summary{};
-   
+    string name{ "" };
+    string summary{ "" };
+
     wxRichTextBuffer content{};
 
-    vector<string> characters{};
-    vector<string> locations{};
+    wxArrayString characters{};
+    wxArrayString locations{};
     vector<Note> notes{};
 
-    string pointOfView = "";
+    string pointOfView{""};
 
-    int position{};
+    int position = -1;
 
     bool hasRedNote();
 
     void save(std::ofstream& out);
     void load(std::ifstream& in);
 };
+
+WX_DEFINE_ARRAY_PTR(Chapter*, ChapterPtrArray);
 
 #endif

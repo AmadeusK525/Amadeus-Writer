@@ -59,12 +59,6 @@ void Character::save(std::ofstream& out) {
             out.write(reinterpret_cast<char*>(&size), sizeof(int));
             out.write(custom[i].second.c_str(), size);
         }
-
-        out.write((char*)&chapters, sizeof(int));
-
-        out.write((char*)&firstChap, sizeof(int));
-
-        out.write((char*)&hasAppeared, sizeof(bool));
     }
 }
 
@@ -151,11 +145,5 @@ void Character::load(std::ifstream& in) {
             custom[i].second = data;
             delete data;
         }
-
-        in.read((char*)&chapters, sizeof(int));
-        
-        in.read((char*)&firstChap, sizeof(int));
-
-        in.read((char*)&hasAppeared, sizeof(bool));
     }
 }

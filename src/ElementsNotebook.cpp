@@ -151,6 +151,9 @@ void ElementsNotebook::deleteChar(wxCommandEvent& WXUNUSED(event)) {
 
         charNames.Remove(it->second.name);
 
+        for (auto it2 : it->second.chaps)
+            it2->characters.Remove(it->second.name);
+
         mainFrame->getOutline()->getOutlineFiles()->deleteCharacter(it->second);
         MainFrame::characters.erase(it);
         MainFrame::saved[0] = MainFrame::characters.size();
@@ -191,10 +194,10 @@ void ElementsNotebook::editLoc(wxCommandEvent& WXUNUSED(event)) {
 void ElementsNotebook::deleteLoc(wxCommandEvent& WXUNUSED(event)) {
     long sel = locList->GetFirstSelected();
 
-    wxMessageDialog* deleteCheck = new wxMessageDialog(mainFrame, "Are you sure you want to delete '" + locList->GetItemText(sel) + "'?",
+    wxMessageDialog deleteCheck(mainFrame, "Are you sure you want to delete '" + locList->GetItemText(sel) + "'?",
         "Delete character", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
 
-    if (deleteCheck->ShowModal() == wxID_YES) {
+    if (deleteCheck.ShowModal() == wxID_YES) {
         locList->DeleteItem(sel);
 
         auto it = MainFrame::locations.begin();
@@ -203,6 +206,9 @@ void ElementsNotebook::deleteLoc(wxCommandEvent& WXUNUSED(event)) {
         }
 
         locNames.Remove(it->second.name);
+
+        for (auto it2 : it->second.chaps)
+            it2->characters.Remove(it->second.name);
 
         mainFrame->getOutline()->getOutlineFiles()->deleteLocation(it->second);
         MainFrame::locations.erase(it);
@@ -242,24 +248,40 @@ void ElementsNotebook::locSelected(wxListEvent& WXUNUSED(event)) {
     locShow->setData(it->second);
 }
 
+void ElementsNotebook::clearAll() {
+    charList->DeleteAllItems();
+    locList->DeleteAllItems();
+    charShow->setData(Character());
+    locShow->setData(Location());
+    charNames.clear();
+    locNames.clear();
+}
+
 void ElementsNotebook::updateLB() {
     charList->DeleteAllItems();
 
     int i = 0;
 
-    for (auto it = MainFrame::characters.begin(); it != MainFrame::characters.end(); it++) {
-        charList->InsertItem(i, it->second.name);
-        charList->SetItem(i, 1, it->second.age);
-        charList->SetItem(i, 2, it->second.sex);
-        charList->SetItem(i, 3, it->second.role);
+    for (auto it : MainFrame::characters) {
+        charList->InsertItem(i, it.second.name);
+        charList->SetItem(i, 1, it.second.age);
+        charList->SetItem(i, 2, it.second.sex);
+        charList->SetItem(i, 3, it.second.role);
 
-        if (it->second.hasAppeared) {
-            charList->SetItem(i, 4, "Chapter " + std::to_string(it->second.firstChap));
+        if (it.second.chaps.Count() > 0) {
+            int first = 9999;
+
+            for (auto it2 : it.second.chaps) {
+                if (it2->position < first)
+                    first = it2->position;
+            }
+
+            charList->SetItem(i, 4, "Chapter " + std::to_string(first));
         } else {
             charList->SetItem(i, 4, "-");
         }
 
-        charList->SetItem(i, 5, std::to_string(it->second.chapters));
+        charList->SetItem(i, 5, std::to_string(it.second.chaps.size()));
 
         i++;
     }
@@ -271,13 +293,21 @@ void ElementsNotebook::updateLB() {
     for (auto it = MainFrame::locations.begin(); it != MainFrame::locations.end(); it++) {
         locList->InsertItem(i, it->second.name);
         locList->SetItem(i, 1, it->second.importance);
-        locList->SetItem(i, 3, std::to_string(it->second.chapters));
 
-        if (it->second.hasAppeared) {
-            locList->SetItem(i, 2, "Chapter " + std::to_string(it->second.firstChap));
+        if (!it->second.chaps.IsEmpty()) {
+            int first = 9999;
+
+            for (auto it2 : it->second.chaps) {
+                if (it2->position < first)
+                    first = it2->position;
+            }
+
+            locList->SetItem(i, 2, "Chapter " + std::to_string(first));
         } else {
             locList->SetItem(i, 2, "-");
         }
+
+        locList->SetItem(i, 3, std::to_string(it->second.chaps.size()));
 
         i++;
     }

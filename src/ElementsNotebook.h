@@ -48,6 +48,7 @@ public:
     void removeCharName(string& name);
     void removeLocName(string& name);
 
+    void clearAll();
     static void updateLB();
 
     static wxListView* charList;

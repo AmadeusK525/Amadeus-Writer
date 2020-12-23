@@ -71,7 +71,7 @@ public:
     void addCharButtonPressed(wxCommandEvent& event);
     void addLocButtonPressed(wxCommandEvent& event);
     void removeChar(wxCommandEvent& event);
-    void removeLocButtonPressed(wxCommandEvent& event);
+    void removeLoc(wxCommandEvent& event);
 
     void addChar(wxCommandEvent& event);
     void addLoc(wxCommandEvent& event);
