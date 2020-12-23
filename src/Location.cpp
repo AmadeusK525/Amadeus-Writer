@@ -62,49 +62,49 @@ void Location::load(std::ifstream& in) {
         data = new char[size];
         in.read(data, size);
         name = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         general = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         natural = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         architecture = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         politics = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         economy = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         culture = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         importance = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
 
@@ -116,13 +116,14 @@ void Location::load(std::ifstream& in) {
             data = new char[size2];
             in.read(data, size2);
             custom[i].first = data;
-            delete data;
+            delete[] data;
 
             in.read(reinterpret_cast<char*>(&size2), sizeof(int));
             data = new char[size2];
             in.read(data, size2);
             custom[i].second = data;
-            delete data;
+            delete[] data;
         }
+
     }
 }

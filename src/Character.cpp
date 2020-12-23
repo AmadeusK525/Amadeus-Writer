@@ -71,61 +71,61 @@ void Character::load(std::ifstream& in) {
         data = new char[size];
         in.read(data, size);
         name = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         sex = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         age = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         nat = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         height = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         nick = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         role = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         appearance = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         personality = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         backstory = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
 
@@ -137,13 +137,13 @@ void Character::load(std::ifstream& in) {
             data = new char[size2];
             in.read(data, size2);
             custom[i].first = data;
-            delete data;
+            delete[] data;
 
             in.read(reinterpret_cast<char*>(&size2), sizeof(int));
             data = new char[size2];
             in.read(data, size2);
             custom[i].second = data;
-            delete data;
+            delete[] data;
         }
     }
 }
