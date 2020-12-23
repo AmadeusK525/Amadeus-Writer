@@ -3,7 +3,7 @@
 
   This project aims to be a multifunctional desktop application for fiction writers (or writers in general).
   
-  My vision is to have a program that can be utilized in every step of the writing process, incluing the research, the outline, the writing itself, keeping track of characters, locations, items, etc. I plan to add tools such as a drawing board for sketching your own drawings, an integraded video player, a built-in Google extension, a timeline, online social features and more. It will take a while since I'm currently very busy with other things.
+  My vision is to have a program that can be utilized in every step of the writing process, incluing the research, the outline, the writing itself, keeping track of characters, locations, items, etc. I plan to add tools such as a drawing board for sketching your own drawings, an integraded video player, a built-in Google extension, a timeline, online social features and more. I'm currently working full time on this.
   
   For now, you can already create characters and locations, specifying lots of attributes in each of them, you can use the famous corkboard for outlining, creating notes, changing colors, adding images, connecting stuff around... You can create chapters and write in each of them, changing the font weight and style, keep track of the characters and locations present in the chapter, add notes to it (which can be green or red, you can change the color anytime). There is a save option to save all of these components and the chapter writing has an autosave function, including word count. There are screenshots at the end.
   
