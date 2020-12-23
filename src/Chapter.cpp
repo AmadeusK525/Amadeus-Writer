@@ -81,13 +81,13 @@ void Chapter::load(std::ifstream& in) {
         data = new char[size];
         in.read(data, size);
         name = data;
-        delete data;
+        delete[] data;
 
         in.read(reinterpret_cast<char*>(&size), sizeof(int));
         data = new char[size];
         in.read(data, size);
         summary = data;
-        delete data;
+        delete[] data;
 
         int number;
         string tempName;
@@ -98,7 +98,7 @@ void Chapter::load(std::ifstream& in) {
             data = new char[size];
             in.read(data, size);
             tempName = data;
-            delete data;
+            delete[] data;
 
             characters.push_back(tempName);
 
@@ -115,7 +115,7 @@ void Chapter::load(std::ifstream& in) {
             data = new char[size];
             in.read(data, size);
             tempName = data;
-            delete data;
+            delete[] data;
 
             locations.push_back(tempName);
 
@@ -134,13 +134,13 @@ void Chapter::load(std::ifstream& in) {
             data = new char[size];
             in.read(data, size);
             tempName2 = data;
-            delete data;
+            delete[] data;
 
             in.read(reinterpret_cast<char*>(&size), sizeof(int));
             data = new char[size];
             in.read(data, size);
             tempName = data;
-            delete data;
+            delete[] data;
 
             in.read((char*)&k, sizeof(bool));
 
