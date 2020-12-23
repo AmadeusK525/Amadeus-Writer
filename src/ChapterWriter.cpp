@@ -478,6 +478,9 @@ void ChapterWriter::loadChapter() {
     }
 
     thisChap->content.SetBasicStyle(chapWriterNotebook->content->GetBasicStyle());
+    chapWriterNotebook->content->GetBuffer().Invalidate(wxRICHTEXT_ALL);
+    chapWriterNotebook->content->RecreateBuffer();
+    chapWriterNotebook->content->Refresh();
 
     summary->SetValue(it->summary);
 
@@ -595,7 +598,7 @@ END_EVENT_TABLE()
 
 ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
     wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT |
-    wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_TOP) {
+    wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_TOP | wxBORDER_NONE) {
 
     this->parent = reinterpret_cast<ChapterWriter*>(parent);
 
@@ -660,7 +663,8 @@ ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent) :
     mainPanel->SetSizer(pageSizer);
 
     corkBoard = new ImagePanel(this, wxDefaultPosition, wxDefaultSize);
-    corkBoard->SetWindowStyle(wxBORDER_SUNKEN);
+    corkBoard->EnableScrolling(false, true);
+    corkBoard->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
 
     notesSizer = new wxWrapSizer();
     corkBoard->SetSizer(notesSizer);
