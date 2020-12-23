@@ -350,14 +350,12 @@ void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
     mainFrame->getOutline()->getOutlineFiles()->deleteLocation(*m_locationEdit);
 
     vector<string> vec = getValues();
-    string temp;
 
-    if (nlName->IsModified() || m_locationEdit->importance != vec[7]) {
+    bool dif = m_locationEdit->name != vec[0] || m_locationEdit->importance != vec[7];
+    if (dif) {
         notebook->removeLocName(m_locationEdit->name);
-        temp = m_locationEdit->importance;
         mainFrame->locations.erase(m_locationEdit->importance + m_locationEdit->name);
-        Location dummy;
-        m_locationEdit = &dummy;
+        m_locationEdit = &Location();
     }
 
     m_locationEdit->name = vec[0];
@@ -373,7 +371,7 @@ void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
 
     m_locationEdit->image = nlImage;
 
-    if (nlName->IsModified() || m_locationEdit->importance != temp) {
+    if (dif) {
         notebook->addLocName(m_locationEdit->name);
         MainFrame::locations[m_locationEdit->importance + m_locationEdit->name] = *m_locationEdit;
         notebook->setSearchAC(wxBookCtrlEvent());
@@ -389,6 +387,7 @@ void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
         n++;
     }
 
+    notebook->locShow->setData(*m_locationEdit);
     notebook->locList->Select(n);
 
     mainFrame->isSaved = false;

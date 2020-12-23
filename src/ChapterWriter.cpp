@@ -19,9 +19,9 @@ EVT_BUTTON(BUTTON_NoteClear, ChapterWriter::clearNote)
 EVT_BUTTON(BUTTON_NoteAdd, ChapterWriter::addNote)
 
 EVT_BUTTON(BUTTON_AddChar, ChapterWriter::addCharButtonPressed)
-EVT_BUTTON(BUTTON_RemChar, ChapterWriter::removeChar)
 EVT_BUTTON(BUTTON_AddLoc, ChapterWriter::addLocButtonPressed)
-EVT_BUTTON(BUTTON_RemLoc, ChapterWriter::removeLocButtonPressed)
+EVT_BUTTON(BUTTON_RemChar, ChapterWriter::removeChar)
+EVT_BUTTON(BUTTON_RemLoc, ChapterWriter::removeLoc)
 
 EVT_BUTTON(BUTTON_NextChap, ChapterWriter::nextChap)
 EVT_BUTTON(BUTTON_PreviousChap, ChapterWriter::prevChap)
@@ -309,17 +309,13 @@ void ChapterWriter::addChar(wxCommandEvent& event) {
             charInChap->InsertItem(i, charNames[i]);
         }
 
-        thisChap->characters.push_back(name);
+        thisChap->characters.Add(name);
 
         auto mapIt = MainFrame::characters.find("Main" + name);
         if (mapIt == MainFrame::characters.end())
             mapIt = MainFrame::characters.find("Secondary" + name);
 
-        mapIt->second.chapters++;
-        mapIt->second.hasAppeared = true;
-
-        if (mapIt->second.chapters == 1)
-            mapIt->second.firstChap = chapterPos;
+        mapIt->second.chaps.Add(thisChap);
 
         ElementsNotebook::updateLB();
     }
@@ -334,25 +330,15 @@ void ChapterWriter::removeChar(wxCommandEvent& event) {
         charInChap->DeleteItem(sel);
         charNames.Remove(name);
 
-        auto it = thisChap->characters.begin();
-        while (true) {
-            if (*it == name) {
-                thisChap->characters.erase(it);
-                break;
-            }
-            it++;
-        }
-
-        thisChap->characters.shrink_to_fit();
+        thisChap->characters.Remove(name);
+        thisChap->characters.Shrink();
 
         auto mapIt = MainFrame::characters.find("Main" + name);
         if (mapIt == MainFrame::characters.end())
             mapIt = MainFrame::characters.find("Secondary" + name);
 
-        if (mapIt != MainFrame::characters.end()) {
-            if ((--mapIt->second.chapters) == 0)
-                mapIt->second.hasAppeared = false;
-        }
+        if (mapIt != MainFrame::characters.end())
+            mapIt->second.chaps.Remove(thisChap);
 
         sel = charInChap->GetNextSelected(sel - 1);
     }
@@ -398,23 +384,19 @@ void ChapterWriter::addLoc(wxCommandEvent& event) {
             locInChap->InsertItem(i, locNames[i]);
         }
 
-        thisChap->locations.push_back(name);
+        thisChap->locations.Add(name);
 
         auto mapIt = MainFrame::locations.find("High" + name);
         if (mapIt == MainFrame::locations.end())
             mapIt = MainFrame::locations.find("Low" + name);
 
-        mapIt->second.chapters++;
-        mapIt->second.hasAppeared = true;
-
-        if (mapIt->second.chapters == 1)
-            mapIt->second.firstChap = chapterPos;
+        mapIt->second.chaps.Add(thisChap);
 
         ElementsNotebook::updateLB();
     }
 }
 
-void ChapterWriter::removeLocButtonPressed(wxCommandEvent& event) {
+void ChapterWriter::removeLoc(wxCommandEvent& event) {
     int sel = locInChap->GetFirstSelected();
     int nos = locInChap->GetSelectedItemCount();
 
@@ -423,22 +405,14 @@ void ChapterWriter::removeLocButtonPressed(wxCommandEvent& event) {
         locInChap->DeleteItem(sel);
         locNames.Remove(name);
 
-        auto it = thisChap->locations.begin();
-        while (true) {
-            if (*it == name) {
-                thisChap->locations.erase(it);
-                break;
-            }
-            it++;
-        }
+        thisChap->locations.Remove(name);
 
         auto mapIt = MainFrame::locations.find("High" + name);
         if (mapIt == MainFrame::locations.end())
             mapIt = MainFrame::locations.find("Low" + name);
 
         if (mapIt != MainFrame::locations.end()) {
-            if ((--mapIt->second.chapters) == 0)
-                mapIt->second.hasAppeared = false;
+            mapIt->second.chaps.Remove(thisChap);
         }
 
     sel = locInChap->GetNextSelected(sel + 1);

@@ -101,6 +101,12 @@ void Chapter::load(std::ifstream& in) {
             delete data;
 
             characters.push_back(tempName);
+
+            for (auto it = MainFrame::characters.begin(); it != MainFrame::characters.end(); it++) {
+                if (it->second.name == tempName) {
+                    it->second.chaps.Add(this);
+                }
+            }
         }
 
         in.read((char*)&number, sizeof(int));
@@ -112,6 +118,12 @@ void Chapter::load(std::ifstream& in) {
             delete data;
 
             locations.push_back(tempName);
+
+            for (auto it = MainFrame::locations.begin(); it != MainFrame::locations.end(); it++) {
+                if (it->second.name == tempName) {
+                    it->second.chaps.Add(this);
+                }
+            }
         }
 
         in.read((char*)&number, sizeof(int));

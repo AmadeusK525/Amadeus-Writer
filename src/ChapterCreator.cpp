@@ -7,6 +7,7 @@
 
 BEGIN_EVENT_TABLE(ChapterCreator, wxFrame)
 
+EVT_BUTTON(BUTTON_NextChapter, ChapterCreator::next)
 EVT_BUTTON(BUTTON_BackChapter, ChapterCreator::back)
 EVT_BUTTON(BUTTON_CancelChapter, ChapterCreator::cancel)
 EVT_BUTTON(BUTTON_CreateChapter, ChapterCreator::create)
@@ -79,8 +80,6 @@ ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook) :
     m_nchapBack = new wxButton(m_btnPanel, BUTTON_BackChapter, "Back", wxPoint(45, 275), wxSize(90, 30));
     m_nchapNext = new wxButton(m_btnPanel, BUTTON_NextChapter, "Next", wxPoint(285, 275), wxSize(90, 30));
     m_nchapCancel = new wxButton(m_btnPanel, BUTTON_CancelChapter, "Cancel", wxPoint(380, 275), wxSize(90, 30));
-
-    m_nchapNext->Bind(wxEVT_BUTTON, &ChapterCreator::next, this);
 
     m_nchapBack->Hide();
 
