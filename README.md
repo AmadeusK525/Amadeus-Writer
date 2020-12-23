@@ -5,7 +5,7 @@
   
   My vision is to have a program that can be utilized in every step of the writing process, incluing the research, the outline, the writing itself, keeping track of characters, locations, items, etc. I plan to add tools such as a drawing board for sketching your own drawings, an integraded video player, a built-in Google extension, a timeline, online social features and more. I'm currently working full time on this.
   
-  For now, you can already create characters and locations, specifying lots of attributes in each of them, you can use the famous corkboard for outlining, creating notes, changing colors, adding images, connecting stuff around... You can create chapters and write in each of them, changing the font weight and style, keep track of the characters and locations present in the chapter, add notes to it (which can be green or red, you can change the color anytime). There is a save option to save all of these components and the chapter writing has an autosave function, including word count. There are screenshots at the end.
+  For now, you can already create characters and locations, specifying lots of attributes in each of them, you can use the famous corkboard for outlining, creating notes, changing colors, adding images, connecting stuff around... There's also a more standard file system for outlining. You can create chapters and write in each of them, changing the font weight and style, keep track of the characters and locations present in the chapter, add notes to it (which can be green or red, you can change the color anytime). There is a save option to save all of these components and the chapter writing has an autosave function, including word count. There are screenshots at the end.
   
 ## Contribute to the project
  
@@ -34,7 +34,7 @@
   
   - The file size is currently pretty large, 20Mb+, but that's because all of the assets (icons, background images..) are embedded in the executable for convinence reasons. The application by itself takes about 6Mb of storage (for now).
 
-  - For now you can test out everything from free, but someday when I finishe it I do plan to put it up for sale. The price won't be anything huge though, something like $5.00 or $10.00, just so I'm a little compensated for the work I've done. I hope you all enjoy writing with it as much as I am writing it! 
+  - For now you can test out everything for free, but someday when I finish it I do plan to put it up for sale. The price won't be anything huge though, definitely one of the cheapest alternatives in the market compared to things like Scrivener, Vellum (which are both great apps!) and subscription-based software. I hope you all enjoy writing *with it* as much as I am writing *it*! 
 
 ## Screenshots
 
