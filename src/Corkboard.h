@@ -16,7 +16,6 @@
 #include <memory>
 
 class Corkboard;
-class CorkboardCanvas;
 
 using std::vector;
 
@@ -33,14 +32,18 @@ enum ToolMode {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 class Corkboard : public wxPanel {
+public:
+	friend class CorkboardCanvas;
+
 private:
-    Outline* parent = nullptr;
-    wxToolBar* toolBar = nullptr;
+	amdProjectManager* m_manager = nullptr;
+    amdOutline* parent = nullptr;
+    wxToolBar* m_toolBar = nullptr;
 
     wxBoxSizer* corkboardSizer = nullptr;
 
-    CorkboardCanvas* canvas = nullptr;
-    wxSFDiagramManager manager;
+    CorkboardCanvas* m_canvas = nullptr;
+    wxSFDiagramManager m_canvasManager;
 
     ToolMode toolMode = modeDESIGN;
     bool isDraggingRight = false;
@@ -53,27 +56,27 @@ public:
     void onTool(wxCommandEvent& event);
 
     void callFullScreen(wxCommandEvent& event);
-    void fullScreen(bool fs);
+    void FullScreen(bool fs);
 
     void setToolMode(ToolMode mode);
     ToolMode getToolMode() { return toolMode; }
-    wxToolBar* getToolbar() { return toolBar; }
+    wxToolBar* getToolbar() { return m_toolBar; }
 
     void exportToImage(wxBitmapType type);
 
-    void save();
-    void load();
+    void Save();
+    void Load();
     
-    CorkboardCanvas* getCanvas() { return canvas; }
+    CorkboardCanvas* getCanvas() { return m_canvas; }
 
-    enum {
-        TOOL_Cursor,
-        TOOL_NewNote,
-        TOOL_NewImage,
-        TOOL_NewText,
-        TOOL_NewConnection,
-        TOOL_CorkboardFullScreen
-    };
+	enum {
+		TOOL_Cursor,
+		TOOL_NewNote,
+		TOOL_NewImage,
+		TOOL_NewText,
+		TOOL_NewConnection,
+		TOOL_CorkboardFullScreen
+	};
 
     DECLARE_EVENT_TABLE()
 };
@@ -85,7 +88,7 @@ public:
 class CorkboardCanvas : public wxSFShapeCanvas {
 private:
 	Corkboard* parent = nullptr;
-	MainFrame* mainFrame = nullptr;
+	amdProjectManager* m_manager = nullptr;
 
 	wxSFShapeBase* shapeForMenu = nullptr;
 

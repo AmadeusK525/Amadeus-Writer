@@ -1,5 +1,6 @@
 #include "ImageShape.h"
 #include "Corkboard.h"
+#include "MyApp.h"
 
 XS_IMPLEMENT_CLONABLE_CLASS(ImageShape, wxSFBitmapShape)
 
@@ -13,7 +14,7 @@ ImageShape::ImageShape(const ImageShape& other): wxSFBitmapShape(other) {
 
 ImageShape::~ImageShape() {}
 
-void ImageShape::create(const wxString& path, wxBitmapType type) {
+void ImageShape::Create(const wxString& path, wxBitmapType type) {
 	CreateFromFile(path, type);
 	wxImage image(path);
 	
@@ -72,11 +73,11 @@ void ImageShape::OnHandle(wxSFShapeHandle& handle) {
 }
 
 void ImageShape::OnEndHandle(wxSFShapeHandle& handle) {
-	MainFrame::isSaved = false;
+	amdGetManager()->SetSaved(false);
 	wxSFBitmapShape::OnEndHandle(handle);
 }
 
 void ImageShape::OnEndDrag(wxPoint& pos) {
-	MainFrame::isSaved = false;
+	amdGetManager()->SetSaved(false);
 	wxSFBitmapShape::OnEndDrag(pos);
 }

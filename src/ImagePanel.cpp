@@ -10,22 +10,22 @@ ImagePanel::ImagePanel(wxWindow* parent, const wxPoint& pos, const wxSize& size)
     this->size = size;
 }
 
-void ImagePanel::adjustSize(const wxSize& size) {
+void ImagePanel::AdjustSize(const wxSize& size) {
     this->size = size;
-    setImage(image);
+    SetImage(image);
 }
 
-void ImagePanel::setBorderColour(const wxColour& colour) {
+void ImagePanel::SetBorderColour(const wxColour& colour) {
     this->colour = colour;
 }
 
 
-bool ImagePanel::setImage(wxImage& im) {
+bool ImagePanel::SetImage(const wxImage& im) {
     image = im;
     bool ok = image.IsOk();
 
     if (ok)
-        newScale();
+        NewScale();
 
     SetBackgroundBitmap(image);
 
@@ -37,7 +37,7 @@ bool ImagePanel::setImage(wxImage& im) {
     return true;
 }
 
-void ImagePanel::newScale() {
+void ImagePanel::NewScale() {
     int width = image.GetWidth();
     int height = image.GetHeight();
 
@@ -56,14 +56,14 @@ void ImagePanel::newScale() {
     SetMinSize(wxSize(neww, newh));
 }
 
-void ImagePanel::setImageAsIs(wxImage& im) {
+void ImagePanel::SetImageAsIs(wxImage& im) {
     image = im;
     image.Rescale(size.x, size.y);
     SetBackgroundBitmap(image);
     Refresh();
 }
 
-void ImagePanel::clear() {
+void ImagePanel::Clear() {
     ClearBackground();
     image.Destroy();
 }

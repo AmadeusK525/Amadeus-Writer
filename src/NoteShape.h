@@ -8,10 +8,10 @@
 
 class NoteShape: public wxSFRoundRectShape {
 protected:
-	AutoWrapTextShape* content = nullptr;
+	AutoWrapTextShape* m_content = nullptr;
 
 public:
-	wxWindowID curColour = CorkboardCanvas::MENU_NoteDefault;
+	wxWindowID m_currentColour = CorkboardCanvas::MENU_NoteDefault;
 
 public:
 	// Enable RTTI and cloneability
@@ -22,10 +22,10 @@ public:
 
 	virtual ~NoteShape() { }
 
-	void changeColour(wxWindowID id);
+	void ChangeColour(wxWindowID id);
 
-	void willCountLines(bool count) { content->willCountLines(count); }
-	void willClip(bool will) { content->willClip(will); }
+	void ShouldCountLines(bool count) { m_content->ShouldCountLines(count); }
+	void ShouldClip(bool will) { m_content->ShouldClip(will); }
 	
 	virtual void OnBeginHandle(wxSFShapeHandle& handle);
 	virtual void OnHandle(wxSFShapeHandle& handle);

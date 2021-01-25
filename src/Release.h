@@ -1,35 +1,30 @@
 #pragma once
 
-#include "wx/panel.h"
-#include "wx/sizer.h"
-#include "wx/button.h"
-#include "wx/richtext/richtextctrl.h"
-#include "wx/richtext/richtextprint.h"
+#include <wx/wx.h>
+#include <wx/sizer.h>
+#include <wx/richtext/richtextctrl.h>
+#include <wx/richtext/richtextprint.h>
 
-#include "MainFrame.h"
+#include "ProjectManager.h"
 
-class MainFrame;
 
-class Release : public wxPanel {
+class amdRelease : public wxPanel {
 private:
-    MainFrame* parent;
+    amdProjectManager* m_manager = nullptr;
 
-    wxRichTextParagraph* para = nullptr;
-    wxRichTextPlainText* text = nullptr;
-    wxRichTextPrinting* print = nullptr;
-    wxPanel* pan = nullptr;
-
-    wxBoxSizer* pagesSizer = nullptr;
+    //wxRichTextPrinting* print = nullptr;
+    wxPanel* m_panel = nullptr;
+    wxBoxSizer* m_pagesSizer = nullptr;
 
 public:
-    Release(wxWindow* parent);
-    ~Release();
+    amdRelease(wxWindow* parent);
+    ~amdRelease();
 
-    void updateContent();
+    void UpdateContent();
 
-    void next(wxCommandEvent& event);
-    void previous(wxCommandEvent& event);
-    void keyPressed(wxKeyEvent& event);
+    void OnNext(wxCommandEvent& event);
+    void OnPrevious(wxCommandEvent& event);
+    void OnKeyPressed(wxKeyEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

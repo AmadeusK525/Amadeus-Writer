@@ -24,12 +24,15 @@ struct Chapter {
 
     string pointOfView{""};
 
-    int position = -1;
+    char position = -1;
 
-    bool hasRedNote();
+    bool HasRedNote();
 
-    void save(std::ofstream& out);
-    void load(std::ifstream& in);
+    void Save(std::ofstream& out);
+    void Load(std::ifstream& in);
+
+    bool operator<(const Chapter& other) const;
+    bool operator==(const Chapter& other) const;
 };
 
 WX_DEFINE_ARRAY_PTR(Chapter*, ChapterPtrArray);

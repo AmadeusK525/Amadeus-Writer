@@ -4,16 +4,22 @@
 #pragma once
 
 #include <wx/wx.h>
-#include "MainFrame.h"
+
+#include "ProjectManager.h"
 
 class MyApp: public wxApp {
 private:
-    MainFrame* mainFrame = nullptr;
-    wxLocale locale;
+    amdProjectManager* m_manager;
+    wxLocale m_locale{};
 
 public:
     virtual bool OnInit();
+    virtual int OnExit();
+
+    amdProjectManager* GetManager() { return m_manager; }
 };
 
 wxDECLARE_APP(MyApp);
+
+amdProjectManager* amdGetManager();
 #endif

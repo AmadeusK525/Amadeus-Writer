@@ -14,7 +14,7 @@ public:
 	ImageShape(const ImageShape& other);
 	virtual ~ImageShape();
 
-	void create(const wxString& path, wxBitmapType type = wxBITMAP_TYPE_ANY);
+	void Create(const wxString& path, wxBitmapType type = wxBITMAP_TYPE_ANY);
 
 	virtual void OnBeginHandle(wxSFShapeHandle& handle);
 	virtual void OnHandle(wxSFShapeHandle& handle);

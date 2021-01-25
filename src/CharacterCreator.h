@@ -12,9 +12,9 @@
 
 class CharacterCreator: public wxFrame {
 private:
-    wxPanel* ncPanel1 = nullptr,
-        * ncPanel3 = nullptr;
-    wxScrolledWindow* ncPanel2 = nullptr;
+    wxPanel* m_panel1 = nullptr,
+        * m_panel3 = nullptr;
+    wxScrolledWindow* m_panel2 = nullptr;
 
     ImagePanel* ncImagePanel = nullptr;
     wxImage ncImage;
@@ -33,32 +33,34 @@ private:
     vector<pair<wxTextCtrl*, wxTextCtrl*>> ncCustom{};
     vector<wxButton*> minusButtons{};
 
-    wxRadioButton* ncMale = nullptr;
-    wxRadioButton* ncFemale = nullptr;
+    wxRadioButton* ncMale = nullptr,
+        * ncFemale = nullptr;
 
-    wxRadioButton* ncMain = nullptr;
-    wxRadioButton* ncSecon = nullptr;
+    wxRadioButton* ncMain = nullptr,
+        * ncSupp = nullptr,
+        * ncVillian = nullptr,
+        * ncSecon = nullptr;
 
     wxButton* ncBack = nullptr;
     wxButton* ncCancel = nullptr;
     wxButton* ncNext = nullptr;
 
     wxButton* ncAddCustom = nullptr;
-    wxBoxSizer* ncp2Sizer = nullptr;
+    wxBoxSizer* m_customSizer = nullptr;
 
     wxButton* ncChooseImage = nullptr;
     wxButton* ncRemoveImage = nullptr;
 
     Character* charEdit = nullptr;
 
-    ElementsNotebook* notebook;
-    MainFrame* mainFrame;
+    amdElementsNotebook* notebook;
+    amdMainFrame* mainFrame;
 
     wxBoxSizer* mainSiz = nullptr;
 
 public:
     CharacterCreator(wxWindow* parent,
-        ElementsNotebook* notebook,
+        amdElementsNotebook* notebook,
         long id =  wxID_ANY,
         const string& label = "Create character",
         const wxPoint& pos = wxDefaultPosition,
@@ -66,23 +68,23 @@ public:
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-    vector<string> getValues();
-    vector<pair<string, string>> getCustom();
+    vector<string> GetValues();
+    vector<pair<string, string>> GetCustom();
 
-    void setEdit(Character* character);
-    void doEdit(wxCommandEvent& event);
+    void SetEdit(Character* character);
+    void DoEdit(wxCommandEvent& event);
 
-    void addCustomAttr(wxCommandEvent& event);
-    void removeCustomAttr(wxCommandEvent& event);
+    void AddCustomAttr(wxCommandEvent& event);
+    void RemoveCustomAttr(wxCommandEvent& event);
 
-    void cancel(wxCommandEvent& event);
-    void next(wxCommandEvent& event);
-    void back(wxCommandEvent& event);
-    void create(wxCommandEvent& event);
-    void checkClose(wxCloseEvent& event);
+    void Cancel(wxCommandEvent& event);
+    void Next(wxCommandEvent& event);
+    void Back(wxCommandEvent& event);
+    void Create(wxCommandEvent& event);
+    void CheckClose(wxCloseEvent& event);
 
-    void setImage(wxCommandEvent& event);
-    void removeImage(wxCommandEvent& event);
+    void SetImage(wxCommandEvent& event);
+    void RemoveImage(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

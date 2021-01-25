@@ -7,8 +7,7 @@
 #include <wx\toolbar.h>
 #include <wx\richtext\richtextctrl.h>
 
-#include "Character.h"
-#include "Location.h"
+#include "Elements.h"
 
 using std::vector;
 using std::string;
@@ -21,7 +20,7 @@ private:
     OutlineTreeModelNode* m_parent = nullptr;
     OulineTreeModelNodePtrArray m_children{};
 
-    wxDataViewItemAttr attr{};
+    wxDataViewItemAttr m_attr{};
 
 public:     // public to avoid getters/setters
     wxRichTextBuffer m_buffer{};
@@ -36,15 +35,15 @@ public:
         m_buffer = buffer;
 
         if (m_parent)
-            m_parent->append(this);
+            m_parent->Append(this);
 
         m_isContainer = false;
 
-        attr.SetBackgroundColour(wxColour(250, 250, 250));
-        attr.SetColour(wxColour(20, 20, 20));
-        attr.SetBold(false);
-        attr.SetItalic(false);
-        attr.SetStrikethrough(false);
+        m_attr.SetBackgroundColour(wxColour(250, 250, 250));
+        m_attr.SetColour(wxColour(20, 20, 20));
+        m_attr.SetBold(false);
+        m_attr.SetItalic(false);
+        m_attr.SetStrikethrough(false);
     }
 
     OutlineTreeModelNode(OutlineTreeModelNode* parent,
@@ -53,15 +52,15 @@ public:
         m_title = branch;
 
         if (m_parent)
-            m_parent->append(this);
+            m_parent->Append(this);
 
         m_isContainer = true;
 
-        attr.SetBackgroundColour(wxColour(250, 250, 250));
-        attr.SetColour(wxColour(20, 20, 20));
-        attr.SetBold(false);
-        attr.SetItalic(false);
-        attr.SetStrikethrough(false);
+        m_attr.SetBackgroundColour(wxColour(250, 250, 250));
+        m_attr.SetColour(wxColour(20, 20, 20));
+        m_attr.SetBold(false);
+        m_attr.SetItalic(false);
+        m_attr.SetStrikethrough(false);
     }
 
     ~OutlineTreeModelNode() {
@@ -73,31 +72,31 @@ public:
         }
     }
 
-    bool isContainer() const {
+    bool IsContainer() const {
         return m_isContainer;
     }
 
-    void reparent(OutlineTreeModelNode* newParent) {
+    void Reparent(OutlineTreeModelNode* newParent) {
         if (m_parent)
-            m_parent->getChildren().Remove(this);
+            m_parent->GetChildren().Remove(this);
         
         m_parent = newParent;
         
         if (m_parent)
-            m_parent->append(this);
+            m_parent->Append(this);
     }
 
-    void reparent(OutlineTreeModelNode* newParent, int n) {
+    void Reparent(OutlineTreeModelNode* newParent, int n) {
         if (m_parent)
-            m_parent->getChildren().Remove(this);
+            m_parent->GetChildren().Remove(this);
 
         m_parent = newParent;
         
         if (m_parent)
-            m_parent->insert(this, n);
+            m_parent->Insert(this, n);
     }
 
-    void reposition(int n) {
+    void Reposition(int n) {
         /*if (m_parent)
             m_parent->getChildren().Remove(this);
         else
@@ -106,31 +105,31 @@ public:
         m_parent->getChildren().Insert(this, n);*/
     }
 
-    OutlineTreeModelNode* getParent() {
+    OutlineTreeModelNode* GetParent() {
         return m_parent;
     }
 
-    OulineTreeModelNodePtrArray& getChildren() {
+    OulineTreeModelNodePtrArray& GetChildren() {
         return m_children;
     }
 
-    OutlineTreeModelNode* getChild(unsigned int n) {
+    OutlineTreeModelNode* GetChild(unsigned int n) {
         return m_children.Item(n);
     }
 
-    wxDataViewItemAttr& getAttr() {
-        return attr;
+    wxDataViewItemAttr& GetAttr() {
+        return m_attr;
     }
 
-    void insert(OutlineTreeModelNode* child, unsigned int n) {
+    void Insert(OutlineTreeModelNode* child, unsigned int n) {
         m_children.Insert(child, n);
     }
     
-    void append(OutlineTreeModelNode* child) {
+    void Append(OutlineTreeModelNode* child) {
         m_children.push_back(child);
     }
     
-    int getChildCount() const {
+    int GetChildCount() const {
         return m_children.GetCount();
     }
 };
@@ -142,7 +141,7 @@ private:
     OutlineTreeModelNode* m_characters;
     OutlineTreeModelNode* m_locations;
 
-    OulineTreeModelNodePtrArray otherRoots{};
+    OulineTreeModelNodePtrArray m_otherRoots{};
 
 public:
     OutlineTreeModel();
@@ -156,62 +155,62 @@ public:
         if (m_locations)
             delete m_locations;
 
-        for (int i = 0; i < otherRoots.GetCount(); i++) {
-            if (otherRoots.at(i))
-                delete otherRoots.at(i);
+        for (int i = 0; i < m_otherRoots.GetCount(); i++) {
+            if (m_otherRoots.at(i))
+                delete m_otherRoots.at(i);
         }
     }
 
-    wxString getTitle(const wxDataViewItem& item) const;
-    wxRichTextBuffer& getBuffer(const wxDataViewItem& item) const;
+    wxString GetTitle(const wxDataViewItem& item) const;
+    wxRichTextBuffer& GetBuffer(const wxDataViewItem& item) const;
 
-    OulineTreeModelNodePtrArray& getCharacters() {
-        return m_characters->getChildren();
+    OulineTreeModelNodePtrArray& GetCharacters() {
+        return m_characters->GetChildren();
     }
 
-    OulineTreeModelNodePtrArray& getLocations() {
-        return m_locations->getChildren();
+    OulineTreeModelNodePtrArray& GetLocations() {
+        return m_locations->GetChildren();
     }
 
-    OutlineTreeModelNode* getResearchNode() {
+    OutlineTreeModelNode* GetResearchNode() {
         return m_research;
     }
 
-    OutlineTreeModelNode* getCharactersNode() {
+    OutlineTreeModelNode* GetCharactersNode() {
         return m_characters;
     }
 
-    OutlineTreeModelNode* getLocationsNode() {
+    OutlineTreeModelNode* GetLocationsNode() {
         return m_locations;
     }
 
     // helper methods to change the model
 
-    wxDataViewItem addToResearch(const string& title);
-    wxDataViewItem addToCharacters(const string& title);
-    wxDataViewItem addToLocations(const string& title);
+    wxDataViewItem AddToResearch(const string& title);
+    wxDataViewItem AddToCharacters(const string& title);
+    wxDataViewItem AddToLocations(const string& title);
 
-    wxDataViewItem appendFile(wxDataViewItem& parent, const string& name, const wxRichTextBuffer& buffer);
-    wxDataViewItem appendFolder(wxDataViewItem& parent, const string& name);
+    wxDataViewItem AppendFile(wxDataViewItem& parent, const string& name, const wxRichTextBuffer& buffer);
+    wxDataViewItem AppendFolder(wxDataViewItem& parent, const string& name);
 
-    bool isResearch(wxDataViewItem& item);
-    bool isCharacters(wxDataViewItem& item);
-    bool isLocations(wxDataViewItem& item);
+    bool IsResearch(wxDataViewItem& item);
+    bool IsCharacters(wxDataViewItem& item);
+    bool IsLocations(wxDataViewItem& item);
 
-    bool isDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
+    bool IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
 
-    void deleteItem(const wxDataViewItem& item);
+    void DeleteItem(const wxDataViewItem& item);
 
-    void setItemBackgroundColour(wxDataViewItem& item, wxColour& colour);
-    void setItemForegroundColour(wxDataViewItem& item, wxColour& colour);
-    void setItemFont(wxDataViewItem& item, wxFont& font);
+    void SetItemBackgroundColour(wxDataViewItem& item, wxColour& colour);
+    void SetItemForegroundColour(wxDataViewItem& item, wxColour& colour);
+    void SetItemFont(wxDataViewItem& item, wxFont& font);
         
-    bool reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent);
-    bool reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent, int n);
+    bool Reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent);
+    bool Reparent(OutlineTreeModelNode* item, OutlineTreeModelNode* newParent, int n);
 
-    bool reposition(wxDataViewItem& item, int n);
+    bool Reposition(wxDataViewItem& item, int n);
 
-    void clear();
+    void Clear();
 
     // implementation of base class virtuals to define model
     virtual unsigned int GetColumnCount() const {
@@ -247,65 +246,65 @@ enum {
     TIMER_OutlineFiles
 };
 
-class OutlineFilesPanel : public wxSplitterWindow {
+class amdOutlineFilesPanel : public wxSplitterWindow {
 private:
-    wxPanel* leftPanel = nullptr;
-    wxDataViewCtrl* files = nullptr;
-    wxRichTextCtrl* content = nullptr;
-    wxRichTextAttr basicAttr;
+    wxPanel* m_leftPanel = nullptr;
+    wxDataViewCtrl* m_files = nullptr;
+    wxRichTextCtrl* m_textCtrl = nullptr;
+    wxRichTextAttr m_basicAttr{};
 
-    wxToolBar* filesTB = nullptr, * contentTB = nullptr;
+    wxToolBar* m_filesTB = nullptr, * m_contentTB = nullptr;
 
-    wxObjectDataPtr<OutlineTreeModel> outlineTreeModel;
+    wxObjectDataPtr<OutlineTreeModel> m_outlineTreeModel;
 
-    OutlineTreeModelNode* curNode = nullptr;
+    OutlineTreeModelNode* m_currentNode = nullptr;
 
-    OutlineTreeModelNode* nodeForDnD = nullptr;
-    wxDataViewItem itemForDnD{};
+    OutlineTreeModelNode* m_nodeForDnD = nullptr;
+    wxDataViewItem m_itemForDnD{};
 
-    wxTimer timer{ this, TIMER_OutlineFiles };
+    wxTimer m_timer{ this, TIMER_OutlineFiles };
 
 public:
-    OutlineFilesPanel(wxWindow* parent);
-    void init();
+    amdOutlineFilesPanel(wxWindow* parent);
+    void Init();
 
-    void generateCharacterBuffer(Character& character, wxRichTextBuffer& buffer);
-    void generateLocationBuffer(Location& location, wxRichTextBuffer& buffer);
-    void appendCharacter(Character& character);
-    void appendLocation(Location& location);
+    void GenerateCharacterBuffer(Character& character, wxRichTextBuffer& buffer);
+    void GenerateLocationBuffer(Location& location, wxRichTextBuffer& buffer);
+    void AppendCharacter(Character& character);
+    void AppendLocation(Location& location);
 
-    void deleteCharacter(Character& character);
-    void deleteLocation(Location& location);
+    void DeleteCharacter(Character& character);
+    void DeleteLocation(Location& location);
 
-    void newFile(wxCommandEvent& event);
-    void newFolder(wxCommandEvent& event);
+    void NewFile(wxCommandEvent& event);
+    void NewFolder(wxCommandEvent& event);
 
-    void deleteItem(wxDataViewItem& item);
+    void DeleteItem(wxDataViewItem& item);
 
-    void onKeyDownDataView(wxKeyEvent& event);
-    void onRightDownDataView(wxMouseEvent& event);
-    void onMenuDataView(wxCommandEvent& event);
+    void OnKeyDownDataView(wxKeyEvent& event);
+    void OnRightDownDataView(wxMouseEvent& event);
+    void OnMenuDataView(wxCommandEvent& event);
 
-    void onSelectionChanged(wxDataViewEvent& event);
-    void onEditingStart(wxDataViewEvent& event);
-    void onEditingEnd(wxDataViewEvent& event);
+    void OnSelectionChanged(wxDataViewEvent& event);
+    void OnEditingStart(wxDataViewEvent& event);
+    void OnEditingEnd(wxDataViewEvent& event);
     
-    void onBeginDrag(wxDataViewEvent& event);
-    void onDropPossible(wxDataViewEvent& event);
-    void onDrop(wxDataViewEvent& event);
+    void OnBeginDrag(wxDataViewEvent& event);
+    void OnDropPossible(wxDataViewEvent& event);
+    void OnDrop(wxDataViewEvent& event);
 
     virtual void OnUnsplit(wxWindow* window);
 
-    void timerEvent(wxTimerEvent& event);
-    void saveCurrentBuffer();
+    void OnTimerEvent(wxTimerEvent& event);
+    void SaveCurrentBuffer();
 
-    wxXmlNode* serializeFolder(wxDataViewItem& item);
-    wxXmlNode* serializeFile(wxDataViewItem& item);
-    void deserializeNode(wxXmlNode* node, wxDataViewItem& parent);
-    bool save();
-    bool load();
+    wxXmlNode* SerializeFolder(wxDataViewItem& item);
+    wxXmlNode* SerializeFile(wxDataViewItem& item);
+    void DeserializeNode(wxXmlNode* node, wxDataViewItem& parent);
+    bool Save();
+    bool Load();
 
-    void clearAll();
+    void ClearAll();
 
     DECLARE_EVENT_TABLE()
 };

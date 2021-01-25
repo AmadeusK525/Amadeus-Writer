@@ -3,17 +3,17 @@
 XS_IMPLEMENT_CLONABLE_CLASS(AutoWrapTextShape,
 	wxSFEditTextShape);
 
-bool AutoWrapTextShape::countLines = true;
-//bool AutoWrapTextShape::clipRegion = false;
+bool AutoWrapTextShape::m_countLines = true;
+//bool AutoWrapTextShape::m_clipRegion = false;
 
 AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape() {
-	SetFill(bgColour);
+	SetFill(m_bgColour);
 }
 
 AutoWrapTextShape::AutoWrapTextShape(const AutoWrapTextShape& other): wxSFEditTextShape(other) {
-	SetFill(bgColour);
+	SetFill(m_bgColour);
 	m_sText = other.m_sText;
-	bgColour = other.bgColour;
+	m_bgColour = other.m_bgColour;
 }
 
 void AutoWrapTextShape::UpdateRectSize() {
@@ -38,24 +38,24 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 
 	wxRect rect(GetBoundingBox());
 
-	if (clipRegion)
+	if (m_clipRegion)
 		m_lines.Clear();
 
 	// Get wrapped text and draw all text lines
-	if (countLines && rect.width > 30) {
+	if (m_countLines && rect.width > 30) {
 		int numberOfLines = 1;
 		
 		if (m_nLineHeight > 0)
 			numberOfLines = rect.height / m_nLineHeight;
 
-		calcWrappedText(rect.width, numberOfLines);
+		CalcWrappedText(rect.width, numberOfLines);
 	}
 
 	for (int i = 0; i < m_lines.GetCount(); i++) {
 		dc.DrawText(m_lines[i], rect.x, rect.y + i * m_nLineHeight);
 	}
 
-	//if (clipRegion)
+	//if (m_clipRegion)
 		//dc.DestroyClippingRegion();
 }
 
@@ -82,7 +82,7 @@ void AutoWrapTextShape::OnLeftDoubleClick(wxPoint& pos) {
 	}
 }
 
-void AutoWrapTextShape::calcWrappedText(int& lenght, int& numberOfLines) {
+void AutoWrapTextShape::CalcWrappedText(int& lenght, int& numberOfLines) {
 	m_lines.Clear();
 
 	wxSize textSize;
