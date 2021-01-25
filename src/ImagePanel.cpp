@@ -28,12 +28,12 @@ bool ImagePanel::SetImage(const wxImage& im) {
         NewScale();
 
     SetBackgroundBitmap(image);
+    Update();
+    Refresh();
 
     if (!ok)
         return false;
 
-    Update();
-    Refresh();
     return true;
 }
 

@@ -106,6 +106,9 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 		progress.Update(currentSize++);
 	}
 
+	char compType = Character::cCompType;
+	file.write(&compType, sizeof(char));
+
 	// Same as the above but for locations.
 	for (Location& it : m_locations) {
 		it.Save(file);
@@ -119,6 +122,9 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 
 		progress.Update(currentSize++);
 	}
+
+	compType = Location::lCompType;
+	file.write(&compType, sizeof(char));
 
 	// Same as the above but for chapters. No images are saved.
 	for (Chapter& it : m_chapters) {
@@ -211,6 +217,10 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		progress.Update(currentSize++);
 	}
 
+	char compType;
+	file.read(&compType, sizeof(char));
+	Character::cCompType = (CompType)compType;
+
 	m_locations.clear();
 	for (int i = 0; i < locSize; i++) {
 		Location location;
@@ -225,6 +235,9 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		//m_elements->m_locNames.Add(location.name);
 		progress.Update(currentSize++);
 	}
+
+	file.read(&compType, sizeof(char));
+	Location::lCompType = (CompType)compType;
 
 	for (int i = 0; i < chapSize; i++) {
 		Chapter chapter;
@@ -243,6 +256,13 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 
 	m_mainFrame->SetTitle(m_curDoc.GetName() + " - Amadeus Writer");
 	m_elements->SetSearchAC(wxBookCtrlEvent());
+
+	wxCommandEvent event;
+	event.SetInt(Character::cCompType);
+	m_elements->OnCharactersSortBy(event);
+
+	event.SetInt(Location::lCompType);
+	m_elements->OnLocationsSortBy(event);
 
 	m_mainFrame->UpdateElements(wxCommandEvent());
 
@@ -414,7 +434,7 @@ void amdProjectManager::EditCharacter(Character& original, Character& edit, bool
 
 	if (sort) {
 		wxVectorSort(m_characters);
-		m_elements->UpdateAll();
+		m_elements->UpdateCharacterList();
 	} else {
 		int n = 0;
 		for (auto& it : m_characters) {
@@ -442,7 +462,7 @@ void amdProjectManager::EditLocation(Location& original, Location& edit, bool so
 
 	if (sort) {
 		wxVectorSort(m_characters);
-		m_elements->UpdateAll();
+		m_elements->UpdateLocationList();
 	} else {
 		int n = 0;
 		for (auto& it : m_characters) {

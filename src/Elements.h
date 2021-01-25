@@ -18,14 +18,17 @@ using std::istream;
 
 enum CompType {
 	CompRole,
-	CompName
+	CompName,
+	CompNameInverse,
+	CompChapters,
+	CompFirst
 };
 
 enum Role {
 	cProtagonist,
+	cVillian,
 	cSupporting,
 	cSecondary,
-	cVillian,
 
 	lHigh,
 	lLow,

@@ -5,15 +5,50 @@ CompType Character::cCompType = CompRole;
 CompType Location::lCompType = CompRole;
 
 bool Element::operator<(const Element& other) const {
+    int i, j;
+
     switch (elCompType) {
     case CompRole:
-        if (role != other.role) {
+        if (role != other.role)
             return role < other.role;
+
+        break;
+
+    case CompNameInverse:
+        return name.Lower() > other.name.Lower();
+        break;
+
+    case CompChapters:
+        i = chapters.Count();
+        j = other.chapters.Count();
+
+        if (i != j)
+            return i > j;
+
+        break;
+    case CompFirst:
+        i = 9999;
+        j = 9999;
+
+        for (auto& it : chapters) {
+            if (it->position < i)
+                i = it->position;
         }
-    case CompName:
-        return name.Lower() < other.name.Lower();
+
+        for (auto& it : other.chapters) {
+            if (it->position < j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i < j;
+
+        break;
+    default:
         break;
     }
+
+    return name.Lower() < other.name.Lower();
 }
 
 bool Element::operator==(const Element& other) const {
@@ -176,18 +211,50 @@ void Character::Load(std::ifstream& in) {
 }
 
 bool Character::operator<(const Character& other) const {
+    int i, j;
+
     switch (cCompType) {
     case CompRole:
-        if (role != other.role) {
+        if (role != other.role)
             return role < other.role;
-        }
-    case CompName:
-        return name.Lower() < other.name.Lower();
+
         break;
 
+    case CompNameInverse:
+        return name.Lower() > other.name.Lower();
+        break;
+
+    case CompChapters:
+        i = chapters.Count();
+        j = other.chapters.Count();
+
+        if (i != j)
+            return i > j;
+
+        break;
+    case CompFirst:
+        i = 9999;
+        j = 9999;
+
+        for (auto& it : chapters) {
+            if (it->position < i)
+                i = it->position;
+        }
+
+        for (auto& it : other.chapters) {
+            if (it->position < j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i < j;
+
+        break;
     default:
-        return false;
+        break;
     }
+
+    return name.Lower() < other.name.Lower();
 }
 
 void Character::operator=(const Character& other)  {
@@ -207,7 +274,7 @@ void Character::operator=(const Character& other)  {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// Lcoation ////////////////////////////////////
+////////////////////////////////// Location ////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -327,18 +394,50 @@ void Location::Load(std::ifstream& in) {
 }
 
 bool Location::operator<(const Location& other) const {
+    int i, j;
+
     switch (lCompType) {
     case CompRole:
-        if (role != other.role) {
+        if (role != other.role)
             return role < other.role;
-        }
-    case CompName:
-        return name.Lower() < other.name.Lower();
+
         break;
 
+    case CompNameInverse:
+        return name.Lower() > other.name.Lower();
+        break;
+
+    case CompChapters:
+        i = chapters.Count();
+        j = other.chapters.Count();
+
+        if (i != j)
+            return i > j;
+
+        break;
+    case CompFirst:
+        i = 9999;
+        j = 9999;
+
+        for (auto& it : chapters) {
+            if (it->position < i)
+                i = it->position;
+        }
+
+        for (auto& it : other.chapters) {
+            if (it->position < j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i < j;
+
+        break;
     default:
-        return false;
+        break;
     }
+
+    return name.Lower() < other.name.Lower();
 }
 
 void Location::operator=(const Location& other) {

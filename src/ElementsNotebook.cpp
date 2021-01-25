@@ -55,11 +55,35 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     m_charList->SetBackgroundColour(wxColour(45, 45, 45));
     m_charList->SetForegroundColour(wxColour(245, 245, 245));
 
+    wxArrayString sortBy;
+    sortBy.Add("Role");
+    sortBy.Add("Name (A-Z)");
+    sortBy.Add("Name (Z-A)");
+    sortBy.Add("Chapters");
+    sortBy.Add("First appearance");
+    
+    wxStaticText* cSortByLabel = new wxStaticText(charFrame, -1, "Sort by:");
+    cSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
+    cSortByLabel->SetFont(wxFontInfo(11).Bold());
+
+    m_cSortBy = new wxChoice(charFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
+    m_cSortBy->Bind(wxEVT_CHOICE, &amdElementsNotebook::OnCharactersSortBy, this);
+    m_cSortBy->SetSelection(0);
+
+    wxBoxSizer* cSortBySizer = new wxBoxSizer(wxHORIZONTAL);
+    cSortBySizer->Add(cSortByLabel, wxSizerFlags(0).CenterVertical());
+    cSortBySizer->AddSpacer(5);
+    cSortBySizer->Add(m_cSortBy, wxSizerFlags(0).CenterVertical());
+
+    wxBoxSizer* cLeftSizer = new wxBoxSizer(wxVERTICAL);
+    cLeftSizer->Add(m_charList, wxSizerFlags(1).Expand());
+    cLeftSizer->AddSpacer(10);
+    cLeftSizer->Add(cSortBySizer, wxSizerFlags(0).Left());
+
     m_charShow = new CharacterShowcase(charFrame);
 
     wxBoxSizer* charSizer = new wxBoxSizer(wxHORIZONTAL);
-    charSizer->Add(m_charList, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
-    //charSizer->SetItemMinSize(size_t(0), wxSize());
+    charSizer->Add(cLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
     charSizer->Add(m_charShow, 3, wxGROW |wxTOP, 10);
     charFrame->SetSizer(charSizer);
 
@@ -79,11 +103,29 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     m_locList->SetForegroundColour(wxColour(245, 245, 245));
     m_locList->SetMinSize(wxSize(300, 400));
 
+    wxStaticText* lSortByLabel = new wxStaticText(locFrame, -1, "Sort by:");
+    lSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
+    lSortByLabel->SetFont(wxFontInfo(11).Bold());
+
+    m_lSortBy = new wxChoice(locFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
+    m_lSortBy->Bind(wxEVT_CHOICE, &amdElementsNotebook::OnLocationsSortBy, this);
+    m_lSortBy->SetSelection(0);
+
+    wxBoxSizer* lSortBySizer = new wxBoxSizer(wxHORIZONTAL);
+    lSortBySizer->Add(lSortByLabel, wxSizerFlags(0).CenterVertical());
+    lSortBySizer->AddSpacer(5);
+    lSortBySizer->Add(m_lSortBy, wxSizerFlags(0).CenterVertical());
+
+    wxBoxSizer* lLeftSizer = new wxBoxSizer(wxVERTICAL);
+    lLeftSizer->Add(m_locList, wxSizerFlags(1).Expand());
+    lLeftSizer->AddSpacer(10);
+    lLeftSizer->Add(lSortBySizer, wxSizerFlags(0).Left());
+
     m_locShow = new LocationShowcase(locFrame);
 
     wxBoxSizer* locSizer = new wxBoxSizer(wxHORIZONTAL);
-    locSizer->Add(m_locList, 4, wxGROW | wxLEFT | wxTOP | wxBOTTOM, 10);
-    locSizer->Add(m_locShow, 5, wxGROW | wxTOP | wxBOTTOM, 10);
+    locSizer->Add(lLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
+    locSizer->Add(m_locShow, wxSizerFlags(5).Expand().Border(wxTOP | wxBOTTOM, 10));
     locFrame->SetSizer(locSizer);
     this->AddPage(locFrame, "Locations");
 
@@ -246,6 +288,22 @@ void amdElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event)) {
     m_locShow->SetData(*it);
 }
 
+void amdElementsNotebook::OnCharactersSortBy(wxCommandEvent& event) {
+    m_cSortBy->SetSelection(event.GetInt());
+    Character::cCompType = (CompType)event.GetInt();
+
+    wxVectorSort(m_manager->GetCharacters());
+    UpdateCharacterList();
+}
+
+void amdElementsNotebook::OnLocationsSortBy(wxCommandEvent& event) {
+    m_lSortBy->SetSelection(event.GetInt());
+    Location::lCompType = (CompType)event.GetInt();
+
+    wxVectorSort(m_manager->GetLocations());
+    UpdateLocationList();
+}
+
 void amdElementsNotebook::ClearAll() {
     m_charList->DeleteAllItems();
     m_locList->DeleteAllItems();
@@ -264,6 +322,10 @@ void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
     switch (character.role) {
     case cProtagonist:
         role = "Protagonist";
+        break;
+
+    case cSupporting:
+        role = "Supporting";
         break;
 
     case cVillian:
