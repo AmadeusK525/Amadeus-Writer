@@ -19,6 +19,10 @@ public:
 	CharacterShowcase* m_charShow = nullptr;
 	LocationShowcase* m_locShow = nullptr;
 
+	wxChoice* m_cSortBy = nullptr,
+		* m_lSortBy = nullptr,
+		* m_iSortBy = nullptr;
+
 	wxSearchCtrl* m_searchBar = nullptr;
 
 	wxArrayString m_charNames{};
@@ -46,6 +50,9 @@ public:
 
 	void OnCharacterSelected(wxListEvent& event);
 	void OnLocationSelected(wxListEvent& event);
+
+	void OnCharactersSortBy(wxCommandEvent& event);
+	void OnLocationsSortBy(wxCommandEvent& event);
 
 	void SetSearchAC(wxBookCtrlEvent& event);
 	void AddCharName(string& name);

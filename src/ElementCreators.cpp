@@ -257,8 +257,7 @@ void amdElementCreator::SetImage(wxCommandEvent& event) {
 }
 
 void amdElementCreator::RemoveImage(wxCommandEvent& event) {
-    m_imagePanel->SetBackgroundBitmap(wxImage());
-    m_imagePanel->Refresh(true);
+    m_imagePanel->SetImage(wxImage());
     m_removeImage->Hide();
     m_mainSizer->Layout();
 
