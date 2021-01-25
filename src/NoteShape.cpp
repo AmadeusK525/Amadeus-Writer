@@ -1,5 +1,7 @@
 #include "NoteShape.h"
 
+#include "MyApp.h"
+
 // Implement RTTI information and Clone() functions.
 XS_IMPLEMENT_CLONABLE_CLASS(NoteShape,
 	wxSFRoundRectShape);
@@ -16,49 +18,49 @@ NoteShape::NoteShape() : wxSFRoundRectShape() {
 
 	AddStyle(sfsNO_FIT_TO_CHILDREN);
 
-	content = new AutoWrapTextShape();
+	m_content = new AutoWrapTextShape();
 
-	if (content) {
-		content->SetVAlign(wxSFShapeBase::valignBOTTOM);
-		content->SetHAlign(wxSFShapeBase::halignCENTER);
+	if (m_content) {
+		m_content->SetVAlign(wxSFShapeBase::valignBOTTOM);
+		m_content->SetHAlign(wxSFShapeBase::halignCENTER);
 
-		content->SetVBorder(10.0);
+		m_content->SetVBorder(10.0);
 
 		// Set required shape style(s)
-		content->SetStyle(sfsALWAYS_INSIDE | sfsHOVERING | sfsPROCESS_DEL |
+		m_content->SetStyle(sfsALWAYS_INSIDE | sfsHOVERING | sfsPROCESS_DEL |
 			sfsPROPAGATE_SELECTION | sfsPROPAGATE_DRAGGING | sfsPROPAGATE_INTERACTIVE_CONNECTION);
 
 		// Components of composite shapes created at runtime in parent
 		// shape constructor cannot be re-created by the serializer so
 		// it is important to disable their automatic serialization ...
-		content->EnableSerialization(false);
+		m_content->EnableSerialization(false);
 
 		// ... but their properties can be serialized in the standard way:
-		XS_SERIALIZE_DYNAMIC_OBJECT_NO_CREATE(content, "content");
+		XS_SERIALIZE_DYNAMIC_OBJECT_NO_CREATE(m_content, "content");
 
 		// Assign the text shape to the parent shape.
-		AddChild(content);
+		AddChild(m_content);
 	}
 
 	Scale(2.3, 2.6);
-	content->SetText("New note");
+	m_content->SetText("New note");
 }
 
 NoteShape::NoteShape(const NoteShape& other) : wxSFRoundRectShape(other) {
 	// Clone source child text object..
-	content = (AutoWrapTextShape*)other.content->Clone();
+	m_content = (AutoWrapTextShape*)other.m_content->Clone();
 
-	if (content) {
+	if (m_content) {
 		// .. and append it to this shapes as its child.
-		AddChild(content);
+		AddChild(m_content);
 
 		// This object is created by the parent class constructor and
 		// not by the serializer (only its properties are deserialized.
-		XS_SERIALIZE_DYNAMIC_OBJECT_NO_CREATE(content, "content");
+		XS_SERIALIZE_DYNAMIC_OBJECT_NO_CREATE(m_content, "content");
 	}
 }
 
-void NoteShape::changeColour(wxWindowID id) {
+void NoteShape::ChangeColour(wxWindowID id) {
 	wxColour frameColour, textBgColour, textFgColour;
 	textFgColour = wxColour(20, 20, 20);
 
@@ -116,39 +118,39 @@ void NoteShape::changeColour(wxWindowID id) {
 	}
 
 	SetFill(frameColour);
-	content->SetFill(textBgColour);
-	content->SetTextColour(textFgColour);
+	m_content->SetFill(textBgColour);
+	m_content->SetTextColour(textFgColour);
 
-	curColour = id;
+	m_currentColour = id;
 }
 
 void NoteShape::OnBeginHandle(wxSFShapeHandle& handle) {
-	willCountLines(false);
-	willClip(true);
+	ShouldCountLines(false);
+	ShouldClip(true);
 	wxSFRoundRectShape::OnBeginHandle(handle);
 }
 
 void NoteShape::OnHandle(wxSFShapeHandle& handle) {
-	content->UpdateRectSize();
+	m_content->UpdateRectSize();
 	wxSFRoundRectShape::OnHandle(handle);
 }
 
 void NoteShape::OnEndHandle(wxSFShapeHandle& handle) {
-	willCountLines(true);
-	willClip(false);
+	ShouldCountLines(true);
+	ShouldClip(false);
 	
-	MainFrame::isSaved = false;
+	amdGetManager()->SetSaved(false);
 	wxSFRoundRectShape::OnEndHandle(handle);
 }
 
 void NoteShape::OnBeginDrag(const wxPoint& pos) {
-	willCountLines(false);
+	ShouldCountLines(false);
 	wxSFRoundRectShape::OnBeginDrag(pos);
 }
 
 void NoteShape::OnEndDrag(const wxPoint& pos) {
-	willCountLines(true);
+	ShouldCountLines(true);
 
-	MainFrame::isSaved = false;
+	amdGetManager()->SetSaved(false);
 	wxSFRoundRectShape::OnEndDrag(pos);
 }

@@ -4,24 +4,35 @@
 
 wxIMPLEMENT_APP(MyApp);
 
+/**
+Global function that returns the application manager, gotten from wxGetApp().
+*/
+amdProjectManager* amdGetManager() {
+    return 	wxGetApp().GetManager();
+}
+
 bool MyApp::OnInit() {
-    locale.Init(wxLANGUAGE_DEFAULT);
+    m_locale.Init(wxLANGUAGE_DEFAULT);
     wxInitAllImageHandlers();
 
-    mainFrame = new MainFrame("New Amadeus project", wxDefaultPosition, wxSize(800, 700));
-    mainFrame->Show(true);
-    SetTopWindow(mainFrame);
-    
-    // This catches the path to the executable (the first cmd line argument) and sets it.
-    // It'll be used in the getLast() and setLast() functions.
-    mainFrame->setExecPath((string)argv.GetArguments()[0]);
-    
-    // This loads the file opened with "Open with..." and, if it fails,
-    // it gets the most recent worked on project and loads it.
+    m_manager = new amdProjectManager();
+    m_manager->SetExecutablePath(argv.GetArguments()[0]);
+
     if (argc > 1)
-        mainFrame->loadFileFromOpenWith((string)argv.GetArguments()[1]);
-    else
-        mainFrame->getLast();
-    
+        m_manager->SetCurrentDocPath(argv.GetArguments()[1]);
+
+    m_manager->Init();
+
+  /*  if (argc > 1)
+        m_manager = new amdProjectManager((string)argv.GetArguments()[1]);
+    else*/
+       
     return true;
+}
+
+int MyApp::OnExit() {
+    if (m_manager)
+        delete m_manager;
+
+    return 0;
 }

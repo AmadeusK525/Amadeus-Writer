@@ -2,13 +2,15 @@
 
 #include "wxmemdbg.h"
 
+#include <wx/wxsqlite3.h>
+
 CharacterShowcase::CharacterShowcase(wxWindow* parent):
     wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL) {
 
     wxFont font(wxFontInfo(12).Bold());
     wxFont font2(wxFontInfo(11));
 
-    m_role = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 25), wxALIGN_CENTER | wxBORDER_RAISED );
+    m_role = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(150, 25), wxALIGN_CENTER | wxBORDER_RAISED );
     m_role->SetBackgroundColour(wxColour(220, 220, 220));
     m_role->SetFont(font);
 
@@ -91,7 +93,7 @@ CharacterShowcase::CharacterShowcase(wxWindow* parent):
 
     m_image = new ImagePanel(this, wxDefaultPosition, wxSize(180, 180));
     m_image->SetBackgroundColour(wxColour(150, 150, 150));
-    m_image->setBorderColour(wxColour(20, 20, 20));
+    m_image->SetBorderColour(wxColour(20, 20, 20));
     m_image->Hide();
 
     m_vertical = new  wxBoxSizer(wxVERTICAL);
@@ -121,7 +123,7 @@ void CharacterShowcase::setData(Character& character) {
     Freeze();
     m_name->SetLabel(character.name);
     m_sex->SetLabel(character.sex);
-
+    
     if (character.sex == "Female")
         m_sex->SetBackgroundColour(wxColour(255, 182, 193));
     else if (character.sex == "Male")
@@ -133,12 +135,33 @@ void CharacterShowcase::setData(Character& character) {
     m_height->SetLabel(character.height);
     m_nat->SetLabel(character.nat);
     m_nick->SetLabel(character.nick);
-    m_role->SetLabel(character.role);
 
-    if (character.role == "Main")
-        m_role->SetBackgroundColour(wxColour(230, 60, 60));
-    else
-        m_role->SetBackgroundColour(wxColour(220, 220, 220));
+    string role("");
+    wxColour rolebg(220, 220, 220);
+    wxColour rolefg(10,10,10);
+    switch (character.role) {
+    case cProtagonist:
+        role = "Protagonist";
+        rolebg = wxColour(230, 60, 60);
+        rolefg = wxColour(10, 10, 10);
+        break;
+
+    case cVillian:
+        role = "Villian";
+        rolebg = wxColour(100, 20, 20);
+        rolefg = wxColour(255, 255, 255);
+        break;
+
+    case cSecondary:
+        role = "Secondary";
+        rolebg = wxColour(220, 220, 220);
+        rolefg = wxColour(10, 10, 10);
+        break;
+    }
+
+    m_role->SetLabel(role);
+    m_role->SetBackgroundColour(rolebg);
+    m_role->SetForegroundColour(rolefg);
 
     m_appearance->SetValue(character.appearance);
     m_personality->SetValue(character.personality);
@@ -154,7 +177,6 @@ void CharacterShowcase::setData(Character& character) {
     m_natLabel->Show(character.nat != "");
     m_nick->Show(character.nick != "");
     m_nickLabel->Show(character.nick != "");
-    m_role->Show(character.role != "");
     m_appearance->Show(character.appearance != "");
     m_appLabel->Show(character.appearance != "");
     m_personality->Show(character.personality != "");
@@ -162,7 +184,7 @@ void CharacterShowcase::setData(Character& character) {
     m_backstory->Show(character.backstory != "");
     m_bsLabel->Show(character.backstory != "");
 
-    m_image->Show(m_image->setImage(character.image));
+    m_image->Show(m_image->SetImage(character.image));
 
     int tcsize = m_custom.size();
     int ccsize = character.custom.size();

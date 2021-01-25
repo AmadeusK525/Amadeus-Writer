@@ -8,7 +8,7 @@
 #include <wx/wx.h>
 
 #include "ImagePanel.h"
-#include "Location.h"
+#include "Elements.h"
 
 using std::string;
 using std::vector;

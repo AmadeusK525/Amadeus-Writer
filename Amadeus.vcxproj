@@ -43,27 +43,35 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLL Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -136,7 +144,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\wxSF\include;$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;%(AdditionalIncludeDirectories);$(WXWIN)\include\msvc;C:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\wxsqlite3-4.6.4\include;F:\wxSF\include;$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;%(AdditionalIncludeDirectories);$(WXWIN)\include\msvc;F:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -154,9 +162,9 @@
       <AdditionalIncludeDirectories>$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;.;$(WXWIN)\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28ud_wxsf.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28ud_wxsf.lib;wxsqlite3d.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_lib\;$(WXWIN)\lib\vc_lib;$(WXWIN)\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>F:\wxsqlite3-4.6.4\lib\vc_lib;F:\wxSF\lib\vc_lib\;$(WXWIN)\lib\vc_lib;$(WXWIN)\lib\$(wxOutDirName);%(AdditionalLibraryDirectories);F:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -173,7 +181,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\wxsqlite3-4.6.4\include;F:\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories);F:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;NDEBUG;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -190,9 +198,9 @@
       <AdditionalIncludeDirectories>$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;.;$(WXWIN)\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib;wxsqlite3.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_lib\;$(WXWIN)\lib\vc_lib;$(WXWIN)\lib\vc_lib\mswu;%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>F:\wxSF\lib\vc_lib\;$(WXWIN)\lib\vc_lib;$(WXWIN)\lib\vc_lib\mswu;F:\wxsqlite3-4.6.4\lib\vc_lib;%(AdditionalLibraryDirectories);F:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -429,23 +437,21 @@
     <ClCompile Include="src\ChaptersNotebook.cpp" />
     <ClCompile Include="src\ChaptersGrid.cpp" />
     <ClCompile Include="src\ChapterWriter.cpp" />
-    <ClCompile Include="src\Character.cpp" />
-    <ClCompile Include="src\CharacterShowcase.cpp" />
     <ClCompile Include="src\Corkboard.cpp" />
     <ClCompile Include="src\DragList.cpp" />
+    <ClCompile Include="src\ElementCreators.cpp" />
+    <ClCompile Include="src\Elements.cpp" />
+    <ClCompile Include="src\ElementShowcases.cpp" />
     <ClCompile Include="src\ImagePanel.cpp" />
     <ClCompile Include="src\ImageShape.cpp" />
-    <ClCompile Include="src\Location.cpp" />
-    <ClCompile Include="src\LocationCreator.cpp" />
-    <ClCompile Include="src\LocationShowcase.cpp" />
     <ClCompile Include="src\MainFrame.cpp" />
     <ClCompile Include="src\ElementsNotebook.cpp" />
     <ClCompile Include="src\MyApp.cpp" />
-    <ClCompile Include="src\CharacterCreator.cpp" />
     <ClCompile Include="src\Note.cpp" />
     <ClCompile Include="src\NoteShape.cpp" />
     <ClCompile Include="src\Outline.cpp" />
     <ClCompile Include="src\OutlineFiles.cpp" />
+    <ClCompile Include="src\ProjectManager.cpp" />
     <ClCompile Include="src\Release.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -456,23 +462,21 @@
     <ClInclude Include="src\ChaptersNotebook.h" />
     <ClInclude Include="src\ChaptersGrid.h" />
     <ClInclude Include="src\ChapterWriter.h" />
-    <ClInclude Include="src\Character.h" />
-    <ClInclude Include="src\CharacterShowcase.h" />
     <ClInclude Include="src\Corkboard.h" />
     <ClInclude Include="src\DragList.h" />
+    <ClInclude Include="src\ElementCreators.h" />
+    <ClInclude Include="src\Elements.h" />
+    <ClInclude Include="src\ElementShowcases.h" />
     <ClInclude Include="src\ImagePanel.h" />
     <ClInclude Include="src\ImageShape.h" />
-    <ClInclude Include="src\Location.h" />
-    <ClInclude Include="src\LocationCreator.h" />
-    <ClInclude Include="src\LocationShowcase.h" />
     <ClInclude Include="src\MainFrame.h" />
     <ClInclude Include="src\ElementsNotebook.h" />
     <ClInclude Include="src\MyApp.h" />
-    <ClInclude Include="src\CharacterCreator.h" />
     <ClInclude Include="src\Note.h" />
     <ClInclude Include="src\NoteShape.h" />
     <ClInclude Include="src\Outline.h" />
     <ClInclude Include="src\OutlineFiles.h" />
+    <ClInclude Include="src\ProjectManager.h" />
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\wxmemdbg.h" />
   </ItemGroup>

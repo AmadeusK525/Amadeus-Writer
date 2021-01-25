@@ -4,74 +4,83 @@
 #pragma once
 
 #include <wx\wx.h>
+#include <wx\notebook.h>
 #include <wx\listctrl.h>
 #include <wx\srchctrl.h>
 
-#include "MainFrame.h"
+#include "ProjectManager.h"
+#include "ElementShowcases.h"
 
-class CharacterShowcase;
-class LocationShowcase;
-
-class ElementsNotebook : public wxNotebook {
+class amdElementsNotebook : public wxNotebook {
 private:
-    MainFrame* mainFrame = nullptr;
+	amdProjectManager* m_manager = nullptr;
 
 public:
-    CharacterShowcase* charShow = nullptr;
-    LocationShowcase* locShow = nullptr;
+	CharacterShowcase* m_charShow = nullptr;
+	LocationShowcase* m_locShow = nullptr;
 
-    wxSearchCtrl* searchBar = nullptr;
+	wxSearchCtrl* m_searchBar = nullptr;
 
-    wxArrayString charNames{};
-    wxArrayString locNames{};
+	wxArrayString m_charNames{};
+	wxArrayString m_locNames{};
 
 public:
-    ElementsNotebook(wxWindow* parent);
+	amdElementsNotebook(wxWindow* parent);
 
-    void onCharRightClick(wxListEvent& event);
-    void editCharName(wxListEvent& event);
-    void editChar(wxCommandEvent& event);
-    void deleteChar(wxCommandEvent& event);
-    void openChar(wxListEvent& event);
+	CharacterShowcase* GetCharacterShowcase() { return m_charShow; }
+	LocationShowcase* GetLocationShowcase() { return m_locShow; }
+	wxArrayString& GetCharacterNames() { return m_charNames; }
+	wxArrayString& GetLocationNames() { return m_locNames; }
+	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 
-    void onLocRightClick(wxListEvent& event);
-    void editLoc(wxCommandEvent& event);
-    void deleteLoc(wxCommandEvent& event);
-    void openLoc(wxListEvent& event);
+	void OnCharRightClick(wxListEvent& event);
+	void OnEditCharName(wxListEvent& event);
+	void OnEditCharacter(wxCommandEvent& event);
+	void OnDeleteCharacter(wxCommandEvent& event);
+	void OnCharacterActivated(wxListEvent& event);
 
-    void charSelected(wxListEvent& event);
-    void locSelected(wxListEvent& event);
+	void OnLocRightClick(wxListEvent& event);
+	void OnEditLocation(wxCommandEvent& event);
+	void OnDeleteLocation(wxCommandEvent& event);
+	void OnLocationActivated(wxListEvent& event);
 
-    void setSearchAC(wxBookCtrlEvent& event);
-    void addCharName(string& name);
-    void addLocName(string& name);
-    void removeCharName(string& name);
-    void removeLocName(string& name);
+	void OnCharacterSelected(wxListEvent& event);
+	void OnLocationSelected(wxListEvent& event);
 
-    void clearAll();
-    static void updateLB();
+	void SetSearchAC(wxBookCtrlEvent& event);
+	void AddCharName(string& name);
+	void AddLocName(string& name);
+	void RemoveCharacterName(string& name);
+	void RemoveLocationName(string& name);
 
-    static wxListView* charList;
-    static wxListView* locList;
-    static wxListView* itemsList;
+	void ClearAll();
+	void UpdateCharacter(int n, Character& character);
+	void UpdateLocation(int n, Location& location);
+	void UpdateCharacterList();
+	void UpdateLocationList();
+	void UpdateAll();
 
-    DECLARE_EVENT_TABLE()
+	static wxListView* m_charList;
+	static wxListView* m_locList;
+	static wxListView* m_itemsList;
+
+	DECLARE_EVENT_TABLE()
 };
 
 enum {
-    NOTEBOOK_THIS,
+	NOTEBOOK_THIS,
 
-    PANEL_Char,
+	PANEL_Char,
 
-    LIST_CharList,
-    LIST_LocList,
-    LIST_ItemsList,
-    LIST_ScenesList,
+	LIST_CharList,
+	LIST_LocList,
+	LIST_ItemsList,
+	LIST_ScenesList,
 
-    LISTMENU_EditChar,
-    LISTMENU_DeleteChar,
-    LISTMENU_EditLoc,
-    LISTMENU_DeleteLoc
+	LISTMENU_EditChar,
+	LISTMENU_DeleteChar,
+	LISTMENU_EditLoc,
+	LISTMENU_DeleteLoc
 };
 
 #endif

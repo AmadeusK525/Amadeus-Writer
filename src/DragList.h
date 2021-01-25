@@ -6,15 +6,16 @@
 
 #include <string>
 
-class DragList : public wxListView {
+using std::string;
+
+class amdDragList : public wxListView {
 private:
-    int itemDragging{};
-    int previous{};
-    wxPanel* posMarker = nullptr;
-    wxWindow* parent = nullptr;
+    int m_itemDragging{};
+    int m_previous{};
+    wxPanel* m_posMarker = nullptr;
 
 public:
-    std::string tempName{};
+    string m_tempName{ "" };
 
     typedef enum {
         DRAG_NONE,
@@ -25,16 +26,16 @@ public:
 private:
     LDragState state = DRAG_NONE;
 
-    void onLeftDown(wxMouseEvent& evt);
-    void onLeftUp(wxMouseEvent& evt);
-    void onLeaveWindow(wxMouseEvent& evt);
-    void onMouseMotion(wxMouseEvent& evt);
-    void endDragging();
+    void OnLeftDown(wxMouseEvent& evt);
+    void OnLeftUp(wxMouseEvent& evt);
+    void OnLeaveWindow(wxMouseEvent& evt);
+    void OnMouseMotion(wxMouseEvent& evt);
+    void EndDragging();
 
 public:
-    DragList(wxWindow* parent, const wxSize& size);
+    amdDragList(wxWindow* parent, const wxSize& size);
 
-    void selectItem(wxMouseEvent& evt);
+    void SelectItem(wxMouseEvent& evt);
 
     DECLARE_EVENT_TABLE()
 };

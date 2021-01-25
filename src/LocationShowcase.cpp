@@ -14,7 +14,7 @@ LocationShowcase::LocationShowcase(wxWindow* parent) :
     
     m_image = new ImagePanel(this, wxDefaultPosition, wxSize(180, 180));
     m_image->SetBackgroundColour(wxColour(150, 150, 150));
-    m_image->setBorderColour(wxColour(20, 20, 20));
+    m_image->SetBorderColour(wxColour(20, 20, 20));
     m_image->Hide();
 
     m_name = new wxStaticText(this, -1, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxALIGN_CENTER | wxBORDER_SIMPLE | wxST_NO_AUTORESIZE);
@@ -144,7 +144,7 @@ void LocationShowcase::setData(Location& location) {
     m_culture->Show(location.culture != "");
     m_culLabel->Show(location.culture != "");
 
-    m_image->Show(m_image->setImage(location.image));
+    m_image->Show(m_image->SetImage(location.image));
 
     int tcsize = m_custom.size();
     int ccsize = location.custom.size();

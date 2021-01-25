@@ -8,37 +8,37 @@
 
 namespace fs = boost::filesystem;
 
-Outline::Outline(wxWindow* parent) : wxNotebook(parent, -1) {
-    corkHolder = new wxPanel(this);
-    corkboard = new Corkboard(corkHolder);
-    timeline = new wxPanel(this);
-    files = new OutlineFilesPanel(this);
+amdOutline::amdOutline(wxWindow* parent) : wxNotebook(parent, -1) {
+    m_corkboardHolder = new wxPanel(this);
+    m_corkboard = new Corkboard(m_corkboardHolder);
+    m_timeline = new wxPanel(this);
+    m_files = new amdOutlineFilesPanel(this);
 
     // Hack for doing corkboard fullscreen
-    corkHolderSizer = new wxBoxSizer(wxVERTICAL);
-    corkHolderSizer->Add(corkboard, wxSizerFlags(1).Expand());
-    corkHolder->SetSizer(corkHolderSizer);
+    m_corkHolderSizer = new wxBoxSizer(wxVERTICAL);
+    m_corkHolderSizer->Add(m_corkboard, wxSizerFlags(1).Expand());
+    m_corkboardHolder->SetSizer(m_corkHolderSizer);
 
-    AddPage(corkHolder, "Corkboard");
-    AddPage(timeline, "Timeline");
-    AddPage(files, "Files");
+    AddPage(m_corkboardHolder, "Corkboard");
+    AddPage(m_timeline, "Timeline");
+    AddPage(m_files, "Files");
 }
 
-void Outline::saveOutline(int& progress, wxProgressDialog* dialog) {
-    corkboard->save();
+void amdOutline::SaveOutline(int& progress, wxProgressDialog* dialog) {
+    m_corkboard->Save();
     dialog->Update(progress++);
-    files->save();
+    m_files->Save();
 }
 
-void Outline::loadOutline(int& progress, wxProgressDialog* dialog) {
-    corkboard->load();
-    files->load();
+void amdOutline::LoadOutline(int& progress, wxProgressDialog* dialog) {
+    m_corkboard->Load();
+    m_files->Load();
     dialog->Update(progress++);
 }
 
-void Outline::clearAll() {
-    corkboard->getCanvas()->GetDiagramManager()->Clear();
-    corkboard->getCanvas()->Refresh(true);
+void amdOutline::ClearAll() {
+    m_corkboard->getCanvas()->GetDiagramManager()->Clear();
+    m_corkboard->getCanvas()->Refresh(true);
 
-    files->clearAll();
+    m_files->ClearAll();
 }

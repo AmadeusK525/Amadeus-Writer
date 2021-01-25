@@ -8,66 +8,55 @@
 
 namespace fs = boost::filesystem;
 
-ChaptersNotebook::ChaptersNotebook(wxWindow* parent) :
-    wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE) {
-    grid = new ChaptersGrid(this);
-    grid->SetBackgroundColour(wxColour(150, 0, 0));
+amdChaptersNotebook::amdChaptersNotebook(wxWindow* parent, amdProjectManager* manager) :
+    wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager) {
+    m_grid = new ChapterGrid(this, m_manager);
+    m_grid->SetBackgroundColour(wxColour(150, 0, 0));
 
-    list = new wxListView(this, -1, wxDefaultPosition, wxDefaultSize,
+    m_list = new wxListView(this, -1, wxDefaultPosition, wxDefaultSize,
         wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
-    list->InsertColumn(0, "Name", wxLIST_FORMAT_LEFT, FromDIP(180));
-    list->InsertColumn(1, "Characters", wxLIST_FORMAT_CENTER);
-    list->InsertColumn(2, "Locations", wxLIST_FORMAT_CENTER);
-    list->InsertColumn(3, "Point of View", wxLIST_FORMAT_CENTER, FromDIP(180));
+    m_list->InsertColumn(0, "Name", wxLIST_FORMAT_LEFT, FromDIP(180));
+    m_list->InsertColumn(1, "Characters", wxLIST_FORMAT_CENTER);
+    m_list->InsertColumn(2, "Locations", wxLIST_FORMAT_CENTER);
+    m_list->InsertColumn(3, "Point of View", wxLIST_FORMAT_CENTER, FromDIP(180));
 
-    list->SetBackgroundColour(wxColour(45, 45, 45));
-    list->SetForegroundColour(wxColour(245, 245, 245));
+    m_list->SetBackgroundColour(wxColour(45, 45, 45));
+    m_list->SetForegroundColour(wxColour(245, 245, 245));
 
-    AddPage(grid, "Grid");
-    AddPage(list, "List");
+    AddPage(m_grid, "Grid");
+    AddPage(m_list, "List");
 }
 
-void ChaptersNotebook::addChapter(Chapter& chapter, int pos) {
-    if (pos < current) {
-        auto it = chapters.begin();
-        for (int i = 0; i < pos; i++) {
-            it++;
-        }
-        chapters.insert(it, chapter);
-    } else {
-        chapters.push_back(chapter);
-    }
-
-    MainFrame::saved[2]++;
-    grid->addButton();
-    addToList(chapter, pos);
-    MainFrame::isSaved = true;
+void amdChaptersNotebook::AddChapter(Chapter& chapter, int pos, bool Reposition) {
+    m_grid->AddButton();
+    AddToList(chapter, pos);
 
     // Redeclare all chapter positions  
-    repositionChapters();
+    if (Reposition)
+        RepositionChapters();
 }
 
-void ChaptersNotebook::addToList(Chapter& chapter, int pos) {
-    list->InsertItem(pos, chapter.name);
-    list->SetItem(pos, 1, std::to_string(chapter.characters.size()));
-    list->SetItem(pos, 2, std::to_string(chapter.locations.size()));
-    list->SetItem(pos, 3, chapter.pointOfView);
+void amdChaptersNotebook::AddToList(Chapter& chapter, int pos) {
+    m_list->InsertItem(pos, chapter.name);
+    m_list->SetItem(pos, 1, std::to_string(chapter.characters.size()));
+    m_list->SetItem(pos, 2, std::to_string(chapter.locations.size()));
+    m_list->SetItem(pos, 3, chapter.pointOfView);
 }
 
-void ChaptersNotebook::repositionChapters() {
+void amdChaptersNotebook::RepositionChapters() {
     int i = 1;
+    wxVector<Chapter>& chapters = m_manager->GetChapters();
+
     for (auto it = chapters.begin(); it != chapters.end(); it++) {
         it->position = i++;
     }
 
-    fs::remove_all(MainFrame::currentDocFolder + "\\Files\\Chapters");
-    fs::create_directory(MainFrame::currentDocFolder + "\\Files\\Chapters");
-    ((MainFrame*)(wxGetApp().GetTopWindow()))->saveFile(wxCommandEvent());
+    fs::remove_all(m_manager->GetPath(true).ToStdString() + "Files\\Chapters");
+    fs::create_directory(m_manager->GetPath(true).ToStdString() + "Files\\Chapters");
+    m_manager->SaveProject();
 }
 
-void ChaptersNotebook::clearAll() {
-    chapters.clear();
-    current = 1;
-    grid->clearAll();
-    list->DeleteAllItems();
+void amdChaptersNotebook::ClearAll() {
+    m_grid->ClearAll();
+    m_list->DeleteAllItems();
 }

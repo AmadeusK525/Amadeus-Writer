@@ -1,6 +1,7 @@
 #include "Chapter.h"
-#include "MainFrame.h"
-#include "boost/filesystem.hpp"
+#include "MyApp.h"
+
+#include <boost/filesystem.hpp>
 
 #include "wxmemdbg.h"
 
@@ -10,7 +11,7 @@
 
 namespace fs = boost::filesystem;
 
-bool Chapter::hasRedNote() {
+bool Chapter::HasRedNote() {
     for (int i = 0; i < notes.size(); i++) {
         if (notes[i].isDone == false)
             return true;
@@ -19,143 +20,145 @@ bool Chapter::hasRedNote() {
     return false;
 }
 
-void Chapter::save(std::ofstream& out) {
+void Chapter::Save(std::ofstream& out) {
     if (out.is_open()) {
-        int size;
+        char size;
 
         size = name.size() + 1;
-        out.write(reinterpret_cast<char*>(&size), sizeof(int));
+        out.write(&size, sizeof(char));
         out.write(name.c_str(), size);
 
         size = summary.size() + 1;
-        out.write(reinterpret_cast<char*>(&size), sizeof(int));
+        out.write(&size, sizeof(char));
         out.write(summary.c_str(), size);
 
-        int writeMe;
+        char writeMe;
 
         writeMe = characters.size();
-        out.write((char*)&writeMe, sizeof(int));
+        out.write(&writeMe, sizeof(char));
         
-        for (auto it = characters.begin(); it != characters.end(); it++) {
-            size = it->size() + 1;
-            out.write(reinterpret_cast<char*>(&size), sizeof(int));
-            out.write(it->c_str(), size);
+        for (auto& it : characters) {
+            size = it.size() + 1;
+            out.write(&size, sizeof(char));
+            out.write(it.c_str(), size);
         }
 
         writeMe = locations.size();
-        out.write((char*)&writeMe, sizeof(int));
+        out.write(&writeMe, sizeof(char));
 
-        for (auto it = locations.begin(); it != locations.end(); it++) {
-            size = it->size() + 1;
-            out.write(reinterpret_cast<char*>(&size), sizeof(int));
-            out.write(it->c_str(), size);
+        for (auto& it : locations) {
+            size = it.size() + 1;
+            out.write(&size, sizeof(char));
+            out.write(it.c_str(), size);
         }
 
         writeMe = notes.size();
-        out.write((char*)&writeMe, sizeof(int));
+        out.write(&writeMe, sizeof(char));
 
         for (auto it = notes.begin(); it != notes.end(); it++) {
             size = it->name.size() + 1;
-            out.write(reinterpret_cast<char*>(&size), sizeof(int));
+            out.write(&size, sizeof(char));
             out.write(it->name.c_str(), size);
 
             size = it->content.size() + 1;
-            out.write(reinterpret_cast<char*>(&size), sizeof(int));
+            out.write(&size, sizeof(char));
             out.write(it->content.c_str(), size);
 
-            out.write((char*)&it->isDone, sizeof(bool));
+            writeMe = it->isDone;
+            out.write(&writeMe, sizeof(char));
         }
         
-        out.write((char*)&position, sizeof(int));
+        out.write(&position, sizeof(char));
     }
 
-    content.SaveFile(MainFrame::currentDocFolder + "\\Files\\Chapters\\" + std::to_string(position) + " - " + name + ".xml", wxRICHTEXT_TYPE_XML);
+    amdProjectManager* man = amdGetManager();
+    string path(man->GetPath(true).ToStdString() + "Files\\Chapters\\" +
+        std::to_string(position) + " - " + name + ".xml");
+
+    if (fs::exists(path))
+        content.SaveFile(path, wxRICHTEXT_TYPE_XML);
 }
 
-void Chapter::load(std::ifstream& in) {
+void Chapter::Load(std::ifstream& in) {
     if (in.is_open()) {
-        int size;
+        char size;
         char* data;
+        amdProjectManager* manager = amdGetManager();
 
-        in.read(reinterpret_cast<char*>(&size), sizeof(int));
+        in.read(&size, sizeof(char));
         data = new char[size];
         in.read(data, size);
         name = data;
         delete[] data;
 
-        in.read(reinterpret_cast<char*>(&size), sizeof(int));
+        in.read(&size, sizeof(char));
         data = new char[size];
         in.read(data, size);
         summary = data;
         delete[] data;
 
-        int number;
+        char number;
         string tempName;
 
-        in.read((char*)&number, sizeof(int));
+        in.read(&number, sizeof(char));
         for (int i = 0; i < number; i++) {
-            in.read(reinterpret_cast<char*>(&size), sizeof(int));
+            in.read(&size, sizeof(char));
             data = new char[size];
             in.read(data, size);
             tempName = data;
             delete[] data;
 
             characters.push_back(tempName);
-
-            for (auto it = MainFrame::characters.begin(); it != MainFrame::characters.end(); it++) {
-                if (it->second.name == tempName) {
-                    it->second.chaps.Add(this);
-                }
-            }
         }
 
-        in.read((char*)&number, sizeof(int));
+        in.read(&number, sizeof(char));
         for (int i = 0; i < number; i++) {
-            in.read(reinterpret_cast<char*>(&size), sizeof(int));
+            in.read(&size, sizeof(char));
             data = new char[size];
             in.read(data, size);
             tempName = data;
             delete[] data;
 
             locations.push_back(tempName);
-
-            for (auto it = MainFrame::locations.begin(); it != MainFrame::locations.end(); it++) {
-                if (it->second.name == tempName) {
-                    it->second.chaps.Add(this);
-                }
-            }
         }
 
-        in.read((char*)&number, sizeof(int));
-        bool k;
+        in.read(&number, sizeof(char));
         string tempName2;
         for (int i = 0; i < number; i++) {
-            in.read(reinterpret_cast<char*>(&size), sizeof(int));
+            in.read(&size, sizeof(char));
             data = new char[size];
             in.read(data, size);
             tempName2 = data;
             delete[] data;
 
-            in.read(reinterpret_cast<char*>(&size), sizeof(int));
+            in.read(&size, sizeof(char));
             data = new char[size];
             in.read(data, size);
             tempName = data;
             delete[] data;
 
-            in.read((char*)&k, sizeof(bool));
+            in.read(&size, sizeof(char));
 
             Note note(tempName, tempName2);
-            note.isDone = k;
+            note.isDone = size;
 
             notes.push_back(note);
         }
 
-        in.read((char*)&position, sizeof(int));
+        in.read(&position, sizeof(char));
 
-        if (fs::exists(MainFrame::currentDocFolder + "\\Files\\Chapters\\" +
-            std::to_string(position) + " - " + name + ".xml")) {
-            content.LoadFile(MainFrame::currentDocFolder + "\\Files\\Chapters\\" +
-                std::to_string(position) + " - " + name + ".xml", wxRICHTEXT_TYPE_XML);
-        }
+        string path(manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
+            std::to_string(position) + " - " + name + ".xml");
+
+        if (fs::exists(path))
+            content.LoadFile(path, wxRICHTEXT_TYPE_XML);
     }
+}
+
+bool Chapter::operator<(const Chapter& other) const {
+    return position < other.position;
+}
+
+bool Chapter::operator==(const Chapter& other) const {
+    return name == other.name && position == other.position;
 }

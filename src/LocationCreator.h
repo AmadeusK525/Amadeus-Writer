@@ -16,8 +16,8 @@ using std::pair;
 
 class LocationCreator: public wxFrame {
 private:
-    MainFrame* mainFrame = nullptr;
-    ElementsNotebook* notebook = nullptr;
+    amdMainFrame* mainFrame = nullptr;
+    amdElementsNotebook* notebook = nullptr;
 
     wxPanel* nlPanel1 = nullptr,
         * nlPanel3 = nullptr;
@@ -55,31 +55,31 @@ private:
 
 public:
     LocationCreator(wxWindow* parent,
-        ElementsNotebook* notebook,
+        amdElementsNotebook* notebook,
         wxWindowID id,
         const wxPoint& pos,
         const wxSize& size,
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
-    vector<string> getValues();
-    vector<pair<string, string>> getCustom();
+    vector<string> GetValues();
+    vector<pair<string, string>> GetCustom();
 
-    void setEdit(Location* location);
-    void doEdit(wxCommandEvent& event);
+    void SetEdit(Location* location);
+    void DoEdit(wxCommandEvent& event);
 
-    void setImage(wxCommandEvent& event);
-    void removeImage(wxCommandEvent& event);
+    void SetImage(wxCommandEvent& event);
+    void RemoveImage(wxCommandEvent& event);
 
-    void addCustomAttr(wxCommandEvent& event);
-    void removeCustomAttr(wxCommandEvent& event);
+    void AddCustomAttr(wxCommandEvent& event);
+    void RemoveCustomAttr(wxCommandEvent& event);
     void recolorCustoms();
 
-    void checkClose(wxCloseEvent& event);
-    void next(wxCommandEvent& event);
-    void back(wxCommandEvent& event);
-    void create(wxCommandEvent& event);
-    void cancel(wxCommandEvent& event);
+    void CheckClose(wxCloseEvent& event);
+    void Next(wxCommandEvent& event);
+    void Back(wxCommandEvent& event);
+    void Create(wxCommandEvent& event);
+    void Cancel(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

@@ -7,21 +7,20 @@
 
 BEGIN_EVENT_TABLE(ChapterCreator, wxFrame)
 
-EVT_BUTTON(BUTTON_NextChapter, ChapterCreator::next)
-EVT_BUTTON(BUTTON_BackChapter, ChapterCreator::back)
-EVT_BUTTON(BUTTON_CancelChapter, ChapterCreator::cancel)
-EVT_BUTTON(BUTTON_CreateChapter, ChapterCreator::create)
+EVT_BUTTON(BUTTON_NextChapter, ChapterCreator::Next)
+EVT_BUTTON(BUTTON_BackChapter, ChapterCreator::Back)
+EVT_BUTTON(BUTTON_CancelChapter, ChapterCreator::Cancel)
+EVT_BUTTON(BUTTON_CreateChapter, ChapterCreator::Create)
 
-EVT_CLOSE(ChapterCreator::checkClose)
+EVT_CLOSE(ChapterCreator::CheckClose)
 
 END_EVENT_TABLE()
 
-ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook) :
+ChapterCreator::ChapterCreator(wxWindow* parent, amdProjectManager* manager) :
     wxFrame(parent, wxID_ANY, "Create chapter", wxDefaultPosition, wxSize(500, 350), wxMINIMIZE_BOX | wxSYSTEM_MENU |
-    wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT) {
+    wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT),
+    m_manager(manager) {
 
-    this->m_mainFrame = (MainFrame*)wxGetApp().GetTopWindow();
-    this->m_notebook = notebook;
     this->CenterOnParent();
     this->SetBackgroundColour(wxColour(40, 40, 40));
 
@@ -35,7 +34,7 @@ ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook) :
     label1->SetForegroundColour(wxColour(245, 245, 245));
     label1->SetBackgroundColour(wxColour(40, 40, 40));
     m_nchapName = new wxTextCtrl(m_nchapPanel1, wxID_ANY, "Chapter " +
-        std::to_string(notebook->current), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
+        std::to_string(m_manager->GetChapterCount() + 1), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
     m_nchapName->SetBackgroundColour(wxColour(70, 70, 70));
     m_nchapName->SetForegroundColour(wxColour(250, 250, 250));
     m_nchapName->SetFont(wxFont(wxFontInfo(10)));
@@ -65,7 +64,7 @@ ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook) :
     m_nchapPanel2->SetBackgroundColour(wxColour(40, 40, 40));
     m_nchapPanel2->Hide();
 
-    m_nchapList = new DragList(m_nchapPanel2, wxDefaultSize);
+    m_nchapList = new amdDragList(m_nchapPanel2, wxDefaultSize);
     m_nchapList->SetBackgroundColour(wxColour(70, 70, 70));
     m_nchapList->SetForegroundColour(wxColour(240, 240, 240));
 
@@ -117,14 +116,14 @@ ChapterCreator::ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook) :
     Layout();
 }
 
-void ChapterCreator::next(wxCommandEvent& event) {
+void ChapterCreator::Next(wxCommandEvent& event) {
     m_tempName = m_nchapName->GetValue();
 
     if (m_firstNext) {
         m_nchapList->AppendColumn("Drag chapter '" + m_tempName + "' to desired position", wxLIST_FORMAT_LEFT, 2000);
 
         int i = 0;
-        for (auto it = m_notebook->chapters.begin(); it != m_notebook->chapters.end(); it++) {
+        for (auto it = m_manager->GetChapters().begin(); it != m_manager->GetChapters().end(); it++) {
             m_nchapList->InsertItem(i++, it->name);
         }
 
@@ -136,8 +135,8 @@ void ChapterCreator::next(wxCommandEvent& event) {
         m_nchapList->SetItemText(item, m_tempName);
     }
 
-    m_nchapList->tempName = this->m_tempName;
-    //m_nchapList->selectItem(wxMouseEvent());
+    m_nchapList->m_tempName = this->m_tempName;
+    //m_nchapList->SelectItem(wxMouseEvent());
 
     m_nchapPanel1->Hide();
     m_nchapPanel2->Show();
@@ -149,7 +148,7 @@ void ChapterCreator::next(wxCommandEvent& event) {
     m_nchapList->SetColumnWidth(0, m_nchapList->GetSize().x);
 }
 
-void ChapterCreator::back(wxCommandEvent& event) {
+void ChapterCreator::Back(wxCommandEvent& event) {
     m_nchapPanel2->Hide();
     m_nchapPanel1->Show();
     m_nchapNext->SetId(BUTTON_NextChapter);
@@ -159,20 +158,20 @@ void ChapterCreator::back(wxCommandEvent& event) {
     event.Skip();
 }
 
-void ChapterCreator::cancel(wxCommandEvent& event) {
-    m_mainFrame->Enable();
+void ChapterCreator::Cancel(wxCommandEvent& event) {
+    m_manager->GetMainFrame()->Enable();
     this->Destroy();
 
     event.Skip();
 }
 
-void ChapterCreator::create(wxCommandEvent& event) {
+void ChapterCreator::Create(wxCommandEvent& event) {
     Chapter chapter;
 
     if (m_nchapName->GetValue() != "" && m_nchapName->IsModified()) {
         chapter.name = m_nchapName->GetValue();
     } else {
-        chapter.name = "Chapter " + std::to_string(m_notebook->current);
+        chapter.name = "Chapter " + std::to_string(m_manager->GetChapterCount() + 1);
     }
 
     chapter.summary = m_nchapSummary->GetValue();
@@ -181,22 +180,21 @@ void ChapterCreator::create(wxCommandEvent& event) {
 
     chapter.position = pos + 1;
 
-    m_notebook->addChapter(chapter, pos);
-
-    m_mainFrame->Enable();
+    m_manager->AddChapter(chapter, pos);
+    m_manager->GetMainFrame()->Enable();
     Destroy();
 
     event.Skip();
 }
 
-void ChapterCreator::checkClose(wxCloseEvent& event) {
+void ChapterCreator::CheckClose(wxCloseEvent& event) {
     if (m_nchapName->IsModified() || m_nchapSummary->IsModified()) {
         wxMessageDialog check(this, "Are you sure you want to close?",
             "Close window", wxYES_NO | wxNO_DEFAULT);
 
         switch (check.ShowModal()) {
         case wxID_YES:
-            m_mainFrame->Enable();
+            m_manager->GetMainFrame()->Enable();
             this->Destroy();
             break;
 
@@ -205,7 +203,7 @@ void ChapterCreator::checkClose(wxCloseEvent& event) {
             break;
         }
     } else {
-        m_mainFrame->Enable();
+        m_manager->GetMainFrame()->Enable();
         this->Destroy();
     }
 }

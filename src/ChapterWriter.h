@@ -10,6 +10,7 @@
 #include <string>
 #include <list>
 
+#include "ProjectManager.h"
 #include "ImagePanel.h"
 #include "ChaptersNotebook.h"
 #include "Note.h"
@@ -17,77 +18,73 @@
 using std::string;
 using std::list;
 
-struct ChapterWriterNotebook;
+struct amdChapterWriterNotebook;
 
-class ChapterWriter : public wxFrame {
+class amdChapterWriter : public wxFrame {
 private:
-    MainFrame* mainFrame = nullptr;
-    Chapter* thisChap = nullptr;
+    amdProjectManager* m_manager = nullptr;
+    amdChapterWriterNotebook* m_cwNotebook = nullptr;
 
-    ChapterWriterNotebook* chapWriterNotebook = nullptr;
+    wxTextCtrl* m_summary = nullptr,
+        * m_note = nullptr,
+        * m_noteLabel = nullptr;
 
-    wxTextCtrl* summary = nullptr;
-    wxTextCtrl* note = nullptr;
-    wxTextCtrl* noteLabel = nullptr;
+    wxStaticText* m_noteChecker = nullptr;
 
-    wxStaticText* noteCheck = nullptr;
+    wxPanel* m_leftPanel = nullptr,
+        * m_locationPanel = nullptr,
+        * m_characterPanel = nullptr;
 
-    wxPanel* leftPanel = nullptr;
-    wxPanel* locPanel = nullptr;
-    wxPanel* charPanel = nullptr;
+    wxBoxSizer* m_leftSizer = nullptr,
+        * m_rightSizer = nullptr;
 
-    wxBoxSizer* leftSizer = nullptr;
-    wxBoxSizer* rightSizer = nullptr;
+    wxListView* m_charInChap = nullptr, * m_locInChap = nullptr;
 
-    wxListView* charInChap = nullptr;
-    wxListView* locInChap = nullptr;
-    wxArrayString charNames{ true };
-    wxArrayString locNames{ true };
+    wxBoxSizer* m_pageSizer = nullptr;
 
-    wxBoxSizer* pageSizer = nullptr;
+    wxButton* m_noteClear = nullptr, * m_noteAdd = nullptr;
 
-    wxButton* noteClear = nullptr;
-    wxButton* noteAdd = nullptr;
+    unsigned int m_chapterPos;
 
-    ChaptersNotebook* chapNote = nullptr;
-    unsigned int chapterPos;
+    wxTimer m_saveTimer;
 
-    wxTimer saveTimer;
-    wxTimer wordsTimer;
-
-    bool green = false;
+    bool m_doGreenNote = false;
 
 public:
-    wxStatusBar* statusBar = nullptr;
+    wxStatusBar* m_statusBar = nullptr;
 
 public:
-    ChapterWriter(wxWindow* parent, ChaptersNotebook* notebook, int numb);
+    amdChapterWriter(wxWindow* parent, amdProjectManager* manager, int numb);
 
-    void clearNote(wxCommandEvent& event);
-    void addNote(wxCommandEvent& event);
+    void ClearNote(wxCommandEvent& event);
+    void AddNote(wxCommandEvent& event);
 
-    void checkNotes();
+    void CheckNotes();
 
-    void addCharButtonPressed(wxCommandEvent& event);
-    void addLocButtonPressed(wxCommandEvent& event);
-    void removeChar(wxCommandEvent& event);
-    void removeLoc(wxCommandEvent& event);
+    void OnAddCharacter(wxCommandEvent& event);
+    void OnAddLocation(wxCommandEvent& event);
+    void OnRemoveCharacter(wxCommandEvent& event);
+    void OnRemoveLocation(wxCommandEvent& event);
 
-    void addChar(wxCommandEvent& event);
-    void addLoc(wxCommandEvent& event);
+    void AddCharacter(wxCommandEvent& event);
+    void AddLocation(wxCommandEvent& event);
 
-    void nextChap(wxCommandEvent& event);
-    void prevChap(wxCommandEvent& event);
+    void UpdateCharacterList();
+    void UpdateLocationList();
 
-    void loadChapter();
-    void saveChapter();
+    void OnNextChapter(wxCommandEvent& event);
+    void OnPreviousChapter(wxCommandEvent& event);
+    void CheckChapterValidity();
 
-    void countWords();
+    void LoadChapter();
+    void SaveChapter();
 
-    void timerEvent(wxTimerEvent& event);
+    void CountWords();
 
-    void toggleFullScreen() { ShowFullScreen(!IsFullScreen()); }
-    void onClose(wxCloseEvent& event);
+    void OnTimerEvent(wxTimerEvent& event);
+
+    void ToggleFullScreen() { ShowFullScreen(!IsFullScreen()); }
+    void OnClose(wxCloseEvent& event);
 
     DECLARE_EVENT_TABLE()
 };
@@ -112,14 +109,14 @@ enum {
 };
 
 
-struct ChapterWriterNotebook : public wxAuiNotebook {
-    ChapterWriter* parent = nullptr;
+struct amdChapterWriterNotebook : public wxAuiNotebook {
+    amdChapterWriter* parent = nullptr;
 
     wxToolBar* contentTool = nullptr;
     wxComboBox* fontSize = nullptr;
     wxSlider* contentScale = nullptr;
 
-    wxRichTextCtrl* content = nullptr;
+    wxRichTextCtrl* m_textCtrl = nullptr;
     wxRichTextStyleSheet* styleSheet = nullptr;
     std::vector<Note> notes;
     ImagePanel* corkBoard = nullptr;
@@ -128,47 +125,47 @@ struct ChapterWriterNotebook : public wxAuiNotebook {
     wxPanel* selNote = nullptr;
     wxSize notesSize{};
 
-    ChapterWriterNotebook::ChapterWriterNotebook(wxWindow* parent);
+    amdChapterWriterNotebook::amdChapterWriterNotebook(wxWindow* parent);
 
-    void setModified(wxCommandEvent& event);
-    void onKeyDown(wxRichTextEvent& event);
+    void OnText(wxCommandEvent& event);
+    void OnKeyDown(wxRichTextEvent& event);
 
-    void setBold(wxCommandEvent& event);
-    void setItalic(wxCommandEvent& event);
-    void setUnderlined(wxCommandEvent& event);
-    void setAlignLeft(wxCommandEvent& event);
-    void setAlignCenter(wxCommandEvent& event);
-    void setAlignCenterJust(wxCommandEvent& event);
-    void setAlignRight(wxCommandEvent& event);
+    void OnBold(wxCommandEvent& event);
+    void OnItalic(wxCommandEvent& event);
+    void OnUnderline(wxCommandEvent& event);
+    void OnAlignLeft(wxCommandEvent& event);
+    void OnAlignCenter(wxCommandEvent& event);
+    void OnAlignCenterJust(wxCommandEvent& event);
+    void OnAlignRight(wxCommandEvent& event);
 
-    void onZoom(wxCommandEvent& event);
+    void OnZoom(wxCommandEvent& event);
 
-    void onFullScreen(wxCommandEvent& event);
-    void onPageView(wxCommandEvent& event);
+    void OnFullScreen(wxCommandEvent& event);
+    void OnPageView(wxCommandEvent& event);
 
-    void onUpdateBold(wxUpdateUIEvent& event);
-    void onUpdateItalic(wxUpdateUIEvent& event);
-    void onUpdateUnderline(wxUpdateUIEvent& event);
-    void onUpdateAlignLeft(wxUpdateUIEvent& event);
-    void onUpdateAlignCenter(wxUpdateUIEvent& event);
-    void onUpdateAlignCenterJust(wxUpdateUIEvent& event);
-    void onUpdateAlignRight(wxUpdateUIEvent& event);
-    void onUpdateFontSize(wxUpdateUIEvent& event);
+    void OnUpdateBold(wxUpdateUIEvent& event);
+    void OnUpdateItalic(wxUpdateUIEvent& event);
+    void OnUpdateUnderline(wxUpdateUIEvent& event);
+    void OnUpdateAlignLeft(wxUpdateUIEvent& event);
+    void OnUpdateAlignCenter(wxUpdateUIEvent& event);
+    void OnUpdateAlignCenterJust(wxUpdateUIEvent& event);
+    void OnUpdateAlignRight(wxUpdateUIEvent& event);
+    void OnUpdateFontSize(wxUpdateUIEvent& event);
 
-    void setFontSize(wxCommandEvent& event);
+    void OnFontSize(wxCommandEvent& event);
 
-    bool hasRedNote();
+    bool HasRedNote();
 
-    void addNote(std::string& note, std::string& noteName, bool isDone);
-    void paintDots(wxPaintEvent& event);
-    void setRed(wxCommandEvent& event);
-    void setGreen(wxCommandEvent& event);
-    void deleteNote(wxCommandEvent& event);
+    void AddNote(std::string& note, std::string& noteName, bool isDone);
+    void PaintDots(wxPaintEvent& event);
+    void SetRed(wxCommandEvent& event);
+    void SetGreen(wxCommandEvent& event);
+    void OnDeleteNote(wxCommandEvent& event);
 
-    void onNoteClick(wxMouseEvent& event);
+    void OnNoteClick(wxMouseEvent& event);
 
-    void updateNoteLabel(wxCommandEvent& event);
-    void updateNote(wxCommandEvent& event);
+    void UpdateNoteLabel(wxCommandEvent& event);
+    void UpdateNote(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

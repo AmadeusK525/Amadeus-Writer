@@ -17,14 +17,15 @@ public:
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize);
 
-    void adjustSize(const wxSize& size);
-    void setBorderColour(const wxColour& colour);
+    void AdjustSize(const wxSize& size);
+    void SetBorderColour(const wxColour& colour);
 
-    bool setImage(wxImage& image);
-    void newScale();
+    bool SetImage(const wxImage& image);
+    void NewScale();
 
-    void setImageAsIs(wxImage& image);
+    void SetImageAsIs(wxImage& image);
 
-    void clear();
+    void Clear();
+    wxImage& GetImage() { return image; }
 };
 

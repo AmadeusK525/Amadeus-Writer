@@ -6,11 +6,11 @@
 
 class AutoWrapTextShape : public wxSFEditTextShape {
 private:
-	wxColour bgColour{ 255, 255, 255 };
+	wxColour m_bgColour{ 255, 255, 255 };
 	wxArrayString m_lines{};
 
-	static bool countLines;
-	bool clipRegion = false;
+	static bool m_countLines;
+	bool m_clipRegion = false;
 
 public:
 	XS_DECLARE_CLONABLE_CLASS(AutoWrapTextShape);
@@ -25,9 +25,9 @@ public:
 
 	virtual void OnLeftDoubleClick(wxPoint& pos);
 
-	static void willCountLines(bool will) { AutoWrapTextShape::countLines = will; }
-	void willClip(bool will) { AutoWrapTextShape::clipRegion = will; }
-	void calcWrappedText(int& length, int& numberOfLines);
+	static void ShouldCountLines(bool will) { m_countLines = will; }
+	void ShouldClip(bool will) { AutoWrapTextShape::m_clipRegion = will; }
+	void CalcWrappedText(int& length, int& numberOfLines);
 };
 
 #endif

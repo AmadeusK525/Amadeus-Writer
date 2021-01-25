@@ -10,30 +10,28 @@
 
 #include <list>
 
-class ChaptersGrid;
+class ChapterGrid;
 struct Chapter;
 
-class ChaptersNotebook : public wxNotebook {
+class amdChaptersNotebook : public wxNotebook {
 private:
-    ChaptersGrid* grid = nullptr;
-    wxListView* list = nullptr;
+    amdProjectManager* m_manager = nullptr;
+    
+    ChapterGrid* m_grid = nullptr;
+    wxListView* m_list = nullptr;
 
 public:
-    std::list<Chapter> chapters{};
-    int current = 1;
+    amdChaptersNotebook(wxWindow* parent, amdProjectManager* manager);
 
-public:
-    ChaptersNotebook(wxWindow* parent);
+    void AddChapter(Chapter& chapter, int pos = -1, bool Reposition = true);
+    void AddToList(Chapter& chapter, int pos = -1);
 
-    void addChapter(Chapter& chapter, int pos);
-    void addToList(Chapter& chapter, int pos);
+    void RepositionChapters();
 
-    void repositionChapters();
+    ChapterGrid* GetGrid() { return m_grid; }
+    wxListView* GetList() { return m_list; }
 
-    ChaptersGrid* getGrid() { return grid; }
-    wxListView* getList() { return list; }
-
-    void clearAll();
+    void ClearAll();
 };
 
 #endif

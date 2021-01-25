@@ -12,21 +12,22 @@
 
 using std::vector;
 
-class ChaptersGrid: public wxScrolledWindow {
+class ChapterGrid: public wxScrolledWindow {
 private:
-    ChaptersNotebook* parent = nullptr;
-    MainFrame* mainFrame = nullptr;
+    amdProjectManager* m_manager = nullptr;
 
-    vector<wxButton*> chapterButtons{};
-    wxWrapSizer* sizer = nullptr;
+    vector<wxButton*> m_buttons{};
+    wxWrapSizer* m_btnSizer = nullptr;
 
 public:
-    ChaptersGrid(wxWindow* parent);
+    ChapterGrid(wxWindow* parent, amdProjectManager* manager);
 
-    void addButton();
-    void openChapter(wxCommandEvent& event);
+    void AddButton();
+    void OpenChapter(unsigned int chapterNumber);
 
-    void clearAll();
+    void OnButtonPressed(wxCommandEvent& event);
+
+    void ClearAll();
 };
 
 #endif

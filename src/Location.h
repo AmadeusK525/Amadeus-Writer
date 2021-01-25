@@ -9,27 +9,30 @@
 #include <vector>
 
 #include "Chapter.h"
+#include "Character.h"
 
 using std::vector;
 using std::string;
 using std::pair;
 
 struct Location {
-    string name{""}, general{""}, natural{""}, architecture{""},
-        politics{""}, economy{""}, culture{""}, importance{""};
+	wxString name{ "" };
+	string general{ "" }, natural{ "" }, architecture{ "" },
+		politics{ "" }, economy{ "" }, culture{ "" }, importance{ "" };
 
-    vector<pair<string, string>> custom{};
+	vector<pair<string, string>> custom{};
 
-    ChapterPtrArray chaps{};
-    int chapters = 0;
+	ChapterPtrArray chapters{};
+	wxImage image{};
 
-    bool hasAppeared = false;
-    int firstChap = 0;
+	static CompType compType;
 
-    wxImage image{};
+	Location() = default;
 
-    void save(std::ofstream& out);
-    void load(std::ifstream& in);
+	void save(std::ofstream& out);
+	void load(std::ifstream& in);
+
+	bool operator<(const Location& other) const;
+	bool operator==(const Location& other) const;
 };
-
 #endif

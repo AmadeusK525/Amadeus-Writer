@@ -13,21 +13,21 @@
 
 BEGIN_EVENT_TABLE(LocationCreator, wxFrame)
 
-EVT_CLOSE(LocationCreator::checkClose)
+EVT_CLOSE(LocationCreator::CheckClose)
 
-EVT_BUTTON(BUTTON_ChooseImageLoc, LocationCreator::setImage)
-EVT_BUTTON(BUTTON_RemoveImageLoc, LocationCreator::removeImage)
+EVT_BUTTON(BUTTON_ChooseImageLoc, LocationCreator::SetImage)
+EVT_BUTTON(BUTTON_RemoveImageLoc, LocationCreator::RemoveImage)
 
 END_EVENT_TABLE()
 
 using std::vector;
 using std::string;
 
-LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook, wxWindowID id,
+LocationCreator::LocationCreator(wxWindow* parent, amdElementsNotebook* notebook, wxWindowID id,
     const wxPoint& pos, const wxSize& size, long style) :
     wxFrame(parent, id, "Create location", pos, size, style) {
 
-    this->mainFrame = (MainFrame*)wxGetApp().GetTopWindow();
+    this->mainFrame = (amdMainFrame*)wxGetApp().GetTopWindow();
     this->notebook = notebook;
     this->CenterOnParent();
 
@@ -199,7 +199,7 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook, w
 
     wxButton* addCustom = new wxButton(nlPanel2, -1, "", wxDefaultPosition, wxSize(25, 25));
     addCustom->SetBitmap(wxBITMAP_PNG(plus));
-    addCustom->Bind(wxEVT_BUTTON, &LocationCreator::addCustomAttr, this);
+    addCustom->Bind(wxEVT_BUTTON, &LocationCreator::AddCustomAttr, this);
 
     wxBoxSizer* p2line = new wxBoxSizer(wxHORIZONTAL);
     p2line->Add(customLabel, wxSizerFlags());
@@ -247,9 +247,9 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook, w
     nlCancel = new wxButton(btnPan, BUTTON_CancelLoc, "Cancel", wxPoint(540, 550), wxSize(90, 30));
     nlBack = new wxButton(btnPan, BUTTON_BackLoc2, "Back", wxPoint(15, 550), wxSize(90, 30));
 
-    nlNext->Bind(wxEVT_BUTTON, &LocationCreator::next, this);
-    nlBack->Bind(wxEVT_BUTTON, &LocationCreator::back, this);
-    nlCancel->Bind(wxEVT_BUTTON, &LocationCreator::cancel, this);
+    nlNext->Bind(wxEVT_BUTTON, &LocationCreator::Next, this);
+    nlBack->Bind(wxEVT_BUTTON, &LocationCreator::Back, this);
+    nlCancel->Bind(wxEVT_BUTTON, &LocationCreator::Cancel, this);
 
     nlBack->Hide();
 
@@ -275,7 +275,7 @@ LocationCreator::LocationCreator(wxWindow* parent, ElementsNotebook* notebook, w
     this->Show();
 }
 
-vector<string> LocationCreator::getValues() {
+vector<string> LocationCreator::GetValues() {
     vector<string> vec;
 
     vec.push_back((string)nlName->GetValue());
@@ -298,7 +298,7 @@ vector<string> LocationCreator::getValues() {
     return vec;
 }
 
-vector<pair<string, string>> LocationCreator::getCustom() {
+vector<pair<string, string>> LocationCreator::GetCustom() {
     vector<pair<string, string>> vec;
     
     string content;
@@ -313,7 +313,7 @@ vector<pair<string, string>> LocationCreator::getCustom() {
     return vec;
 }
 
-void LocationCreator::setEdit(Location* location) {
+void LocationCreator::SetEdit(Location* location) {
     nlNext->SetId(BUTTON_NextEditLoc1);
     nlBack->SetId(BUTTON_BackEditLoc1);
 
@@ -331,7 +331,7 @@ void LocationCreator::setEdit(Location* location) {
 
     int i = 0;
     for (auto it : location->custom) {
-        addCustomAttr(wxCommandEvent());
+        AddCustomAttr(wxCommandEvent());
         nlCustom[i].first->SetValue(it.first);
         nlCustom[i].second->SetValue(it.second);
 
@@ -339,22 +339,22 @@ void LocationCreator::setEdit(Location* location) {
     }
 
     nlImage = location->image;
-    if (nlImagePanel->setImage(nlImage)) {
+    if (nlImagePanel->SetImage(nlImage)) {
         nlRemoveImage->Show();
     }
 
     m_locationEdit = location;
 }
 
-void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
-    mainFrame->getOutline()->getOutlineFiles()->deleteLocation(*m_locationEdit);
+void LocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
+    m_manager->GetOutline()->GetOutlineFiles()->DeleteLocation(*m_locationEdit);
 
-    vector<string> vec = getValues();
+    vector<string> vec = GetValues();
 
     bool dif = m_locationEdit->name != vec[0] || m_locationEdit->importance != vec[7];
     if (dif) {
-        notebook->removeLocName(m_locationEdit->name);
-        mainFrame->locations.erase(m_locationEdit->importance + m_locationEdit->name);
+        notebook->RemoveLocName(m_locationEdit->name.ToStdString());
+        mainFrame->locations.remove(*m_locationEdit);
         m_locationEdit = &Location();
     }
 
@@ -367,37 +367,38 @@ void LocationCreator::doEdit(wxCommandEvent& WXUNUSED(event)) {
     m_locationEdit->culture = vec[6];
     m_locationEdit->importance = vec[7];
 
-    m_locationEdit->custom = getCustom();
+    m_locationEdit->custom = GetCustom();
 
     m_locationEdit->image = nlImage;
 
     if (dif) {
-        notebook->addLocName(m_locationEdit->name);
-        MainFrame::locations[m_locationEdit->importance + m_locationEdit->name] = *m_locationEdit;
+        notebook->AddLocName(m_locationEdit->name.ToStdString());
+        amdMainFrame::locations.push_back(*m_locationEdit);
+        amdMainFrame::locations.sort();
         notebook->setSearchAC(wxBookCtrlEvent());
     }
 
-    notebook->updateLB();
+    notebook->UpdateAll();
 
     int n = 0;
     for (auto it : mainFrame->locations) {
-        if (m_locationEdit->name == it.second.name)
+        if (m_locationEdit->name == it.name)
             break;
 
         n++;
     }
 
-    notebook->locShow->setData(*m_locationEdit);
-    notebook->locList->Select(n);
+    notebook->m_locShow->setData(*m_locationEdit);
+    notebook->m_locList->Select(n);
 
     mainFrame->isSaved = false;
     mainFrame->Enable();
-    mainFrame->getOutline()->getOutlineFiles()->appendLocation(*m_locationEdit);
+    mainFrame->getOutline()->GetOutlineFiles()->AppendLocation(*m_locationEdit);
 
     this->Destroy();
 }
 
-void LocationCreator::next(wxCommandEvent& event) {
+void LocationCreator::Next(wxCommandEvent& event) {
     bool show1 = false, show2 = false, show3 = false;
 
     switch (event.GetId()) {
@@ -429,11 +430,11 @@ void LocationCreator::next(wxCommandEvent& event) {
         break;
 
     case BUTTON_CreateLoc:
-        create(event);
+        Create(event);
         return;
 
     case BUTTON_CreateEditLoc:
-        doEdit(event);
+        DoEdit(event);
         return;
     }
 
@@ -445,7 +446,7 @@ void LocationCreator::next(wxCommandEvent& event) {
     event.Skip();
 }
 
-void LocationCreator::back(wxCommandEvent& event) {
+void LocationCreator::Back(wxCommandEvent& event) {
     bool show1 = false, show2 = false, show3 = false;
 
     switch (event.GetId()) {
@@ -484,27 +485,27 @@ void LocationCreator::back(wxCommandEvent& event) {
     event.Skip();
 }
 
-void LocationCreator::setImage(wxCommandEvent& WXUNUSED(event)) {
+void LocationCreator::SetImage(wxCommandEvent& WXUNUSED(event)) {
     wxFileDialog choose(this, "Select a Image", wxEmptyString, wxEmptyString,
         "JPG, JPEG and PNG(*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
         wxFD_OPEN, wxDefaultPosition);
 
     if (choose.ShowModal() == wxID_OK) {
         nlImage.LoadFile(choose.GetPath(), wxBITMAP_TYPE_ANY);
-        nlImagePanel->setImage(nlImage);
+        nlImagePanel->SetImage(nlImage);
         nlRemoveImage->Show();
     }
 
     m_mainSiz->Layout();
 }
 
-void LocationCreator::removeImage(wxCommandEvent& WXUNUSED(event)) {
+void LocationCreator::RemoveImage(wxCommandEvent& WXUNUSED(event)) {
     nlImagePanel->ClearBackground();
     nlImage.Destroy();
     nlRemoveImage->Hide();
 }
 
-void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
+void LocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
     wxPanel* panel = new wxPanel(nlPanel2);
     wxSize size(label6->GetSize());
     wxSize size2(nlArchitecture->GetSize());
@@ -523,7 +524,7 @@ void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 
     wxButton* minus = new wxButton(panel, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
     minus->SetBitmap(wxBITMAP_PNG(minus));
-    minus->Bind(wxEVT_BUTTON, &LocationCreator::removeCustomAttr, this);
+    minus->Bind(wxEVT_BUTTON, &LocationCreator::RemoveCustomAttr, this);
 
     wxBoxSizer* hor = new wxBoxSizer(wxHORIZONTAL);
     hor->Add(label, wxSizerFlags(1));
@@ -545,7 +546,7 @@ void LocationCreator::addCustomAttr(wxCommandEvent& WXUNUSED(event)) {
     Refresh();
 }
 
-void LocationCreator::removeCustomAttr(wxCommandEvent& event) {
+void LocationCreator::RemoveCustomAttr(wxCommandEvent& event) {
     Freeze();
     wxButton* minus = (wxButton*)event.GetEventObject();
 
@@ -584,10 +585,10 @@ void LocationCreator::recolorCustoms() {
     }
 }
 
-void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
+void LocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
     if (!nlName->IsEmpty()) {
 
-        std::vector<std::string> vec = getValues();
+        std::vector<std::string> vec = GetValues();
 
         Location location;
 
@@ -602,15 +603,15 @@ void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
 
         location.image = nlImage;
 
-        location.custom = getCustom();
+        location.custom = GetCustom();
 
-        mainFrame->locations[vec[7] + vec[0]] = location;
-        mainFrame->saved[1] = MainFrame::locations.size();
+        mainFrame->locations.push_back(location);
+        mainFrame->saved[1] = amdMainFrame::locations.size();
 
-        ElementsNotebook::updateLB();
+        mainFrame->updateElements(wxCommandEvent());
 
         mainFrame->isSaved = false;
-        mainFrame->getOutline()->getOutlineFiles()->appendLocation(location);
+        mainFrame->getOutline()->GetOutlineFiles()->AppendLocation(location);
     } else {
         wxMessageBox("You can't create a location with no name!");
         return;
@@ -620,7 +621,7 @@ void LocationCreator::create(wxCommandEvent& WXUNUSED(event)) {
     Destroy();
 }
 
-void LocationCreator::checkClose(wxCloseEvent& WXUNUSED(event)) {
+void LocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
 
     if (nlArchitecture->IsModified() || nlName->IsModified() || nlGeneral->IsModified() ||
         nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified()) {
@@ -639,7 +640,7 @@ void LocationCreator::checkClose(wxCloseEvent& WXUNUSED(event)) {
     }
 }
 
-void LocationCreator::cancel(wxCommandEvent& WXUNUSED(event)) {
+void LocationCreator::Cancel(wxCommandEvent& WXUNUSED(event)) {
     mainFrame->Enable();
     this->Destroy();
 }

@@ -14,8 +14,7 @@ using std::string;
 
 class ChapterCreator: public wxFrame {
 private:
-    MainFrame* m_mainFrame = nullptr;
-    ChaptersNotebook* m_notebook = nullptr;
+    amdProjectManager* m_manager = nullptr;
 
     wxPanel* m_nchapPanel1 = nullptr,
         * m_nchapPanel2 = nullptr;
@@ -25,7 +24,7 @@ private:
     wxTextCtrl* m_nchapName = nullptr;
     wxTextCtrl* m_nchapSummary = nullptr;
 
-    DragList* m_nchapList = nullptr;
+    amdDragList* m_nchapList = nullptr;
 
     wxButton* m_nchapNext = nullptr,
         * m_nchapBack = nullptr,
@@ -34,18 +33,17 @@ private:
     wxBoxSizer* m_mainHor = nullptr;
 
     string m_tempName{};
-
     bool m_firstNext = true;
 
 public:
-    ChapterCreator(wxWindow* parent, ChaptersNotebook* notebook);
+    ChapterCreator(wxWindow* parent, amdProjectManager* manager);
 
-    void next(wxCommandEvent& event);
-    void back(wxCommandEvent& event);
-    void cancel(wxCommandEvent& event);
-    void create(wxCommandEvent& event);
+    void Next(wxCommandEvent& event);
+    void Back(wxCommandEvent& event);
+    void Cancel(wxCommandEvent& event);
+    void Create(wxCommandEvent& event);
 
-    void checkClose(wxCloseEvent& event);
+    void CheckClose(wxCloseEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

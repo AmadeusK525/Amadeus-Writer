@@ -5,7 +5,7 @@
 
 #include <wx/wx.h>
 
-#include "Character.h"
+#include "Elements.h"
 #include "ImagePanel.h"
 
 using std::string;
