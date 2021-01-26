@@ -948,6 +948,7 @@ void amdLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
     bool dif = m_locationEdit->name != vec[0] || m_locationEdit->role != location.role;
     m_manager->EditLocation(*m_locationEdit, location, dif);
 
+    m_manager->GetMainFrame()->Enable(true);
     Destroy();
 }
 

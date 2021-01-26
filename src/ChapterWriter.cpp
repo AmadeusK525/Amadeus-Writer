@@ -455,6 +455,8 @@ void amdChapterWriter::LoadChapter() {
 
     string path(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
         std::to_string(chapter.position) + " - " + chapter.name + ".xml");
+
+    m_cwNotebook->Freeze();
     
     if (fs::exists(path))
         m_cwNotebook->m_textCtrl->LoadFile(path, wxRICHTEXT_TYPE_XML);
@@ -478,6 +480,7 @@ void amdChapterWriter::LoadChapter() {
     }
 
     m_cwNotebook->corkBoard->Layout();
+    m_cwNotebook->Thaw();
 
     UpdateCharacterList();
     UpdateLocationList();
@@ -974,7 +977,7 @@ void amdChapterWriterNotebook::UpdateNoteLabel(wxCommandEvent& event) {
 }
 
 void amdChapterWriterNotebook::UpdateNote(wxCommandEvent& event) {
-    wxRichTextCtrl* trtc = (wxRichTextCtrl*)event.GetEventObject();
+    wxTextCtrl* trtc = (wxTextCtrl*)event.GetEventObject();
     wxPanel* pan = dynamic_cast<wxPanel*>(trtc->GetParent());
 
     wxPanel* sp;

@@ -46,10 +46,10 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     m_charList = new wxListView(charFrame, LIST_CharList, wxDefaultPosition, wxDefaultSize,
         wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
     m_charList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, 190);
-    m_charList->InsertColumn(1, "Age", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    m_charList->InsertColumn(2, "Sex", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    m_charList->InsertColumn(3, "Role", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    m_charList->InsertColumn(4, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_charList->InsertColumn(1, "Sex", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_charList->InsertColumn(2, "Role", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_charList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_charList->InsertColumn(4, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
     m_charList->InsertColumn(5, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
     m_charList->SetBackgroundColour(wxColour(45, 45, 45));
@@ -94,10 +94,11 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     locFrame->SetBackgroundColour(wxColour(20, 20, 20));
     m_locList = new wxListView(locFrame, LIST_LocList, wxDefaultPosition, wxDefaultSize,
         wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
-    m_locList->InsertColumn(0, "Name of location", wxLIST_FORMAT_CENTER, 150);
+    m_locList->InsertColumn(0, "Name of location", wxLIST_FORMAT_CENTER, 125);
     m_locList->InsertColumn(1, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
     m_locList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-    m_locList->InsertColumn(3, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_locList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_locList->InsertColumn(4, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
     m_locList->SetBackgroundColour(wxColour(45, 45, 45));
     m_locList->SetForegroundColour(wxColour(245, 245, 245));
@@ -315,8 +316,7 @@ void amdElementsNotebook::ClearAll() {
 
 void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
     m_charList->SetItem(n, 0, character.name);
-    m_charList->SetItem(n, 1, character.age);
-    m_charList->SetItem(n, 2, character.sex);
+    m_charList->SetItem(n, 1, character.sex);
 
     string role;
     switch (character.role) {
@@ -340,17 +340,25 @@ void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
         role = "-";
     }
 
-    m_charList->SetItem(n, 3, role);
+    m_charList->SetItem(n, 2, role);
 
     if (!character.chapters.IsEmpty()) {
         int first = 99999;
-        for (auto& it : character.chapters)
+        int last = -1;
+        for (auto& it : character.chapters) {
             if (it->position < first)
                 first = it->position;
 
-        m_charList->SetItem(n, 4, wxString("Chapter ") << first);
-    } else
+            if (it->position > last)
+                last = it->position;
+        }
+
+        m_charList->SetItem(n, 3, wxString("Chapter ") << first);
+        m_charList->SetItem(n, 4, wxString("Chapter ") << last);
+    } else {
+        m_charList->SetItem(n, 3, "-");
         m_charList->SetItem(n, 4, "-");
+    }
 
     m_charList->SetItem(n, 5, std::to_string(character.chapters.Count()));
 }
@@ -376,15 +384,23 @@ void amdElementsNotebook::UpdateLocation(int n, Location& location) {
 
     if (!location.chapters.IsEmpty()) {
         int first = 999999;
-        for (auto& it : location.chapters)
+        int last = -1;
+
+        for (auto& it : location.chapters) {
             if (it->position < first)
                 first = it->position;
+        
+            if (it->position > last)
+                last = it->position;
+        }
 
         m_locList->SetItem(n, 2, wxString("Chapter ") << first);
-    } else
+        m_locList->SetItem(n, 3, wxString("Chapter ") << last);
+    } else {
         m_locList->SetItem(n, 2, "-");
-
-    m_locList->SetItem(n, 3, std::to_string(location.chapters.Count()));
+        m_locList->SetItem(n, 3, "-");
+    }
+    m_locList->SetItem(n, 4, std::to_string(location.chapters.Count()));
 }
 
 void amdElementsNotebook::UpdateCharacterList() {
