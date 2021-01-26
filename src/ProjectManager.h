@@ -69,6 +69,10 @@ public:
 	bool IsSaved() { return m_isSaved; }
 	void SetSaved(bool saved = true);
 
+	// These two go together when saving / loading. setLast writes to a file the path to the most recently
+	// worked on project. When booting up the application, the getLast function will
+	// be called and it will get the written path, opening up the project automatically,
+	// with no need to load it. Makes things more convenient.
 	void SetLastSave();
 	bool GetLastSave();
 

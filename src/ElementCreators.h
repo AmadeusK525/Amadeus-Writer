@@ -40,6 +40,7 @@ protected:
     wxButton* m_removeImage = nullptr;
 
     wxBoxSizer* m_mainSizer = nullptr;
+    Element* m_elementEdit = nullptr;
 
 public:
     amdElementCreator(wxWindow* parent,
@@ -123,8 +124,6 @@ private:
         * ncVillian = nullptr,
         * ncSecon = nullptr;
 
-    Character* charEdit = nullptr;
-
 public:
     amdCharacterCreator(wxWindow* parent,
         amdProjectManager* manager,
@@ -149,8 +148,8 @@ public:
 
 
 //////////////////////////////////////////////////////////////////////
-//////////////////////// Location Creator /////////////////////////
-/////////////////////////////////////////////////////////////////////
+////////////////////////// Location Creator //////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 
 class amdLocationCreator : public amdElementCreator {
@@ -165,8 +164,6 @@ private:
 
     wxRadioButton* nlHigh = nullptr,
         * nlLow = nullptr;
-
-    Location* m_locationEdit = nullptr;
 
     wxStaticText* label6 = nullptr;
     wxWrapSizer* m_nlcustomSizer = nullptr;
@@ -194,4 +191,50 @@ public:
     virtual void CheckClose(wxCloseEvent& event);
 };
 
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////// Item Creator ////////////////////////////
+//////////////////////////////////////////////////////////////////////
+
+
+class amdItemCreator : public amdElementCreator {
+private:
+    wxTextCtrl* niName = nullptr,
+        * niGeneral = nullptr,
+        * niOrigin = nullptr,
+        * niBackstory = nullptr,
+        * niAppearance = nullptr,
+        * niUsage = nullptr;
+
+    wxRadioButton* niMagic = nullptr,
+        * niNonMagic = nullptr;
+
+    wxRadioButton* niNatural = nullptr,
+        * niManMade = nullptr;
+
+    //wxStaticText* label6 = nullptr;
+    //wxWrapSizer* m_nlcustomSizer = nullptr;
+
+
+public:
+    amdItemCreator(wxWindow* parent,
+        amdProjectManager* manager,
+        long id,
+        const string& label,
+        const wxPoint& pos,
+        const wxSize& size,
+        long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
+        wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
+
+    virtual vector<string> GetValues();
+
+    virtual void SetEdit(Element* editLoc);
+    virtual void DoEdit(wxCommandEvent& event);
+
+    virtual void AddCustomAttr(wxCommandEvent& event);
+    virtual void RemoveCustomAttr(wxCommandEvent& event);
+
+    virtual void Create(wxCommandEvent& event);
+    virtual void CheckClose(wxCloseEvent& event);
+};
 #endif

@@ -103,4 +103,26 @@ struct Location : public Element {
 	void operator=(const Location& other);
 };
 
+
+//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// Item /////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+struct Item : public Element {
+	string origin{ "" }, backstory{ "" }, appearance{ "" },
+		madeOf{ "" }, usage{ "" }, howItWorks{ "" };
+	
+	bool isMagic{ false };
+	bool isManMade{ true };
+
+	static CompType lCompType;
+
+	virtual void Save(std::ofstream& out);
+	virtual void Load(std::ifstream& in);
+
+	bool operator<(const Item& other);
+	bool operator=(const Item& other);
+};
+
 #endif
