@@ -534,8 +534,8 @@ void amdCharacterCreator::SetEdit(Element* editChar) {
     
     m_removeImage->Show(m_imagePanel->SetImage(image));
 
-    charEdit = character;
-    SetTitle("Edit character - '" + charEdit->name + "'");
+    m_elementEdit = character;
+    SetTitle("Edit character - '" + m_elementEdit->name + "'");
 }
 
 void amdCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
@@ -551,7 +551,7 @@ void amdCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
     else if (vec[6] == "Villian")
         newRole = cVillian;
 
-    bool dif = charEdit->name != vec[0] || charEdit->role != newRole;
+    bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != newRole;
 
     Character character;
 
@@ -569,9 +569,11 @@ void amdCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
     character.image = m_imagePanel->GetImage();
 
     character.custom = GetCustom();
-    character.chapters = charEdit->chapters;
+    character.chapters = m_elementEdit->chapters;
 
-    m_manager->EditCharacter(*charEdit, character, dif);
+    Character* pCharacterToEdit = (Character*)m_elementEdit;
+
+    m_manager->EditCharacter(*pCharacterToEdit, character, dif);
     Destroy();
 }
 
@@ -916,9 +918,9 @@ void amdLocationCreator::SetEdit(Element* editLoc) {
     image = location->image;
     m_removeImage->Show(m_imagePanel->SetImage(image));
 
-    m_locationEdit = location;
+    m_elementEdit = location;
 
-    SetTitle("Edit location - '" + m_locationEdit->name + "'");
+    SetTitle("Edit location - '" + m_elementEdit->name + "'");
 }
 
 void amdLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
@@ -944,9 +946,11 @@ void amdLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
     location.image = m_imagePanel->GetImage();
 
     location.custom = GetCustom();
+
+    Location* pLocationToEdit = (Location*)m_elementEdit;
     
-    bool dif = m_locationEdit->name != vec[0] || m_locationEdit->role != location.role;
-    m_manager->EditLocation(*m_locationEdit, location, dif);
+    bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != location.role;
+    m_manager->EditLocation(*pLocationToEdit, location, dif);
 
     m_manager->GetMainFrame()->Enable(true);
     Destroy();
@@ -1086,3 +1090,32 @@ void amdLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
         this->Destroy();
     }
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// Item Creator ////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+amdItemCreator::amdItemCreator(wxWindow* parent, amdProjectManager* manager,
+    long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
+    amdElementCreator(parent, manager, id, label, pos, size, style) {
+
+
+}
+
+vector<string> amdItemCreator::GetValues() {
+    return vector<string>();
+}
+
+void amdItemCreator::SetEdit(Element* editLoc) {}
+
+void amdItemCreator::DoEdit(wxCommandEvent& event) {}
+
+void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {}
+
+void amdItemCreator::RemoveCustomAttr(wxCommandEvent& event) {}
+
+void amdItemCreator::Create(wxCommandEvent& event) {}
+
+void amdItemCreator::CheckClose(wxCloseEvent& event) {}

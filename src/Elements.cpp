@@ -322,6 +322,9 @@ void Location::Save(std::ofstream& out) {
             out.write(&size, sizeof(char));
             out.write(custom[i].second.c_str(), size);
         }
+
+        size = role;
+        out.write(&size, sizeof(char));
     }
 }
 
@@ -390,6 +393,9 @@ void Location::Load(std::ifstream& in) {
             custom[i].second = data;
             delete[] data;
         }
+
+        in.read(&size, sizeof(char));
+        role = (Role)size;
     }
 }
 
@@ -452,4 +458,26 @@ void Location::operator=(const Location& other) {
     economy = other.economy;
     culture = other.culture;
     lCompType = other.lCompType;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// Item /////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
+void Item::Save(std::ofstream& out) {
+
+}
+
+void Item::Load(std::ifstream& in) {
+
+}
+
+bool Item::operator<(const Item& other) {
+    return false;
+}
+
+bool Item::operator=(const Item& other) {
+    return false;
 }

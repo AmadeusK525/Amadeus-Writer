@@ -53,13 +53,6 @@ public:
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize);
 
-    // These two go together when saving / loading. setLast writes to a file the path to the most recently
-    // worked on project. When booting up the application, the getLast function will
-    // be called and it will get the written path, opening up the project automatically,
-    // with no need to load it. Makes things more convenient.
-    // void setLast();
-    // void getLast();
-
     amdElementsNotebook* GetElementsNotebook();
     amdChaptersNotebook* GetChaptersNotebook();
     amdOutline* GetOutline();
@@ -75,9 +68,10 @@ public:
     void EditTitle(wxCommandEvent& event);
 
     void FullScreen(wxCommandEvent& event);
-    void OnNewCharacter(wxCommandEvent& event);
     void OnNewChapter(wxCommandEvent& event);
+    void OnNewCharacter(wxCommandEvent& event);
     void OnNewLocation(wxCommandEvent& event);
+    void OnNewItem(wxCommandEvent& event);
 
     void UpdateElements(wxCommandEvent& event);
 
@@ -98,14 +92,14 @@ enum {
     MAIN_Panel = wxID_HIGHEST + 1,
 
     MENU_NewChapter,
-    MENU_NewScene,
     MENU_NewCharacter,
     MENU_NewLocation,
+    MENU_NewItem,
 
     TOOL_NewChapter,
-    TOOL_NewScene,
     TOOL_NewCharacter,
     TOOL_NewLocation,
+    TOOL_NewItem,
     TOOL_Search,
     TOOL_Save,
     TOOL_FullScreen,

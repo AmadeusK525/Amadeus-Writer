@@ -39,13 +39,15 @@ EVT_MENU(MENU_Quit, amdMainFrame::OnQuit)
 EVT_MENU(MENU_Update, amdMainFrame::UpdateElements)
 EVT_MENU(MENU_ProjectName, amdMainFrame::EditTitle)
 
-EVT_MENU(MENU_NewCharacter, amdMainFrame::OnNewCharacter)
 EVT_MENU(MENU_NewChapter, amdMainFrame::OnNewChapter)
+EVT_MENU(MENU_NewCharacter, amdMainFrame::OnNewCharacter)
 EVT_MENU(MENU_NewLocation, amdMainFrame::OnNewLocation)
+EVT_MENU(MENU_NewItem, amdMainFrame::OnNewItem)
 
 EVT_TOOL(TOOL_NewChapter, amdMainFrame::OnNewChapter)
 EVT_TOOL(TOOL_NewCharacter, amdMainFrame::OnNewCharacter)
 EVT_TOOL(TOOL_NewLocation, amdMainFrame::OnNewLocation)
+EVT_TOOL(TOOL_NewItem, amdMainFrame::OnNewItem)
 
 EVT_TOOL(TOOL_Save, amdMainFrame::OnSaveFile)
 EVT_MENU(TOOL_FullScreen, amdMainFrame::FullScreen)
@@ -173,6 +175,7 @@ amdMainFrame::amdMainFrame(const wxString& title, amdProjectManager* manager, co
     projectMenu->AppendSeparator();
     projectMenu->Append(MENU_NewCharacter, "New Character", "Create a new character");
     projectMenu->Append(MENU_NewLocation, "New &Location", "Create a new location");
+    projectMenu->Append(MENU_NewItem, "New &Item", "Create a new item");
 
     wxMenu* editMenu = new wxMenu();
     editMenu->Append(MENU_Update, "&Update", "Update");
@@ -200,6 +203,7 @@ amdMainFrame::amdMainFrame(const wxString& title, amdProjectManager* manager, co
     m_toolBar->AddTool(TOOL_NewChapter, wxEmptyString, wxBITMAP_PNG(chapterPng), "Add new chapter", wxITEM_NORMAL);
     m_toolBar->AddTool(TOOL_NewCharacter, wxEmptyString, wxBITMAP_PNG(characterPng), "Add new character", wxITEM_NORMAL);
     m_toolBar->AddTool(TOOL_NewLocation, wxEmptyString, wxBITMAP_PNG(locationPng), "Add new location", wxITEM_NORMAL);
+    m_toolBar->AddTool(TOOL_NewItem, wxEmptyString, wxBITMAP_PNG(itemPng), "Add new item", wxITEM_NORMAL);
 
     m_toolBar->AddSeparator();
     m_toolBar->AddSeparator();
@@ -451,15 +455,6 @@ void amdMainFrame::OnMainButtons(wxCommandEvent& event) {
 }
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
-void amdMainFrame::OnNewCharacter(wxCommandEvent& event) {
-    amdCharacterCreator* create = new amdCharacterCreator(this, m_manager, -1,
-        "Create character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
-    create->Show();
-    create->SetFocus();
-    Enable(false);
-    event.Skip();
-}
-
 void amdMainFrame::OnNewChapter(wxCommandEvent& event) {
     if (!fs::is_directory(m_manager->GetPath(true).ToStdString() + "Files")) {
         wxMessageDialog* first = new wxMessageDialog(this, "It seems like you haven't saved your project yet.\nPlease do before writing any chapters.",
@@ -487,9 +482,27 @@ void amdMainFrame::OnNewChapter(wxCommandEvent& event) {
     event.Skip();
 }
 
+void amdMainFrame::OnNewCharacter(wxCommandEvent& event) {
+    amdCharacterCreator* create = new amdCharacterCreator(this, m_manager, -1,
+        "Create character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
+    create->Show();
+    create->SetFocus();
+    Enable(false);
+    event.Skip();
+}
+
 void amdMainFrame::OnNewLocation(wxCommandEvent& event) {
     amdLocationCreator* create = new amdLocationCreator(this, m_manager, -1, "Create location",
         wxDefaultPosition, FromDIP(wxSize(900, 650)));
+    create->Show();
+    create->SetFocus();
+    Enable(false);
+    event.Skip();
+}
+
+void amdMainFrame::OnNewItem(wxCommandEvent& event) {
+    amdItemCreator* create = new amdItemCreator(this, m_manager, -1, "Create item",
+        wxDefaultPosition, FromDIP(wxSize(650, 650)));
     create->Show();
     create->SetFocus();
     Enable(false);
