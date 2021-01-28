@@ -61,7 +61,8 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     sortBy.Add("Name (Z-A)");
     sortBy.Add("Chapters");
     sortBy.Add("First appearance");
-    
+    sortBy.Add("Last appearance");
+
     wxStaticText* cSortByLabel = new wxStaticText(charFrame, -1, "Sort by:");
     cSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
     cSortByLabel->SetFont(wxFontInfo(11).Bold());
@@ -97,7 +98,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     m_locList->InsertColumn(0, "Name of location", wxLIST_FORMAT_CENTER, 125);
     m_locList->InsertColumn(1, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
     m_locList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-    m_locList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_locList->InsertColumn(3, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
     m_locList->InsertColumn(4, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
     m_locList->SetBackgroundColour(wxColour(45, 45, 45));

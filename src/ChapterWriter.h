@@ -32,17 +32,21 @@ private:
     wxStaticText* m_noteChecker = nullptr;
 
     wxPanel* m_leftPanel = nullptr,
+        * m_characterPanel = nullptr,
         * m_locationPanel = nullptr,
-        * m_characterPanel = nullptr;
+        * m_itemPanel = nullptr;
 
     wxBoxSizer* m_leftSizer = nullptr,
         * m_rightSizer = nullptr;
 
-    wxListView* m_charInChap = nullptr, * m_locInChap = nullptr;
+    wxListView* m_charInChap = nullptr,
+        * m_locInChap = nullptr,
+        * m_itemsInChap = nullptr;
 
     wxBoxSizer* m_pageSizer = nullptr;
 
-    wxButton* m_noteClear = nullptr, * m_noteAdd = nullptr;
+    wxButton* m_noteClear = nullptr,
+        * m_noteAdd = nullptr;
 
     unsigned int m_chapterPos;
 
@@ -92,8 +96,10 @@ public:
 enum {
     BUTTON_AddChar,
     BUTTON_AddLoc,
+    BUTTON_AddItem,
     BUTTON_RemChar,
     BUTTON_RemLoc,
+    BUTTON_RemItem,
 
     LIST_AddChar,
     LIST_AddLoc,

@@ -198,7 +198,7 @@ amdMainFrame::amdMainFrame(const wxString& title, amdProjectManager* manager, co
     // Creating toolbar and setting tools
 
     m_toolBar = new wxToolBar(m_mainPanel, -1);
-    m_toolBar->SetBackgroundColour(wxColour(120, 120, 120));
+    m_toolBar->SetBackgroundColour(wxColour(100, 100, 100));
 
     m_toolBar->AddTool(TOOL_NewChapter, wxEmptyString, wxBITMAP_PNG(chapterPng), "Add new chapter", wxITEM_NORMAL);
     m_toolBar->AddTool(TOOL_NewCharacter, wxEmptyString, wxBITMAP_PNG(characterPng), "Add new character", wxITEM_NORMAL);
@@ -502,7 +502,7 @@ void amdMainFrame::OnNewLocation(wxCommandEvent& event) {
 
 void amdMainFrame::OnNewItem(wxCommandEvent& event) {
     amdItemCreator* create = new amdItemCreator(this, m_manager, -1, "Create item",
-        wxDefaultPosition, FromDIP(wxSize(650, 650)));
+        wxDefaultPosition, FromDIP(wxSize(900, 720)));
     create->Show();
     create->SetFocus();
     Enable(false);

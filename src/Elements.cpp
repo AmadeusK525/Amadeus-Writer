@@ -13,7 +13,6 @@ bool Element::operator<(const Element& other) const {
             return role < other.role;
 
         break;
-
     case CompNameInverse:
         return name.Lower() > other.name.Lower();
         break;
@@ -42,6 +41,24 @@ bool Element::operator<(const Element& other) const {
 
         if (i != j)
             return i < j;
+
+        break;
+    case CompLast:
+        i = -1;
+        j = -1;
+
+        for (auto& it : chapters) {
+            if (it->position > i)
+                i = it->position;
+        }
+
+        for (auto& it : other.chapters) {
+            if (it->position > j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i > j;
 
         break;
     default:
@@ -250,6 +267,24 @@ bool Character::operator<(const Character& other) const {
             return i < j;
 
         break;
+    case CompLast:
+        i = -1;
+        j = -1;
+
+        for (auto& it : chapters) {
+            if (it->position > i)
+                i = it->position;
+        }
+
+        for (auto& it : other.chapters) {
+            if (it->position > j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i > j;
+
+        break;
     default:
         break;
     }
@@ -437,6 +472,24 @@ bool Location::operator<(const Location& other) const {
 
         if (i != j)
             return i < j;
+
+        break;
+    case CompLast:
+        i = -1;
+        j = -1;
+
+        for (auto& it : chapters) {
+            if (it->position > i)
+                i = it->position;
+        }
+
+        for (auto& it : other.chapters) {
+            if (it->position > j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i > j;
 
         break;
     default:
