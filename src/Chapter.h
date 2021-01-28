@@ -25,7 +25,7 @@ struct Chapter {
 
     string pointOfView{""};
 
-    char position = -1;
+    int position = -1;
 
     Chapter() : characters(true), locations(true), items(true) {}
 

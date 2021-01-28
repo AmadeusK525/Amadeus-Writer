@@ -104,7 +104,7 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 				it.image.SaveFile(imagePath);
 
 		progress.Update(currentSize++);
-	}
+	} 
 
 	char compType = Character::cCompType;
 	file.write(&compType, sizeof(char));
@@ -327,7 +327,7 @@ void amdProjectManager::SetLastSave() {
 
 	char size = GetFullPath().size() + 1;
 
-	last.write(&size, sizeof(char));
+	last.write((char*)&size, sizeof(int));
 	last.write(GetFullPath().c_str(), size);
 
 	last.close();
@@ -342,7 +342,7 @@ bool amdProjectManager::GetLastSave() {
 		char size;
 		char* data;
 
-		last.read(&size, sizeof(char));
+		last.read((char*)&size, sizeof(int));
 		data = new char[size];
 		last.read(data, size);
 		SetCurrentDocPath(data);

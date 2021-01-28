@@ -22,62 +22,62 @@ bool Chapter::HasRedNote() {
 
 void Chapter::Save(std::ofstream& out) {
     if (out.is_open()) {
-        char size;
+        int size;
 
         size = name.size() + 1;
-        out.write(&size, sizeof(char));
+        out.write((char*)&size, sizeof(int));
         out.write(name.c_str(), size);
 
         size = summary.size() + 1;
-        out.write(&size, sizeof(char));
+        out.write((char*)&size, sizeof(int));
         out.write(summary.c_str(), size);
 
-        char writeMe;
+        int writeMe;
 
         writeMe = characters.size();
-        out.write(&writeMe, sizeof(char));
+        out.write((char*)&writeMe, sizeof(int));
         
         for (auto& it : characters) {
             size = it.size() + 1;
-            out.write(&size, sizeof(char));
+            out.write((char*)&size, sizeof(int));
             out.write(it.c_str(), size);
         }
 
         writeMe = locations.size();
-        out.write(&writeMe, sizeof(char));
+        out.write((char*)&writeMe, sizeof(int));
 
         for (auto& it : locations) {
             size = it.size() + 1;
-            out.write(&size, sizeof(char));
+            out.write((char*)&size, sizeof(int));
             out.write(it.c_str(), size);
         }
 
         writeMe = items.size();
-        out.write(&writeMe, sizeof(char));
+        out.write((char*)&writeMe, sizeof(int));
 
         for (auto& it : items) {
             size = it.size() + 1;
-            out.write(&size, sizeof(char));
+            out.write((char*)&size, sizeof(int));
             out.write(it.c_str(), size);
         }
 
         writeMe = notes.size();
-        out.write(&writeMe, sizeof(char));
+        out.write((char*)&writeMe, sizeof(int));
 
         for (auto it = notes.begin(); it != notes.end(); it++) {
             size = it->name.size() + 1;
-            out.write(&size, sizeof(char));
+            out.write((char*)&size, sizeof(int));
             out.write(it->name.c_str(), size);
 
             size = it->content.size() + 1;
-            out.write(&size, sizeof(char));
+            out.write((char*)&size, sizeof(int));
             out.write(it->content.c_str(), size);
 
             writeMe = it->isDone;
-            out.write(&writeMe, sizeof(char));
+            out.write((char*)&writeMe, sizeof(int));
         }
         
-        out.write(&position, sizeof(char));
+        out.write((char*)&position, sizeof(int));
     }
 
     amdProjectManager* man = amdGetManager();
@@ -90,28 +90,28 @@ void Chapter::Save(std::ofstream& out) {
 
 void Chapter::Load(std::ifstream& in) {
     if (in.is_open()) {
-        char size;
+        int size;
         char* data;
         amdProjectManager* manager = amdGetManager();
 
-        in.read(&size, sizeof(char));
+        in.read((char*)&size, sizeof(int));
         data = new char[size];
         in.read(data, size);
         name = data;
         delete[] data;
 
-        in.read(&size, sizeof(char));
+        in.read((char*)&size, sizeof(int));
         data = new char[size];
         in.read(data, size);
         summary = data;
         delete[] data;
 
-        char number;
+        int number;
         string tempName;
 
-        in.read(&number, sizeof(char));
+        in.read((char*)&number, sizeof(int));
         for (int i = 0; i < number; i++) {
-            in.read(&size, sizeof(char));
+            in.read((char*)&size, sizeof(int));
             data = new char[size];
             in.read(data, size);
             tempName = data;
@@ -120,9 +120,9 @@ void Chapter::Load(std::ifstream& in) {
             characters.push_back(tempName);
         }
 
-        in.read(&number, sizeof(char));
+        in.read((char*)&number, sizeof(int));
         for (int i = 0; i < number; i++) {
-            in.read(&size, sizeof(char));
+            in.read((char*)&size, sizeof(int));
             data = new char[size];
             in.read(data, size);
             tempName = data;
@@ -131,9 +131,9 @@ void Chapter::Load(std::ifstream& in) {
             locations.push_back(tempName);
         }
 
-        in.read(&number, sizeof(char));
+        in.read((char*)&number, sizeof(int));
         for (int i = 0; i < number; i++) {
-            in.read(&size, sizeof(char));
+            in.read((char*)&size, sizeof(int));
             data = new char[size];
             in.read(data, size);
             tempName = data;
@@ -142,22 +142,22 @@ void Chapter::Load(std::ifstream& in) {
             items.push_back(tempName);
         }
 
-        in.read(&number, sizeof(char));
+        in.read((char*)&number, sizeof(int));
         string tempName2;
         for (int i = 0; i < number; i++) {
-            in.read(&size, sizeof(char));
+            in.read((char*)&size, sizeof(int));
             data = new char[size];
             in.read(data, size);
             tempName2 = data;
             delete[] data;
 
-            in.read(&size, sizeof(char));
+            in.read((char*)&size, sizeof(int));
             data = new char[size];
             in.read(data, size);
             tempName = data;
             delete[] data;
 
-            in.read(&size, sizeof(char));
+            in.read((char*)&size, sizeof(int));
 
             Note note(tempName, tempName2);
             note.isDone = size;
@@ -165,7 +165,7 @@ void Chapter::Load(std::ifstream& in) {
             notes.push_back(note);
         }
 
-        in.read(&position, sizeof(char));
+        in.read((char*)&position, sizeof(int));
 
         string path(manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
             std::to_string(position) + " - " + name + ".xml");

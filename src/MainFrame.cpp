@@ -584,7 +584,7 @@ void amdMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, w
 //
 //    char size = m_manager->GetFullPath().size() + 1;
 //
-//    last.write(&size, sizeof(char));
+//    last.write((char*)&size, sizeof(int));
 //    last.write(m_manager->GetFullPath().c_str(), size);
 //
 //    last.close();
@@ -600,7 +600,7 @@ void amdMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, w
 //        char size;
 //        char* data;
 //
-//        last.read(&size, sizeof(char));
+//        last.read((char*)&size, sizeof(int));
 //        data = new char[size];
 //        last.read(data, size);
 //        m_manager->SetCurrentDocPath(data);
