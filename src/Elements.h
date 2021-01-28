@@ -34,8 +34,8 @@ enum Role {
 	lHigh,
 	lLow,
 
-	iMain,
-	iSecondary,
+	iHigh,
+	iLow,
 
 	None
 };
@@ -112,17 +112,19 @@ struct Location : public Element {
 
 struct Item : public Element {
 	string origin{ "" }, backstory{ "" }, appearance{ "" },
-		madeOf{ "" }, usage{ "" }, howItWorks{ "" };
+		usage{ "" }, general{ "" };
+
+	string width{ "" }, height{ "" }, depth{ "" };
 	
 	bool isMagic{ false };
 	bool isManMade{ true };
 
-	static CompType lCompType;
+	static CompType iCompType;
 
 	virtual void Save(std::ofstream& out);
 	virtual void Load(std::ifstream& in);
 
-	bool operator<(const Item& other);
+	bool operator<(const Item& other) const;
 	bool operator=(const Item& other);
 };
 

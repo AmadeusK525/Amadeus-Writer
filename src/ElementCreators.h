@@ -136,7 +136,6 @@ public:
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
     virtual vector<string> GetValues();
-    //vector<pair<string, string>> GetCustom();
 
     virtual void SetEdit(Element* editChar);
     virtual void DoEdit(wxCommandEvent& event);
@@ -210,19 +209,16 @@ private:
         * niHeight = nullptr,
         * niDepth = nullptr;
 
-    wxStaticText* label4 = nullptr;
+    wxStaticText* meaLabel = nullptr;
 
     wxRadioButton* niMagic = nullptr,
-        * niNonMagic = nullptr;
-
-    wxRadioButton* niNatural = nullptr,
-        * niManMade = nullptr;
+        * niNonMagic = nullptr,
+        * niNatural = nullptr,
+        * niManMade = nullptr,
+        * niHigh = nullptr,
+        * niLow = nullptr;
 
     wxBoxSizer* niMeaSizer = nullptr;
-
-    //wxStaticText* label6 = nullptr;
-    //wxWrapSizer* m_nlcustomSizer = nullptr;
-
 
 public:
     amdItemCreator(wxWindow* parent,
@@ -236,7 +232,7 @@ public:
 
     virtual vector<string> GetValues();
 
-    virtual void SetEdit(Element* editLoc);
+    virtual void SetEdit(Element* editItem);
     virtual void DoEdit(wxCommandEvent& event);
 
     virtual void AddCustomAttr(wxCommandEvent& event);

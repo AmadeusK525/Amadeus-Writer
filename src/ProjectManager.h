@@ -32,6 +32,7 @@ private:
 
 	wxVector<Character> m_characters{};
 	wxVector<Location> m_locations{};
+	wxVector<Item> m_items{};
 	wxVector<Chapter> m_chapters{};
 
 	wxFileName m_curDoc{};
@@ -78,27 +79,38 @@ public:
 
 	void AddCharacter(Character& character, int pos = -1);
 	void AddLocation(Location& location, int pos = -1);
+	void AddItem(Item& item, int pos = -1);
 	void AddChapter(Chapter& chapter, int pos = -1);
 
 	void EditCharacter(Character& original, Character& edit, bool sort = false);
 	void EditLocation(Location& original, Location& edit, bool sort = false);
+	void EditItem(Item& original, Item& edit, bool sort = false);
 
 	void AddChapterToCharacter(const wxString& characterName, Chapter& chapter);
 	void AddChapterToLocation(const wxString& locationName, Chapter& chapter);
+	void AddChapterToItem(const wxString& itemName, Chapter& chapter);
 	void RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter);
 	void RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter);
+	void RemoveChapterFromItem(const wxString& itemName, Chapter& chapter);
 	void RedeclareChapsInElements();
 
 	void DeleteCharacter(Character& character);
 	void DeleteLocation(Location& location);
+	void DeleteItem(Item& item);
 	void DeleteChapter(Chapter& chapter);
 
 	wxVector<Character>& GetCharacters() { return m_characters; }
 	wxVector<Location>& GetLocations() { return m_locations; }
+	wxVector<Item>& GetItems() { return m_items; }
 	wxVector<Chapter>& GetChapters() { return m_chapters; }
+
+	wxArrayString GetCharacterNames();
+	wxArrayString GetLocationNames();
+	wxArrayString GetItemNames();
 
 	int GetChapterCount() { return m_chapters.size(); }
 	int GetCharacterCount() { return m_characters.size(); }
+	int GetItemCount() { return m_items.size(); }
 	int GetLocationCount() { return m_locations.size(); }
 };
 

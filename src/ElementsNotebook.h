@@ -16,8 +16,9 @@ private:
 	amdProjectManager* m_manager = nullptr;
 
 public:
-	CharacterShowcase* m_charShow = nullptr;
-	LocationShowcase* m_locShow = nullptr;
+	amdCharacterShowcase* m_charShow = nullptr;
+	amdLocationShowcase* m_locShow = nullptr;
+	amdItemShowcase* m_itemShow = nullptr;
 
 	wxChoice* m_cSortBy = nullptr,
 		* m_lSortBy = nullptr,
@@ -25,16 +26,12 @@ public:
 
 	wxSearchCtrl* m_searchBar = nullptr;
 
-	wxArrayString m_charNames{};
-	wxArrayString m_locNames{};
-
 public:
 	amdElementsNotebook(wxWindow* parent);
 
-	CharacterShowcase* GetCharacterShowcase() { return m_charShow; }
-	LocationShowcase* GetLocationShowcase() { return m_locShow; }
-	wxArrayString& GetCharacterNames() { return m_charNames; }
-	wxArrayString& GetLocationNames() { return m_locNames; }
+	amdCharacterShowcase* GetCharacterShowcase() { return m_charShow; }
+	amdLocationShowcase* GetLocationShowcase() { return m_locShow; }
+
 	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 
 	void OnCharRightClick(wxListEvent& event);
@@ -48,23 +45,30 @@ public:
 	void OnDeleteLocation(wxCommandEvent& event);
 	void OnLocationActivated(wxListEvent& event);
 
+	void OnItemRightClick(wxListEvent& event);
+	void OnEditItem(wxCommandEvent& event);
+	void OnDeleteItem(wxCommandEvent& event);
+	void OnItemActivated(wxListEvent& event);
+
 	void OnCharacterSelected(wxListEvent& event);
 	void OnLocationSelected(wxListEvent& event);
+	void OnItemSelected(wxListEvent& event);
 
 	void OnCharactersSortBy(wxCommandEvent& event);
 	void OnLocationsSortBy(wxCommandEvent& event);
+	void OnItemsSortBy(wxCommandEvent& event);
 
 	void SetSearchAC(wxBookCtrlEvent& event);
-	void AddCharName(string& name);
-	void AddLocName(string& name);
-	void RemoveCharacterName(string& name);
-	void RemoveLocationName(string& name);
 
 	void ClearAll();
+
 	void UpdateCharacter(int n, Character& character);
 	void UpdateLocation(int n, Location& location);
+	void UpdateItem(int n, Item& item);
+
 	void UpdateCharacterList();
 	void UpdateLocationList();
+	void UpdateItemList();
 	void UpdateAll();
 
 	static wxListView* m_charList;
@@ -85,9 +89,11 @@ enum {
 	LIST_ScenesList,
 
 	LISTMENU_EditChar,
-	LISTMENU_DeleteChar,
 	LISTMENU_EditLoc,
-	LISTMENU_DeleteLoc
+	LISTMENU_EditItem,
+	LISTMENU_DeleteChar,
+	LISTMENU_DeleteLoc,
+	LISTMENU_DeleteItem
 };
 
 #endif

@@ -13,7 +13,7 @@
 using std::vector;
 using std::pair;
 
-class ElementShowcase: public wxScrolledWindow {
+class amdElementShowcase: public wxScrolledWindow {
 protected:
     ImagePanel* m_image = nullptr;
 
@@ -24,7 +24,7 @@ protected:
 	wxBoxSizer* m_vertical = nullptr;
 
 public:
-    ElementShowcase(wxWindow* parent);
+    amdElementShowcase(wxWindow* parent);
 	virtual void SetData(const Element& element);
 };
 
@@ -32,7 +32,7 @@ public:
 ///////////////////////// CharacterShowcase ///////////////////////
 ///////////////////////////////////////////////////////////////////
 
-class CharacterShowcase : public ElementShowcase {
+class amdCharacterShowcase : public amdElementShowcase {
 private:
 	wxStaticText* m_ageLabel = nullptr,
 		* m_sexLabel = nullptr,
@@ -56,7 +56,7 @@ private:
 	vector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 
 public:
-	CharacterShowcase(wxWindow* parent);
+	amdCharacterShowcase(wxWindow* parent);
 	virtual void SetData(const Element& charToSet);
 };
 
@@ -66,7 +66,7 @@ public:
 ///////////////////////////////////////////////////////////////////
 
 
-class LocationShowcase : public ElementShowcase {
+class amdLocationShowcase : public amdElementShowcase {
 private:
     wxStaticText* m_generalLabel = nullptr,
         * m_natLabel = nullptr,
@@ -88,10 +88,24 @@ private:
     bool m_first = true;
 
 public:
-    LocationShowcase(wxWindow* parent);
+    amdLocationShowcase(wxWindow* parent);
 
     virtual void SetData(const Element& locToSet);
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// Item Showcase ///////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
+class amdItemShowcase : public amdElementShowcase {
+private:
+
+public:
+    amdItemShowcase(wxWindow* parent);
+
+    virtual void SetData(const Element& itemToSet);
+};
 
 #endif

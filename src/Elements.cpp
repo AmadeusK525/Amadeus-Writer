@@ -3,6 +3,7 @@
 CompType Element::elCompType = CompRole;
 CompType Character::cCompType = CompRole;
 CompType Location::lCompType = CompRole;
+CompType Item::iCompType = CompRole;
 
 bool Element::operator<(const Element& other) const {
     int i, j;
@@ -527,8 +528,69 @@ void Item::Load(std::ifstream& in) {
 
 }
 
-bool Item::operator<(const Item& other) {
-    return false;
+bool Item::operator<(const Item& other) const {
+    int i, j;
+
+    switch (iCompType) {
+    case CompRole:
+        if (role != other.role)
+            return role < other.role;
+
+        break;
+
+    case CompNameInverse:
+        return name.Lower() > other.name.Lower();
+        break;
+
+    case CompChapters:
+        i = chapters.Count();
+        j = other.chapters.Count();
+
+        if (i != j)
+            return i > j;
+
+        break;
+    case CompFirst:
+        i = 9999;
+        j = 9999;
+
+        for (auto& it : chapters) {
+            if (it->position < i)
+                i = it->position;
+        }
+
+        for (auto& it : other.chapters) {
+            if (it->position < j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i < j;
+
+        break;
+    case CompLast:
+        i = -1;
+        j = -1;
+
+        for (auto& it : chapters) {
+            if (it->position > i)
+                i = it->position;
+        }
+
+        for (auto& it : other.chapters) {
+            if (it->position > j)
+                j = it->position;
+        }
+
+        if (i != j)
+            return i > j;
+
+        break;
+    default:
+        break;
+    }
+
+    return name.Lower() < other.name.Lower();
 }
 
 bool Item::operator=(const Item& other) {
