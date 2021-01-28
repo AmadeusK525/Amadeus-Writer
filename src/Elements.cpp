@@ -593,6 +593,19 @@ bool Item::operator<(const Item& other) const {
     return name.Lower() < other.name.Lower();
 }
 
-bool Item::operator=(const Item& other) {
-    return false;
+void Item::operator=(const Item& other) {
+    name = other.name;
+    role = other.role;
+    image = other.image;
+    origin = other.origin;
+    backstory = other.backstory;
+    appearance = other.appearance;
+    usage = other.usage;
+    general = other.general;
+    width = other.width;
+    height = other.height;
+    depth = other.depth;
+    isMagic = other.isMagic;
+    isManMade = other.isManMade;
+    iCompType = other.iCompType;
 }

@@ -67,14 +67,18 @@ public:
 
     void OnAddCharacter(wxCommandEvent& event);
     void OnAddLocation(wxCommandEvent& event);
+    void OnAddItem(wxCommandEvent& event);
     void OnRemoveCharacter(wxCommandEvent& event);
     void OnRemoveLocation(wxCommandEvent& event);
+    void OnRemoveItem(wxCommandEvent& event);
 
     void AddCharacter(wxCommandEvent& event);
     void AddLocation(wxCommandEvent& event);
+    void AddItem(wxCommandEvent& event);
 
     void UpdateCharacterList();
     void UpdateLocationList();
+    void UpdateItemList();
 
     void OnNextChapter(wxCommandEvent& event);
     void OnPreviousChapter(wxCommandEvent& event);
@@ -103,6 +107,7 @@ enum {
 
     LIST_AddChar,
     LIST_AddLoc,
+    LIST_AddItem,
 
     BUTTON_NoteAdd,
     BUTTON_NoteClear,

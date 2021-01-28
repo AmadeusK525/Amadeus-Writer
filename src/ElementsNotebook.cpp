@@ -27,6 +27,11 @@ EVT_LIST_ITEM_ACTIVATED(LIST_LocList, amdElementsNotebook::OnLocationActivated)
 EVT_MENU(LISTMENU_EditLoc, amdElementsNotebook::OnEditLocation)
 EVT_MENU(LISTMENU_DeleteLoc, amdElementsNotebook::OnDeleteLocation)
 
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemsList, amdElementsNotebook::OnItemRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_ItemsList, amdElementsNotebook::OnItemActivated)
+EVT_MENU(LISTMENU_EditItem, amdElementsNotebook::OnEditItem)
+EVT_MENU(LISTMENU_DeleteItem, amdElementsNotebook::OnDeleteItem)
+
 EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, amdElementsNotebook::SetSearchAC)
 
 END_EVENT_TABLE()
@@ -109,6 +114,9 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     lSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
     lSortByLabel->SetFont(wxFontInfo(11).Bold());
 
+    sortBy.Remove("Role");
+    sortBy.Insert("Importance", 0);
+
     m_lSortBy = new wxChoice(locFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
     m_lSortBy->Bind(wxEVT_CHOICE, &amdElementsNotebook::OnLocationsSortBy, this);
     m_lSortBy->SetSelection(0);
@@ -137,10 +145,11 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     m_itemsList = new wxListView(itemsFrame, LIST_ItemsList, wxDefaultPosition, wxDefaultSize,
         wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxBORDER_NONE);
     m_itemsList->InsertColumn(0, "Name of item", wxLIST_FORMAT_CENTER, 120);
-    m_itemsList->InsertColumn(1, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    m_itemsList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-    m_itemsList->InsertColumn(3, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-    m_itemsList->InsertColumn(4, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_itemsList->InsertColumn(1, "Is Magic", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_itemsList->InsertColumn(2, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_itemsList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_itemsList->InsertColumn(4, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_itemsList->InsertColumn(5, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
     m_itemsList->SetBackgroundColour(wxColour(45, 45, 45));
     m_itemsList->SetForegroundColour(wxColour(245, 245, 245));
@@ -439,11 +448,11 @@ void amdElementsNotebook::UpdateLocation(int n, Location& location) {
     string role("");
     switch (location.role) {
     case lHigh:
-        role = "Main";
+        role = "High";
         break;
 
     case lLow:
-        role = "Secondary";
+        role = "Low";
         break;
 
     default:
@@ -476,21 +485,25 @@ void amdElementsNotebook::UpdateLocation(int n, Location& location) {
 void amdElementsNotebook::UpdateItem(int n, Item& item) {
     m_itemsList->SetItem(n, 0, item.name);
 
+    if (item.isMagic)
+        m_itemsList->SetItem(n, 1, "Yes");
+    else
+        m_itemsList->SetItem(n, 1, "No");
+
     string role("");
     switch (item.role) {
     case iHigh:
-        role = "Main";
+        role = "High";
         break;
 
     case iLow:
-        role = "Secondary";
+        role = "Low";
         break;
 
     default:
         role = "-";
     }
-
-    m_itemsList->SetItem(n, 1, role);
+    m_itemsList->SetItem(n, 2, role); 
 
     if (!item.chapters.IsEmpty()) {
         int first = 999999;
@@ -504,13 +517,13 @@ void amdElementsNotebook::UpdateItem(int n, Item& item) {
                 last = it->position;
         }
 
-        m_itemsList->SetItem(n, 2, wxString("Chapter ") << first);
-        m_itemsList->SetItem(n, 3, wxString("Chapter ") << last);
+        m_itemsList->SetItem(n, 3, wxString("Chapter ") << first);
+        m_itemsList->SetItem(n, 4, wxString("Chapter ") << last);
     } else {
-        m_itemsList->SetItem(n, 2, "-");
         m_itemsList->SetItem(n, 3, "-");
+        m_itemsList->SetItem(n, 4, "-");
     }
-    m_itemsList->SetItem(n, 4, std::to_string(item.chapters.Count()));
+    m_itemsList->SetItem(n, 5, std::to_string(item.chapters.Count()));
 }
 
 void amdElementsNotebook::UpdateCharacterList() {

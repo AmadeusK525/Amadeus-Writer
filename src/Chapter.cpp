@@ -52,6 +52,15 @@ void Chapter::Save(std::ofstream& out) {
             out.write(it.c_str(), size);
         }
 
+        writeMe = items.size();
+        out.write(&writeMe, sizeof(char));
+
+        for (auto& it : items) {
+            size = it.size() + 1;
+            out.write(&size, sizeof(char));
+            out.write(it.c_str(), size);
+        }
+
         writeMe = notes.size();
         out.write(&writeMe, sizeof(char));
 
@@ -120,6 +129,17 @@ void Chapter::Load(std::ifstream& in) {
             delete[] data;
 
             locations.push_back(tempName);
+        }
+
+        in.read(&number, sizeof(char));
+        for (int i = 0; i < number; i++) {
+            in.read(&size, sizeof(char));
+            data = new char[size];
+            in.read(data, size);
+            tempName = data;
+            delete[] data;
+
+            items.push_back(tempName);
         }
 
         in.read(&number, sizeof(char));
