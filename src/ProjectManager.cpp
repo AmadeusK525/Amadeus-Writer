@@ -370,8 +370,7 @@ void amdProjectManager::AddCharacter(Character& character, int pos) {
 		m_characters.push_back(character);
 
 	wxVectorSort(m_characters);
-	m_elements->UpdateAll();
-	m_elements->AddCharName(character.name.ToStdString());
+	m_elements->UpdateCharacterList();
 	m_elements->SetSearchAC(wxBookCtrlEvent());
 
 	m_mainFrame->GetOutline()->GetOutlineFiles()->AppendCharacter(character);
@@ -389,11 +388,28 @@ void amdProjectManager::AddLocation(Location& location, int pos) {
 		m_locations.push_back(location);
 
 	wxVectorSort(m_locations);
-	m_elements->UpdateAll();
-	m_elements->AddLocName(location.name.ToStdString());
+	m_elements->UpdateLocationList();
 	m_elements->SetSearchAC(wxBookCtrlEvent());
 
 	m_mainFrame->GetOutline()->GetOutlineFiles()->AppendLocation(location);
+	SetSaved(false);
+}
+
+void amdProjectManager::AddItem(Item& item, int pos) {
+	if (pos > -1) {
+		auto it = m_items.begin();
+		for (int i = 0; i < pos; i++)
+			it++;
+
+		m_items.insert(it, item);
+	} else
+		m_items.push_back(item);
+
+	wxVectorSort(m_items);
+	m_elements->UpdateItemList();
+	m_elements->SetSearchAC(wxBookCtrlEvent());
+
+	m_mainFrame->GetOutline()->GetOutlineFiles()->AppendItem(item);
 	SetSaved(false);
 }
 
@@ -475,6 +491,8 @@ void amdProjectManager::EditLocation(Location& original, Location& edit, bool so
 	}
 }
 
+void amdProjectManager::EditItem(Item& original, Item& edit, bool sort) {}
+
 void amdProjectManager::AddChapterToCharacter(const wxString& characterName, Chapter& chapter) {
 	for (auto& it : m_characters) {
 		if (characterName == it.name) {
@@ -498,6 +516,8 @@ void amdProjectManager::AddChapterToLocation(const wxString& locationName, Chapt
 		}
 	}
 }
+
+void amdProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapter) {}
 
 void amdProjectManager::RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter) {
 	for (auto& it : m_characters) {
@@ -523,6 +543,8 @@ void amdProjectManager::RemoveChapterFromLocation(const wxString& locationName, 
 	wxLogMessage("Could not remove location '%s' from chapter '%s'", locationName, chapter.name);
 }
 
+void amdProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter& chapter) {}
+
 void amdProjectManager::RedeclareChapsInElements() {
 	for (auto& it : m_characters)
 		it.chapters.Clear();
@@ -540,7 +562,6 @@ void amdProjectManager::RedeclareChapsInElements() {
 }
 
 void amdProjectManager::DeleteCharacter(Character& character) {
-	m_elements->RemoveCharacterName(character.name.ToStdString());
 	for (auto it : character.chapters)
 		it->characters.Remove(character.name);
 
@@ -549,11 +570,18 @@ void amdProjectManager::DeleteCharacter(Character& character) {
 }
 
 void amdProjectManager::DeleteLocation(Location& location) {
-	m_elements->RemoveLocationName(location.name.ToStdString());
 	for (auto it : location.chapters)
 		it->characters.Remove(location.name);
 
 	m_locations.erase(&location);
+	SetSaved(false);
+}
+
+void amdProjectManager::DeleteItem(Item& item) {
+	for (auto it : item.chapters)
+		it->characters.Remove(item.name);
+
+	m_items.erase(&item);
 	SetSaved(false);
 }
 
@@ -574,4 +602,28 @@ void amdProjectManager::DeleteChapter(Chapter& chapter) {
 
 	m_chapters.erase(&chapter);
 	SetSaved(false);
+}
+
+wxArrayString amdProjectManager::GetCharacterNames() {
+	wxArrayString names;
+	for (auto& it : m_characters)
+		names.Add(it.name);
+
+	return names;
+}
+
+wxArrayString amdProjectManager::GetLocationNames() {
+	wxArrayString names;
+	for (auto& it : m_locations)
+		names.Add(it.name);
+
+	return names;
+}
+
+wxArrayString amdProjectManager::GetItemNames() {
+	wxArrayString names;
+	for (auto& it : m_items)
+		names.Add(it.name);
+
+	return names;
 }

@@ -140,6 +140,7 @@ private:
     OutlineTreeModelNode* m_research;
     OutlineTreeModelNode* m_characters;
     OutlineTreeModelNode* m_locations;
+    OutlineTreeModelNode* m_items;
 
     OulineTreeModelNodePtrArray m_otherRoots{};
 
@@ -154,6 +155,9 @@ public:
 
         if (m_locations)
             delete m_locations;
+
+        if (m_items)
+            delete m_items;
 
         for (int i = 0; i < m_otherRoots.GetCount(); i++) {
             if (m_otherRoots.at(i))
@@ -172,6 +176,10 @@ public:
         return m_locations->GetChildren();
     }
 
+    OulineTreeModelNodePtrArray& GetItems() {
+        return m_items->GetChildren();
+    }
+
     OutlineTreeModelNode* GetResearchNode() {
         return m_research;
     }
@@ -184,11 +192,16 @@ public:
         return m_locations;
     }
 
+    OutlineTreeModelNode* GetItemsNode() {
+        return m_items;
+    }
+
     // helper methods to change the model
 
     wxDataViewItem AddToResearch(const string& title);
     wxDataViewItem AddToCharacters(const string& title);
     wxDataViewItem AddToLocations(const string& title);
+    wxDataViewItem AddToItems(const string& title);
 
     wxDataViewItem AppendFile(wxDataViewItem& parent, const string& name, const wxRichTextBuffer& buffer);
     wxDataViewItem AppendFolder(wxDataViewItem& parent, const string& name);
@@ -196,6 +209,7 @@ public:
     bool IsResearch(wxDataViewItem& item);
     bool IsCharacters(wxDataViewItem& item);
     bool IsLocations(wxDataViewItem& item);
+    bool IsItems(wxDataViewItem& item);
 
     bool IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
 
@@ -270,11 +284,14 @@ public:
 
     void GenerateCharacterBuffer(Character& character, wxRichTextBuffer& buffer);
     void GenerateLocationBuffer(Location& location, wxRichTextBuffer& buffer);
+    void GenerateItemBuffer(Item& item, wxRichTextBuffer& buffer);
     void AppendCharacter(Character& character);
     void AppendLocation(Location& location);
+    void AppendItem(Item& item);
 
     void DeleteCharacter(Character& character);
     void DeleteLocation(Location& location);
+    void DeleteItem(Item& item);
 
     void NewFile(wxCommandEvent& event);
     void NewFolder(wxCommandEvent& event);

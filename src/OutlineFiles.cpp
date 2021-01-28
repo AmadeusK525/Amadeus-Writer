@@ -14,6 +14,7 @@ OutlineTreeModel::OutlineTreeModel() {
 	m_research = new OutlineTreeModelNode(nullptr, "Research");
 	m_characters = new OutlineTreeModelNode(nullptr, "Characters");
 	m_locations = new OutlineTreeModelNode(nullptr, "Locations");
+	m_items = new OutlineTreeModelNode(nullptr, "Items");
 }
 
 wxString OutlineTreeModel::GetTitle(const wxDataViewItem& item) const {
@@ -51,6 +52,15 @@ wxDataViewItem OutlineTreeModel::AddToCharacters(const string& title) {
 wxDataViewItem OutlineTreeModel::AddToLocations(const string& title) {
 	OutlineTreeModelNode* node = new OutlineTreeModelNode(m_locations, title, wxRichTextBuffer());
 	wxDataViewItem parent(m_locations);
+	wxDataViewItem child(node);
+	this->ItemAdded(parent, child);
+
+	return child;
+}
+
+wxDataViewItem OutlineTreeModel::AddToItems(const string& title) {
+	OutlineTreeModelNode* node = new OutlineTreeModelNode(m_items, title, wxRichTextBuffer());
+	wxDataViewItem parent(m_items);
 	wxDataViewItem child(node);
 	this->ItemAdded(parent, child);
 
@@ -96,6 +106,11 @@ bool OutlineTreeModel::IsCharacters(wxDataViewItem& item) {
 bool OutlineTreeModel::IsLocations(wxDataViewItem& item) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	return node == m_locations;
+}
+
+bool OutlineTreeModel::IsItems(wxDataViewItem& item) {
+	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
+	return node == m_items;
 }
 
 bool OutlineTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
@@ -333,6 +348,11 @@ unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 
 		if (m_locations) {
 			array.Add(wxDataViewItem(m_locations));
+			n++;
+		}
+
+		if (m_items) {
+			array.Add(wxDataViewItem(m_items));
 			n++;
 		}
 
@@ -640,6 +660,104 @@ void amdOutlineFilesPanel::GenerateLocationBuffer(Location& location, wxRichText
 	buffer.SetName(location.name);
 }
 
+void amdOutlineFilesPanel::GenerateItemBuffer(Item& item, wxRichTextBuffer& buffer) {
+	buffer.SetBasicStyle(m_textCtrl->GetBasicStyle());
+	buffer.BeginSuppressUndo();
+
+	if (item.image.IsOk()) {
+		wxImage image = item.image;
+		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
+
+		if (ratio > 1)
+			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
+		else
+			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
+
+		buffer.BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
+		buffer.AddImage(image);
+		buffer.EndAlignment();
+	}
+
+	buffer.BeginFontSize(16);
+	buffer.BeginBold();
+	buffer.InsertTextWithUndo(2, "\nName: ", nullptr);
+	buffer.EndBold();
+	buffer.InsertTextWithUndo(buffer.GetText().size(), " " + item.name, nullptr);
+	buffer.EndFontSize();
+
+	buffer.BeginBold();
+	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\nImportance: ", nullptr);
+	buffer.EndBold();
+	string role;
+	switch (item.role) {
+	case iHigh:
+		role = "High";
+		break;
+
+	case iLow:
+		role = "Low";
+		break;
+
+	default:
+		role = "--/--";
+		break;
+	}
+	buffer.InsertTextWithUndo(buffer.GetText().size(), role, nullptr);
+
+	//if (item.general != "") {
+	//	buffer.BeginBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nGeneral:\n", nullptr);
+	//	buffer.EndBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), item.general, nullptr);
+	//}
+
+	//if (item.natural != "") {
+	//	buffer.BeginBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nNatural characteristics:\n", nullptr);
+	//	buffer.EndBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.natural, nullptr);
+	//}
+
+	//if (location.architecture != "") {
+	//	buffer.BeginBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nArchitecture:\n", nullptr);
+	//	buffer.EndBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.architecture, nullptr);
+	//}
+
+	//if (location.politics != "") {
+	//	buffer.BeginBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nPolitics:\n", nullptr);
+	//	buffer.EndBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.politics, nullptr);
+	//}
+
+	//if (location.economy != "") {
+	//	buffer.BeginBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nEconomy:\n", nullptr);
+	//	buffer.EndBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.economy, nullptr);
+	//}
+
+	//if (location.culture != "") {
+	//	buffer.BeginBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nCulture:\n", nullptr);
+	//	buffer.EndBold();
+	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.culture, nullptr);
+	//}
+
+	//for (auto& it : location.custom) {
+	//	if (it.second != "") {
+	//		buffer.BeginBold();
+	//		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
+	//		buffer.EndBold();
+	//		buffer.InsertTextWithUndo(buffer.GetText().size(), it.second, nullptr);
+	//	}
+	//}
+
+	//buffer.SetName(location.name);
+}
+
 void amdOutlineFilesPanel::AppendCharacter(Character& character) {
 	wxDataViewItem item = m_outlineTreeModel->AddToCharacters(character.name.ToStdString());
 	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
@@ -652,6 +770,13 @@ void amdOutlineFilesPanel::AppendLocation(Location& location) {
 	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
 	
 	GenerateLocationBuffer(location, buffer);
+}
+
+void amdOutlineFilesPanel::AppendItem(Item& item) {
+	wxDataViewItem dvitem = m_outlineTreeModel->AddToItems(item.name.ToStdString());
+	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)dvitem.GetID())->m_buffer;
+
+	GenerateItemBuffer(item, buffer);
 }
 
 void amdOutlineFilesPanel::DeleteCharacter(Character& character) {
@@ -681,6 +806,22 @@ void amdOutlineFilesPanel::DeleteLocation(Location& location) {
 
 			wxDataViewItem item(locations[i]);
 			m_outlineTreeModel->DeleteItem(item);
+			return;
+		}
+	}
+}
+
+void amdOutlineFilesPanel::DeleteItem(Item& item) {
+	OulineTreeModelNodePtrArray& items = m_outlineTreeModel->GetItems();
+	for (int i = 0; i < items.Count(); i++) {
+		if (items[i]->m_title == item.name) {
+			if (m_currentNode == items[i]) {
+				m_currentNode = nullptr;
+				m_textCtrl->Clear();
+			}
+
+			wxDataViewItem dvitem(items[i]);
+			m_outlineTreeModel->DeleteItem(dvitem);
 			return;
 		}
 	}
