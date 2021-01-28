@@ -20,11 +20,14 @@ struct Chapter {
 
     wxArrayString characters{};
     wxArrayString locations{};
+    wxArrayString items{};
     vector<Note> notes{};
 
     string pointOfView{""};
 
     char position = -1;
+
+    Chapter() : characters(true), locations(true), items(true) {}
 
     bool HasRedNote();
 

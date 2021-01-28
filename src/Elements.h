@@ -125,7 +125,7 @@ struct Item : public Element {
 	virtual void Load(std::ifstream& in);
 
 	bool operator<(const Item& other) const;
-	bool operator=(const Item& other);
+	void operator=(const Item& other);
 };
 
 #endif

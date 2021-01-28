@@ -1492,7 +1492,49 @@ void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amdItemCreator::Create(wxCommandEvent& event) {}
+void amdItemCreator::Create(wxCommandEvent& event) {
+	if (!niName->IsEmpty()) {
+		std::vector<std::string> vec = GetValues();
+
+		Item item;
+		item.name = vec[0];
+
+		if (vec[1] == "Natural")
+			item.isManMade = false;
+		else
+			item.isManMade = true;
+
+		if (vec[2] == "Yes")
+			item.isMagic = true;
+		else
+			item.isMagic = false;
+
+		if (vec[3] == "High")
+			item.role = iHigh;
+		else
+			item.role = iLow;
+
+		item.width = vec[4];
+		item.height = vec[5];
+		item.depth = vec[6];
+		item.appearance = vec[7];
+		item.origin = vec[8];
+		item.backstory = vec[9];
+		item.usage = vec[10];
+		item.general = vec[11];
+
+		item.image = m_imagePanel->GetImage();
+		item.custom = GetCustom();
+
+		m_manager->AddItem(item);
+	} else {
+		wxMessageBox("You can't create an item with no name!");
+		return;
+	}
+
+	m_manager->GetMainFrame()->Enable();
+	Destroy();
+}
 
 void amdItemCreator::CheckClose(wxCloseEvent& event) {
 	if (niGeneral->IsModified() || niName->IsModified() || niAppearance->IsModified() ||

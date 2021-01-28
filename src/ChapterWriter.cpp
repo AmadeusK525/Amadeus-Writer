@@ -20,8 +20,10 @@ EVT_BUTTON(BUTTON_NoteAdd, amdChapterWriter::AddNote)
 
 EVT_BUTTON(BUTTON_AddChar, amdChapterWriter::OnAddCharacter)
 EVT_BUTTON(BUTTON_AddLoc, amdChapterWriter::OnAddLocation)
+EVT_BUTTON(BUTTON_AddItem, amdChapterWriter::OnAddItem)
 EVT_BUTTON(BUTTON_RemChar, amdChapterWriter::OnRemoveCharacter)
 EVT_BUTTON(BUTTON_RemLoc, amdChapterWriter::OnRemoveLocation)
+EVT_BUTTON(BUTTON_RemItem, amdChapterWriter::OnRemoveItem)
 
 EVT_BUTTON(BUTTON_NextChap, amdChapterWriter::OnNextChapter)
 EVT_BUTTON(BUTTON_PreviousChap, amdChapterWriter::OnPreviousChapter)
@@ -312,13 +314,9 @@ void amdChapterWriter::OnAddCharacter(wxCommandEvent& event) {
     
     wxPopupTransientWindow* win = new wxPopupTransientWindow(m_leftPanel, wxBORDER_RAISED | wxPU_CONTAINS_CONTROLS);
 
-    wxArrayString array(true);
-    for (auto it = m_manager->GetCharacters().begin(); it != m_manager->GetCharacters().end(); it++) {
-        array.Add(it->name);
-    }
-
     wxListBox* list = new wxListBox();
-    list->Create(win, LIST_AddChar, wxDefaultPosition, wxDefaultSize, array, wxLB_NEEDED_SB | wxLB_SINGLE);
+    list->Create(win, LIST_AddChar, wxDefaultPosition, wxDefaultSize,
+        m_manager->GetCharacterNames(), wxLB_NEEDED_SB | wxLB_SINGLE);
     list->Bind(wxEVT_LISTBOX_DCLICK, &amdChapterWriter::AddCharacter, this);
 
     wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
@@ -332,6 +330,53 @@ void amdChapterWriter::OnAddCharacter(wxCommandEvent& event) {
     event.Skip();
 }
 
+void amdChapterWriter::OnAddLocation(wxCommandEvent& event) {
+    wxPoint point(m_locationPanel->GetScreenPosition());
+
+    int x = point.x;
+    int y = point.y + m_locInChap->GetSize().y;
+
+    wxPopupTransientWindow* win = new wxPopupTransientWindow(m_locationPanel, wxBORDER_RAISED | wxPU_CONTAINS_CONTROLS);
+
+    wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize,
+        m_manager->GetLocationNames(), wxLB_NEEDED_SB | wxLB_SINGLE);
+    list->Bind(wxEVT_LISTBOX_DCLICK, &amdChapterWriter::AddLocation, this);
+
+    wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
+    siz->Add(list, 1, wxGROW);
+    win->SetSizer(siz);
+
+    win->SetPosition(wxPoint(x, y));
+    win->SetSize(m_locationPanel->GetSize());
+
+    win->Popup();
+    event.Skip();
+}
+
+void amdChapterWriter::OnAddItem(wxCommandEvent& event) {
+    wxPoint point(m_itemPanel->GetScreenPosition());
+
+    int x = point.x;
+    int y = point.y + m_itemsInChap->GetSize().y;
+
+    wxPopupTransientWindow* win = new wxPopupTransientWindow(m_leftPanel, wxBORDER_RAISED | wxPU_CONTAINS_CONTROLS);
+
+    wxListBox* list = new wxListBox();
+    list->Create(win, LIST_AddItem, wxDefaultPosition, wxDefaultSize,
+        m_manager->GetCharacterNames(), wxLB_NEEDED_SB | wxLB_SINGLE);
+    list->Bind(wxEVT_LISTBOX_DCLICK, &amdChapterWriter::AddItem, this);
+
+    wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
+    siz->Add(list, wxSizerFlags(1).Expand());
+    win->SetSizer(siz);
+
+    win->SetPosition(wxPoint(x, y));
+    win->SetSize(m_itemPanel->GetSize());
+
+    win->Popup(list);
+    event.Skip();
+}
+
 void amdChapterWriter::AddCharacter(wxCommandEvent& event) {
     string name = event.GetString();
     if (m_charInChap->FindItem(-1, name) == -1) {
@@ -339,6 +384,55 @@ void amdChapterWriter::AddCharacter(wxCommandEvent& event) {
         m_manager->AddChapterToCharacter(name, m_manager->GetChapters()[m_chapterPos - 1]);
         UpdateCharacterList();
         m_manager->GetElementsNotebook()->UpdateCharacterList();
+    }
+}
+
+void amdChapterWriter::AddLocation(wxCommandEvent& event) {
+    string name = event.GetString();
+   
+    if (m_locInChap->FindItem(-1, name) == -1) {
+        CheckChapterValidity();
+        m_manager->AddChapterToLocation(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        UpdateLocationList();
+        m_manager->GetElementsNotebook()->UpdateLocationList();
+    }
+}
+
+void amdChapterWriter::AddItem(wxCommandEvent& event) {
+    string name = event.GetString();
+
+    if (m_itemsInChap->FindItem(-1, name) == -1) {
+        CheckChapterValidity();
+        m_manager->AddChapterToItem(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        UpdateItemList();
+        m_manager->GetElementsNotebook()->UpdateItemList();
+    }
+}
+
+void amdChapterWriter::UpdateCharacterList() {
+    m_charInChap->DeleteAllItems();
+    
+    int i = 0;
+    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].characters) {
+        m_charInChap->InsertItem(i++, it);
+    }
+}
+
+void amdChapterWriter::UpdateLocationList() {
+    m_locInChap->DeleteAllItems();
+
+    int i = 0;
+    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].locations) {
+        m_locInChap->InsertItem(i++, it);
+    }
+}
+
+void amdChapterWriter::UpdateItemList() {
+    m_itemsInChap->DeleteAllItems();
+
+    int i = 0;
+    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].items) {
+        m_itemsInChap->InsertItem(i++, it);
     }
 }
 
@@ -362,62 +456,6 @@ void amdChapterWriter::OnRemoveCharacter(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amdChapterWriter::OnAddLocation(wxCommandEvent& event) {
-    wxPoint point(m_locationPanel->GetScreenPosition());
-
-    int x = point.x;
-    int y = point.y + m_locInChap->GetSize().y;
-
-    wxPopupTransientWindow* win = new wxPopupTransientWindow(m_locationPanel, wxBORDER_RAISED | wxPU_CONTAINS_CONTROLS);
-
-    wxArrayString array(true);
-    for (auto it: m_manager->GetLocations()) {
-        array.Add(it.name);
-    }
-
-    wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize, array, wxLB_NEEDED_SB);
-    list->Bind(wxEVT_LISTBOX_DCLICK, &amdChapterWriter::AddLocation, this);
-
-    wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
-    siz->Add(list, 1, wxGROW);
-    win->SetSizer(siz);
-
-    win->SetPosition(wxPoint(x, y));
-    win->SetSize(m_locationPanel->GetSize());
-
-    win->Popup();
-    event.Skip();
-}
-
-void amdChapterWriter::AddLocation(wxCommandEvent& event) {
-    string name = event.GetString();
-   
-    if (m_locInChap->FindItem(-1, name) == -1) {
-        CheckChapterValidity();
-        m_manager->AddChapterToLocation(name, m_manager->GetChapters()[m_chapterPos - 1]);
-        UpdateLocationList();
-        m_manager->GetElementsNotebook()->UpdateLocationList();
-    }
-}
-
-void amdChapterWriter::UpdateCharacterList() {
-    m_charInChap->DeleteAllItems();
-    
-    int i = 0;
-    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].characters) {
-        m_charInChap->InsertItem(i++, it);
-    }
-}
-
-void amdChapterWriter::UpdateLocationList() {
-    m_locInChap->DeleteAllItems();
-
-    int i = 0;
-    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].locations) {
-        m_locInChap->InsertItem(i++, it);
-    }
-}
-
 void amdChapterWriter::OnRemoveLocation(wxCommandEvent& event) {
     int sel = m_locInChap->GetFirstSelected();
     int nos = m_locInChap->GetSelectedItemCount();
@@ -434,6 +472,25 @@ void amdChapterWriter::OnRemoveLocation(wxCommandEvent& event) {
     }
 
     m_manager->GetElementsNotebook()->UpdateLocationList();
+    event.Skip();
+}
+
+void amdChapterWriter::OnRemoveItem(wxCommandEvent& event) {
+    int sel = m_itemsInChap->GetFirstSelected();
+    int nos = m_itemsInChap->GetSelectedItemCount();
+
+    CheckChapterValidity();
+
+    for (int i = 0; i < nos; i++) {
+        string name = m_itemsInChap->GetItemText(sel);
+        m_itemsInChap->DeleteItem(sel);
+
+        m_manager->RemoveChapterFromItem(name, m_manager->GetChapters()[m_chapterPos - 1]);
+
+        sel = m_itemsInChap->GetNextSelected(sel + 1);
+    }
+
+    m_manager->GetElementsNotebook()->UpdateItemList();
     event.Skip();
 }
 
