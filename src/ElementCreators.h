@@ -21,7 +21,8 @@ protected:
     amdProjectManager* m_manager = nullptr;
 
     wxPanel* m_panel1 = nullptr,
-        * m_panel3 = nullptr;
+        * m_panel3 = nullptr,
+        * m_btnPanel = nullptr;
     wxScrolledWindow* m_panel2 = nullptr;
 
     ImagePanel* m_imagePanel = nullptr;
@@ -201,16 +202,23 @@ class amdItemCreator : public amdElementCreator {
 private:
     wxTextCtrl* niName = nullptr,
         * niGeneral = nullptr,
-        * niOrigin = nullptr,
-        * niBackstory = nullptr,
         * niAppearance = nullptr,
-        * niUsage = nullptr;
+        * niBackstory = nullptr,
+        * niOrigin = nullptr,
+        * niUsage = nullptr,
+        * niWidth = nullptr,
+        * niHeight = nullptr,
+        * niDepth = nullptr;
+
+    wxStaticText* label4 = nullptr;
 
     wxRadioButton* niMagic = nullptr,
         * niNonMagic = nullptr;
 
     wxRadioButton* niNatural = nullptr,
         * niManMade = nullptr;
+
+    wxBoxSizer* niMeaSizer = nullptr;
 
     //wxStaticText* label6 = nullptr;
     //wxWrapSizer* m_nlcustomSizer = nullptr;
@@ -232,9 +240,10 @@ public:
     virtual void DoEdit(wxCommandEvent& event);
 
     virtual void AddCustomAttr(wxCommandEvent& event);
-    virtual void RemoveCustomAttr(wxCommandEvent& event);
 
     virtual void Create(wxCommandEvent& event);
     virtual void CheckClose(wxCloseEvent& event);
+
+    void OnPaint(wxPaintEvent& event);
 };
 #endif

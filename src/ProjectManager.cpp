@@ -196,6 +196,8 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 	file.read(&locSize, sizeof(char));
 	file.read(&chapSize, sizeof(char));
 
+	progressSize = charSize + locSize + chapSize;
+
 	wxProgressDialog progress("Loading project...", m_curDoc.GetFullPath(), progressSize, m_mainFrame,
 		wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_SMOOTH);
 
@@ -213,8 +215,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		}
 
 		m_characters.push_back(character);
-		//m_elements->m_charNames.Add(character.name);
-		progress.Update(currentSize++);
+		progress.Update(++currentSize);
 	}
 
 	char compType;
@@ -232,8 +233,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		}
 
 		m_locations.push_back(location);
-		//m_elements->m_locNames.Add(location.name);
-		progress.Update(currentSize++);
+		progress.Update(++currentSize);
 	}
 
 	file.read(&compType, sizeof(char));
@@ -246,12 +246,12 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		m_chaptersNote->AddToList(chapter, i);
 		m_chaptersNote->GetGrid()->AddButton();
 
-		progress.Update(currentSize++);
+		progress.Update(++currentSize);
 	}
 	RedeclareChapsInElements();
 	file.close();
 
-	m_outline->LoadOutline(currentSize, &progress);
+	m_outline->LoadOutline(++currentSize, &progress);
 	m_release->UpdateContent();
 
 	m_mainFrame->SetTitle(m_curDoc.GetName() + " - Amadeus Writer");
@@ -266,7 +266,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 
 	m_mainFrame->UpdateElements(wxCommandEvent());
 
-	progress.Update(progressSize);
+	progress.Update(++progressSize);
 	progress.Hide();
 
 	m_isSaved = true;

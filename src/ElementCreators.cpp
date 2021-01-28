@@ -7,6 +7,7 @@
 
 #include <wx\sizer.h>
 #include <wx\stattext.h>
+#include <wx\statline.h>
 
 BEGIN_EVENT_TABLE(amdElementCreator, wxFrame)
 
@@ -81,12 +82,12 @@ amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manage
 
     m_panel3->SetSizer(verSizer3);
 
-    wxPanel* btnPanel = new wxPanel(this);
-    btnPanel->SetBackgroundColour(darker);
+    m_btnPanel = new wxPanel(this);
+    m_btnPanel->SetBackgroundColour(darker);
 
-    m_next = new wxButton(btnPanel, BUTTON_Next1, "Next", wxPoint(300, 505), wxSize(90, 30));
-    m_back = new wxButton(btnPanel, BUTTON_Back1, "Back", wxPoint(15, 505), wxSize(90, 30));
-    m_cancel = new wxButton(btnPanel, BUTTON_Cancel, "Cancel", wxPoint(400, 505), wxSize(90, 30));
+    m_next = new wxButton(m_btnPanel, BUTTON_Next1, "Next", wxPoint(300, 505), wxSize(90, 30));
+    m_back = new wxButton(m_btnPanel, BUTTON_Back1, "Back", wxPoint(15, 505), wxSize(90, 30));
+    m_cancel = new wxButton(m_btnPanel, BUTTON_Cancel, "Cancel", wxPoint(400, 505), wxSize(90, 30));
 
     m_next->Bind(wxEVT_BUTTON, &amdElementCreator::Next, this);
     m_back->Bind(wxEVT_BUTTON, &amdElementCreator::Back, this);
@@ -100,13 +101,13 @@ amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manage
     btnSizer->Add(m_cancel, wxSizerFlags(0).Border(wxTOP | wxBOTTOM, 10));
 
     m_back->Hide();
-    btnPanel->SetSizer(btnSizer);
+    m_btnPanel->SetSizer(btnSizer);
 
     m_mainSizer = new wxBoxSizer(wxVERTICAL);
     m_mainSizer->Add(m_panel1, wxSizerFlags(1).Expand());
     m_mainSizer->Add(m_panel2, wxSizerFlags(1).Expand());
     m_mainSizer->Add(m_panel3, wxSizerFlags(1).Expand().Border(wxLEFT | wxRIGHT, 75));
-    m_mainSizer->Add(btnPanel, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
+    m_mainSizer->Add(m_btnPanel, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
 
     SetSizer(m_mainSizer);
 }
@@ -277,8 +278,6 @@ amdCharacterCreator::amdCharacterCreator(wxWindow* parent, amdProjectManager* ma
     wxColour dark(50, 50, 50);
     wxColour darker(30, 30, 30);
     wxColour txtCol(255, 255, 255);
-
-    wxString choice[] = { "Male", "Female" };
 
     wxFont font10(wxFontInfo(10));
 
@@ -656,10 +655,10 @@ void amdCharacterCreator::CheckClose(wxCloseEvent& event) {
         ncHeight->IsModified() || ncNickname->IsModified() ||
         ncAppearance->IsModified() || ncPersonality->IsModified() || ncBackstory->IsModified()) {
 
-        wxMessageDialog* check = new wxMessageDialog(this, "Are you sure you want to close?",
+        wxMessageDialog check(this, "Are you sure you want to close?",
             "Close window", wxYES_NO | wxNO_DEFAULT);
 
-        switch (check->ShowModal()) {
+        switch (check.ShowModal()) {
         case wxID_YES:
             m_manager->GetMainFrame()->Enable();
             this->Destroy();
@@ -668,7 +667,7 @@ void amdCharacterCreator::CheckClose(wxCloseEvent& event) {
         case wxID_NO:
             break;
 
-            check->Destroy();
+            check.Destroy();
         }
 
     } else {
@@ -841,7 +840,6 @@ amdLocationCreator::amdLocationCreator(wxWindow* parent, amdProjectManager* mana
     m_nlcustomSizer = new wxWrapSizer(wxHORIZONTAL);
 
     m_customSizer->Add(m_nlcustomSizer, wxSizerFlags(1).Expand().Border(wxLEFT, 5));
-
     m_customSizer->FitInside(m_panel2);
 
     SetIcon(wxICON(locationIcon));
@@ -1077,13 +1075,13 @@ void amdLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
     if (nlArchitecture->IsModified() || nlName->IsModified() || nlGeneral->IsModified() ||
         nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified()) {
 
-        wxMessageDialog* check = new wxMessageDialog(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
+        wxMessageDialog check(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
 
-        if (check->ShowModal() == wxID_YES) {
+        if (check.ShowModal() == wxID_YES) {
             m_manager->GetMainFrame()->Enable();
             this->Destroy();
         } else {
-            check->Destroy();
+            check.Destroy();
         }
     } else {
         m_manager->GetMainFrame()->Enable();
@@ -1096,12 +1094,226 @@ void amdLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
 /////////////////////////////////// Item Creator ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-
 amdItemCreator::amdItemCreator(wxWindow* parent, amdProjectManager* manager,
     long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
     amdElementCreator(parent, manager, id, label, pos, size, style) {
 
+    wxColour dark(40, 40, 40);
+    wxColour darker(30, 30, 30);
+    wxColour txtCol(255, 255, 255);
 
+    m_panel1->Bind(wxEVT_PAINT, &amdItemCreator::OnPaint, this);
+
+    wxStaticText* label1 = new wxStaticText(m_panel1, wxID_ANY, "Name:",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label1->SetBackgroundColour(darker);
+    label1->SetForegroundColour(txtCol);
+    label1->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niName = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_SIMPLE);
+    niName->SetBackgroundColour(dark);
+    niName->SetForegroundColour(txtCol);
+
+    wxBoxSizer* nameSizer = new wxBoxSizer(wxHORIZONTAL);
+    nameSizer->Add(label1);
+    nameSizer->AddSpacer(3);
+    nameSizer->Add(niName, 1);
+
+    wxStaticText* label2 = new wxStaticText(m_panel1, wxID_ANY, "Type:",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label2->SetBackgroundColour(darker);
+    label2->SetForegroundColour(txtCol);
+    label2->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niNatural = new wxRadioButton(m_panel1, -1, "Natural", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    niNatural->SetForegroundColour(txtCol);
+    niNatural->SetFont(wxFontInfo(11));
+    niManMade = new wxRadioButton(m_panel1, -1, "Man-made");
+    niManMade->SetForegroundColour(txtCol);
+    niManMade->SetFont(wxFontInfo(11));
+
+    wxBoxSizer* typeSizer = new wxBoxSizer(wxVERTICAL);
+    typeSizer->Add(niNatural);
+    typeSizer->AddSpacer(3);
+    typeSizer->Add(niManMade);
+
+    wxStaticText* label3 = new wxStaticText(m_panel1, wxID_ANY, "Is magic:",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label3->SetBackgroundColour(darker);
+    label3->SetForegroundColour(txtCol);
+    label3->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niMagic = new wxRadioButton(m_panel1, -1, "Yes", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    niMagic->SetForegroundColour(txtCol);
+    niMagic->SetFont(wxFontInfo(11));
+    niNonMagic = new wxRadioButton(m_panel1, -1, "No");
+    niNonMagic->SetForegroundColour(txtCol);
+    niNonMagic->SetFont(wxFontInfo(11));
+
+    wxBoxSizer* magicSizer = new wxBoxSizer(wxVERTICAL);
+    magicSizer->Add(niMagic);
+    magicSizer->AddSpacer(3);
+    magicSizer->Add(niNonMagic);
+
+    wxBoxSizer* choicesSizer = new wxBoxSizer(wxHORIZONTAL);
+    choicesSizer->Add(label2, wxSizerFlags(0).Center());
+    choicesSizer->AddSpacer(3);
+    choicesSizer->Add(typeSizer, wxSizerFlags(0).Center());
+    choicesSizer->AddStretchSpacer(1);
+    choicesSizer->Add(label3, wxSizerFlags(0).Center());
+    choicesSizer->AddSpacer(3);
+    choicesSizer->Add(magicSizer, wxSizerFlags(0).Center());
+
+    wxBoxSizer* rightSiz1 = new wxBoxSizer(wxVERTICAL);
+    rightSiz1->Add(nameSizer, wxSizerFlags(0).Expand());
+    rightSiz1->AddSpacer(10);
+    rightSiz1->Add(choicesSizer, wxSizerFlags(0).Expand());
+
+    label4 = new wxStaticText(m_panel1, -1, "Measurements");
+    label4->SetBackgroundColour(darker);
+    label4->SetForegroundColour(txtCol);
+    label4->SetFont(wxFont(wxFontInfo(12).Bold()));
+    wxStaticText* label5 = new wxStaticText(m_panel1, -1, "Width:");
+    label5->SetBackgroundColour(darker);
+    label5->SetForegroundColour(txtCol);
+    label5->SetFont(wxFont(wxFontInfo(12).Bold()));
+    wxStaticText* label6 = new wxStaticText(m_panel1, -1, "Height:");
+    label6->SetBackgroundColour(darker);
+    label6->SetForegroundColour(txtCol);
+    label6->SetFont(wxFont(wxFontInfo(12).Bold()));
+    wxStaticText* label7 = new wxStaticText(m_panel1, -1, "Depth:");
+    label7->SetBackgroundColour(darker);
+    label7->SetForegroundColour(txtCol);
+    label7->SetFont(wxFont(wxFontInfo(12).Bold()));
+
+    wxBoxSizer* firstColumn = new wxBoxSizer(wxVERTICAL);
+    firstColumn->Add(label5);
+    firstColumn->AddStretchSpacer(1);
+    firstColumn->Add(label6);
+    firstColumn->AddStretchSpacer(1);
+    firstColumn->Add(label7);
+    firstColumn->AddStretchSpacer(1);
+
+    niWidth = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_SIMPLE);
+    niWidth->SetBackgroundColour(dark);
+    niWidth->SetForegroundColour(txtCol);
+
+    niHeight = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_SIMPLE);
+    niHeight->SetBackgroundColour(dark);
+    niHeight->SetForegroundColour(txtCol);
+
+    niDepth = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_SIMPLE);
+    niDepth->SetBackgroundColour(dark);
+    niDepth->SetForegroundColour(txtCol);
+
+    wxBoxSizer* secondColumn = new wxBoxSizer(wxVERTICAL);
+    secondColumn->Add(niWidth);
+    secondColumn->AddStretchSpacer(1);
+    secondColumn->Add(niHeight);
+    secondColumn->AddStretchSpacer(1);
+    secondColumn->Add(niDepth);
+    secondColumn->AddStretchSpacer(1);
+
+    wxBoxSizer* rightSiz2 = new wxBoxSizer(wxHORIZONTAL);
+    rightSiz2->Add(firstColumn, wxSizerFlags(0).Expand());
+    rightSiz2->AddStretchSpacer(1);
+    rightSiz2->Add(secondColumn, wxSizerFlags(2).Expand());
+
+    niMeaSizer = new wxBoxSizer(wxVERTICAL);
+    niMeaSizer->Add(label4, wxSizerFlags(0).Expand());
+    niMeaSizer->AddSpacer(20);
+    niMeaSizer->Add(rightSiz2, wxSizerFlags(1).Expand());
+
+    wxBoxSizer* rightVerSiz = new wxBoxSizer(wxVERTICAL);
+    rightVerSiz->AddSpacer(10);
+    rightVerSiz->Add(rightSiz1, wxSizerFlags(1).Expand());
+    rightVerSiz->AddStretchSpacer(1);
+    rightVerSiz->Add(niMeaSizer, wxSizerFlags(3).Expand());
+    rightVerSiz->AddStretchSpacer(1);
+
+    wxStaticText* label8 = new wxStaticText(m_panel1, wxID_ANY, "Appearance",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label8->SetBackgroundColour(darker);
+    label8->SetForegroundColour(txtCol);
+    label8->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niAppearance = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
+    niAppearance->SetBackgroundColour(dark);
+    niAppearance->SetForegroundColour(txtCol);
+
+    wxStaticText* label9 = new wxStaticText(m_panel1, wxID_ANY, "Origin",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label9->SetBackgroundColour(darker);
+    label9->SetForegroundColour(txtCol);
+    label9->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niOrigin = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
+    niOrigin->SetBackgroundColour(dark);
+    niOrigin->SetForegroundColour(txtCol);
+
+    wxStaticText* label10 = new wxStaticText(m_panel1, wxID_ANY, "Backstory",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label10->SetBackgroundColour(darker);
+    label10->SetForegroundColour(txtCol);
+    label10->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niBackstory = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
+    niBackstory->SetBackgroundColour(dark);
+    niBackstory->SetForegroundColour(txtCol);
+
+    wxStaticText* label11 = new wxStaticText(m_panel1, wxID_ANY, "Usage",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label11->SetBackgroundColour(darker);
+    label11->SetForegroundColour(txtCol);
+    label11->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niUsage = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
+    niUsage->SetBackgroundColour(dark);
+    niUsage->SetForegroundColour(txtCol);
+
+    wxBoxSizer* verSizer1 = new wxBoxSizer(wxVERTICAL);
+    verSizer1->Add(label8, wxSizerFlags(0).Left());
+    verSizer1->AddSpacer(4);
+    verSizer1->Add(niAppearance, wxSizerFlags(1).Expand());
+    verSizer1->AddSpacer(2);
+    verSizer1->Add(label9, wxSizerFlags(0).Left());
+    verSizer1->AddSpacer(4);
+    verSizer1->Add(niOrigin, wxSizerFlags(1).Expand());
+    verSizer1->AddSpacer(2);
+    verSizer1->Add(label10, wxSizerFlags(0).Left());
+    verSizer1->AddSpacer(4);
+    verSizer1->Add(niBackstory, wxSizerFlags(1).Expand());
+    verSizer1->AddSpacer(2);
+    verSizer1->Add(label11, wxSizerFlags(0).Left());
+    verSizer1->AddSpacer(4);
+    verSizer1->Add(niUsage, wxSizerFlags(1).Expand());
+
+    wxBoxSizer* mainHor = new wxBoxSizer(wxHORIZONTAL);
+    mainHor->Add(rightVerSiz, wxSizerFlags(1).Expand());
+    mainHor->AddSpacer(20);
+    mainHor->Add(verSizer1, wxSizerFlags(2).Expand());
+
+    wxStaticText* label12 = new wxStaticText(m_panel1, wxID_ANY, "General",
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
+    label12->SetBackgroundColour(darker);
+    label12->SetForegroundColour(txtCol);
+    label12->SetFont(wxFont(wxFontInfo(12).Bold()));
+    niGeneral = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
+        wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE);
+    niGeneral->SetBackgroundColour(dark);
+    niGeneral->SetForegroundColour(txtCol);
+
+    wxBoxSizer* mainVer = new wxBoxSizer(wxVERTICAL);
+    mainVer->AddSpacer(10);
+    mainVer->Add(mainHor, wxSizerFlags(4).Expand().Border(wxLEFT | wxRIGHT, 20));
+    mainVer->Add(label12, wxSizerFlags(0).Left().Border(wxLEFT | wxRIGHT, 20));
+    mainVer->AddSpacer(5);
+    mainVer->Add(niGeneral, wxSizerFlags(1).Expand().Border(wxLEFT | wxRIGHT, 20));
+
+    m_panel1->SetSizer(mainVer);
+
+    SetIcon(wxICON(itemIcon));
 }
 
 vector<string> amdItemCreator::GetValues() {
@@ -1112,10 +1324,96 @@ void amdItemCreator::SetEdit(Element* editLoc) {}
 
 void amdItemCreator::DoEdit(wxCommandEvent& event) {}
 
-void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {}
+void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {
+    Freeze();
+    wxSize size(label4->GetSize());
 
-void amdItemCreator::RemoveCustomAttr(wxCommandEvent& event) {}
+    wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title",
+        wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
+    wxTextCtrl* content = new wxTextCtrl(m_panel2, -1, "", wxDefaultPosition,
+        wxSize(-1, niGeneral->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
+
+    content->SetBackgroundColour(wxColour(60, 60, 60));
+    content->SetForegroundColour(wxColour(255, 255, 255));
+    label->SetBackgroundColour(wxColour(230, 0, 20));
+    label->SetFont(wxFontInfo(13).Bold());
+
+    wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
+    minus->SetBitmap(wxBITMAP_PNG(minus));
+    minus->Bind(wxEVT_BUTTON, &amdCharacterCreator::RemoveCustomAttr, this);
+
+    wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
+    topSizer->Add(label, wxSizerFlags(1));
+    topSizer->Add(minus, 0);
+
+    m_customSizer->Add(topSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxTOP | wxRIGHT, 15));
+    m_customSizer->Add(content, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
+
+    m_customSizer->FitInside(m_panel2);
+
+    m_custom.push_back(pair<wxTextCtrl*, wxTextCtrl*>(label, content));
+    m_minusButtons.push_back(minus);
+
+    Thaw();
+}
 
 void amdItemCreator::Create(wxCommandEvent& event) {}
 
-void amdItemCreator::CheckClose(wxCloseEvent& event) {}
+void amdItemCreator::CheckClose(wxCloseEvent& event) {
+    if (niGeneral->IsModified() || niName->IsModified() || niAppearance->IsModified() ||
+        niBackstory->IsModified() || niOrigin->IsModified() || niUsage->IsModified()) {
+
+        wxMessageDialog check(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
+
+        if (check.ShowModal() == wxID_YES) {
+            m_manager->GetMainFrame()->Enable();
+            this->Destroy();
+        } else {
+            check.Destroy();
+        }
+    } else {
+        m_manager->GetMainFrame()->Enable();
+        this->Destroy();
+    }
+}
+
+void amdItemCreator::OnPaint(wxPaintEvent& event) {
+    wxPaintDC dc(m_panel1);
+
+    wxRect rect;
+    dc.SetPen(wxPen(wxColour(250, 0, 0), 3));
+    dc.SetBackgroundMode(wxTRANSPARENT);
+
+    rect = niGeneral->GetRect();
+    dc.DrawLine(wxPoint(rect.x, rect.y - 3), wxPoint(rect.x + rect.width, rect.y - 3));
+
+    rect = niAppearance->GetRect();
+    dc.DrawLine(wxPoint(rect.x, rect.y - 3), wxPoint(rect.x + rect.width, rect.y - 3));
+
+    rect = niOrigin->GetRect();
+    dc.DrawLine(wxPoint(rect.x, rect.y - 3), wxPoint(rect.x + rect.width, rect.y - 3));
+    
+    rect = niBackstory->GetRect();
+    dc.DrawLine(wxPoint(rect.x, rect.y - 3), wxPoint(rect.x + rect.width, rect.y - 3));
+
+    rect = niUsage->GetRect();
+    dc.DrawLine(wxPoint(rect.x, rect.y - 3), wxPoint(rect.x + rect.width, rect.y - 3));
+
+    dc.SetPen(wxPen(wxColour(250, 0, 0), 5));
+
+    rect = label4->GetRect();
+    dc.DrawLine(wxPoint(rect.x + 3, rect.y + rect.height + 7),
+        wxPoint(rect.x - 3 + rect.width, rect.y + rect.height + 7));
+
+    dc.SetPen(wxPen(wxColour(200, 200, 200), 5));
+
+    rect = wxRect(niMeaSizer->GetPosition(), niMeaSizer->GetSize());
+    rect.x -= 7;
+    rect.y -= 7;
+    rect.width += 14;
+
+    wxPoint points[]{ rect.GetTopLeft(), rect.GetTopRight(), rect.GetBottomRight(), rect.GetBottomLeft(), rect.GetTopLeft() };
+    dc.DrawLines(5, points);
+
+    event.Skip();
+}

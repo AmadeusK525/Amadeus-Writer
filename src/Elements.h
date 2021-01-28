@@ -21,7 +21,8 @@ enum CompType {
 	CompName,
 	CompNameInverse,
 	CompChapters,
-	CompFirst
+	CompFirst,
+	CompLast
 };
 
 enum Role {

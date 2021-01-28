@@ -54,23 +54,6 @@ amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager,
     m_leftPanel = new wxPanel(leftNotebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     m_leftPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
-    wxPanel* sumPanel = new wxPanel(m_leftPanel);
-    sumPanel->SetBackgroundColour(wxColour(255, 255, 255));
-
-    m_summary = new wxTextCtrl(sumPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_SIMPLE);
-    m_summary->SetBackgroundColour(wxColour(35, 35, 35));
-    m_summary->SetForegroundColour(wxColour(245, 245, 245));
-
-    wxStaticText* sumLabel = new wxStaticText(sumPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
-    sumLabel->SetBackgroundColour(wxColour(150, 0, 0));
-    sumLabel->SetFont(wxFont(wxFontInfo(10).Bold().AntiAliased()));
-    sumLabel->SetForegroundColour(wxColour(255, 255, 255));
-
-    wxBoxSizer* sumSizer = new wxBoxSizer(wxVERTICAL);
-    sumSizer->Add(sumLabel, wxSizerFlags(0).Expand());
-    sumSizer->Add(m_summary, wxSizerFlags(1).Expand());
-    sumPanel->SetSizer(sumSizer);
-
     m_characterPanel = new wxPanel(m_leftPanel, -1);
     m_characterPanel->SetBackgroundColour(wxColour(80, 80, 80));
 
@@ -136,13 +119,45 @@ amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager,
     locationsSizer->Add(locBSizer, wxSizerFlags(0).Expand());
     m_locationPanel->SetSizer(locationsSizer);
 
+    m_itemPanel = new wxPanel(m_leftPanel, -1);
+    m_itemPanel->SetBackgroundColour(wxColour(80, 80, 80));
+
+    wxStaticText* itemsInChapLabel = new wxStaticText(m_itemPanel, -1, "Items present in chapter",
+        wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE | wxBORDER_SIMPLE);
+    itemsInChapLabel->SetBackgroundColour(wxColour(25, 25, 25));
+    itemsInChapLabel->SetForegroundColour(wxColour(255, 255, 255));
+    itemsInChapLabel->SetFont(wxFontInfo(10).Bold());
+    m_itemsInChap = new wxListView(m_itemPanel, -1, wxDefaultPosition, wxDefaultSize,
+        wxLC_HRULES | wxLC_REPORT | wxLC_NO_HEADER | wxBORDER_NONE);
+
+    m_itemsInChap->SetMinSize(FromDIP(wxSize(150, 150)));
+    m_itemsInChap->SetBackgroundColour(wxColour(35, 35, 35));
+    m_itemsInChap->SetForegroundColour(wxColour(245, 245, 245));
+    m_itemsInChap->InsertColumn(0, "Items present in chapter", wxLIST_ALIGN_LEFT, FromDIP(155));
+
+    wxButton* addItemButton = new wxButton(m_itemPanel, BUTTON_AddItem, "Add");
+    addLocButton->SetBackgroundColour(wxColour(240, 240, 240));
+    wxButton* remItemButton = new wxButton(m_itemPanel, BUTTON_RemItem, "Remove");
+    remLocButton->SetBackgroundColour(wxColour(240, 240, 240));
+
+    wxBoxSizer* itemBSizer = new wxBoxSizer(wxHORIZONTAL);
+    itemBSizer->Add(addItemButton);
+    itemBSizer->AddStretchSpacer();
+    itemBSizer->Add(remItemButton);
+
+    wxBoxSizer* itemsSizer = new wxBoxSizer(wxVERTICAL);
+    itemsSizer->Add(itemsInChapLabel, wxSizerFlags(0).Expand());
+    itemsSizer->Add(m_itemsInChap, wxSizerFlags(1).Expand());
+    itemsSizer->Add(itemBSizer, wxSizerFlags(0).Expand());
+    m_itemPanel->SetSizer(itemsSizer);
+
     wxButton* leftButton = new wxButton(m_leftPanel, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
     leftButton->SetBitmap(wxBITMAP_PNG(arrowLeft));
 
     m_leftSizer = new wxBoxSizer(wxVERTICAL);
-    m_leftSizer->Add(sumPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
     m_leftSizer->Add(m_characterPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
     m_leftSizer->Add(m_locationPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
+    m_leftSizer->Add(m_itemPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
     m_leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxRIGHT | wxBOTTOM, 8));
 
     m_leftPanel->SetSizer(m_leftSizer);
@@ -150,6 +165,23 @@ amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager,
 
     wxPanel* rightPanel = new wxPanel(this, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
+
+    wxPanel* sumPanel = new wxPanel(rightPanel);
+    sumPanel->SetBackgroundColour(wxColour(255, 255, 255));
+
+    m_summary = new wxTextCtrl(sumPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_SIMPLE);
+    m_summary->SetBackgroundColour(wxColour(35, 35, 35));
+    m_summary->SetForegroundColour(wxColour(245, 245, 245));
+
+    wxStaticText* sumLabel = new wxStaticText(sumPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
+    sumLabel->SetBackgroundColour(wxColour(150, 0, 0));
+    sumLabel->SetFont(wxFont(wxFontInfo(10).Bold().AntiAliased()));
+    sumLabel->SetForegroundColour(wxColour(255, 255, 255));
+
+    wxBoxSizer* sumSizer = new wxBoxSizer(wxVERTICAL);
+    sumSizer->Add(sumLabel, wxSizerFlags(0).Expand());
+    sumSizer->Add(m_summary, wxSizerFlags(1).Expand());
+    sumPanel->SetSizer(sumSizer);
 
     m_noteChecker = new wxStaticText(rightPanel, -1, "Nothing to show.", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     m_noteChecker->SetBackgroundColour(wxColour(20, 20, 20));
@@ -184,7 +216,8 @@ amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager,
     rightButton->SetBitmap(wxBITMAP_PNG(arrowRight));
 
     m_rightSizer = new wxBoxSizer(wxVERTICAL);
-    m_rightSizer->AddStretchSpacer(2);
+    m_rightSizer->Add(sumPanel, wxSizerFlags(2).Expand().Border(wxALL, 8));
+    m_rightSizer->AddStretchSpacer(1);
     m_rightSizer->Add(m_noteChecker, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 8));
     m_rightSizer->Add(m_noteLabel, wxSizerFlags(0).Expand().Border(wxTOP | wxRIGHT | wxLEFT, 8));
     m_rightSizer->Add(m_note, wxSizerFlags(1).Expand().Border(wxRIGHT | wxLEFT, 8));
