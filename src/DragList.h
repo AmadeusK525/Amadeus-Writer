@@ -4,9 +4,9 @@
 #include "wx/panel.h"
 #include "wx/dragimag.h"
 
-#include <string>
 
-using std::string;
+
+
 
 class amdDragList : public wxListView {
 private:
@@ -15,7 +15,7 @@ private:
     wxPanel* m_posMarker = nullptr;
 
 public:
-    string m_tempName{ "" };
+    wxString m_tempName{ "" };
 
     typedef enum {
         DRAG_NONE,

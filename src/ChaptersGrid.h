@@ -8,15 +8,11 @@
 
 #include "ChaptersNotebook.h"
 
-#include <vector>
-
-using std::vector;
-
 class ChapterGrid: public wxScrolledWindow {
 private:
     amdProjectManager* m_manager = nullptr;
 
-    vector<wxButton*> m_buttons{};
+    wxVector<wxButton*> m_buttons{};
     wxWrapSizer* m_btnSizer = nullptr;
 
 public:

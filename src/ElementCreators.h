@@ -6,14 +6,9 @@
 #include <wx\wrapsizer.h>
 
 #include "Elements.h"
-#include "ProjectManager.h"
+#include "Project.h"
 #include "ImagePanel.h"
 
-#include <vector>
-#include <string>
-
-using std::string;
-using std::vector;
 using std::pair;
 
 class amdElementCreator: public wxFrame {
@@ -27,8 +22,8 @@ protected:
 
     ImagePanel* m_imagePanel = nullptr;
 
-    vector<pair<wxTextCtrl*, wxTextCtrl*>> m_custom{};
-    vector<wxButton*> m_minusButtons{};
+    wxVector<pair<wxTextCtrl*, wxTextCtrl*>> m_custom{};
+    wxVector<wxButton*> m_minusButtons{};
 
     wxButton* m_addCustom = nullptr;
     wxBoxSizer* m_customSizer = nullptr;
@@ -47,14 +42,14 @@ public:
     amdElementCreator(wxWindow* parent,
         amdProjectManager* m_manager,
         long id = wxID_ANY,
-        const string& label = "Create element",
+        const wxString& label = "Create element",
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxSize(600, 600),
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-    virtual vector<string> GetValues() = 0;
-    vector<pair<string, string>> GetCustom();
+    virtual wxVector<wxString> GetValues() = 0;
+    wxVector<pair<wxString, wxString>> GetCustom();
 
     virtual void SetEdit(Element* element) = 0;
     virtual void DoEdit(wxCommandEvent& event) = 0;
@@ -129,13 +124,13 @@ public:
     amdCharacterCreator(wxWindow* parent,
         amdProjectManager* manager,
         long id = wxID_ANY,
-        const string& label = "Create character",
+        const wxString& label = "Create character",
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxSize(520, 585),
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-    virtual vector<string> GetValues();
+    virtual wxVector<wxString> GetValues();
 
     virtual void SetEdit(Element* editChar);
     virtual void DoEdit(wxCommandEvent& event);
@@ -172,13 +167,13 @@ public:
     amdLocationCreator(wxWindow* parent,
         amdProjectManager* manager,
         long id,
-        const string& label,
+        const wxString& label,
         const wxPoint& pos,
         const wxSize& size,
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
-    virtual vector<string> GetValues();
+    virtual wxVector<wxString> GetValues();
 
     virtual void SetEdit(Element* editLoc);
     virtual void DoEdit(wxCommandEvent& event);
@@ -224,13 +219,13 @@ public:
     amdItemCreator(wxWindow* parent,
         amdProjectManager* manager,
         long id,
-        const string& label,
+        const wxString& label,
         const wxPoint& pos,
         const wxSize& size,
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
-    virtual vector<string> GetValues();
+    virtual wxVector<wxString> GetValues();
 
     virtual void SetEdit(Element* editItem);
     virtual void DoEdit(wxCommandEvent& event);

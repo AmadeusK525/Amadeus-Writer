@@ -5,12 +5,12 @@
 
 #include "wx/editlbox.h"
 
-#include <string>
+
 
 #include "DragList.h"
 #include "ChaptersGrid.h"
 
-using std::string;
+
 
 class ChapterCreator: public wxFrame {
 private:
@@ -32,7 +32,7 @@ private:
 
     wxBoxSizer* m_mainHor = nullptr;
 
-    string m_tempName{};
+    wxString m_tempName{};
     bool m_firstNext = true;
 
 public:

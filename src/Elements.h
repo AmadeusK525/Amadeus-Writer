@@ -4,14 +4,12 @@
 
 #include <wx/bitmap.h>
 
-#include <string>
-#include <vector>
 #include <fstream>
 
 #include "Chapter.h"
 
-using std::string;
-using std::vector;
+
+;
 using std::pair;
 using std::ostream;
 using std::istream;
@@ -44,7 +42,7 @@ struct Element {
 	wxString name{ "" };
 	Role role{ None };
 
-	vector<pair<string, string>> custom{ 0 };
+	wxVector<pair<wxString, wxString>> custom{ 0 };
 
 	ChapterPtrArray chapters{};
 	wxImage image{};
@@ -68,7 +66,7 @@ struct Element {
 
 
 struct Character : public Element {
-	string sex{ "" }, age{ "" }, nat{ "" },
+	wxString sex{ "" }, age{ "" }, nat{ "" },
 		height{ "" }, nick{ "" }, appearance{ "" },
 		personality{ "" }, backstory{ "" };
 
@@ -90,7 +88,7 @@ struct Character : public Element {
 
 
 struct Location : public Element {
-	string general{ "" }, natural{ "" }, architecture{ "" },
+	wxString general{ "" }, natural{ "" }, architecture{ "" },
 		politics{ "" }, economy{ "" }, culture{ "" };
 
 	static CompType lCompType;
@@ -111,10 +109,10 @@ struct Location : public Element {
 
 
 struct Item : public Element {
-	string origin{ "" }, backstory{ "" }, appearance{ "" },
+	wxString origin{ "" }, backstory{ "" }, appearance{ "" },
 		usage{ "" }, general{ "" };
 
-	string width{ "" }, height{ "" }, depth{ "" };
+	wxString width{ "" }, height{ "" }, depth{ "" };
 	
 	bool isMagic{ false };
 	bool isManMade{ true };

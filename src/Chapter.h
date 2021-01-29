@@ -6,24 +6,24 @@
 
 #include "Note.h"
 
-#include <string>
-#include <vector>
+struct Scene {
+    wxString name{ "" };
+    wxRichTextBuffer content{};
 
-using std::string;
-using std::vector;
+    wxString pointOfView{ "" };
+
+};
 
 struct Chapter {
-    string name{ "" };
-    string summary{ "" };
+    wxString name{ "" };
+    wxString synopsys{ "" };
 
-    wxRichTextBuffer content{};
+    wxVector<Scene> scenes{};
 
     wxArrayString characters{};
     wxArrayString locations{};
     wxArrayString items{};
-    vector<Note> notes{};
-
-    string pointOfView{""};
+    wxVector<Note> notes{};
 
     int position = -1;
 

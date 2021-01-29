@@ -12,7 +12,7 @@ amdProjectManager* amdGetManager() {
 }
 
 bool MyApp::OnInit() {
-    m_locale.Init(wxLANGUAGE_DEFAULT);
+    m_locale.Init(wxLANGUAGE_PORTUGUESE_BRAZILIAN);
     wxInitAllImageHandlers();
 
     m_manager = new amdProjectManager();
@@ -24,7 +24,7 @@ bool MyApp::OnInit() {
     m_manager->Init();
 
   /*  if (argc > 1)
-        m_manager = new amdProjectManager((string)argv.GetArguments()[1]);
+        m_manager = new amdProjectManager((wxString)argv.GetArguments()[1]);
     else*/
        
     return true;

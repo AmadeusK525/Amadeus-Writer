@@ -9,9 +9,9 @@
 
 #include "wxmemdbg.h"
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// amdChapterWriter //////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(amdChapterWriter, wxFrame)
 
@@ -131,8 +131,8 @@ amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager,
     itemsInChapLabel->SetFont(wxFontInfo(10).Bold());
     m_itemsInChap = new wxListView(m_itemPanel, -1, wxDefaultPosition, wxDefaultSize,
         wxLC_HRULES | wxLC_REPORT | wxLC_NO_HEADER | wxBORDER_NONE);
-
     m_itemsInChap->SetMinSize(FromDIP(wxSize(150, 150)));
+
     m_itemsInChap->SetBackgroundColour(wxColour(35, 35, 35));
     m_itemsInChap->SetForegroundColour(wxColour(245, 245, 245));
     m_itemsInChap->InsertColumn(0, "Items present in chapter", wxLIST_ALIGN_LEFT, FromDIP(155));
@@ -163,7 +163,7 @@ amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager,
     m_leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxRIGHT | wxBOTTOM, 8));
 
     m_leftPanel->SetSizer(m_leftSizer);
-    leftNotebook->AddPage(m_leftPanel,"Left");
+    leftNotebook->AddPage(m_leftPanel,"Elements");
 
     wxPanel* rightPanel = new wxPanel(this, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
@@ -222,7 +222,7 @@ amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager,
     m_rightSizer->AddStretchSpacer(1);
     m_rightSizer->Add(m_noteChecker, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 8));
     m_rightSizer->Add(m_noteLabel, wxSizerFlags(0).Expand().Border(wxTOP | wxRIGHT | wxLEFT, 8));
-    m_rightSizer->Add(m_note, wxSizerFlags(1).Expand().Border(wxRIGHT | wxLEFT, 8));
+    m_rightSizer->Add(m_note, wxSizerFlags(2).Expand().Border(wxRIGHT | wxLEFT, 8));
     m_rightSizer->Add(nbHolder, wxSizerFlags(0).Expand().Border(wxBOTTOM | wxRIGHT | wxLEFT, 9));
     m_rightSizer->Add(rightButton, wxSizerFlags(0).Left().Border(wxLEFT | wxBOTTOM, 8));
 
@@ -278,7 +278,7 @@ void amdChapterWriter::ClearNote(wxCommandEvent& event) {
 
 void amdChapterWriter::AddNote(wxCommandEvent& event) {
     if (!m_note->IsEmpty()) {
-        m_cwNotebook->AddNote((string)m_note->GetValue(), (string)m_noteLabel->GetValue(), m_doGreenNote);
+        m_cwNotebook->AddNote((wxString)m_note->GetValue(), (wxString)m_noteLabel->GetValue(), m_doGreenNote);
         m_note->Clear();
         m_noteLabel->SetValue("New note");
         m_doGreenNote = false;
@@ -363,7 +363,7 @@ void amdChapterWriter::OnAddItem(wxCommandEvent& event) {
 
     wxListBox* list = new wxListBox();
     list->Create(win, LIST_AddItem, wxDefaultPosition, wxDefaultSize,
-        m_manager->GetCharacterNames(), wxLB_NEEDED_SB | wxLB_SINGLE);
+        m_manager->GetItemNames(), wxLB_NEEDED_SB | wxLB_SINGLE);
     list->Bind(wxEVT_LISTBOX_DCLICK, &amdChapterWriter::AddItem, this);
 
     wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
@@ -378,7 +378,7 @@ void amdChapterWriter::OnAddItem(wxCommandEvent& event) {
 }
 
 void amdChapterWriter::AddCharacter(wxCommandEvent& event) {
-    string name = event.GetString();
+    wxString name = event.GetString();
     if (m_charInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
         m_manager->AddChapterToCharacter(name, m_manager->GetChapters()[m_chapterPos - 1]);
@@ -388,7 +388,7 @@ void amdChapterWriter::AddCharacter(wxCommandEvent& event) {
 }
 
 void amdChapterWriter::AddLocation(wxCommandEvent& event) {
-    string name = event.GetString();
+    wxString name = event.GetString();
    
     if (m_locInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
@@ -399,7 +399,7 @@ void amdChapterWriter::AddLocation(wxCommandEvent& event) {
 }
 
 void amdChapterWriter::AddItem(wxCommandEvent& event) {
-    string name = event.GetString();
+    wxString name = event.GetString();
 
     if (m_itemsInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
@@ -443,7 +443,7 @@ void amdChapterWriter::OnRemoveCharacter(wxCommandEvent& event) {
     CheckChapterValidity();
 
     for (int i = 0; i < nos; i++) {
-        string name = m_charInChap->GetItemText(sel);
+        wxString name = m_charInChap->GetItemText(sel);
         m_charInChap->DeleteItem(sel);
 
         m_manager->RemoveChapterFromCharacter(name, m_manager->GetChapters()[m_chapterPos - 1]);
@@ -463,7 +463,7 @@ void amdChapterWriter::OnRemoveLocation(wxCommandEvent& event) {
     CheckChapterValidity();
 
     for (int i = 0; i < nos; i++) {
-        string name = m_locInChap->GetItemText(sel);
+        wxString name = m_locInChap->GetItemText(sel);
         m_locInChap->DeleteItem(sel);
 
         m_manager->RemoveChapterFromLocation(name, m_manager->GetChapters()[m_chapterPos - 1]);
@@ -482,7 +482,7 @@ void amdChapterWriter::OnRemoveItem(wxCommandEvent& event) {
     CheckChapterValidity();
 
     for (int i = 0; i < nos; i++) {
-        string name = m_itemsInChap->GetItemText(sel);
+        wxString name = m_itemsInChap->GetItemText(sel);
         m_itemsInChap->DeleteItem(sel);
 
         m_manager->RemoveChapterFromItem(name, m_manager->GetChapters()[m_chapterPos - 1]);
@@ -543,12 +543,12 @@ void amdChapterWriter::LoadChapter() {
 
     SetTitle(m_manager->GetChapters()[m_chapterPos - 1].name);
 
-    string path(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
+    wxString path(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
         std::to_string(chapter.position) + " - " + chapter.name + ".xml");
 
     m_cwNotebook->Freeze();
     
-    if (fs::exists(path))
+    if (fs::exists(path.ToStdString()))
         m_cwNotebook->m_textCtrl->LoadFile(path, wxRICHTEXT_TYPE_XML);
     else
         m_cwNotebook->m_textCtrl->GetBuffer() = chapter.content;
@@ -559,7 +559,7 @@ void amdChapterWriter::LoadChapter() {
     m_cwNotebook->m_textCtrl->RecreateBuffer();
     m_cwNotebook->m_textCtrl->Refresh();
 
-    m_summary->SetValue(chapter.summary);
+    m_summary->SetValue(chapter.synopsys);
 
     for (auto& noteIt : chapter.notes) {
         m_note->SetValue(noteIt.content);
@@ -586,7 +586,7 @@ void amdChapterWriter::SaveChapter() {
 
     chapter.content = m_cwNotebook->m_textCtrl->GetBuffer();
     chapter.content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
-    chapter.summary = (string)m_summary->GetValue();
+    chapter.synopsys = (wxString)m_summary->GetValue();
 
     chapter.notes.clear();
     for (int i = 0; i < m_cwNotebook->notes.size(); i++) {
@@ -603,7 +603,7 @@ void amdChapterWriter::SaveChapter() {
 }
 
 void amdChapterWriter::CountWords() {
-    string count = m_cwNotebook->m_textCtrl->GetValue();
+    wxString count = m_cwNotebook->m_textCtrl->GetValue();
 
     if (count != "") {
         int words = std::count(count.begin(), count.end(), ' ');
@@ -858,7 +858,7 @@ void amdChapterWriterNotebook::OnUpdateAlignRight(wxUpdateUIEvent& event) {
 void amdChapterWriterNotebook::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event)) {
     wxRichTextAttr attr;
     m_textCtrl->GetStyle(m_textCtrl->GetInsertionPoint() - 1, attr);
-    string size(std::to_string(attr.GetFontSize()));
+    wxString size(std::to_string(attr.GetFontSize()));
 
     if (fontSize->GetValue() != size)
         fontSize->SetValue(size);
@@ -891,7 +891,7 @@ bool amdChapterWriterNotebook::HasRedNote() {
     return false;
 }
 
-void amdChapterWriterNotebook::AddNote(std::string& noteContent, std::string& noteName, bool isDone) {
+void amdChapterWriterNotebook::AddNote(wxString& noteContent, wxString& noteName, bool isDone) {
 
     wxPanel* notePanel = new wxPanel(corkBoard);
 

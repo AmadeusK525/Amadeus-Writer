@@ -208,7 +208,7 @@ void Character::Load(std::ifstream& in) {
 
         int size2;
         for (int i = 0; i < size; i++) {
-            custom.push_back(pair<string, string>(string(), string()));
+            custom.push_back(pair<wxString, wxString>(wxString(), wxString()));
 
             in.read((char*)&size2, sizeof(int));
             data = new char[size2];
@@ -415,7 +415,7 @@ void Location::Load(std::ifstream& in) {
 
         int size2;
         for (int i = 0; i < size; i++) {
-            custom.push_back(pair<string, string>(string(), string()));
+            custom.push_back(pair<wxString, wxString>(wxString(), wxString()));
 
             in.read((char*)&size2, sizeof(int));
             data = new char[size2];

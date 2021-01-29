@@ -174,7 +174,7 @@ void ChapterCreator::Create(wxCommandEvent& event) {
         chapter.name = "Chapter " + std::to_string(m_manager->GetChapterCount() + 1);
     }
 
-    chapter.summary = m_nchapSummary->GetValue();
+    chapter.synopsys = m_nchapSummary->GetValue();
 
     int pos = m_nchapList->FindItem(-1, m_tempName);
 

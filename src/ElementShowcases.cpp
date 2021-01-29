@@ -171,7 +171,7 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 	m_nat->SetLabel(character->nat);
 	m_nick->SetLabel(character->nick);
 
-	string role("");
+	wxString role("");
 	wxColour rolebg(220, 220, 220);
 	wxColour rolefg(10, 10, 10);
 	switch (character->role) {
