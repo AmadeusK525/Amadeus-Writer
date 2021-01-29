@@ -6,6 +6,12 @@
 
 #include "Note.h"
 
+enum SectionType {
+    Section_Part,
+    Section_FrontMatter,
+    Section_BackMatter
+};
+
 struct Scene {
     wxString name{ "" };
     wxRichTextBuffer content{};
@@ -31,11 +37,23 @@ struct Chapter {
 
     bool HasRedNote();
 
-    void Save(std::ofstream& out);
-    void Load(std::ifstream& in);
+    void Save(std::ofstream& out) {}
+    void Load(std::ifstream& in) {}
 
     bool operator<(const Chapter& other) const;
     bool operator==(const Chapter& other) const;
+};
+
+
+struct Section {
+    wxString name{ "" };
+    wxString description{ "" };
+
+    unsigned int pos = -1;
+
+    wxVector<Chapter> chapters{};
+
+    SectionType type{ Section_Part };
 };
 
 WX_DEFINE_ARRAY_PTR(Chapter*, ChapterPtrArray);
