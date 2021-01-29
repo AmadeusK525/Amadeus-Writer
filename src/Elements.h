@@ -8,8 +8,6 @@
 
 #include "Chapter.h"
 
-
-;
 using std::pair;
 using std::ostream;
 using std::istream;
@@ -74,8 +72,8 @@ struct Character : public Element {
 
 	Character() = default;
 
-	virtual void Save(std::ofstream& out);
-	virtual void Load(std::ifstream& in);
+	virtual void Save(std::ofstream& out) {}
+	virtual void Load(std::ifstream& in) {}
 
 	bool operator<(const Character& other) const;
 	void operator=(const Character& other);
@@ -95,8 +93,8 @@ struct Location : public Element {
 
 	Location() = default;
 
-	virtual void Save(std::ofstream& out);
-	virtual void Load(std::ifstream& in);
+	virtual void Save(std::ofstream& out) {}
+	virtual void Load(std::ifstream& in) {}
 
 	bool operator<(const Location& other) const;
 	void operator=(const Location& other);
@@ -119,8 +117,8 @@ struct Item : public Element {
 
 	static CompType iCompType;
 
-	virtual void Save(std::ofstream& out);
-	virtual void Load(std::ifstream& in);
+	virtual void Save(std::ofstream& out) {}
+	virtual void Load(std::ifstream& in) {}
 
 	bool operator<(const Item& other) const;
 	void operator=(const Item& other);
