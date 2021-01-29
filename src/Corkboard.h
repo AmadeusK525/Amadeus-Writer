@@ -12,12 +12,9 @@
 #include "MainFrame.h"
 #include "Outline.h"
 
-#include <vector>
 #include <memory>
 
 class Corkboard;
-
-using std::vector;
 
 enum ToolMode {
     modeDESIGN,

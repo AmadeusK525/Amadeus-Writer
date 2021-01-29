@@ -19,7 +19,7 @@ EVT_CLOSE(amdElementCreator::CheckClose)
 END_EVENT_TABLE()
 
 amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
 	wxFrame(parent, id, label, pos, size, style) {
 
 	m_manager = manager;
@@ -112,11 +112,11 @@ amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manage
 	SetSizer(m_mainSizer);
 }
 
-vector<pair<string, string>> amdElementCreator::GetCustom() {
-	vector<pair<string, string>> vec;
+wxVector<pair<wxString, wxString>> amdElementCreator::GetCustom() {
+	wxVector<pair<wxString, wxString>> vec;
 
 	for (auto& it : m_custom) {
-		pair<string, string> pair(it.first->GetValue(), it.second->GetValue());
+		pair<wxString, wxString> pair(it.first->GetValue(), it.second->GetValue());
 		vec.push_back(pair);
 	}
 
@@ -272,7 +272,7 @@ void amdElementCreator::RemoveImage(wxCommandEvent& event) {
 
 
 amdCharacterCreator::amdCharacterCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
 	amdElementCreator(parent, manager, id, label, pos, size, style) {
 
 	wxColour dark(50, 50, 50);
@@ -445,8 +445,8 @@ amdCharacterCreator::amdCharacterCreator(wxWindow* parent, amdProjectManager* ma
 	Layout();
 }
 
-vector<string> amdCharacterCreator::GetValues() {
-	vector<string> vec;
+wxVector<wxString> amdCharacterCreator::GetValues() {
+	wxVector<wxString> vec;
 
 	vec.push_back(ncFullName->GetValue().ToStdString());
 
@@ -538,7 +538,7 @@ void amdCharacterCreator::SetEdit(Element* editChar) {
 }
 
 void amdCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
-	vector<string>& vec = GetValues();
+	wxVector<wxString>& vec = GetValues();
 
 	Role newRole;
 	if (vec[6] == "Protagonist")
@@ -611,7 +611,7 @@ void amdCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 
 void amdCharacterCreator::Create(wxCommandEvent& event) {
 	if (!ncFullName->IsEmpty()) {
-		vector<string>& vec = GetValues();
+		wxVector<wxString>& vec = GetValues();
 
 		Character character;
 		character.name = vec[0];
@@ -684,7 +684,7 @@ void amdCharacterCreator::CheckClose(wxCloseEvent& event) {
 
 
 amdLocationCreator::amdLocationCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
 	amdElementCreator(parent, manager, id, label, pos, size, style) {
 
 	wxColour dark(50, 50, 50);
@@ -848,25 +848,25 @@ amdLocationCreator::amdLocationCreator(wxWindow* parent, amdProjectManager* mana
 	this->Show();
 }
 
-vector<string> amdLocationCreator::GetValues() {
-	vector<string> vec;
+wxVector<wxString> amdLocationCreator::GetValues() {
+	wxVector<wxString> vec;
 
-	vec.push_back((string)nlName->GetValue());
-	vec.push_back((string)nlGeneral->GetValue());
-	vec.push_back((string)nlNatural->GetValue());
-	vec.push_back((string)nlArchitecture->GetValue());
-	vec.push_back((string)nlPolitics->GetValue());
-	vec.push_back((string)nlEconomy->GetValue());
-	vec.push_back((string)nlCulture->GetValue());
+	vec.push_back((wxString)nlName->GetValue());
+	vec.push_back((wxString)nlGeneral->GetValue());
+	vec.push_back((wxString)nlNatural->GetValue());
+	vec.push_back((wxString)nlArchitecture->GetValue());
+	vec.push_back((wxString)nlPolitics->GetValue());
+	vec.push_back((wxString)nlEconomy->GetValue());
+	vec.push_back((wxString)nlCulture->GetValue());
 
-	string importance;
+	wxString importance;
 	if (nlHigh->GetValue()) {
 		importance = nlHigh->GetLabel();
 	} else {
 		importance = nlLow->GetLabel();
 	}
 
-	vec.push_back((string)importance);
+	vec.push_back((wxString)importance);
 
 	return vec;
 }
@@ -922,7 +922,7 @@ void amdLocationCreator::SetEdit(Element* editLoc) {
 }
 
 void amdLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
-	vector<string> vec = GetValues();
+	wxVector<wxString> vec = GetValues();
 
 	Location location;
 
@@ -1037,7 +1037,7 @@ void amdLocationCreator::RecolorCustoms() {
 
 void amdLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
 	if (!nlName->IsEmpty()) {
-		std::vector<std::string> vec = GetValues();
+		wxVector<wxString> vec = GetValues();
 
 		Location location;
 
@@ -1095,7 +1095,7 @@ void amdLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
 /////////////////////////////////////////////////////////////////////////////////////
 
 amdItemCreator::amdItemCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
 	amdElementCreator(parent, manager, id, label, pos, size, style) {
 
 	wxColour dark(40, 40, 40);
@@ -1337,8 +1337,8 @@ amdItemCreator::amdItemCreator(wxWindow* parent, amdProjectManager* manager,
 	SetIcon(wxICON(itemIcon));
 }
 
-vector<string> amdItemCreator::GetValues() {
-	vector<string> vec;
+wxVector<wxString> amdItemCreator::GetValues() {
+	wxVector<wxString> vec;
 
 	vec.push_back(niName->GetValue().ToStdString());
 
@@ -1418,7 +1418,7 @@ void amdItemCreator::SetEdit(Element* editItem) {
 }
 
 void amdItemCreator::DoEdit(wxCommandEvent& event) {
-	vector<string> vec = GetValues();
+	wxVector<wxString> vec = GetValues();
 
 	Item item;
 	item.name = vec[0];
@@ -1494,7 +1494,7 @@ void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {
 
 void amdItemCreator::Create(wxCommandEvent& event) {
 	if (!niName->IsEmpty()) {
-		std::vector<std::string> vec = GetValues();
+		wxVector<wxString> vec = GetValues();
 
 		Item item;
 		item.name = vec[0];

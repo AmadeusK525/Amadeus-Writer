@@ -8,7 +8,7 @@
 #include <wx\listctrl.h>
 #include <wx\srchctrl.h>
 
-#include "ProjectManager.h"
+#include "Project.h"
 #include "ElementShowcases.h"
 
 class amdElementsNotebook : public wxNotebook {

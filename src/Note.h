@@ -1,15 +1,16 @@
+#ifndef NOTE_H_
+#define NOTE_H_
 #pragma once
 
-#include <string>
-
-using std::string;
+#include <wx\wx.h>
 
 struct Note {
-    string content{};
-    string name{};
+	wxString content{ "" };
+	wxString name{ "" };
 
-    bool isDone = false;
+	bool isDone = false;
 
-    Note(string content, string name);
+	Note(wxString content, wxString name);
 };
 
+#endif

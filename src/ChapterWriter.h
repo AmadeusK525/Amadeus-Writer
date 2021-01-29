@@ -7,15 +7,15 @@
 #include <wx\aui\aui.h>
 #include <wx\wrapsizer.h>
 
-#include <string>
+
 #include <list>
 
-#include "ProjectManager.h"
+#include "Project.h"
 #include "ImagePanel.h"
 #include "ChaptersNotebook.h"
 #include "Note.h"
 
-using std::string;
+
 using std::list;
 
 struct amdChapterWriterNotebook;
@@ -129,7 +129,7 @@ struct amdChapterWriterNotebook : public wxAuiNotebook {
 
     wxRichTextCtrl* m_textCtrl = nullptr;
     wxRichTextStyleSheet* styleSheet = nullptr;
-    std::vector<Note> notes;
+    wxVector<Note> notes;
     ImagePanel* corkBoard = nullptr;
 
     wxWrapSizer* notesSizer = nullptr;
@@ -167,7 +167,7 @@ struct amdChapterWriterNotebook : public wxAuiNotebook {
 
     bool HasRedNote();
 
-    void AddNote(std::string& note, std::string& noteName, bool isDone);
+    void AddNote(wxString& note, wxString& noteName, bool isDone);
     void PaintDots(wxPaintEvent& event);
     void SetRed(wxCommandEvent& event);
     void SetGreen(wxCommandEvent& event);

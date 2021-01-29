@@ -6,20 +6,39 @@
 #include <wx\filename.h>
 //#include <wx\wxsqlite3.h>
 
-#include <list>
-
 #include "Elements.h"
 #include "Chapter.h"
+
+struct Book {
+	wxString title{ "" };
+	
+	wxString publisher{ "" };
+
+	wxString author{ "" };
+	wxString genre{ "" };
+	wxString description{ "" };
+	wxString synopsys{ "" };
+
+	wxVector<Character> characters{};
+	wxVector<Location> locations{};
+	wxVector<Item> items{};
+	wxVector<Chapter> chapters{};
+
+
+};
+
+class amdProject {
+	wxVector<Book> books{};
+
+
+
+};
 
 class amdMainFrame;
 class amdElementsNotebook;
 class amdChaptersNotebook;
 class amdOutline;
 class amdRelease;
-
-using std::string;
-using std::list;
-using std::vector;
 
 class amdProjectManager {
 private:

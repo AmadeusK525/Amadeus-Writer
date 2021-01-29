@@ -397,7 +397,7 @@ void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
     m_charList->SetItem(n, 0, character.name);
     m_charList->SetItem(n, 1, character.sex);
 
-    string role;
+    wxString role;
     switch (character.role) {
     case cProtagonist:
         role = "Protagonist";
@@ -445,7 +445,7 @@ void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
 void amdElementsNotebook::UpdateLocation(int n, Location& location) {
     m_locList->SetItem(n, 0, location.name);
 
-    string role("");
+    wxString role("");
     switch (location.role) {
     case lHigh:
         role = "High";
@@ -490,7 +490,7 @@ void amdElementsNotebook::UpdateItem(int n, Item& item) {
     else
         m_itemsList->SetItem(n, 1, "No");
 
-    string role("");
+    wxString role("");
     switch (item.role) {
     case iHigh:
         role = "High";

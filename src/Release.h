@@ -5,7 +5,7 @@
 #include <wx/richtext/richtextctrl.h>
 #include <wx/richtext/richtextprint.h>
 
-#include "ProjectManager.h"
+#include "Project.h"
 
 
 class amdRelease : public wxPanel {

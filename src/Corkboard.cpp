@@ -127,11 +127,11 @@ void Corkboard::setToolMode(ToolMode mode) {
 }
 
 void Corkboard::exportToImage(wxBitmapType type) {
-	string name = "Corkboard";
-	string dummyName = name;
+	wxString name = "Corkboard";
+	wxString dummyName = name;
 
 	int i = 0;
-	while (fs::exists(m_manager->GetPath(true).ToStdString() + "Images\\Corkboard\\" + dummyName)) {
+	while (fs::exists(m_manager->GetPath(true).ToStdString() + "Images\\Corkboard\\" + dummyName.ToStdString())) {
 		dummyName = dummyName + " (" + std::to_string(i++) + ")";
 	}
 

@@ -451,7 +451,7 @@
     <ClCompile Include="src\NoteShape.cpp" />
     <ClCompile Include="src\Outline.cpp" />
     <ClCompile Include="src\OutlineFiles.cpp" />
-    <ClCompile Include="src\ProjectManager.cpp" />
+    <ClCompile Include="src\Project.cpp" />
     <ClCompile Include="src\Release.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -476,7 +476,7 @@
     <ClInclude Include="src\NoteShape.h" />
     <ClInclude Include="src\Outline.h" />
     <ClInclude Include="src\OutlineFiles.h" />
-    <ClInclude Include="src\ProjectManager.h" />
+    <ClInclude Include="src\Project.h" />
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\wxmemdbg.h" />
   </ItemGroup>

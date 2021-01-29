@@ -9,8 +9,8 @@
 
 #include "Elements.h"
 
-using std::vector;
-using std::string;
+;
+
 
 class OutlineTreeModelNode;
 WX_DEFINE_ARRAY_PTR(OutlineTreeModelNode*, OulineTreeModelNodePtrArray);
@@ -24,7 +24,7 @@ private:
 
 public:     // public to avoid getters/setters
     wxRichTextBuffer m_buffer{};
-    string m_title{};
+    wxString m_title{};
     bool m_isContainer = true;
 
 public:
@@ -198,13 +198,13 @@ public:
 
     // helper methods to change the model
 
-    wxDataViewItem AddToResearch(const string& title);
-    wxDataViewItem AddToCharacters(const string& title);
-    wxDataViewItem AddToLocations(const string& title);
-    wxDataViewItem AddToItems(const string& title);
+    wxDataViewItem AddToResearch(const wxString& title);
+    wxDataViewItem AddToCharacters(const wxString& title);
+    wxDataViewItem AddToLocations(const wxString& title);
+    wxDataViewItem AddToItems(const wxString& title);
 
-    wxDataViewItem AppendFile(wxDataViewItem& parent, const string& name, const wxRichTextBuffer& buffer);
-    wxDataViewItem AppendFolder(wxDataViewItem& parent, const string& name);
+    wxDataViewItem AppendFile(wxDataViewItem& parent, const wxString& name, const wxRichTextBuffer& buffer);
+    wxDataViewItem AppendFolder(wxDataViewItem& parent, const wxString& name);
 
     bool IsResearch(wxDataViewItem& item);
     bool IsCharacters(wxDataViewItem& item);
@@ -232,7 +232,7 @@ public:
     }
 
     virtual wxString GetColumnType(unsigned int col) const {
-        return "string";
+        return "wxString";
     }
 
     virtual void GetValue(wxVariant& variant,

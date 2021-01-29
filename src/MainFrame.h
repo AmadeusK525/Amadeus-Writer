@@ -6,17 +6,12 @@
 #include <wx\wx.h>
 #include <wx\simplebook.h>
 
-#include <list>
-#include <string>
-#include <vector>
-#include <fstream>
-
-#include "ProjectManager.h"
+#include "Project.h"
 
 #include <boost/filesystem.hpp>
 
-using std::string;
-using std::vector;
+
+;
 
 class amdMainFrame : public wxFrame {
 private:
@@ -31,7 +26,7 @@ private:
     amdOutline* m_outline = nullptr;
     amdRelease* m_release = nullptr;
 
-    vector<wxButton*> m_mainButtons;
+    wxVector<wxButton*> m_mainButtons;
     wxPanel* m_selPanel = nullptr;
 
     wxSimplebook* m_mainBook = nullptr;

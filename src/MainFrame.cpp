@@ -21,8 +21,8 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #endif
 
-using std::string;
-using std::vector;
+
+;
 
 namespace fs = boost::filesystem;
 
@@ -277,7 +277,7 @@ void amdMainFrame::OnSaveFileAs(wxCommandEvent& event) {
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
     if (saveDialog.ShowModal() == wxID_OK) {
-        string fullPath(saveDialog.GetPath().ToStdString());
+        wxString fullPath(saveDialog.GetPath().ToStdString());
         fullPath.erase(fullPath.size() - 4, 4);
         fullPath += "\\" + saveDialog.GetFilename();
 
@@ -285,15 +285,15 @@ void amdMainFrame::OnSaveFileAs(wxCommandEvent& event) {
 
         fullPath = m_manager->GetPath(true);
 
-        fs::create_directory(fullPath);
-        fs::create_directory(fullPath + "Images");
-        fs::create_directory(fullPath + "Images\\Characters");
-        fs::create_directory(fullPath + "Images\\Locations");
-        fs::create_directory(fullPath + "Images\\Corkboard");
-        fs::create_directory(fullPath + "Files");
-        fs::create_directory(fullPath + "Files\\Corkboard");
-        fs::create_directory(fullPath + "Files\\Chapters");
-        fs::create_directory(fullPath + "Files\\Outline");
+        fs::create_directory(fullPath.ToStdString());
+        fs::create_directory(fullPath.ToStdString() + "Images");
+        fs::create_directory(fullPath.ToStdString() + "Images\\Characters");
+        fs::create_directory(fullPath.ToStdString() + "Images\\Locations");
+        fs::create_directory(fullPath.ToStdString() + "Images\\Corkboard");
+        fs::create_directory(fullPath.ToStdString() + "Files");
+        fs::create_directory(fullPath.ToStdString() + "Files\\Corkboard");
+        fs::create_directory(fullPath.ToStdString() + "Files\\Chapters");
+        fs::create_directory(fullPath.ToStdString() + "Files\\Outline");
 
 
         OnSaveFile(event);
@@ -351,8 +351,8 @@ void amdMainFrame::OnQuit(wxCommandEvent& event) {
 }
 
 void amdMainFrame::EditTitle(wxCommandEvent& event) {
-    /*string temp(m_manager->GetTitle());
-    temp.erase(m_manager->GetTitle().size() - 4, string::npos);
+    /*wxString temp(m_manager->GetTitle());
+    temp.erase(m_manager->GetTitle().size() - 4, wxString::npos);
 
     wxTextEntryDialog newTitle(this, "Change project name - '" +
         temp + "':", "New title", "Teste");
@@ -364,7 +364,7 @@ void amdMainFrame::EditTitle(wxCommandEvent& event) {
         fs::rename(currentDocFile, currentDocFolder + "\\" + currentTitle);
         currentDocFile = currentDocFolder + "\\" + currentTitle;
 
-        currentDocFolder.erase(currentDocFolder.size() - previousTitle.size() + 4, string::npos);
+        currentDocFolder.erase(currentDocFolder.size() - previousTitle.size() + 4, wxString::npos);
         currentDocFolder += newTitle.GetValue();
 
         fs::rename(previousDocFolder, currentDocFolder);
@@ -514,8 +514,8 @@ void amdMainFrame::Search(wxCommandEvent& event) {
     int sel = m_elements->GetSelection();
     int item;
 
-    // Get the searched string.
-    string nameSearch = event.GetString();
+    // Get the searched wxString.
+    wxString nameSearch = event.GetString();
     wxMenu menu;
 
     // Switch accordingly to current page being displayed, then either display a message

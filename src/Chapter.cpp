@@ -28,9 +28,9 @@ void Chapter::Save(std::ofstream& out) {
         out.write((char*)&size, sizeof(int));
         out.write(name.c_str(), size);
 
-        size = summary.size() + 1;
+        size = synopsys.size() + 1;
         out.write((char*)&size, sizeof(int));
-        out.write(summary.c_str(), size);
+        out.write(synopsys.c_str(), size);
 
         int writeMe;
 
@@ -81,10 +81,10 @@ void Chapter::Save(std::ofstream& out) {
     }
 
     amdProjectManager* man = amdGetManager();
-    string path(man->GetPath(true).ToStdString() + "Files\\Chapters\\" +
+    wxString path(man->GetPath(true).ToStdString() + "Files\\Chapters\\" +
         std::to_string(position) + " - " + name + ".xml");
 
-    if (fs::exists(path))
+    if (fs::exists(path.ToStdString()))
         content.SaveFile(path, wxRICHTEXT_TYPE_XML);
 }
 
@@ -103,11 +103,11 @@ void Chapter::Load(std::ifstream& in) {
         in.read((char*)&size, sizeof(int));
         data = new char[size];
         in.read(data, size);
-        summary = data;
+        synopsys = data;
         delete[] data;
 
         int number;
-        string tempName;
+        wxString tempName;
 
         in.read((char*)&number, sizeof(int));
         for (int i = 0; i < number; i++) {
@@ -143,7 +143,7 @@ void Chapter::Load(std::ifstream& in) {
         }
 
         in.read((char*)&number, sizeof(int));
-        string tempName2;
+        wxString tempName2;
         for (int i = 0; i < number; i++) {
             in.read((char*)&size, sizeof(int));
             data = new char[size];
@@ -167,10 +167,10 @@ void Chapter::Load(std::ifstream& in) {
 
         in.read((char*)&position, sizeof(int));
 
-        string path(manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
+        wxString path(manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
             std::to_string(position) + " - " + name + ".xml");
 
-        if (fs::exists(path))
+        if (fs::exists(path.ToStdString()))
             content.LoadFile(path, wxRICHTEXT_TYPE_XML);
     }
 }

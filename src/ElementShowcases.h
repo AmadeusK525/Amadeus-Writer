@@ -8,9 +8,6 @@
 #include "ImagePanel.h"
 #include "Elements.h"
 
-#include <vector>
-
-using std::vector;
 using std::pair;
 
 class amdElementShowcase: public wxScrolledWindow {
@@ -20,7 +17,7 @@ protected:
     wxStaticText* m_name = nullptr,
         * m_role = nullptr;
 
-    vector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
+    wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 	wxBoxSizer* m_vertical = nullptr;
 
 public:
@@ -53,7 +50,7 @@ private:
 		* m_personality = nullptr,
 		* m_backstory = nullptr;
 
-	vector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
+	wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 
 public:
 	amdCharacterShowcase(wxWindow* parent);

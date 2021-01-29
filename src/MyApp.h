@@ -5,7 +5,7 @@
 
 #include <wx/wx.h>
 
-#include "ProjectManager.h"
+#include "Project.h"
 
 class MyApp: public wxApp {
 private:
