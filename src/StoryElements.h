@@ -1,12 +1,12 @@
-#ifndef ELEMENTS_H_
-#define ELEMENTS_H_
+#ifndef STORYELEMENTS_H_
+#define STORYELEMENTS_H_
 #pragma once
 
 #include <wx/bitmap.h>
 
 #include <fstream>
 
-#include "Chapter.h"
+struct  Chapter;
 
 using std::pair;
 using std::ostream;
@@ -42,7 +42,7 @@ struct Element {
 
 	wxVector<pair<wxString, wxString>> custom{ 0 };
 
-	ChapterPtrArray chapters{};
+	wxVector<Chapter*> chapters{};
 	wxImage image{};
 
 	static CompType elCompType;

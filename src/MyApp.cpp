@@ -12,7 +12,7 @@ amdProjectManager* amdGetManager() {
 }
 
 bool MyApp::OnInit() {
-    m_locale.Init(wxLANGUAGE_PORTUGUESE_BRAZILIAN);
+    m_locale.Init(wxLANGUAGE_DEFAULT);
     wxInitAllImageHandlers();
 
     m_manager = new amdProjectManager();
@@ -21,12 +21,14 @@ bool MyApp::OnInit() {
     if (argc > 1)
         m_manager->SetCurrentDocPath(argv.GetArguments()[1]);
 
-    m_manager->Init();
+    if (!m_manager->Init()) {
+        m_wizard = new amdProjectWizard(nullptr, 1234);
+        m_wizard->Bind(wxEVT_WIZARD_FINISHED, &MyApp::OnWizardFinished, this);
+        m_wizard->Bind(wxEVT_WIZARD_CANCEL, &MyApp::OnWizardCanceled, this);
+        m_wizard->Show();
+        m_wizard->RunWizard(m_wizard->GetFirstPage());
+    }
 
-  /*  if (argc > 1)
-        m_manager = new amdProjectManager((wxString)argv.GetArguments()[1]);
-    else*/
-       
     return true;
 }
 
@@ -35,4 +37,12 @@ int MyApp::OnExit() {
         delete m_manager;
 
     return 0;
+}
+
+void MyApp::OnWizardFinished(wxWizardEvent& event) {
+    m_wizard->Destroy();
+}
+
+void MyApp::OnWizardCanceled(wxWizardEvent& event) {
+    m_wizard->Destroy();
 }

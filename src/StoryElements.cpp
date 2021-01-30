@@ -1,4 +1,5 @@
-#include "Elements.h"
+#include "StoryElements.h"
+#include "BookElements.h"
 
 CompType Element::elCompType = CompRole;
 CompType Character::cCompType = CompRole;
@@ -19,8 +20,8 @@ bool Element::operator<(const Element& other) const {
         break;
 
     case CompChapters:
-        i = chapters.Count();
-        j = other.chapters.Count();
+        i = chapters.size();
+        j = other.chapters.size();
 
         if (i != j)
             return i > j;
@@ -243,8 +244,8 @@ bool Character::operator<(const Character& other) const {
         break;
 
     case CompChapters:
-        i = chapters.Count();
-        j = other.chapters.Count();
+        i = chapters.size();
+        j = other.chapters.size();
 
         if (i != j)
             return i > j;
@@ -450,8 +451,8 @@ bool Location::operator<(const Location& other) const {
         break;
 
     case CompChapters:
-        i = chapters.Count();
-        j = other.chapters.Count();
+        i = chapters.size();
+        j = other.chapters.size();
 
         if (i != j)
             return i > j;
@@ -534,8 +535,8 @@ bool Item::operator<(const Item& other) const {
         break;
 
     case CompChapters:
-        i = chapters.Count();
-        j = other.chapters.Count();
+        i = chapters.size();
+        j = other.chapters.size();
 
         if (i != j)
             return i > j;

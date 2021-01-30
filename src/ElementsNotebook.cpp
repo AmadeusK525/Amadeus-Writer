@@ -421,7 +421,7 @@ void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
 
     m_charList->SetItem(n, 2, role);
 
-    if (!character.chapters.IsEmpty()) {
+    if (!character.chapters.empty()) {
         int first = 99999;
         int last = -1;
         for (auto& it : character.chapters) {
@@ -439,7 +439,7 @@ void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
         m_charList->SetItem(n, 4, "-");
     }
 
-    m_charList->SetItem(n, 5, std::to_string(character.chapters.Count()));
+    m_charList->SetItem(n, 5, std::to_string(character.chapters.size()));
 }
 
 void amdElementsNotebook::UpdateLocation(int n, Location& location) {
@@ -461,7 +461,7 @@ void amdElementsNotebook::UpdateLocation(int n, Location& location) {
 
     m_locList->SetItem(n, 1, role);
 
-    if (!location.chapters.IsEmpty()) {
+    if (!location.chapters.empty()) {
         int first = 999999;
         int last = -1;
 
@@ -479,7 +479,7 @@ void amdElementsNotebook::UpdateLocation(int n, Location& location) {
         m_locList->SetItem(n, 2, "-");
         m_locList->SetItem(n, 3, "-");
     }
-    m_locList->SetItem(n, 4, std::to_string(location.chapters.Count()));
+    m_locList->SetItem(n, 4, std::to_string(location.chapters.size()));
 }
 
 void amdElementsNotebook::UpdateItem(int n, Item& item) {
@@ -505,7 +505,7 @@ void amdElementsNotebook::UpdateItem(int n, Item& item) {
     }
     m_itemsList->SetItem(n, 2, role); 
 
-    if (!item.chapters.IsEmpty()) {
+    if (!item.chapters.empty()) {
         int first = 999999;
         int last = -1;
 
@@ -523,7 +523,7 @@ void amdElementsNotebook::UpdateItem(int n, Item& item) {
         m_itemsList->SetItem(n, 3, "-");
         m_itemsList->SetItem(n, 4, "-");
     }
-    m_itemsList->SetItem(n, 5, std::to_string(item.chapters.Count()));
+    m_itemsList->SetItem(n, 5, std::to_string(item.chapters.size()));
 }
 
 void amdElementsNotebook::UpdateCharacterList() {

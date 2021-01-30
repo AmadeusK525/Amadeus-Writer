@@ -1,7 +1,7 @@
 #include "ChaptersNotebook.h"
 
 #include "ChaptersGrid.h"
-#include "Chapter.h"
+
 #include "MyApp.h"
 
 #include <wx\dir.h>
@@ -40,7 +40,7 @@ void amdChaptersNotebook::AddToList(Chapter& chapter, int pos) {
     m_list->InsertItem(pos, chapter.name);
     m_list->SetItem(pos, 1, std::to_string(chapter.characters.size()));
     m_list->SetItem(pos, 2, std::to_string(chapter.locations.size()));
-    m_list->SetItem(pos, 3, chapter.pointOfView);
+    //m_list->SetItem(pos, 3, chapter.pointOfView);
 }
 
 void amdChaptersNotebook::RepositionChapters() {

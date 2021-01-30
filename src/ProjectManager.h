@@ -4,35 +4,10 @@
 
 #include <wx\wx.h>
 #include <wx\filename.h>
-//#include <wx\wxsqlite3.h>
 
-#include "Elements.h"
-#include "Chapter.h"
+#include "ProjectWizard.h"
+#include "BookElements.h"
 
-struct Book {
-	wxString title{ "" };
-	
-	wxString publisher{ "" };
-
-	wxString author{ "" };
-	wxString genre{ "" };
-	wxString description{ "" };
-	wxString synopsys{ "" };
-
-	wxVector<Character> characters{};
-	wxVector<Location> locations{};
-	wxVector<Item> items{};
-	wxVector<Chapter> chapters{};
-
-
-};
-
-class amdProject {
-	wxVector<Book> books{};
-
-
-
-};
 
 class amdMainFrame;
 class amdElementsNotebook;
@@ -42,6 +17,9 @@ class amdRelease;
 
 class amdProjectManager {
 private:
+	amdProject project{};
+
+	amdProjectWizard* m_wizard = nullptr;
 	amdMainFrame* m_mainFrame = nullptr;
 	
 	amdElementsNotebook* m_elements = nullptr;
@@ -64,6 +42,7 @@ public:
 	amdProjectManager();
 	
 	bool Init();
+
 	bool SaveProject();
 	bool LoadProject();
 	bool DoSaveProject(const wxString& path);

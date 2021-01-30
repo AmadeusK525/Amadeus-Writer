@@ -6,7 +6,7 @@
 #include <wx\wx.h>
 #include <wx\simplebook.h>
 
-#include "Project.h"
+#include "ProjectManager.h"
 
 #include <boost/filesystem.hpp>
 

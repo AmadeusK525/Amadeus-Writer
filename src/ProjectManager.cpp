@@ -1,5 +1,6 @@
-#include "Project.h"
+#include "ProjectManager.h"
 
+#include "ProjectWizard.h"
 #include "MainFrame.h"
 #include "ElementsNotebook.h"
 #include "ChaptersGrid.h"
@@ -33,20 +34,11 @@ bool amdProjectManager::Init() {
 
 		LoadProject();
 		m_isInitialized = true;
-	} else {
-		if (!m_mainFrame) {
-			m_mainFrame = new amdMainFrame("New Amadeus project", this, wxDefaultPosition, wxDefaultSize);
 
-			m_elements = (m_mainFrame->GetElementsNotebook());
-			m_chaptersNote = (m_mainFrame->GetChaptersNotebook());
-			m_outline = (m_mainFrame->GetOutline());
-			m_release = (m_mainFrame->GetRelease());
-		
-			m_isInitialized = true;
-		}
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 bool amdProjectManager::SaveProject() {
@@ -522,8 +514,14 @@ void amdProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 void amdProjectManager::AddChapterToCharacter(const wxString& characterName, Chapter& chapter) {
 	for (auto& it : m_characters) {
 		if (characterName == it.name) {
-			if (it.chapters.Index(&chapter) == -1)
-				it.chapters.Add(&chapter);
+
+			bool has = false;
+			for (int i = 0; i < it.chapters.size(); i++)
+				if (it.chapters[i] == &chapter)
+					has = true;
+			
+			if (!has)
+				it.chapters.push_back(&chapter);
 
 			if (chapter.characters.Index(characterName) == -1)
 				chapter.characters.Add(characterName);
@@ -534,8 +532,14 @@ void amdProjectManager::AddChapterToCharacter(const wxString& characterName, Cha
 void amdProjectManager::AddChapterToLocation(const wxString& locationName, Chapter& chapter) {
 	for (auto& it : m_locations) {
 		if (locationName == it.name) {
-			if (it.chapters.Index(&chapter) == -1)
-				it.chapters.Add(&chapter);
+
+			bool has = false;
+			for (int i = 0; i < it.chapters.size(); i++)
+				if (it.chapters[i] == &chapter)
+					has = true;
+
+			if (!has)
+				it.chapters.push_back(&chapter);
 
 			if (chapter.locations.Index(locationName) == -1)
 				chapter.locations.Add(locationName);
@@ -546,8 +550,14 @@ void amdProjectManager::AddChapterToLocation(const wxString& locationName, Chapt
 void amdProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapter) {
 	for (auto& it : m_items) {
 		if (itemName == it.name) {
-			if (it.chapters.Index(&chapter) == -1)
-				it.chapters.Add(&chapter);
+
+			bool has = false;
+			for (int i = 0; i < it.chapters.size(); i++)
+				if (it.chapters[i] == &chapter)
+					has = true;
+
+			if (!has)
+				it.chapters.push_back(&chapter);
 
 			if (chapter.items.Index(itemName) == -1)
 				chapter.items.Add(itemName);
@@ -558,7 +568,10 @@ void amdProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chap
 void amdProjectManager::RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter) {
 	for (auto& it : m_characters) {
 		if (characterName == it.name) {
-			it.chapters.Remove(&chapter);
+			for (auto& it2 : it.chapters)
+				if (it2 == &chapter)
+					it.chapters.erase(&it2);
+
 			chapter.characters.Remove(characterName);
 			return;
 		}
@@ -570,7 +583,10 @@ void amdProjectManager::RemoveChapterFromCharacter(const wxString& characterName
 void amdProjectManager::RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter) {
 	for (auto& it : m_locations) {
 		if (locationName == it.name) {
-			it.chapters.Remove(&chapter);
+			for (auto& it2 : it.chapters)
+				if (it2 == &chapter)
+					it.chapters.erase(&it2);
+
 			chapter.locations.Remove(locationName);
 			return;
 		}
@@ -582,8 +598,11 @@ void amdProjectManager::RemoveChapterFromLocation(const wxString& locationName, 
 void amdProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter& chapter) {
 	for (auto& it : m_items) {
 		if (itemName == it.name) {
-			it.chapters.Remove(&chapter);
-			chapter.locations.Remove(itemName);
+			for (auto& it2 : it.chapters)
+				if (it2 == &chapter)
+					it.chapters.erase(&it2);
+
+			chapter.items.Remove(itemName);
 			return;
 		}
 	}
@@ -593,13 +612,13 @@ void amdProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter&
 
 void amdProjectManager::RedeclareChapsInElements() {
 	for (auto& it : m_characters)
-		it.chapters.Clear();
+		it.chapters.clear();
 	
 	for (auto& it : m_locations)
-		it.chapters.Clear();
+		it.chapters.clear();
 
 	for (auto& it : m_items)
-		it.chapters.Clear();
+		it.chapters.clear();
 
 	for (auto& it : m_chapters) {
 		for (auto& it2 : it.characters)
@@ -640,15 +659,29 @@ void amdProjectManager::DeleteItem(Item& item) {
 void amdProjectManager::DeleteChapter(Chapter& chapter) {
 	for (auto& it : chapter.characters) {
 		for (auto& it2 : m_characters) {
-			if (it == it2.name)
-				it2.chapters.Remove(&chapter);
+			
+			if (it == it2.name) {
+			
+				for (auto& it3 : it2.chapters) {
+					if (it3 == &chapter)
+						it2.chapters.erase(&it3);
+				
+				}
+			}
 		}
 	}
 
 	for (auto& it : chapter.locations) {
 		for (auto& it2 : m_locations) {
-			if (it == it2.name)
-				it2.chapters.Remove(&chapter);
+
+			if (it == it2.name) {
+
+				for (auto& it3 : it2.chapters) {
+					if (it3 == &chapter)
+						it2.chapters.erase(&it3);
+			
+				}
+			}
 		}
 	}
 

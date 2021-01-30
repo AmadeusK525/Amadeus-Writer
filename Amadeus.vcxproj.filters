@@ -74,23 +74,23 @@
     <ClCompile Include="src\ElementCreators.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Elements.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Chapter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ElementShowcases.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Project.cpp">
+    <ClCompile Include="src\ProjectWizard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProjectManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BookElements.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StoryElements.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Chapter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChapterCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -151,13 +151,19 @@
     <ClInclude Include="src\ElementCreators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Elements.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ElementShowcases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Project.h">
+    <ClInclude Include="src\ProjectWizard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ProjectManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BookElements.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StoryElements.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

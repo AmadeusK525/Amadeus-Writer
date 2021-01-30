@@ -1,5 +1,5 @@
 #include "ChapterWriter.h"
-#include "Chapter.h"
+
 
 #include "ElementsNotebook.h"
 
@@ -550,11 +550,11 @@ void amdChapterWriter::LoadChapter() {
     
     if (fs::exists(path.ToStdString()))
         m_cwNotebook->m_textCtrl->LoadFile(path, wxRICHTEXT_TYPE_XML);
-    else
-        m_cwNotebook->m_textCtrl->GetBuffer() = chapter.content;
+   // else
+       // m_cwNotebook->m_textCtrl->GetBuffer() = chapter.content;
     
 
-    chapter.content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
+    //chapter.content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
     m_cwNotebook->m_textCtrl->GetBuffer().Invalidate(wxRICHTEXT_ALL);
     m_cwNotebook->m_textCtrl->RecreateBuffer();
     m_cwNotebook->m_textCtrl->Refresh();
@@ -584,8 +584,8 @@ void amdChapterWriter::SaveChapter() {
     CheckChapterValidity();
     Chapter& chapter = m_manager->GetChapters()[m_chapterPos - 1];
 
-    chapter.content = m_cwNotebook->m_textCtrl->GetBuffer();
-    chapter.content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
+    //chapter.content = m_cwNotebook->m_textCtrl->GetBuffer();
+    //chapter.content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
     chapter.synopsys = (wxString)m_summary->GetValue();
 
     chapter.notes.clear();
@@ -594,7 +594,7 @@ void amdChapterWriter::SaveChapter() {
     }
 
     if (fs::exists(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\")) {
-        chapter.content.SaveFile(m_manager->GetPath(true) + "Files\\Chapters\\" +
+        m_cwNotebook->m_textCtrl->SaveFile(m_manager->GetPath(true) + "Files\\Chapters\\" +
             std::to_string(chapter.position) + " - " + chapter.name + ".xml", wxRICHTEXT_TYPE_XML);
     }
 
