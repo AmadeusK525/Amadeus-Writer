@@ -7,7 +7,7 @@
 #include <wx\toolbar.h>
 #include <wx\richtext\richtextctrl.h>
 
-#include "Elements.h"
+#include "StoryElements.h"
 
 ;
 

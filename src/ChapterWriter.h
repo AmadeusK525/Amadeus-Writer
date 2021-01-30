@@ -10,7 +10,7 @@
 
 #include <list>
 
-#include "Project.h"
+#include "ProjectManager.h"
 #include "ImagePanel.h"
 #include "ChaptersNotebook.h"
 #include "Note.h"

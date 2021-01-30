@@ -6,7 +6,7 @@
 #include <wx\scrolwin.h>
 
 #include "ImagePanel.h"
-#include "Elements.h"
+#include "StoryElements.h"
 
 using std::pair;
 

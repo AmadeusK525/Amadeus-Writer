@@ -432,7 +432,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AutoWrapTextShape.cpp" />
-    <ClCompile Include="src\Chapter.cpp" />
+    <ClCompile Include="src\BookElements.cpp" />
     <ClCompile Include="src\ChapterCreator.cpp" />
     <ClCompile Include="src\ChaptersNotebook.cpp" />
     <ClCompile Include="src\ChaptersGrid.cpp" />
@@ -440,7 +440,7 @@
     <ClCompile Include="src\Corkboard.cpp" />
     <ClCompile Include="src\DragList.cpp" />
     <ClCompile Include="src\ElementCreators.cpp" />
-    <ClCompile Include="src\Elements.cpp" />
+    <ClCompile Include="src\StoryElements.cpp" />
     <ClCompile Include="src\ElementShowcases.cpp" />
     <ClCompile Include="src\ImagePanel.cpp" />
     <ClCompile Include="src\ImageShape.cpp" />
@@ -451,13 +451,14 @@
     <ClCompile Include="src\NoteShape.cpp" />
     <ClCompile Include="src\Outline.cpp" />
     <ClCompile Include="src\OutlineFiles.cpp" />
-    <ClCompile Include="src\Project.cpp" />
+    <ClCompile Include="src\ProjectManager.cpp" />
+    <ClCompile Include="src\ProjectWizard.cpp" />
     <ClCompile Include="src\Release.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\resource.h" />
     <ClInclude Include="src\AutoWrapTextShape.h" />
-    <ClInclude Include="src\Chapter.h" />
+    <ClInclude Include="src\BookElements.h" />
     <ClInclude Include="src\ChapterCreator.h" />
     <ClInclude Include="src\ChaptersNotebook.h" />
     <ClInclude Include="src\ChaptersGrid.h" />
@@ -465,7 +466,7 @@
     <ClInclude Include="src\Corkboard.h" />
     <ClInclude Include="src\DragList.h" />
     <ClInclude Include="src\ElementCreators.h" />
-    <ClInclude Include="src\Elements.h" />
+    <ClInclude Include="src\StoryElements.h" />
     <ClInclude Include="src\ElementShowcases.h" />
     <ClInclude Include="src\ImagePanel.h" />
     <ClInclude Include="src\ImageShape.h" />
@@ -476,7 +477,8 @@
     <ClInclude Include="src\NoteShape.h" />
     <ClInclude Include="src\Outline.h" />
     <ClInclude Include="src\OutlineFiles.h" />
-    <ClInclude Include="src\Project.h" />
+    <ClInclude Include="src\ProjectManager.h" />
+    <ClInclude Include="src\ProjectWizard.h" />
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\wxmemdbg.h" />
   </ItemGroup>

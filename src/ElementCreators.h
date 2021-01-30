@@ -5,8 +5,8 @@
 #include <wx\wx.h>
 #include <wx\wrapsizer.h>
 
-#include "Elements.h"
-#include "Project.h"
+#include "StoryElements.h"
+#include "ProjectManager.h"
 #include "ImagePanel.h"
 
 using std::pair;

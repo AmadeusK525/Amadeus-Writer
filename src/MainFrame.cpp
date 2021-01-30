@@ -9,7 +9,7 @@
 #include "ChapterCreator.h"
 #include "ElementCreators.h"
 
-#include "Chapter.h"
+
 
 #include <wx\richtext\richtextxml.h>
 #include <wx\richtext\richtexthtml.h>
@@ -20,9 +20,6 @@
 #ifndef BOOST_FILESYSTEM_NO_DEPRECATED
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #endif
-
-
-;
 
 namespace fs = boost::filesystem;
 
