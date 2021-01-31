@@ -34,7 +34,7 @@ EVT_CLOSE(amdChapterWriter::OnClose)
 
 END_EVENT_TABLE()
 
-namespace fs = boost::filesystem;
+
 
 amdChapterWriter::amdChapterWriter(wxWindow* parent, amdProjectManager* manager, int numb) :
     m_saveTimer(this, TIMER_Save),
@@ -548,7 +548,7 @@ void amdChapterWriter::LoadChapter() {
 
     m_cwNotebook->Freeze();
     
-    if (fs::exists(path.ToStdString()))
+    if (wxFileName::Exists(path.ToStdString()))
         m_cwNotebook->m_textCtrl->LoadFile(path, wxRICHTEXT_TYPE_XML);
    // else
        // m_cwNotebook->m_textCtrl->GetBuffer() = chapter.content;
@@ -593,7 +593,7 @@ void amdChapterWriter::SaveChapter() {
         chapter.notes.push_back(m_cwNotebook->notes[i]);
     }
 
-    if (fs::exists(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\")) {
+    if (wxFileName::Exists(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\")) {
         m_cwNotebook->m_textCtrl->SaveFile(m_manager->GetPath(true) + "Files\\Chapters\\" +
             std::to_string(chapter.position) + " - " + chapter.name + ".xml", wxRICHTEXT_TYPE_XML);
     }

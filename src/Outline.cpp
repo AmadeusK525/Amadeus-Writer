@@ -1,12 +1,10 @@
 #include "Outline.h"
 
-#include <boost/filesystem.hpp>
-
 #include "MainFrame.h"
 #include "Corkboard.h"
 #include "OutlineFiles.h"
 
-namespace fs = boost::filesystem;
+
 
 amdOutline::amdOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     m_corkboardHolder = new wxPanel(this);

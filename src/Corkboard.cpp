@@ -9,7 +9,7 @@
 
 #include "wxmemdbg.h"
 
-namespace fs = boost::filesystem;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Corkboard ///////////////////////////////////////
@@ -131,7 +131,7 @@ void Corkboard::exportToImage(wxBitmapType type) {
 	wxString dummyName = name;
 
 	int i = 0;
-	while (fs::exists(m_manager->GetPath(true).ToStdString() + "Images\\Corkboard\\" + dummyName.ToStdString())) {
+	while (wxFileName::Exists(m_manager->GetPath(true).ToStdString() + "Images\\Corkboard\\" + dummyName.ToStdString())) {
 		dummyName = dummyName + " (" + std::to_string(i++) + ")";
 	}
 
@@ -156,7 +156,7 @@ void Corkboard::Save() {
 }
 
 void Corkboard::Load() {
-    if (fs::exists(m_manager->GetPath(true).ToStdString() + "Files\\Outline\\Corkboard Canvas.xml")) {
+    if (wxFileName::Exists(m_manager->GetPath(true).ToStdString() + "Files\\Outline\\Corkboard Canvas.xml")) {
         m_canvas->LoadCanvas(m_manager->GetPath(true) + "Files\\Outline\\Corkboard Canvas.xml");
         m_canvas->SetScale(0.1);
         m_canvas->RefreshCanvas(true, m_canvas->GetTotalBoundingBox());

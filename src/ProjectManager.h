@@ -59,7 +59,6 @@ public:
 
 	wxString GetPath(bool withSeparator);
 	wxString GetFullPath() { return m_curDoc.GetFullPath(); }
-	wxString GetMainDir() { return m_curDoc.GetPathWithSep() + m_curDoc.GetName(); }
 	wxString GetExecutablePath(bool withSeparator) { return m_executablePath.GetPath(withSeparator); }
 	wxString GetTitle() { return m_curDoc.GetName(); }
 

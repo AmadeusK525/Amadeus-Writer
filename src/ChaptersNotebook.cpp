@@ -6,7 +6,6 @@
 
 #include <wx\dir.h>
 
-namespace fs = boost::filesystem;
 
 amdChaptersNotebook::amdChaptersNotebook(wxWindow* parent, amdProjectManager* manager) :
     wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager) {
@@ -51,8 +50,8 @@ void amdChaptersNotebook::RepositionChapters() {
         it->position = i++;
     }
 
-    fs::remove_all(m_manager->GetPath(true).ToStdString() + "Files\\Chapters");
-    fs::create_directory(m_manager->GetPath(true).ToStdString() + "Files\\Chapters");
+    wxFileName::Rmdir(m_manager->GetPath(true).ToStdString() + "Files\\Chapters", wxPATH_RMDIR_RECURSIVE);
+    wxFileName::Mkdir(m_manager->GetPath(true).ToStdString() + "Files\\Chapters");
     m_manager->SaveProject();
 }
 

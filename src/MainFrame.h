@@ -8,11 +8,6 @@
 
 #include "ProjectManager.h"
 
-#include <boost/filesystem.hpp>
-
-
-;
-
 class amdMainFrame : public wxFrame {
 private:
     amdProjectManager* m_manager = nullptr;
