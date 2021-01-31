@@ -21,7 +21,7 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #endif
 
-namespace fs = boost::filesystem;
+
 
 BEGIN_EVENT_TABLE(amdMainFrame, wxFrame)
 
@@ -259,7 +259,7 @@ void amdMainFrame::OnOpenFile(wxCommandEvent& event) {
 void amdMainFrame::OnSaveFile(wxCommandEvent& event) {
     // First, check whether the current path of the project exists. If it doesn't,
     // the "OnSaveFileAs" is called, which calls back the "saveAs" function.
-    if (!fs::exists(m_manager->GetPath(false).ToStdString())) {
+    if (!wxFileName::Exists(m_manager->GetPath(false).ToStdString())) {
         amdMainFrame::OnSaveFileAs(event);
     } else {
         m_manager->SaveProject();
@@ -274,25 +274,7 @@ void amdMainFrame::OnSaveFileAs(wxCommandEvent& event) {
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
     if (saveDialog.ShowModal() == wxID_OK) {
-        wxString fullPath(saveDialog.GetPath().ToStdString());
-        fullPath.erase(fullPath.size() - 4, 4);
-        fullPath += "\\" + saveDialog.GetFilename();
-
-        m_manager->SetCurrentDocPath(fullPath);
-
-        fullPath = m_manager->GetPath(true);
-
-        fs::create_directory(fullPath.ToStdString());
-        fs::create_directory(fullPath.ToStdString() + "Images");
-        fs::create_directory(fullPath.ToStdString() + "Images\\Characters");
-        fs::create_directory(fullPath.ToStdString() + "Images\\Locations");
-        fs::create_directory(fullPath.ToStdString() + "Images\\Corkboard");
-        fs::create_directory(fullPath.ToStdString() + "Files");
-        fs::create_directory(fullPath.ToStdString() + "Files\\Corkboard");
-        fs::create_directory(fullPath.ToStdString() + "Files\\Chapters");
-        fs::create_directory(fullPath.ToStdString() + "Files\\Outline");
-
-
+        m_manager->SetCurrentDocPath(saveDialog.GetPath().ToStdString());
         OnSaveFile(event);
     }
 
@@ -453,7 +435,7 @@ void amdMainFrame::OnMainButtons(wxCommandEvent& event) {
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
 void amdMainFrame::OnNewChapter(wxCommandEvent& event) {
-    if (!fs::is_directory(m_manager->GetPath(true).ToStdString() + "Files")) {
+    if (!wxFileName::Exists(m_manager->GetPath(true).ToStdString() + "Files")) {
         wxMessageDialog* first = new wxMessageDialog(this, "It seems like you haven't saved your project yet.\nPlease do before writing any chapters.",
             "Save before", wxOK | wxCANCEL | wxOK_DEFAULT);
         first->SetOKCancelLabels("Save", "Cancel");
@@ -606,7 +588,7 @@ void amdMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, w
 //        last.close();
 //    }
 //
-//    if (fs::exists(m_manager->GetFullPath().ToStdString()))
+//    if (wxFileName::Exists(m_manager->GetFullPath().ToStdString()))
 //        m_manager->LoadProject(m_manager->GetFullPath());
 //    else
 //        m_manager->ClearPath();

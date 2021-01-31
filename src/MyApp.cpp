@@ -4,9 +4,10 @@
 
 wxIMPLEMENT_APP(MyApp);
 
-/**
-Global function that returns the application manager, gotten from wxGetApp().
-*/
+/// <summary>
+/// Global function that returns the application manager, gotten from wxGetApp().
+/// </summary>
+/// <returns>The active amdProjectManager object pointer</returns>
 amdProjectManager* amdGetManager() {
     return 	wxGetApp().GetManager();
 }
@@ -40,6 +41,14 @@ int MyApp::OnExit() {
 }
 
 void MyApp::OnWizardFinished(wxWizardEvent& event) {
+    if (!wxFileName::Exists(m_wizard->GetFileName().GetPath())) {
+        wxMessageBox("There was an error.");
+        return;
+    }
+
+    m_manager->SetCurrentDocPath(m_wizard->GetFileName().GetFullPath());
+    m_manager->Init();
+
     m_wizard->Destroy();
 }
 

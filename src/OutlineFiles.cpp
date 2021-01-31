@@ -8,7 +8,7 @@
 #include <wx\richtext\richtextxml.h>
 #include <wx\colordlg.h>
 
-namespace fs = boost::filesystem;
+
 
 OutlineTreeModel::OutlineTreeModel() {
 	m_research = new OutlineTreeModelNode(nullptr, _("Research"));
@@ -450,12 +450,16 @@ amdOutlineFilesPanel::amdOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(
 void amdOutlineFilesPanel::Init() {
 	wxVector<Character>& charList = amdGetManager()->GetCharacters();
 	wxVector<Location>& locList = amdGetManager()->GetLocations();
+	wxVector<Item>& itemList = amdGetManager()->GetItems();
 
 	for (auto it = charList.begin(); it != charList.end(); it++)
 		AppendCharacter(*it);
 
 	for (auto it = locList.begin(); it != locList.end(); it++)
 		AppendLocation(*it);
+
+	for (auto it = itemList.begin(); it != itemList.end(); it++)
+		AppendItem(*it);
 }
 
 void amdOutlineFilesPanel::GenerateCharacterBuffer(Character& character, wxRichTextBuffer& buffer) {
@@ -1208,7 +1212,7 @@ void amdOutlineFilesPanel::DeserializeNode(wxXmlNode* node, wxDataViewItem& pare
 }
 
 bool amdOutlineFilesPanel::Save() {
-	if (!fs::exists(amdGetManager()->GetPath(true).ToStdString()))
+	if (!wxFileName::Exists(amdGetManager()->GetPath(true).ToStdString()))
 		return false;
 	
 	SaveCurrentBuffer();

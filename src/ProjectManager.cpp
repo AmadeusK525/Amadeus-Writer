@@ -10,9 +10,8 @@
 #include "ElementShowcases.h"
 
 #include <wx\progdlg.h>
-#include <boost\filesystem.hpp>
+#include <wx\utils.h>
 
-namespace fs = boost::filesystem;
 
 amdProjectManager::amdProjectManager() {
 
@@ -22,7 +21,9 @@ bool amdProjectManager::Init() {
 	if (m_isInitialized)
 		return false;
 
-	if (GetLastSave()) {
+	GetLastSave();
+
+	if (m_curDoc.DirExists()) {
 		if (!m_mainFrame) {
 			m_mainFrame = new amdMainFrame("New Amadeus project", this, wxDefaultPosition, wxDefaultSize);
 
@@ -32,7 +33,9 @@ bool amdProjectManager::Init() {
 			m_release = (m_mainFrame->GetRelease());
 		}
 
-		LoadProject();
+		if (m_curDoc.FileExists())
+			LoadProject();
+
 		m_isInitialized = true;
 
 		return true;
@@ -81,7 +84,7 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 
 	wxString cImagePath(GetPath(true) + "Images\\Characters\\");
 	wxString lImagePath(GetPath(true) + "Images\\Locations\\");
-
+	
 	// This for loop calls the Save funtion of each character and saves it, besides
 	// saving the image (if it exists) that is attached to it. It increments the gauge
 	// by one each time.
@@ -89,8 +92,8 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 		it.Save(file);
 
 		imagePath = cImagePath + it.name + ".jpg";
-		if (fs::exists(imagePath.ToStdString()) && !it.image.IsOk())
-			fs::remove(imagePath.ToStdString());
+		if (wxFileName::Exists(imagePath.ToStdString()) && !it.image.IsOk())
+			wxRemoveFile(imagePath.ToStdString());
 		else
 			if (it.image.IsOk())
 				it.image.SaveFile(imagePath);
@@ -106,8 +109,8 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 		it.Save(file);
 
 		imagePath = lImagePath + it.name + ".jpg";
-		if (fs::exists(imagePath.ToStdString()) && !it.image.IsOk())
-			fs::remove(imagePath.ToStdString());
+		if (wxFileName::Exists(imagePath.ToStdString()) && !it.image.IsOk())
+			wxRemoveFile(imagePath.ToStdString());
 		else
 			if (it.image.IsOk())
 				it.image.SaveFile(imagePath);
@@ -123,7 +126,7 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 		it.Save(file);
 		progress.Update(currentSize++);
 	}
-
+	
 	file.close();
 
 	// This calls the Save function of the outline page, which saves the corkboard
@@ -201,7 +204,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		Character character;
 		character.Load(file);
 
-		if (fs::exists(cImagePath.ToStdString() + character.name.ToStdString() + ".jpg")) {
+		if (wxFileName::DirExists(cImagePath.ToStdString() + character.name.ToStdString() + ".jpg")) {
 			character.image.LoadFile(cImagePath +
 				character.name + ".jpg");
 		}
@@ -219,7 +222,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		Location location;
 		location.Load(file);
 
-		if (fs::exists(lImagePath.ToStdString() + location.name.ToStdString() + ".jpg")) {
+		if (wxFileName::Exists(lImagePath.ToStdString() + location.name.ToStdString() + ".jpg")) {
 			location.image.LoadFile(lImagePath +
 				location.name + ".jpg");
 		}
@@ -343,7 +346,7 @@ bool amdProjectManager::GetLastSave() {
 		last.close();
 	}
 
-	if (fs::exists(GetFullPath().ToStdString())) {
+	if (wxFileName::Exists(GetFullPath().ToStdString())) {
 		return true;
 	} else {
 		ClearPath();
