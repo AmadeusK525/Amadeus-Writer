@@ -108,7 +108,17 @@ struct Book {
 struct amdProject {
 	wxVector<Book> books{};
 
+    // Global Elements
+    wxVector<Character> gCharacters{};
+    wxVector<Location> gLocations{};
+    wxVector<Item> gItems{};
+
     wxFileName amdFile{};
+
+    wxVector<Character> GetCharacters(int bookPos);
+    wxVector<Location> GetLocations(int bookPos);
+    wxVector<Item> GetItems(int bookPos);
+    wxVector<Chapter> GetChapters(int bookPos);
 };
 
 #endif

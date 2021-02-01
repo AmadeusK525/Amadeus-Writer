@@ -12,6 +12,44 @@
 #include <wx\progdlg.h>
 #include <wx\utils.h>
 
+///////////////////////////////////////////////////////////////////
+//////////////////////////// SQLStorage ///////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+amdProjectSQLDatabase::amdProjectSQLDatabase(wxFileName& path) {
+	if (path.IsOk() && !path.IsDir()) {
+		Open(path.GetFullPath());
+	}
+}
+
+void amdProjectSQLDatabase::Init() {
+	if (!TableExists("characters")) {
+		CreateAllTables();
+	} else
+		wxMessageBox("OH MY GOD FUCKER");
+}
+
+void amdProjectSQLDatabase::CreateAllTables() {
+	wxString create("CREATE TABLE characters (id INTEGER PRIMARY KEY, "
+		"name TEXT UNIQUE NOT NULL, "
+		"age INTEGER UNSIGNED, "
+		"sex TEXT NOT NULL, "
+		"nationality TEXT, "
+		"height TEXT, "
+		"nickname TEXT, "
+		"appearance TEXT, "
+		"personality TEXT, "
+		"backstory TEXT);");
+
+	ExecuteUpdate(create);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+//////////////////////////// ProjectManager ///////////////////////////
+///////////////////////////////////////////////////////////////////////
+
 
 amdProjectManager::amdProjectManager() {
 
@@ -22,6 +60,13 @@ bool amdProjectManager::Init() {
 		return false;
 
 	if (m_project.amdFile.IsOk()) {
+		if (!m_project.amdFile.FileExists()) {
+			Book book;
+			book.title = m_project.amdFile.GetName();
+
+			m_project.books.push_back(book);
+		}
+
 		if (!m_mainFrame) {
 			m_mainFrame = new amdMainFrame("New Amadeus project - " + m_project.amdFile.GetName(),
 				this, wxDefaultPosition, wxDefaultSize);
@@ -32,8 +77,13 @@ bool amdProjectManager::Init() {
 			m_release = (m_mainFrame->GetRelease());
 		}
 
-		if (m_project.amdFile.FileExists())
-			LoadProject();
+		try {
+			wxSQLite3Database::InitializeSQLite();
+			m_storage.Open(m_project.amdFile.GetFullPath());
+			m_storage.Init();
+		} catch (wxSQLite3Exception& e) {
+			wxMessageBox(wxString("Exception thrown - ") << e.GetMessage());
+		}
 
 		m_isInitialized = true;
 
@@ -692,6 +742,22 @@ void amdProjectManager::DeleteChapter(Chapter& chapter) {
 	SetSaved(false);
 }
 
+wxVector<Character> amdProjectManager::GetCharacters(int bookPos) {
+	return m_project.GetCharacters(bookPos);
+}
+
+wxVector<Location>& amdProjectManager::GetLocations(int bookPos) {
+	return m_project.GetLocations(bookPos);
+}
+
+wxVector<Item>& amdProjectManager::GetItems(int bookPos) {
+	return m_project.GetItems(bookPos);
+}
+
+wxVector<Chapter>& amdProjectManager::GetChapters(int bookPos) {
+	return m_project.GetChapters(bookPos);
+}
+
 wxArrayString amdProjectManager::GetCharacterNames() {
 	wxArrayString names(true);
 	for (auto& it : m_characters)
@@ -712,6 +778,14 @@ wxArrayString amdProjectManager::GetItemNames() {
 	wxArrayString names(true);
 	for (auto& it : m_items)
 		names.Add(it.name);
+
+	return names;
+}
+
+wxArrayString amdProjectManager::GetBookTitles() {
+	wxArrayString names;
+	for (auto& it : m_project.books)
+		names.Add(it.title);
 
 	return names;
 }
