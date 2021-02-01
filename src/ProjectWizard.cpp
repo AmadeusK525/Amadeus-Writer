@@ -74,7 +74,7 @@ wxFileName amdProjectWizard::GetFileName() {
 	if (IsLoading())
 		return m_filePicker->GetFileName();
 	else {
-		wxFileName fileName(m_dirPicker->GetDirName());
+		wxFileName fileName(m_dirPicker->GetPath() << wxFileName::GetPathSeparator());
 		fileName.SetFullName(m_title->GetValue() + ".amp");
 
 		return fileName;

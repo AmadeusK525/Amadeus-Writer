@@ -20,7 +20,9 @@ bool MyApp::OnInit() {
     m_manager->SetExecutablePath(argv.GetArguments()[0]);
 
     if (argc > 1)
-        m_manager->SetCurrentDocPath(argv.GetArguments()[1]);
+        m_manager->SetProjectFileName(argv.GetArguments()[1]);
+    else
+        m_manager->GetLastSave();
 
     if (!m_manager->Init()) {
         m_wizard = new amdProjectWizard(nullptr, 1234);
@@ -46,7 +48,7 @@ void MyApp::OnWizardFinished(wxWizardEvent& event) {
         return;
     }
 
-    m_manager->SetCurrentDocPath(m_wizard->GetFileName().GetFullPath());
+    m_manager->SetProjectFileName(m_wizard->GetFileName());
     m_manager->Init();
 
     m_wizard->Destroy();

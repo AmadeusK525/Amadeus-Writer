@@ -3,6 +3,7 @@
 #pragma once
 
 #include <wx\wx.h>
+#include <wx\filename.h>
 #include <wx\richtext\richtextbuffer.h>
 
 #include "StoryElements.h"
@@ -104,10 +105,10 @@ struct Book {
 /////////////////////////////////////////////////////////////////
 
 
-class amdProject {
+struct amdProject {
 	wxVector<Book> books{};
 
-
+    wxFileName amdFile{};
 };
 
 #endif
