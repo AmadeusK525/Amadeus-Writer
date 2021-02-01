@@ -381,7 +381,7 @@ void amdChapterWriter::AddCharacter(wxCommandEvent& event) {
     wxString name = event.GetString();
     if (m_charInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToCharacter(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        m_manager->AddChapterToCharacter(name, m_manager->GetChapters(0)[m_chapterPos - 1]);
         UpdateCharacterList();
         m_manager->GetElementsNotebook()->UpdateCharacterList();
     }
@@ -392,7 +392,7 @@ void amdChapterWriter::AddLocation(wxCommandEvent& event) {
    
     if (m_locInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToLocation(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        m_manager->AddChapterToLocation(name, m_manager->GetChapters(0)[m_chapterPos - 1]);
         UpdateLocationList();
         m_manager->GetElementsNotebook()->UpdateLocationList();
     }
@@ -403,7 +403,7 @@ void amdChapterWriter::AddItem(wxCommandEvent& event) {
 
     if (m_itemsInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToItem(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        m_manager->AddChapterToItem(name, m_manager->GetChapters(0)[m_chapterPos - 1]);
         UpdateItemList();
         m_manager->GetElementsNotebook()->UpdateItemList();
     }
@@ -413,7 +413,7 @@ void amdChapterWriter::UpdateCharacterList() {
     m_charInChap->DeleteAllItems();
     
     int i = 0;
-    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].characters) {
+    for (auto& it : m_manager->GetChapters(0)[m_chapterPos - 1].characters) {
         m_charInChap->InsertItem(i++, it);
     }
 }
@@ -422,7 +422,7 @@ void amdChapterWriter::UpdateLocationList() {
     m_locInChap->DeleteAllItems();
 
     int i = 0;
-    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].locations) {
+    for (auto& it : m_manager->GetChapters(0)[m_chapterPos - 1].locations) {
         m_locInChap->InsertItem(i++, it);
     }
 }
@@ -431,7 +431,7 @@ void amdChapterWriter::UpdateItemList() {
     m_itemsInChap->DeleteAllItems();
 
     int i = 0;
-    for (auto& it : m_manager->GetChapters()[m_chapterPos - 1].items) {
+    for (auto& it : m_manager->GetChapters(0)[m_chapterPos - 1].items) {
         m_itemsInChap->InsertItem(i++, it);
     }
 }
@@ -446,7 +446,7 @@ void amdChapterWriter::OnRemoveCharacter(wxCommandEvent& event) {
         wxString name = m_charInChap->GetItemText(sel);
         m_charInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromCharacter(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromCharacter(name, m_manager->GetChapters(0)[m_chapterPos - 1]);
 
         sel = m_charInChap->GetNextSelected(sel - 1);
     }
@@ -466,7 +466,7 @@ void amdChapterWriter::OnRemoveLocation(wxCommandEvent& event) {
         wxString name = m_locInChap->GetItemText(sel);
         m_locInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromLocation(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromLocation(name, m_manager->GetChapters(0)[m_chapterPos - 1]);
 
         sel = m_locInChap->GetNextSelected(sel + 1);
     }
@@ -485,7 +485,7 @@ void amdChapterWriter::OnRemoveItem(wxCommandEvent& event) {
         wxString name = m_itemsInChap->GetItemText(sel);
         m_itemsInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromItem(name, m_manager->GetChapters()[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromItem(name, m_manager->GetChapters(0)[m_chapterPos - 1]);
 
         sel = m_itemsInChap->GetNextSelected(sel + 1);
     }
@@ -539,9 +539,9 @@ void amdChapterWriter::CheckChapterValidity() {
 void amdChapterWriter::LoadChapter() {
     wxBusyCursor busy;
 
-    Chapter& chapter = m_manager->GetChapters()[m_chapterPos - 1];
+    Chapter& chapter = m_manager->GetChapters(0)[m_chapterPos - 1];
 
-    SetTitle(m_manager->GetChapters()[m_chapterPos - 1].name);
+    SetTitle(m_manager->GetChapters(0)[m_chapterPos - 1].name);
 
     wxString path(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
         std::to_string(chapter.position) + " - " + chapter.name + ".xml");
@@ -582,7 +582,7 @@ void amdChapterWriter::LoadChapter() {
 
 void amdChapterWriter::SaveChapter() {
     CheckChapterValidity();
-    Chapter& chapter = m_manager->GetChapters()[m_chapterPos - 1];
+    Chapter& chapter = m_manager->GetChapters(0)[m_chapterPos - 1];
 
     //chapter.content = m_cwNotebook->m_textCtrl->GetBuffer();
     //chapter.content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());

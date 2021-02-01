@@ -5,8 +5,29 @@
 #include <wx\wx.h>
 #include <wx\filename.h>
 
+#include <wx\wxsqlite3.h>
+
 #include "ProjectWizard.h"
 #include "BookElements.h"
+
+///////////////////////////////////////////////////////////////////
+//////////////////////////// SQLStorage ///////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+class amdProjectSQLDatabase : public wxSQLite3Database {
+public:
+	amdProjectSQLDatabase() = default;
+	amdProjectSQLDatabase(wxFileName& path);
+
+	void Init();
+	void CreateAllTables();
+};
+
+
+///////////////////////////////////////////////////////////////////////
+//////////////////////////// ProjectManager ///////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 
 class amdMainFrame;
@@ -18,10 +39,9 @@ class amdRelease;
 class amdProjectManager {
 private:
 	amdProject m_project{};
+	amdProjectSQLDatabase m_storage;
 
-	amdProjectWizard* m_wizard = nullptr;
 	amdMainFrame* m_mainFrame = nullptr;
-	
 	amdElementsNotebook* m_elements = nullptr;
 	amdChaptersNotebook* m_chaptersNote = nullptr;
 	amdOutline* m_outline = nullptr;
@@ -39,7 +59,7 @@ private:
 
 public:
 	amdProjectManager();
-	
+
 	bool Init();
 
 	bool SaveProject();
@@ -95,19 +115,23 @@ public:
 	void DeleteItem(Item& item);
 	void DeleteChapter(Chapter& chapter);
 
-	wxVector<Character>& GetCharacters() { return m_characters; }
-	wxVector<Location>& GetLocations() { return m_locations; }
-	wxVector<Item>& GetItems() { return m_items; }
-	wxVector<Chapter>& GetChapters() { return m_chapters; }
+	wxVector<Book>& GetBooks() { return m_project.books; }
+	wxVector<Character> GetCharacters(int bookPos);
+	wxVector<Location>& GetLocations(int bookPos);
+	wxVector<Item>& GetItems(int bookPos);
+	wxVector<Chapter>& GetChapters(int bookPos);
 
 	wxArrayString GetCharacterNames();
 	wxArrayString GetLocationNames();
 	wxArrayString GetItemNames();
 
+	wxArrayString GetBookTitles();
+
+	int GetBookCount() { return m_project.books.size(); }
 	int GetChapterCount() { return m_chapters.size(); }
 	int GetCharacterCount() { return m_characters.size(); }
-	int GetItemCount() { return m_items.size(); }
 	int GetLocationCount() { return m_locations.size(); }
+	int GetItemCount() { return m_items.size(); }
 };
 
 #endif

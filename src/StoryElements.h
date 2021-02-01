@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-struct  Chapter;
+struct Chapter;
 
 using std::pair;
 using std::ostream;

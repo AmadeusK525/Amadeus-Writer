@@ -6,6 +6,7 @@
 #include <wx\wx.h>
 #include <wx\notebook.h>
 #include <wx\listctrl.h>
+#include <wx\combo.h>
 #include <wx\srchctrl.h>
 
 #include "ProjectManager.h"
@@ -23,6 +24,8 @@ public:
 	wxChoice* m_cSortBy = nullptr,
 		* m_lSortBy = nullptr,
 		* m_iSortBy = nullptr;
+
+	wxComboCtrl* m_cShow = nullptr;
 
 	wxSearchCtrl* m_searchBar = nullptr;
 
@@ -95,5 +98,53 @@ enum {
 	LISTMENU_DeleteLoc,
 	LISTMENU_DeleteItem
 };
+
+
+class amdCheckListBox : public wxCheckListBox, public wxComboPopup {
+public:
+	virtual void Init() {
+		Bind(wxEVT_LEFT_UP, &amdCheckListBox::OnMouseClick, this);
+	}
+
+	virtual bool Create(wxWindow* parent) {
+		return wxCheckListBox::Create(parent, -1);
+	}
+	
+	virtual wxWindow* GetControl() { return this; }
+
+	virtual void SetStringValue(const wxString& s) {
+		int n = FindString(s);
+		Check(n);
+	}
+
+	virtual wxString GetStringValue() const {
+		wxString string("");
+		wxArrayInt selections;
+		GetCheckedItems(selections);
+
+		bool first = true;
+
+		for (auto& it: selections) {
+			if (!first)
+				string << ", ";
+
+			string << GetString(it);
+			first = false;
+		}
+		return string;
+	}
+
+	virtual wxSize GetAdjustedSize(int minWidth, int prefHeight, int maxHeight) {
+		return wxSize(minWidth, GetBestSize().y);
+	}
+
+	void OnMouseClick(wxMouseEvent& event) {
+		int n = HitTest(event.GetPosition());
+		
+		Check(n, !IsChecked(n));
+		GetComboCtrl()->SetText(GetStringValue());
+	}
+};
+
 
 #endif
