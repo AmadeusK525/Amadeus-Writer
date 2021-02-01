@@ -274,7 +274,7 @@ void amdMainFrame::OnSaveFileAs(wxCommandEvent& event) {
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
     if (saveDialog.ShowModal() == wxID_OK) {
-        m_manager->SetCurrentDocPath(saveDialog.GetPath().ToStdString());
+        m_manager->SetProjectFileName(saveDialog.GetPath());
         OnSaveFile(event);
     }
 

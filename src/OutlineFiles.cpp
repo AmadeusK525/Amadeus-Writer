@@ -396,7 +396,8 @@ EVT_TIMER(TIMER_OutlineFiles, amdOutlineFilesPanel::OnTimerEvent)
 
 END_EVENT_TABLE()
 
-amdOutlineFilesPanel::amdOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(parent, -1, wxDefaultPosition, wxDefaultSize, 768L | wxSP_LIVE_UPDATE) {
+amdOutlineFilesPanel::amdOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(parent, -1, wxDefaultPosition,
+	wxDefaultSize, wxSP_LIVE_UPDATE | wxSP_NOBORDER | wxSP_THIN_SASH | wxSP_NO_XP_THEME | wxBORDER_NONE) {
 	m_textCtrl = new wxRichTextCtrl(this);
 	m_textCtrl->SetBackgroundColour(wxColour(40, 40, 40));
 	m_textCtrl->Refresh();

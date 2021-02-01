@@ -17,7 +17,7 @@ class amdRelease;
 
 class amdProjectManager {
 private:
-	amdProject project{};
+	amdProject m_project{};
 
 	amdProjectWizard* m_wizard = nullptr;
 	amdMainFrame* m_mainFrame = nullptr;
@@ -32,7 +32,6 @@ private:
 	wxVector<Item> m_items{};
 	wxVector<Chapter> m_chapters{};
 
-	wxFileName m_curDoc{};
 	wxFileName m_executablePath{};
 
 	bool m_isInitialized = false;
@@ -49,7 +48,7 @@ public:
 	bool DoLoadProject(const wxString& path);
 
 	void SetExecutablePath(const wxString& path);
-	void SetCurrentDocPath(const wxString& path);
+	void SetProjectFileName(const wxFileName& fileName);
 
 	amdMainFrame* GetMainFrame();
 	amdElementsNotebook* GetElementsNotebook();
@@ -58,9 +57,9 @@ public:
 	amdRelease* GetRelease();
 
 	wxString GetPath(bool withSeparator);
-	wxString GetFullPath() { return m_curDoc.GetFullPath(); }
+	wxString GetFullPath() { return m_project.amdFile.GetFullPath(); }
 	wxString GetExecutablePath(bool withSeparator) { return m_executablePath.GetPath(withSeparator); }
-	wxString GetTitle() { return m_curDoc.GetName(); }
+	wxString GetTitle() { return m_project.amdFile.GetName(); }
 
 	void ClearPath();
 

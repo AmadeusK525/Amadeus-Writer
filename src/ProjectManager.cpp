@@ -21,11 +21,10 @@ bool amdProjectManager::Init() {
 	if (m_isInitialized)
 		return false;
 
-	GetLastSave();
-
-	if (m_curDoc.DirExists()) {
+	if (m_project.amdFile.IsOk()) {
 		if (!m_mainFrame) {
-			m_mainFrame = new amdMainFrame("New Amadeus project", this, wxDefaultPosition, wxDefaultSize);
+			m_mainFrame = new amdMainFrame("New Amadeus project - " + m_project.amdFile.GetName(),
+				this, wxDefaultPosition, wxDefaultSize);
 
 			m_elements = (m_mainFrame->GetElementsNotebook());
 			m_chaptersNote = (m_mainFrame->GetChaptersNotebook());
@@ -33,7 +32,7 @@ bool amdProjectManager::Init() {
 			m_release = (m_mainFrame->GetRelease());
 		}
 
-		if (m_curDoc.FileExists())
+		if (m_project.amdFile.FileExists())
 			LoadProject();
 
 		m_isInitialized = true;
@@ -45,11 +44,11 @@ bool amdProjectManager::Init() {
 }
 
 bool amdProjectManager::SaveProject() {
-	return DoSaveProject(m_curDoc.GetFullPath());
+	return DoSaveProject(m_project.amdFile.GetFullPath());
 }
 
 bool amdProjectManager::LoadProject() {
-	return DoLoadProject(m_curDoc.GetFullPath());
+	return DoLoadProject(m_project.amdFile.GetFullPath());
 }
 
 bool amdProjectManager::DoSaveProject(const wxString& path) {
@@ -160,7 +159,7 @@ bool amdProjectManager::DoSaveProject(const wxString& path) {
 	// The attribute "saveDialog" currently does nothing.
 	SetSaved(true);
 
-	m_mainFrame->SetTitle(m_curDoc.GetName() + " - Amadeus Writer");
+	m_mainFrame->SetTitle(m_project.amdFile.GetName() + " - Amadeus Writer");
 	m_mainFrame->SetFocus();
 	SetLastSave();
 
@@ -178,7 +177,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 		ClearPath();
 		return false;
 	}
-	SetCurrentDocPath(path);
+	SetProjectFileName(path);
 
 	m_mainFrame->OnNewFile(wxCommandEvent());
 
@@ -193,7 +192,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 
 	progressSize = charSize + locSize + chapSize;
 
-	wxProgressDialog progress("Loading project...", m_curDoc.GetFullPath(), progressSize, m_mainFrame,
+	wxProgressDialog progress("Loading project...", m_project.amdFile.GetFullPath(), progressSize, m_mainFrame,
 		wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_SMOOTH);
 
 	wxString cImagePath(GetPath(true) + "Images\\Characters\\");
@@ -249,7 +248,7 @@ bool amdProjectManager::DoLoadProject(const wxString& path) {
 	m_outline->LoadOutline(++currentSize, &progress);
 	m_release->UpdateContent();
 
-	m_mainFrame->SetTitle(m_curDoc.GetName() + " - Amadeus Writer");
+	m_mainFrame->SetTitle(m_project.amdFile.GetName() + " - Amadeus Writer");
 	m_elements->SetSearchAC(wxBookCtrlEvent());
 
 	wxCommandEvent event;
@@ -273,8 +272,8 @@ void amdProjectManager::SetExecutablePath(const wxString& path) {
 	m_executablePath.Assign(path);
 }
 
-void amdProjectManager::SetCurrentDocPath(const wxString& path) {
-	m_curDoc.Assign(path);
+void amdProjectManager::SetProjectFileName(const wxFileName& fileName) {
+	m_project.amdFile.Assign(fileName);
 }
 
 amdMainFrame* amdProjectManager::GetMainFrame() {
@@ -299,13 +298,13 @@ amdRelease* amdProjectManager::GetRelease() {
 
 wxString amdProjectManager::GetPath(bool withSeparator) {
 	if (withSeparator)
-		return m_curDoc.GetPathWithSep();
+		return m_project.amdFile.GetPathWithSep();
 	else
-		return m_curDoc.GetPath();
+		return m_project.amdFile.GetPath();
 }
 
 void amdProjectManager::ClearPath() {
-	m_curDoc.Clear();
+	m_project.amdFile.Clear();
 }
 
 void amdProjectManager::SetSaved(bool saved) {
@@ -320,7 +319,7 @@ void amdProjectManager::SetLastSave() {
 
 	std::ofstream last(GetExecutablePath(true).ToStdString() + "88165468", std::ios::binary | std::ios::out);
 
-	char size = GetFullPath().size() + 1;
+	int size = GetFullPath().size() + 1;
 
 	last.write((char*)&size, sizeof(int));
 	last.write(GetFullPath().c_str(), size);
@@ -334,17 +333,18 @@ bool amdProjectManager::GetLastSave() {
 	std::ifstream last(GetExecutablePath(true).ToStdString() + "88165468", std::ios::binary | std::ios::in);
 
 	if (last.is_open()) {
-		char size;
+		int size;
 		char* data;
 
 		last.read((char*)&size, sizeof(int));
 		data = new char[size];
 		last.read(data, size);
-		SetCurrentDocPath(data);
+		SetProjectFileName(wxFileName(data));
 		delete[] data;
 
 		last.close();
-	}
+	} else
+		return false;
 
 	if (wxFileName::Exists(GetFullPath().ToStdString())) {
 		return true;
