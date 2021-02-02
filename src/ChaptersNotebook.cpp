@@ -7,7 +7,7 @@
 #include <wx\dir.h>
 
 
-amdChaptersNotebook::amdChaptersNotebook(wxWindow* parent, amdProjectManager* manager) :
+amChaptersNotebook::amChaptersNotebook(wxWindow* parent, amProjectManager* manager) :
     wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager) {
     m_grid = new ChapterGrid(this, m_manager);
     m_grid->SetBackgroundColour(wxColour(150, 0, 0));
@@ -26,7 +26,7 @@ amdChaptersNotebook::amdChaptersNotebook(wxWindow* parent, amdProjectManager* ma
     AddPage(m_list, "List");
 }
 
-void amdChaptersNotebook::AddChapter(Chapter& chapter, int pos, bool Reposition) {
+void amChaptersNotebook::AddChapter(Chapter& chapter, int pos, bool Reposition) {
     m_grid->AddButton();
     AddToList(chapter, pos);
 
@@ -35,14 +35,14 @@ void amdChaptersNotebook::AddChapter(Chapter& chapter, int pos, bool Reposition)
         RepositionChapters();
 }
 
-void amdChaptersNotebook::AddToList(Chapter& chapter, int pos) {
+void amChaptersNotebook::AddToList(Chapter& chapter, int pos) {
     m_list->InsertItem(pos, chapter.name);
     m_list->SetItem(pos, 1, std::to_string(chapter.characters.size()));
     m_list->SetItem(pos, 2, std::to_string(chapter.locations.size()));
     //m_list->SetItem(pos, 3, chapter.pointOfView);
 }
 
-void amdChaptersNotebook::RepositionChapters() {
+void amChaptersNotebook::RepositionChapters() {
     int i = 1;
     wxVector<Chapter>& chapters = m_manager->GetChapters(0);
 
@@ -55,7 +55,7 @@ void amdChaptersNotebook::RepositionChapters() {
     m_manager->SaveProject();
 }
 
-void amdChaptersNotebook::ClearAll() {
+void amChaptersNotebook::ClearAll() {
     m_grid->ClearAll();
     m_list->DeleteAllItems();
 }

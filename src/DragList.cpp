@@ -5,17 +5,17 @@
 
 #include "wxmemdbg.h"
 
-BEGIN_EVENT_TABLE(amdDragList, wxListView)
+BEGIN_EVENT_TABLE(amDragList, wxListView)
 
-EVT_LEFT_DOWN(amdDragList::OnLeftDown)
-EVT_LEFT_UP(amdDragList::OnLeftUp)
-EVT_LEAVE_WINDOW(amdDragList::OnLeaveWindow)
-EVT_ENTER_WINDOW(amdDragList::SelectItem)
-EVT_MOTION(amdDragList::OnMouseMotion)
+EVT_LEFT_DOWN(amDragList::OnLeftDown)
+EVT_LEFT_UP(amDragList::OnLeftUp)
+EVT_LEAVE_WINDOW(amDragList::OnLeaveWindow)
+EVT_ENTER_WINDOW(amDragList::SelectItem)
+EVT_MOTION(amDragList::OnMouseMotion)
 
 END_EVENT_TABLE()
 
-amdDragList::amdDragList(wxWindow* parent, const wxSize& size) :
+amDragList::amDragList(wxWindow* parent, const wxSize& size) :
     wxListView(parent, -1, wxDefaultPosition, size, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxBORDER_SIMPLE) {
 
     m_posMarker = new wxPanel(this, -1, wxPoint(0, GetSize().y / 2));
@@ -26,11 +26,11 @@ amdDragList::amdDragList(wxWindow* parent, const wxSize& size) :
     SetDoubleBuffered(true);
 }
 
-void amdDragList::OnLeftDown(wxMouseEvent& evt) {
+void amDragList::OnLeftDown(wxMouseEvent& evt) {
     state = DRAG_START;
 }
 
-void amdDragList::OnLeftUp(wxMouseEvent& evt) {
+void amDragList::OnLeftUp(wxMouseEvent& evt) {
     wxPoint evtPos = evt.GetPosition();
     int listFlags = wxLIST_HITTEST_ONITEM;
     int itemUnderMouse = HitTest(evtPos, listFlags), insert;
@@ -62,7 +62,7 @@ void amdDragList::OnLeftUp(wxMouseEvent& evt) {
     EndDragging();
 }
 
-void amdDragList::OnLeaveWindow(wxMouseEvent& evt) {
+void amDragList::OnLeaveWindow(wxMouseEvent& evt) {
     if (state == DRAGGING) {
         EndDragging();
         InsertItem(m_previous, m_tempName);
@@ -70,7 +70,7 @@ void amdDragList::OnLeaveWindow(wxMouseEvent& evt) {
     }
 }
 
-void amdDragList::OnMouseMotion(wxMouseEvent& evt) {
+void amDragList::OnMouseMotion(wxMouseEvent& evt) {
     wxPoint evtPos = evt.GetPosition();
     int listFlags = wxLIST_HITTEST_ONITEMICON | wxLIST_HITTEST_ONITEMLABEL | wxLIST_HITTEST_ONITEMSTATEICON;
 
@@ -123,7 +123,7 @@ void amdDragList::OnMouseMotion(wxMouseEvent& evt) {
     }
 }
 
-void amdDragList::EndDragging() {
+void amDragList::EndDragging() {
     state = DRAG_NONE;
 
     m_posMarker->Hide();
@@ -137,7 +137,7 @@ void amdDragList::EndDragging() {
     SetFocus();
 }
 
-void amdDragList::SelectItem(wxMouseEvent& evt) {
+void amDragList::SelectItem(wxMouseEvent& evt) {
     for (int i = 0; i < GetItemCount(); i++) {
         Select(i, false);
     }

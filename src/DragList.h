@@ -8,7 +8,7 @@
 
 
 
-class amdDragList : public wxListView {
+class amDragList : public wxListView {
 private:
     int m_itemDragging{};
     int m_previous{};
@@ -33,7 +33,7 @@ private:
     void EndDragging();
 
 public:
-    amdDragList(wxWindow* parent, const wxSize& size);
+    amDragList(wxWindow* parent, const wxSize& size);
 
     void SelectItem(wxMouseEvent& evt);
 

@@ -73,11 +73,11 @@ void ImageShape::OnHandle(wxSFShapeHandle& handle) {
 }
 
 void ImageShape::OnEndHandle(wxSFShapeHandle& handle) {
-	amdGetManager()->SetSaved(false);
+	amGetManager()->SetSaved(false);
 	wxSFBitmapShape::OnEndHandle(handle);
 }
 
 void ImageShape::OnEndDrag(wxPoint& pos) {
-	amdGetManager()->SetSaved(false);
+	amGetManager()->SetSaved(false);
 	wxSFBitmapShape::OnEndDrag(pos);
 }

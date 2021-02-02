@@ -9,15 +9,15 @@
 
 #include <fstream>
 
-class amdOutline;
-class amdOutlineFilesPanel;
+class amOutline;
+class amOutlineFilesPanel;
 class Corkboard;
 
-class amdOutline : public wxNotebook {
+class amOutline : public wxNotebook {
 private:
     Corkboard* m_corkboard = nullptr;
     wxPanel* m_timeline = nullptr;
-    amdOutlineFilesPanel* m_files = nullptr;
+    amOutlineFilesPanel* m_files = nullptr;
 
 public:
     // Hack for doing corkboard fullscreen
@@ -25,13 +25,13 @@ public:
     wxBoxSizer* m_corkHolderSizer = nullptr;
 
 public:
-    amdOutline(wxWindow* parent);
+    amOutline(wxWindow* parent);
 
     void SaveOutline(int& progress, wxProgressDialog* dialog);
     void LoadOutline(int& progress, wxProgressDialog* dialog);
 
     Corkboard* GetCorkboard() { return m_corkboard; }
-    amdOutlineFilesPanel* GetOutlineFiles() { return m_files; }
+    amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
 
     void ClearAll();
 };

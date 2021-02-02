@@ -6,11 +6,11 @@
 
 
 
-amdOutline::amdOutline(wxWindow* parent) : wxNotebook(parent, -1) {
+amOutline::amOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     m_corkboardHolder = new wxPanel(this);
     m_corkboard = new Corkboard(m_corkboardHolder);
     m_timeline = new wxPanel(this);
-    m_files = new amdOutlineFilesPanel(this);
+    m_files = new amOutlineFilesPanel(this);
 
     // Hack for doing corkboard fullscreen
     m_corkHolderSizer = new wxBoxSizer(wxVERTICAL);
@@ -22,19 +22,19 @@ amdOutline::amdOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     AddPage(m_files, "Files");
 }
 
-void amdOutline::SaveOutline(int& progress, wxProgressDialog* dialog) {
+void amOutline::SaveOutline(int& progress, wxProgressDialog* dialog) {
     m_corkboard->Save();
     dialog->Update(progress++);
     m_files->Save();
 }
 
-void amdOutline::LoadOutline(int& progress, wxProgressDialog* dialog) {
+void amOutline::LoadOutline(int& progress, wxProgressDialog* dialog) {
     m_corkboard->Load();
     m_files->Load();
     dialog->Update(progress++);
 }
 
-void amdOutline::ClearAll() {
+void amOutline::ClearAll() {
     m_corkboard->getCanvas()->GetDiagramManager()->Clear();
     m_corkboard->getCanvas()->Refresh(true);
 

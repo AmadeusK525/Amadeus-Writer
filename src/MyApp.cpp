@@ -7,8 +7,8 @@ wxIMPLEMENT_APP(MyApp);
 /// <summary>
 /// Global function that returns the application manager, gotten from wxGetApp().
 /// </summary>
-/// <returns>The active amdProjectManager object pointer</returns>
-amdProjectManager* amdGetManager() {
+/// <returns>The active amProjectManager object pointer</returns>
+amProjectManager* amGetManager() {
     return 	wxGetApp().GetManager();
 }
 
@@ -16,7 +16,7 @@ bool MyApp::OnInit() {
     m_locale.Init(wxLANGUAGE_DEFAULT);
     wxInitAllImageHandlers();
 
-    m_manager = new amdProjectManager();
+    m_manager = new amProjectManager();
     m_manager->SetExecutablePath(argv.GetArguments()[0]);
 
     if (argc > 1)
@@ -25,7 +25,7 @@ bool MyApp::OnInit() {
         m_manager->GetLastSave();
 
     if (!m_manager->Init()) {
-        m_wizard = new amdProjectWizard(nullptr, 1234);
+        m_wizard = new amProjectWizard(nullptr, 1234);
         m_wizard->Bind(wxEVT_WIZARD_FINISHED, &MyApp::OnWizardFinished, this);
         m_wizard->Bind(wxEVT_WIZARD_CANCEL, &MyApp::OnWizardCanceled, this);
         m_wizard->Show();
@@ -48,10 +48,10 @@ void MyApp::OnWizardFinished(wxWizardEvent& event) {
         return;
     }
 
+    m_wizard->Destroy();
+
     m_manager->SetProjectFileName(m_wizard->GetFileName());
     m_manager->Init();
-
-    m_wizard->Destroy();
 }
 
 void MyApp::OnWizardCanceled(wxWizardEvent& event) {

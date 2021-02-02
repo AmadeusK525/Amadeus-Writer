@@ -11,38 +11,38 @@
 
 #include "wxmemdbg.h"
 
-BEGIN_EVENT_TABLE(amdElementsNotebook, wxNotebook)
+BEGIN_EVENT_TABLE(amElementsNotebook, wxNotebook)
 
-EVT_LIST_ITEM_FOCUSED(LIST_CharList, amdElementsNotebook::OnCharacterSelected)
-EVT_LIST_ITEM_SELECTED(LIST_LocList, amdElementsNotebook::OnLocationSelected)
+EVT_LIST_ITEM_FOCUSED(LIST_CharList, amElementsNotebook::OnCharacterSelected)
+EVT_LIST_ITEM_SELECTED(LIST_LocList, amElementsNotebook::OnLocationSelected)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, amdElementsNotebook::OnCharRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_CharList, amdElementsNotebook::OnCharacterActivated)
-EVT_MENU(LISTMENU_EditChar, amdElementsNotebook::OnEditCharacter)
-EVT_LIST_END_LABEL_EDIT(LIST_CharList, amdElementsNotebook::OnEditCharName)
-EVT_MENU(LISTMENU_DeleteChar, amdElementsNotebook::OnDeleteCharacter)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, amElementsNotebook::OnCharRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_CharList, amElementsNotebook::OnCharacterActivated)
+EVT_MENU(LISTMENU_EditChar, amElementsNotebook::OnEditCharacter)
+EVT_LIST_END_LABEL_EDIT(LIST_CharList, amElementsNotebook::OnEditCharName)
+EVT_MENU(LISTMENU_DeleteChar, amElementsNotebook::OnDeleteCharacter)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_LocList, amdElementsNotebook::OnLocRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_LocList, amdElementsNotebook::OnLocationActivated)
-EVT_MENU(LISTMENU_EditLoc, amdElementsNotebook::OnEditLocation)
-EVT_MENU(LISTMENU_DeleteLoc, amdElementsNotebook::OnDeleteLocation)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_LocList, amElementsNotebook::OnLocRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_LocList, amElementsNotebook::OnLocationActivated)
+EVT_MENU(LISTMENU_EditLoc, amElementsNotebook::OnEditLocation)
+EVT_MENU(LISTMENU_DeleteLoc, amElementsNotebook::OnDeleteLocation)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemsList, amdElementsNotebook::OnItemRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_ItemsList, amdElementsNotebook::OnItemActivated)
-EVT_MENU(LISTMENU_EditItem, amdElementsNotebook::OnEditItem)
-EVT_MENU(LISTMENU_DeleteItem, amdElementsNotebook::OnDeleteItem)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemsList, amElementsNotebook::OnItemRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_ItemsList, amElementsNotebook::OnItemActivated)
+EVT_MENU(LISTMENU_EditItem, amElementsNotebook::OnEditItem)
+EVT_MENU(LISTMENU_DeleteItem, amElementsNotebook::OnDeleteItem)
 
-EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, amdElementsNotebook::SetSearchAC)
+EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, amElementsNotebook::SetSearchAC)
 
 END_EVENT_TABLE()
 
-wxListView* amdElementsNotebook::m_charList;
-wxListView* amdElementsNotebook::m_locList;
-wxListView* amdElementsNotebook::m_itemsList;
+wxListView* amElementsNotebook::m_charList;
+wxListView* amElementsNotebook::m_locList;
+wxListView* amElementsNotebook::m_itemsList;
 
-amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
+amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     wxNotebook(parent, NOTEBOOK_THIS) {
-    m_manager = amdGetManager();
+    m_manager = amGetManager();
 
     //Setting up first notebook tab with a characters list
     wxPanel* charFrame = new wxPanel(this, PANEL_Char);
@@ -73,7 +73,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     cSortByLabel->SetFont(wxFontInfo(11).Bold());
 
     m_cSortBy = new wxChoice(charFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-    m_cSortBy->Bind(wxEVT_CHOICE, &amdElementsNotebook::OnCharactersSortBy, this);
+    m_cSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnCharactersSortBy, this);
     m_cSortBy->SetSelection(0);
 
     wxStaticText* cShowLabel = new wxStaticText(charFrame, -1, "Show:");
@@ -81,7 +81,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     cShowLabel->SetFont(wxFontInfo(11).Bold());
 
     m_cShow = new wxComboCtrl(charFrame, -1, "", wxDefaultPosition, wxSize(200, -1), wxCB_READONLY);
-    amdCheckListBox* cBooks = new amdCheckListBox();
+    amCheckListBox* cBooks = new amCheckListBox();
 
     m_cShow->SetPopupControl(cBooks);
     cBooks->InsertItems(m_manager->GetBookTitles(), 0);
@@ -101,7 +101,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     cLeftSizer->AddSpacer(10);
     cLeftSizer->Add(cFooterSizer, wxSizerFlags(0).Expand());
 
-    m_charShow = new amdCharacterShowcase(charFrame);
+    m_charShow = new amCharacterShowcase(charFrame);
 
     wxBoxSizer* charSizer = new wxBoxSizer(wxHORIZONTAL);
     charSizer->Add(cLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
@@ -133,7 +133,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     sortBy.Insert("Importance", 0);
 
     m_lSortBy = new wxChoice(locFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-    m_lSortBy->Bind(wxEVT_CHOICE, &amdElementsNotebook::OnLocationsSortBy, this);
+    m_lSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnLocationsSortBy, this);
     m_lSortBy->SetSelection(0);
 
     wxBoxSizer* lSortBySizer = new wxBoxSizer(wxHORIZONTAL);
@@ -146,7 +146,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     lLeftSizer->AddSpacer(10);
     lLeftSizer->Add(lSortBySizer, wxSizerFlags(0).Left());
 
-    m_locShow = new amdLocationShowcase(locFrame);
+    m_locShow = new amLocationShowcase(locFrame);
 
     wxBoxSizer* locSizer = new wxBoxSizer(wxHORIZONTAL);
     locSizer->Add(lLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
@@ -175,7 +175,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     iSortByLabel->SetFont(wxFontInfo(11).Bold());
 
     m_iSortBy = new wxChoice(itemsFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-    m_iSortBy->Bind(wxEVT_CHOICE, &amdElementsNotebook::OnLocationsSortBy, this);
+    m_iSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnLocationsSortBy, this);
     m_iSortBy->SetSelection(0);
 
     wxBoxSizer* iSortBySizer = new wxBoxSizer(wxHORIZONTAL);
@@ -188,7 +188,7 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     iLeftSizer->AddSpacer(10);
     iLeftSizer->Add(iSortBySizer, wxSizerFlags(0).Left());
 
-    m_itemShow = new amdItemShowcase(itemsFrame);
+    m_itemShow = new amItemShowcase(itemsFrame);
 
     wxBoxSizer* itemSizer = new wxBoxSizer(wxHORIZONTAL);
     itemSizer->Add(iLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
@@ -198,20 +198,20 @@ amdElementsNotebook::amdElementsNotebook(wxWindow* parent) :
     this->AddPage(itemsFrame, "Items");
 }
 
-void amdElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event)) {
     wxMenu menu;
     menu.Append(LISTMENU_EditChar, "&Edit");
     menu.Append(LISTMENU_DeleteChar, "&Delete");
     PopupMenu(&menu, wxDefaultPosition);
 }
 
-void amdElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event)) {
     auto it = m_manager->GetCharacters(0).begin();
     for (int i = 0; i < m_charList->GetFirstSelected(); i++) {
         it++;
     }
 
-    amdCharacterCreator* edit = new amdCharacterCreator(m_manager->GetMainFrame(), m_manager, -1,
+    amCharacterCreator* edit = new amCharacterCreator(m_manager->GetMainFrame(), m_manager, -1,
         "Create character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
 
     edit->CenterOnParent();
@@ -221,7 +221,7 @@ void amdElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event)) {
     m_manager->GetMainFrame()->Enable(false);
 }
 
-void amdElementsNotebook::OnEditCharName(wxListEvent& event) {
+void amElementsNotebook::OnEditCharName(wxListEvent& event) {
     auto it = m_manager->GetCharacters(0).begin();
     for (int i = 0; i < m_charList->GetFirstSelected(); i++) {
         it++;
@@ -230,7 +230,7 @@ void amdElementsNotebook::OnEditCharName(wxListEvent& event) {
     it->name = event.GetLabel();
 }
 
-void amdElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event)) {
     long sel = m_charList->GetFirstSelected();
 
     wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_charList->GetItemText(sel) + "'?",
@@ -249,24 +249,24 @@ void amdElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event)) {
     }
 }
 
-void amdElementsNotebook::OnCharacterActivated(wxListEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnCharacterActivated(wxListEvent& WXUNUSED(event)) {
     OnEditCharacter(wxCommandEvent());
 }
 
-void amdElementsNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event)) {
     wxMenu menu;
     menu.Append(LISTMENU_EditLoc, "&Edit");
     menu.Append(LISTMENU_DeleteLoc, "Delete");
     PopupMenu(&menu, wxDefaultPosition);
 }
 
-void amdElementsNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event)) {
     auto it = m_manager->GetLocations(0).begin();
     for (int i = 0; i < m_locList->GetFirstSelected(); i++) {
         it++;
     }
 
-    amdLocationCreator* edit = new amdLocationCreator(m_manager->GetMainFrame(), m_manager, -1,
+    amLocationCreator* edit = new amLocationCreator(m_manager->GetMainFrame(), m_manager, -1,
         "Edit location - ''", wxDefaultPosition, FromDIP(wxSize(900, 650)));
 
     edit->CenterOnParent();
@@ -276,7 +276,7 @@ void amdElementsNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event)) {
     m_manager->GetMainFrame()->Enable(false);
 }
 
-void amdElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event)) {
     long sel = m_locList->GetFirstSelected();
 
     wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_locList->GetItemText(sel) + "'?",
@@ -295,24 +295,24 @@ void amdElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event)) {
     }
 }
 
-void amdElementsNotebook::OnLocationActivated(wxListEvent& event) {
+void amElementsNotebook::OnLocationActivated(wxListEvent& event) {
     OnEditLocation(wxCommandEvent());
 }
 
-void amdElementsNotebook::OnItemRightClick(wxListEvent& event) {
+void amElementsNotebook::OnItemRightClick(wxListEvent& event) {
     wxMenu menu;
     menu.Append(LISTMENU_EditItem, "&Edit");
     menu.Append(LISTMENU_DeleteItem, "Delete");
     PopupMenu(&menu, wxDefaultPosition);
 }
 
-void amdElementsNotebook::OnEditItem(wxCommandEvent& event) {
+void amElementsNotebook::OnEditItem(wxCommandEvent& event) {
     auto it = m_manager->GetItems(0).begin();
     for (int i = 0; i < m_itemsList->GetFirstSelected(); i++) {
         it++;
     }
 
-    amdItemCreator* edit = new amdItemCreator(m_manager->GetMainFrame(), m_manager, -1,
+    amItemCreator* edit = new amItemCreator(m_manager->GetMainFrame(), m_manager, -1,
         "Edit item - ''", wxDefaultPosition, FromDIP(wxSize(900, 720)));
 
     edit->CenterOnParent();
@@ -322,7 +322,7 @@ void amdElementsNotebook::OnEditItem(wxCommandEvent& event) {
     m_manager->GetMainFrame()->Enable(false);
 }
 
-void amdElementsNotebook::OnDeleteItem(wxCommandEvent& event) {
+void amElementsNotebook::OnDeleteItem(wxCommandEvent& event) {
     long sel = m_itemsList->GetFirstSelected();
 
     wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_itemsList->GetItemText(sel) + "'?",
@@ -341,11 +341,11 @@ void amdElementsNotebook::OnDeleteItem(wxCommandEvent& event) {
     }
 }
 
-void amdElementsNotebook::OnItemActivated(wxListEvent& event) {
+void amElementsNotebook::OnItemActivated(wxListEvent& event) {
     OnEditItem(wxCommandEvent());
 }
 
-void amdElementsNotebook::OnCharacterSelected(wxListEvent& event) {
+void amElementsNotebook::OnCharacterSelected(wxListEvent& event) {
     long sel = m_charList->GetFirstSelected();
 
     auto it = m_manager->GetCharacters(0).begin();
@@ -355,7 +355,7 @@ void amdElementsNotebook::OnCharacterSelected(wxListEvent& event) {
     m_charShow->SetData(*it);
 }
 
-void amdElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event)) {
+void amElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event)) {
     long sel = m_locList->GetFirstSelected();
 
     auto it = m_manager->GetLocations(0).begin();
@@ -365,7 +365,7 @@ void amdElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event)) {
     m_locShow->SetData(*it);
 }
 
-void amdElementsNotebook::OnItemSelected(wxListEvent& event) {
+void amElementsNotebook::OnItemSelected(wxListEvent& event) {
     long sel = m_itemsList->GetFirstSelected();
 
     auto it = m_manager->GetItems(0).begin();
@@ -375,7 +375,7 @@ void amdElementsNotebook::OnItemSelected(wxListEvent& event) {
     m_itemShow->SetData(*it);
 }
 
-void amdElementsNotebook::OnCharactersSortBy(wxCommandEvent& event) {
+void amElementsNotebook::OnCharactersSortBy(wxCommandEvent& event) {
     m_cSortBy->SetSelection(event.GetInt());
     Character::cCompType = (CompType)event.GetInt();
 
@@ -383,7 +383,7 @@ void amdElementsNotebook::OnCharactersSortBy(wxCommandEvent& event) {
     UpdateCharacterList();
 }
 
-void amdElementsNotebook::OnLocationsSortBy(wxCommandEvent& event) {
+void amElementsNotebook::OnLocationsSortBy(wxCommandEvent& event) {
     m_lSortBy->SetSelection(event.GetInt());
     Location::lCompType = (CompType)event.GetInt();
 
@@ -391,7 +391,7 @@ void amdElementsNotebook::OnLocationsSortBy(wxCommandEvent& event) {
     UpdateLocationList();
 }
 
-void amdElementsNotebook::OnItemsSortBy(wxCommandEvent& event) {
+void amElementsNotebook::OnItemsSortBy(wxCommandEvent& event) {
     m_iSortBy->SetSelection(event.GetInt());
     Item::iCompType = (CompType)event.GetInt();
 
@@ -399,7 +399,7 @@ void amdElementsNotebook::OnItemsSortBy(wxCommandEvent& event) {
     UpdateItemList();
 }
 
-void amdElementsNotebook::ClearAll() {
+void amElementsNotebook::ClearAll() {
     m_charList->DeleteAllItems();
     m_locList->DeleteAllItems();
     m_itemsList->DeleteAllItems();
@@ -408,7 +408,7 @@ void amdElementsNotebook::ClearAll() {
     m_itemShow->SetData(Item());
 }
 
-void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
+void amElementsNotebook::UpdateCharacter(int n, Character& character) {
     m_charList->SetItem(n, 0, character.name);
     m_charList->SetItem(n, 1, character.sex);
 
@@ -457,7 +457,7 @@ void amdElementsNotebook::UpdateCharacter(int n, Character& character) {
     m_charList->SetItem(n, 5, std::to_string(character.chapters.size()));
 }
 
-void amdElementsNotebook::UpdateLocation(int n, Location& location) {
+void amElementsNotebook::UpdateLocation(int n, Location& location) {
     m_locList->SetItem(n, 0, location.name);
 
     wxString role("");
@@ -497,7 +497,7 @@ void amdElementsNotebook::UpdateLocation(int n, Location& location) {
     m_locList->SetItem(n, 4, std::to_string(location.chapters.size()));
 }
 
-void amdElementsNotebook::UpdateItem(int n, Item& item) {
+void amElementsNotebook::UpdateItem(int n, Item& item) {
     m_itemsList->SetItem(n, 0, item.name);
 
     if (item.isMagic)
@@ -541,7 +541,7 @@ void amdElementsNotebook::UpdateItem(int n, Item& item) {
     m_itemsList->SetItem(n, 5, std::to_string(item.chapters.size()));
 }
 
-void amdElementsNotebook::UpdateCharacterList() {
+void amElementsNotebook::UpdateCharacterList() {
     m_charList->Freeze();
 
     int i = 0;
@@ -565,7 +565,7 @@ void amdElementsNotebook::UpdateCharacterList() {
     m_charList->Thaw();
 }
 
-void amdElementsNotebook::UpdateLocationList() {
+void amElementsNotebook::UpdateLocationList() {
     m_locList->Freeze();
 
     int i = 0;
@@ -589,7 +589,7 @@ void amdElementsNotebook::UpdateLocationList() {
     m_locList->Thaw();
 }
 
-void amdElementsNotebook::UpdateItemList() {
+void amElementsNotebook::UpdateItemList() {
     m_itemsList->Freeze();
 
     int i = 0;
@@ -613,13 +613,13 @@ void amdElementsNotebook::UpdateItemList() {
     m_itemsList->Thaw();
 }
 
-void amdElementsNotebook::UpdateAll() {
+void amElementsNotebook::UpdateAll() {
     UpdateCharacterList();
     UpdateLocationList();
     UpdateItemList();
 }
 
-void amdElementsNotebook::SetSearchAC(wxBookCtrlEvent& WXUNUSED(event)) {
+void amElementsNotebook::SetSearchAC(wxBookCtrlEvent& WXUNUSED(event)) {
     int sel = this->GetSelection();
 
     switch (sel) {

@@ -2,7 +2,7 @@
 
 #include <wx\wx.h>
 
-amdProjectWizard::amdProjectWizard(wxWindow* parent, wxWindowID id) {
+amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id) {
 	SetExtraStyle(wxWIZARD_EX_HELPBUTTON);
 	Create(parent, id, "Project Wizard", wxNullBitmap, wxDefaultPosition,
 		wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -15,7 +15,7 @@ amdProjectWizard::amdProjectWizard(wxWindow* parent, wxWindowID id) {
 	wxWizardPageSimple* page2 = new wxWizardPageSimple(this);
 	wxWizardPageSimple* page3 = new wxWizardPageSimple(this);
 	wxWizardPageSimple* page4 = new wxWizardPageSimple(this);
-	m_page1 = new amdFirstWizardPage(this, page2, page3);
+	m_page1 = new amFirstWizardPage(this, page2, page3);
 
 	wxStaticText* label = new wxStaticText(page2, -1, _("Please select a folder where\nyour project will be located:"));
 	label->SetForegroundColour(wxColour(255, 255, 255));
@@ -70,7 +70,7 @@ amdProjectWizard::amdProjectWizard(wxWindow* parent, wxWindowID id) {
 	SetBackgroundColour(wxColour(40, 40, 40));
 }
 
-wxFileName amdProjectWizard::GetFileName() {
+wxFileName amProjectWizard::GetFileName() {
 	if (IsLoading())
 		return m_filePicker->GetFileName();
 	else {
@@ -87,7 +87,7 @@ wxFileName amdProjectWizard::GetFileName() {
 ////////////////////////////////////////////////////////////////////////
 
 
-amdFirstWizardPage::amdFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, wxWizardPage* doNew) :
+amFirstWizardPage::amFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, wxWizardPage* doNew) :
 	wxWizardPage(parent) {
 
 	m_load = doLoad;
@@ -123,6 +123,6 @@ amdFirstWizardPage::amdFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, w
 	SetSizerAndFit(siz1);
 }
 
-wxWizardPage* amdFirstWizardPage::GetNext() const {
+wxWizardPage* amFirstWizardPage::GetNext() const {
 	return m_loadBtn->GetValue() ? m_new : m_load;
 }

@@ -6,7 +6,7 @@
 #include <wx\filepicker.h>
 #include <wx\radiobut.h>
 
-class amdFirstWizardPage : public wxWizardPage {
+class amFirstWizardPage : public wxWizardPage {
 private:
 	wxRadioButton* m_loadBtn = nullptr,
 		* m_newBtn = nullptr;
@@ -15,7 +15,7 @@ private:
 		* m_new = nullptr;
 
 public:
-	amdFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, wxWizardPage* doNew);
+	amFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, wxWizardPage* doNew);
 
 	virtual wxWizardPage* GetPrev() const { return nullptr; }
 	virtual wxWizardPage* GetNext() const;
@@ -24,16 +24,16 @@ public:
 };
 
 
-class amdProjectWizard : public wxWizard {
+class amProjectWizard : public wxWizard {
 private:
-	amdFirstWizardPage* m_page1 = nullptr;
+	amFirstWizardPage* m_page1 = nullptr;
 
 	wxDirPickerCtrl* m_dirPicker = nullptr;
 	wxFilePickerCtrl* m_filePicker = nullptr;
 	wxTextCtrl* m_title = nullptr;
 
 public:
-	amdProjectWizard(wxWindow* parent, wxWindowID id);
+	amProjectWizard(wxWindow* parent, wxWindowID id);
 
 	wxWizardPage* GetFirstPage() { return m_page1; }
 	wxFileName GetFileName();

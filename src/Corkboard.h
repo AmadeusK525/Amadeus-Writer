@@ -33,8 +33,8 @@ public:
 	friend class CorkboardCanvas;
 
 private:
-	amdProjectManager* m_manager = nullptr;
-    amdOutline* parent = nullptr;
+	amProjectManager* m_manager = nullptr;
+    amOutline* parent = nullptr;
     wxToolBar* m_toolBar = nullptr;
 
     wxBoxSizer* corkboardSizer = nullptr;
@@ -85,7 +85,7 @@ public:
 class CorkboardCanvas : public wxSFShapeCanvas {
 private:
 	Corkboard* parent = nullptr;
-	amdProjectManager* m_manager = nullptr;
+	amProjectManager* m_manager = nullptr;
 
 	wxSFShapeBase* shapeForMenu = nullptr;
 

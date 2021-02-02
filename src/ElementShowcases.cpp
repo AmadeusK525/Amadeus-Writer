@@ -1,6 +1,6 @@
 #include "ElementShowcases.h"
 
-amdElementShowcase::amdElementShowcase(wxWindow* parent) :
+amElementShowcase::amElementShowcase(wxWindow* parent) :
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL) {
 	wxFont font(wxFontInfo(12).Bold());
 
@@ -28,7 +28,7 @@ amdElementShowcase::amdElementShowcase(wxWindow* parent) :
 	this->SetScrollRate(20, 20);
 }
 
-void amdElementShowcase::SetData(const Element& element) {
+void amElementShowcase::SetData(const Element& element) {
 	Freeze();
 	m_name->SetLabel(element.name);
 }
@@ -39,7 +39,7 @@ void amdElementShowcase::SetData(const Element& element) {
 ///////////////////////////////////////////////////////////////////
 
 
-amdCharacterShowcase::amdCharacterShowcase(wxWindow* parent) : amdElementShowcase(parent) {
+amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(parent) {
 
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(11));
@@ -147,7 +147,7 @@ amdCharacterShowcase::amdCharacterShowcase(wxWindow* parent) : amdElementShowcas
 	m_backstory->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amdCharacterShowcase::SetData(const Element& charToSet) {
+void amCharacterShowcase::SetData(const Element& charToSet) {
 	const Character* character = dynamic_cast<const Character*>(&charToSet);
 	if (!character) {
 		wxMessageBox("There was an unexpected problem when loading the Character to the panel.");
@@ -299,7 +299,7 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 ///////////////////////////////////////////////////////////////////
 
 
-amdLocationShowcase::amdLocationShowcase(wxWindow* parent) :amdElementShowcase(parent) {
+amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(parent) {
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(9));
 
@@ -392,7 +392,7 @@ amdLocationShowcase::amdLocationShowcase(wxWindow* parent) :amdElementShowcase(p
 	m_culture->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amdLocationShowcase::SetData(const Element& locToSet) {
+void amLocationShowcase::SetData(const Element& locToSet) {
 	const Location* location = dynamic_cast<const Location*>(&locToSet);
 
 	if (!location) {
@@ -520,6 +520,6 @@ void amdLocationShowcase::SetData(const Element& locToSet) {
 	Thaw();
 }
 
-amdItemShowcase::amdItemShowcase(wxWindow* parent) : amdElementShowcase(parent) {}
+amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent) {}
 
-void amdItemShowcase::SetData(const Element& itemToSet) {}
+void amItemShowcase::SetData(const Element& itemToSet) {}
