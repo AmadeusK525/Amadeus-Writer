@@ -6,7 +6,7 @@
 
 #include "wxmemdbg.h"
 
-ChapterGrid::ChapterGrid(wxWindow* parent, amdProjectManager* manager): wxScrolledWindow(parent, wxID_ANY,
+ChapterGrid::ChapterGrid(wxWindow* parent, amProjectManager* manager): wxScrolledWindow(parent, wxID_ANY,
     wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN | wxTAB_TRAVERSAL) {
     m_manager = manager;
 
@@ -18,7 +18,7 @@ ChapterGrid::ChapterGrid(wxWindow* parent, amdProjectManager* manager): wxScroll
 }
 
 void ChapterGrid::AddButton() {
-    amdChaptersNotebook* chapNote = ((amdChaptersNotebook*)GetParent());
+    amChaptersNotebook* chapNote = ((amChaptersNotebook*)GetParent());
     int current = m_buttons.size() + 1;
 
     wxButton* button = new wxButton(this, 10000 + current,
@@ -37,7 +37,7 @@ void ChapterGrid::AddButton() {
 }
 
 void ChapterGrid::OpenChapter(unsigned int chapterNumber) {
-    amdChapterWriter* writer = new amdChapterWriter(m_manager->GetMainFrame(), m_manager, chapterNumber);
+    amChapterWriter* writer = new amChapterWriter(m_manager->GetMainFrame(), m_manager, chapterNumber);
     writer->Show();
 }
 

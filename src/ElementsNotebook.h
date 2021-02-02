@@ -12,14 +12,14 @@
 #include "ProjectManager.h"
 #include "ElementShowcases.h"
 
-class amdElementsNotebook : public wxNotebook {
+class amElementsNotebook : public wxNotebook {
 private:
-	amdProjectManager* m_manager = nullptr;
+	amProjectManager* m_manager = nullptr;
 
 public:
-	amdCharacterShowcase* m_charShow = nullptr;
-	amdLocationShowcase* m_locShow = nullptr;
-	amdItemShowcase* m_itemShow = nullptr;
+	amCharacterShowcase* m_charShow = nullptr;
+	amLocationShowcase* m_locShow = nullptr;
+	amItemShowcase* m_itemShow = nullptr;
 
 	wxChoice* m_cSortBy = nullptr,
 		* m_lSortBy = nullptr,
@@ -30,10 +30,10 @@ public:
 	wxSearchCtrl* m_searchBar = nullptr;
 
 public:
-	amdElementsNotebook(wxWindow* parent);
+	amElementsNotebook(wxWindow* parent);
 
-	amdCharacterShowcase* GetCharacterShowcase() { return m_charShow; }
-	amdLocationShowcase* GetLocationShowcase() { return m_locShow; }
+	amCharacterShowcase* GetCharacterShowcase() { return m_charShow; }
+	amLocationShowcase* GetLocationShowcase() { return m_locShow; }
 
 	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 
@@ -100,10 +100,10 @@ enum {
 };
 
 
-class amdCheckListBox : public wxCheckListBox, public wxComboPopup {
+class amCheckListBox : public wxCheckListBox, public wxComboPopup {
 public:
 	virtual void Init() {
-		Bind(wxEVT_LEFT_UP, &amdCheckListBox::OnMouseClick, this);
+		Bind(wxEVT_LEFT_UP, &amCheckListBox::OnMouseClick, this);
 	}
 
 	virtual bool Create(wxWindow* parent) {

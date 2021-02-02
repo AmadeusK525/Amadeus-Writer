@@ -105,7 +105,7 @@ struct Book {
 /////////////////////////////////////////////////////////////////
 
 
-struct amdProject {
+struct amProject {
 	wxVector<Book> books{};
 
     // Global Elements
@@ -113,7 +113,7 @@ struct amdProject {
     wxVector<Location> gLocations{};
     wxVector<Item> gItems{};
 
-    wxFileName amdFile{};
+    wxFileName amFile{};
 
     wxVector<Character> GetCharacters(int bookPos);
     wxVector<Location> GetLocations(int bookPos);

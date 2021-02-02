@@ -139,7 +139,7 @@ void NoteShape::OnEndHandle(wxSFShapeHandle& handle) {
 	ShouldCountLines(true);
 	ShouldClip(false);
 	
-	amdGetManager()->SetSaved(false);
+	amGetManager()->SetSaved(false);
 	wxSFRoundRectShape::OnEndHandle(handle);
 }
 
@@ -151,6 +151,6 @@ void NoteShape::OnBeginDrag(const wxPoint& pos) {
 void NoteShape::OnEndDrag(const wxPoint& pos) {
 	ShouldCountLines(true);
 
-	amdGetManager()->SetSaved(false);
+	amGetManager()->SetSaved(false);
 	wxSFRoundRectShape::OnEndDrag(pos);
 }

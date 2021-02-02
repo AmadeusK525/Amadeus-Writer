@@ -11,9 +11,9 @@
 
 using std::pair;
 
-class amdElementCreator: public wxFrame {
+class amElementCreator: public wxFrame {
 protected:
-    amdProjectManager* m_manager = nullptr;
+    amProjectManager* m_manager = nullptr;
 
     wxPanel* m_panel1 = nullptr,
         * m_panel3 = nullptr,
@@ -39,8 +39,8 @@ protected:
     Element* m_elementEdit = nullptr;
 
 public:
-    amdElementCreator(wxWindow* parent,
-        amdProjectManager* m_manager,
+    amElementCreator(wxWindow* parent,
+        amProjectManager* m_manager,
         long id = wxID_ANY,
         const wxString& label = "Create element",
         const wxPoint& pos = wxDefaultPosition,
@@ -99,7 +99,7 @@ public:
 /////////////////////////////////////////////////////////////////////
 
 
-class amdCharacterCreator : public amdElementCreator {
+class amCharacterCreator : public amElementCreator {
 private:
     wxTextCtrl* ncFullName = nullptr,
         * ncNickname = nullptr,
@@ -121,8 +121,8 @@ private:
         * ncSecon = nullptr;
 
 public:
-    amdCharacterCreator(wxWindow* parent,
-        amdProjectManager* manager,
+    amCharacterCreator(wxWindow* parent,
+        amProjectManager* manager,
         long id = wxID_ANY,
         const wxString& label = "Create character",
         const wxPoint& pos = wxDefaultPosition,
@@ -147,7 +147,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 
-class amdLocationCreator : public amdElementCreator {
+class amLocationCreator : public amElementCreator {
 private:
     wxTextCtrl* nlName = nullptr,
         * nlGeneral = nullptr,
@@ -164,8 +164,8 @@ private:
     wxWrapSizer* m_nlcustomSizer = nullptr;
 
 public:
-    amdLocationCreator(wxWindow* parent,
-        amdProjectManager* manager,
+    amLocationCreator(wxWindow* parent,
+        amProjectManager* manager,
         long id,
         const wxString& label,
         const wxPoint& pos,
@@ -192,7 +192,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 
-class amdItemCreator : public amdElementCreator {
+class amItemCreator : public amElementCreator {
 private:
     wxTextCtrl* niName = nullptr,
         * niGeneral = nullptr,
@@ -216,8 +216,8 @@ private:
     wxBoxSizer* niMeaSizer = nullptr;
 
 public:
-    amdItemCreator(wxWindow* parent,
-        amdProjectManager* manager,
+    amItemCreator(wxWindow* parent,
+        amProjectManager* manager,
         long id,
         const wxString& label,
         const wxPoint& pos,

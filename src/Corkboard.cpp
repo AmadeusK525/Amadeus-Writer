@@ -22,8 +22,8 @@ EVT_TOOL_RANGE(TOOL_Cursor, TOOL_CorkboardFullScreen, Corkboard::onTool)
 END_EVENT_TABLE()
 
 Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
-    this->parent = (amdOutline*)(parent->GetParent());
-	m_manager = amdGetManager();
+    this->parent = (amOutline*)(parent->GetParent());
+	m_manager = amGetManager();
 
     m_toolBar = new wxToolBar(this, -1);
     m_toolBar->AddRadioTool(TOOL_Cursor, "", wxBITMAP_PNG(cursor), wxNullBitmap, "Default");
@@ -172,7 +172,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 	wxWindowID id, const wxPoint& pos, const wxSize& size, long style) :
 	wxSFShapeCanvas(canvasManager, parent, id, pos, size, style) {
 
-	m_manager = amdGetManager();
+	m_manager = amGetManager();
 	this->parent = (Corkboard*)parent;
 
 	// Remove grid lines.

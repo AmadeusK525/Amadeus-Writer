@@ -1,36 +1,36 @@
 #include "Release.h"
 
-BEGIN_EVENT_TABLE(amdRelease, wxPanel)
+BEGIN_EVENT_TABLE(amRelease, wxPanel)
 
-EVT_BUTTON(BUTTON_NextPage, amdRelease::OnNext)
-EVT_BUTTON(BUTTON_PreviousPage, amdRelease::OnPrevious)
+EVT_BUTTON(BUTTON_NextPage, amRelease::OnNext)
+EVT_BUTTON(BUTTON_PreviousPage, amRelease::OnPrevious)
 
-EVT_KEY_UP(amdRelease::OnKeyPressed)
+EVT_KEY_UP(amRelease::OnKeyPressed)
 
 END_EVENT_TABLE()
 
-amdRelease::amdRelease(wxWindow* parent) :
+amRelease::amRelease(wxWindow* parent) :
     wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN) {
     SetBackgroundColour(wxColour(20, 20, 20));
 }
 
-amdRelease::~amdRelease() {
+amRelease::~amRelease() {
 
 }
 
-void amdRelease::UpdateContent() {
+void amRelease::UpdateContent() {
 
 }
 
-void amdRelease::OnNext(wxCommandEvent& event) {
+void amRelease::OnNext(wxCommandEvent& event) {
     
 }
 
-void amdRelease::OnPrevious(wxCommandEvent& event) {
+void amRelease::OnPrevious(wxCommandEvent& event) {
 
 }
 
-void amdRelease::OnKeyPressed(wxKeyEvent& event) {
+void amRelease::OnKeyPressed(wxKeyEvent& event) {
     if (event.GetKeyCode() == WXK_LEFT) {
         OnNext(wxCommandEvent());
         return;

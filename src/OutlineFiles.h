@@ -260,7 +260,7 @@ enum {
     TIMER_OutlineFiles
 };
 
-class amdOutlineFilesPanel : public wxSplitterWindow {
+class amOutlineFilesPanel : public wxSplitterWindow {
 private:
     wxPanel* m_leftPanel = nullptr;
     wxDataViewCtrl* m_files = nullptr;
@@ -279,7 +279,7 @@ private:
     wxTimer m_timer{ this, TIMER_OutlineFiles };
 
 public:
-    amdOutlineFilesPanel(wxWindow* parent);
+    amOutlineFilesPanel(wxWindow* parent);
     void Init();
 
     void GenerateCharacterBuffer(Character& character, wxRichTextBuffer& buffer);

@@ -15,10 +15,10 @@
 ///////////////////////////////////////////////////////////////////
 
 
-class amdProjectSQLDatabase : public wxSQLite3Database {
+class amProjectSQLDatabase : public wxSQLite3Database {
 public:
-	amdProjectSQLDatabase() = default;
-	amdProjectSQLDatabase(wxFileName& path);
+	amProjectSQLDatabase() = default;
+	amProjectSQLDatabase(wxFileName& path);
 
 	void Init();
 	void CreateAllTables();
@@ -30,22 +30,22 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 
-class amdMainFrame;
-class amdElementsNotebook;
-class amdChaptersNotebook;
-class amdOutline;
-class amdRelease;
+class amMainFrame;
+class amElementsNotebook;
+class amChaptersNotebook;
+class amOutline;
+class amRelease;
 
-class amdProjectManager {
+class amProjectManager {
 private:
-	amdProject m_project{};
-	amdProjectSQLDatabase m_storage;
+	amProject m_project{};
+	amProjectSQLDatabase m_storage;
 
-	amdMainFrame* m_mainFrame = nullptr;
-	amdElementsNotebook* m_elements = nullptr;
-	amdChaptersNotebook* m_chaptersNote = nullptr;
-	amdOutline* m_outline = nullptr;
-	amdRelease* m_release = nullptr;
+	amMainFrame* m_mainFrame = nullptr;
+	amElementsNotebook* m_elements = nullptr;
+	amChaptersNotebook* m_chaptersNote = nullptr;
+	amOutline* m_outline = nullptr;
+	amRelease* m_release = nullptr;
 
 	wxVector<Character> m_characters{};
 	wxVector<Location> m_locations{};
@@ -58,7 +58,7 @@ private:
 	bool m_isSaved = true;
 
 public:
-	amdProjectManager();
+	amProjectManager();
 
 	bool Init();
 
@@ -70,16 +70,16 @@ public:
 	void SetExecutablePath(const wxString& path);
 	void SetProjectFileName(const wxFileName& fileName);
 
-	amdMainFrame* GetMainFrame();
-	amdElementsNotebook* GetElementsNotebook();
-	amdChaptersNotebook* GetChaptersNotebook();
-	amdOutline* GetOutline();
-	amdRelease* GetRelease();
+	amMainFrame* GetMainFrame();
+	amElementsNotebook* GetElementsNotebook();
+	amChaptersNotebook* GetChaptersNotebook();
+	amOutline* GetOutline();
+	amRelease* GetRelease();
 
 	wxString GetPath(bool withSeparator);
-	wxString GetFullPath() { return m_project.amdFile.GetFullPath(); }
+	wxString GetFullPath() { return m_project.amFile.GetFullPath(); }
 	wxString GetExecutablePath(bool withSeparator) { return m_executablePath.GetPath(withSeparator); }
-	wxString GetTitle() { return m_project.amdFile.GetName(); }
+	wxString GetTitle() { return m_project.amFile.GetName(); }
 
 	void ClearPath();
 
@@ -93,10 +93,10 @@ public:
 	void SetLastSave();
 	bool GetLastSave();
 
-	void AddCharacter(Character& character, int pos = -1);
-	void AddLocation(Location& location, int pos = -1);
-	void AddItem(Item& item, int pos = -1);
-	void AddChapter(Chapter& chapter, int pos = -1);
+	void AddCharacter(Character& character, int book = -1);
+	void AddLocation(Location& location, int book = -1);
+	void AddItem(Item& item, int book = -1);
+	void AddChapter(Chapter& chapter, int book, int pos = -1);
 
 	void EditCharacter(Character& original, Character& edit, bool sort = false);
 	void EditLocation(Location& original, Location& edit, bool sort = false);

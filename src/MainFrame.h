@@ -8,18 +8,18 @@
 
 #include "ProjectManager.h"
 
-class amdMainFrame : public wxFrame {
+class amMainFrame : public wxFrame {
 private:
-    amdProjectManager* m_manager = nullptr;
+    amProjectManager* m_manager = nullptr;
 
     wxPanel* m_mainPanel = nullptr,
         * m_panel = nullptr;
 
     wxPanel* m_overview = nullptr;
-    amdElementsNotebook* m_elements = nullptr;
-    amdChaptersNotebook* m_chaptersNote = nullptr;
-    amdOutline* m_outline = nullptr;
-    amdRelease* m_release = nullptr;
+    amElementsNotebook* m_elements = nullptr;
+    amChaptersNotebook* m_chaptersNote = nullptr;
+    amOutline* m_outline = nullptr;
+    amRelease* m_release = nullptr;
 
     wxVector<wxButton*> m_mainButtons;
     wxPanel* m_selPanel = nullptr;
@@ -38,15 +38,15 @@ private:
     wxTimer m_timer{this, -1};
 
 public:
-    amdMainFrame(const wxString& title,
-        amdProjectManager* manager,
+    amMainFrame(const wxString& title,
+        amProjectManager* manager,
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize);
 
-    amdElementsNotebook* GetElementsNotebook();
-    amdChaptersNotebook* GetChaptersNotebook();
-    amdOutline* GetOutline();
-    amdRelease* GetRelease();
+    amElementsNotebook* GetElementsNotebook();
+    amChaptersNotebook* GetChaptersNotebook();
+    amOutline* GetOutline();
+    amRelease* GetRelease();
 
     void OnQuit(wxCommandEvent& event);
     void OnNewFile(wxCommandEvent& event);

@@ -13,15 +13,15 @@
 class ChapterGrid;
 struct Chapter;
 
-class amdChaptersNotebook : public wxNotebook {
+class amChaptersNotebook : public wxNotebook {
 private:
-    amdProjectManager* m_manager = nullptr;
+    amProjectManager* m_manager = nullptr;
     
     ChapterGrid* m_grid = nullptr;
     wxListView* m_list = nullptr;
 
 public:
-    amdChaptersNotebook(wxWindow* parent, amdProjectManager* manager);
+    amChaptersNotebook(wxWindow* parent, amProjectManager* manager);
 
     void AddChapter(Chapter& chapter, int pos = -1, bool Reposition = true);
     void AddToList(Chapter& chapter, int pos = -1);

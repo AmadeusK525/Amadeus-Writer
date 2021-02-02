@@ -18,12 +18,12 @@
 
 using std::list;
 
-struct amdChapterWriterNotebook;
+struct amChapterWriterNotebook;
 
-class amdChapterWriter : public wxFrame {
+class amChapterWriter : public wxFrame {
 private:
-    amdProjectManager* m_manager = nullptr;
-    amdChapterWriterNotebook* m_cwNotebook = nullptr;
+    amProjectManager* m_manager = nullptr;
+    amChapterWriterNotebook* m_cwNotebook = nullptr;
 
     wxTextCtrl* m_summary = nullptr,
         * m_note = nullptr,
@@ -58,7 +58,7 @@ public:
     wxStatusBar* m_statusBar = nullptr;
 
 public:
-    amdChapterWriter(wxWindow* parent, amdProjectManager* manager, int numb);
+    amChapterWriter(wxWindow* parent, amProjectManager* manager, int numb);
 
     void ClearNote(wxCommandEvent& event);
     void AddNote(wxCommandEvent& event);
@@ -120,8 +120,8 @@ enum {
 };
 
 
-struct amdChapterWriterNotebook : public wxAuiNotebook {
-    amdChapterWriter* parent = nullptr;
+struct amChapterWriterNotebook : public wxAuiNotebook {
+    amChapterWriter* parent = nullptr;
 
     wxToolBar* contentTool = nullptr;
     wxComboBox* fontSize = nullptr;
@@ -136,7 +136,7 @@ struct amdChapterWriterNotebook : public wxAuiNotebook {
     wxPanel* selNote = nullptr;
     wxSize notesSize{};
 
-    amdChapterWriterNotebook::amdChapterWriterNotebook(wxWindow* parent);
+    amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent);
 
     void OnText(wxCommandEvent& event);
     void OnKeyDown(wxRichTextEvent& event);

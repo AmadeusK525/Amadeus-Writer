@@ -16,7 +16,7 @@ EVT_CLOSE(ChapterCreator::CheckClose)
 
 END_EVENT_TABLE()
 
-ChapterCreator::ChapterCreator(wxWindow* parent, amdProjectManager* manager) :
+ChapterCreator::ChapterCreator(wxWindow* parent, amProjectManager* manager) :
     wxFrame(parent, wxID_ANY, "Create chapter", wxDefaultPosition, wxSize(500, 350), wxMINIMIZE_BOX | wxSYSTEM_MENU |
     wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT),
     m_manager(manager) {
@@ -64,7 +64,7 @@ ChapterCreator::ChapterCreator(wxWindow* parent, amdProjectManager* manager) :
     m_nchapPanel2->SetBackgroundColour(wxColour(40, 40, 40));
     m_nchapPanel2->Hide();
 
-    m_nchapList = new amdDragList(m_nchapPanel2, wxDefaultSize);
+    m_nchapList = new amDragList(m_nchapPanel2, wxDefaultSize);
     m_nchapList->SetBackgroundColour(wxColour(70, 70, 70));
     m_nchapList->SetForegroundColour(wxColour(240, 240, 240));
 

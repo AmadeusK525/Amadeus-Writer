@@ -8,17 +8,17 @@
 #include "ProjectManager.h"
 
 
-class amdRelease : public wxPanel {
+class amRelease : public wxPanel {
 private:
-    amdProjectManager* m_manager = nullptr;
+    amProjectManager* m_manager = nullptr;
 
     //wxRichTextPrinting* print = nullptr;
     wxPanel* m_panel = nullptr;
     wxBoxSizer* m_pagesSizer = nullptr;
 
 public:
-    amdRelease(wxWindow* parent);
-    ~amdRelease();
+    amRelease(wxWindow* parent);
+    ~amRelease();
 
     void UpdateContent();
 
