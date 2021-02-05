@@ -92,11 +92,6 @@ struct Book {
         synopsys{ "" };
 
     wxVector<Section> sections{};
-
-	wxVector<Character> characters{};
-	wxVector<Location> locations{};
-	wxVector<Item> items{};
-	wxVector<Chapter> chapters{};
 };
 
 
@@ -108,16 +103,15 @@ struct Book {
 struct amProject {
 	wxVector<Book> books{};
 
-    // Global Elements
-    wxVector<Character> gCharacters{};
-    wxVector<Location> gLocations{};
-    wxVector<Item> gItems{};
+    wxVector<Character> characters{};
+    wxVector<Location> locations{};
+    wxVector<Item> items{};
 
     wxFileName amFile{};
 
-    wxVector<Character> GetCharacters(int bookPos);
-    wxVector<Location> GetLocations(int bookPos);
-    wxVector<Item> GetItems(int bookPos);
+    wxVector<Character>& GetCharacters(int bookPos) { return characters; }
+    wxVector<Location>& GetLocations(int bookPos) { return locations; }
+    wxVector<Item>& GetItems(int bookPos) { return items; }
     wxVector<Chapter> GetChapters(int bookPos);
 };
 
