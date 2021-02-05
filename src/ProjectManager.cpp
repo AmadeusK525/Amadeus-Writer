@@ -10,6 +10,7 @@
 #include "ElementShowcases.h"
 
 #include <wx\progdlg.h>
+#include <wx\mstream.h>
 #include <wx\utils.h>
 
 ///////////////////////////////////////////////////////////////////
@@ -24,118 +25,285 @@ amProjectSQLDatabase::amProjectSQLDatabase(wxFileName& path) {
 	}
 }
 
-void amProjectSQLDatabase::Init() {
+bool amProjectSQLDatabase::Init() {
 	if (!TableExists("characters")) {
 		CreateAllTables();
+		return false;
 	}
+
+	return true;
 }
 
 void amProjectSQLDatabase::CreateAllTables() {
-	wxString tCharacters("CREATE TABLE characters (id INTEGER PRIMARY KEY, "
-		"name TEXT UNIQUE NOT NULL, "
-		"age INTEGER UNSIGNED, "
-		"sex TEXT NOT NULL, "
-		"nationality TEXT, "
-		"height TEXT, "
-		"nickname TEXT, "
-		"appearance TEXT, "
-		"personality TEXT, "
-		"backstory TEXT, "
-		"role INTEGER, "
-		"image BLOB);");
+	wxArrayString tCharacters;
+	tCharacters.Add("id INTEGER PRIMARY KEY");
+	tCharacters.Add("name TEXT UNIQUE NOT NULL");
+	tCharacters.Add("age TEXT");
+	tCharacters.Add("sex TEXT NOT NULL");
+	tCharacters.Add("nationality TEXT");
+	tCharacters.Add("height TEXT");
+	tCharacters.Add("nickname TEXT");
+	tCharacters.Add("appearance TEXT");
+	tCharacters.Add("personality TEXT");
+	tCharacters.Add("backstory TEXT");
+	tCharacters.Add("role INTEGER");
+	tCharacters.Add("image BLOB");
 
-	wxString tLocations("CREATE TABLE locations (id INTEGER PRIMARY KEY,"
-		"name TEXT UNIQUE NOT NULL, "
-		"age INTEGER, "
-		"general TEXT, "
-		"natural TEXT, "
-		"architecture TEXT, "
-		"politics TEXT, "
-		"economy TEXT, "
-		"culture TEXT, "
-		"role INTEGER, "
-		"image BLOB);");
+	wxArrayString tCharactersCustom;
+	tCharactersCustom.Add("id INTEGER PRIMARY KEY");
+	tCharactersCustom.Add("name TEXT");
+	tCharactersCustom.Add("content TEXT");
+	tCharactersCustom.Add("character_id INTEGER");
+	tCharactersCustom.Add("FOREIGN KEY(character_id) REFERENCES characters(id)");
 
-	wxString tItems("CREATE TABLE items (id INTEGER PRIMARY KEY,"
-		"name TEXT UNIQUE NOT NULL,"
-		"general TEXT,"
-		"origin TEXT,"
-		"backstory TEXT,"
-		"appearance TEXT,"
-		"usage TEXT,"
-		"width TEXT,"
-		"height TEXT,"
-		"depth TEXT,"
-		"isMagic INTEGER,"
-		"isManMade INTEGER,"
-		"image BLOB);");
+	wxArrayString tLocations;
+	tLocations.Add("id INTEGER PRIMARY KEY");
+	tLocations.Add("name TEXT UNIQUE NOT NULL");
+	tLocations.Add("age INTEGER");
+	tLocations.Add("general TEXT");
+	tLocations.Add("natural TEXT");
+	tLocations.Add("architecture TEXT");
+	tLocations.Add("politics TEXT");
+	tLocations.Add("economy TEXT");
+	tLocations.Add("culture TEXT");
+	tLocations.Add("role INTEGER");
+	tLocations.Add("image BLOB");
 
-	wxString tBooks("CREATE TABLE books (id INTEGER PRIMARY KEY,"
-		"title TEXT NOT NULL,"
-		"author TEXT,"
-		"genre TEXT,"
-		"description TEXT,"
-		"synopsys TEXT);");
+	wxArrayString tItems; 
+	tItems.Add("id INTEGER PRIMARY KEY");
+	tItems.Add("name TEXT UNIQUE NOT NULL");
+	tItems.Add("general TEXT");
+	tItems.Add("origin TEXT");
+	tItems.Add("backstory TEXT");
+	tItems.Add("appearance TEXT");
+	tItems.Add("usage TEXT");
+	tItems.Add("width TEXT");
+	tItems.Add("height TEXT");
+	tItems.Add("depth TEXT");
+	tItems.Add("isMagic INTEGER");
+	tItems.Add("isManMade INTEGER");
+	tItems.Add("image BLOB");
 
-	wxString tSections("CREATE TABLE sections (id INTEGER PRIMARY KEY,"
-		"name TEXT,"
-		"description TEXT,"
-		"position INTEGER,"
-		"type INTEGER,"
-		"book_id INTEGER,"
-		"FOREIGN KEY(book_id) REFERENCES books(id));");
+	wxArrayString tBooks;
+	tBooks.Add("id INTEGER PRIMARY KEY");
+	tBooks.Add("name TEXT NOT NULL");
+	tBooks.Add("author TEXT");
+	tBooks.Add("genre TEXT");
+	tBooks.Add("description TEXT");
+	tBooks.Add("synopsys TEXT");
 
-	wxString tChapters("CREATE TABLE chapters (id INTEGER PRIMARY KEY,"
-		"name TEXT NOT NULL,"
-		"synopsys TEXT,"
-		"position INTEGER,"
-		"section_id INTEGER,"
-		"FOREIGN KEY(section_id) REFERENCES sections(id));");
+	wxArrayString tSections;
+	tSections.Add("id INTEGER PRIMARY KEY");
+	tSections.Add("name TEXT");
+	tSections.Add("description TEXT");
+	tSections.Add("position INTEGER");
+	tSections.Add("type INTEGER");
+	tSections.Add("book_id INTEGER");
+	tSections.Add("FOREIGN KEY(book_id) REFERENCES books(id)");
 
-	wxString tScenes("CREATE TABLE scenes (id INTEGER PRIMARY KEY,"
-		"name TEXT,"
-		"content TEXT,"
-		"chapter_id INTEGER NOT NULL,"
-		"character_id INTEGER,"
-		"FOREIGN KEY(chapter_id) REFERENCES chapters(id),"
-		"FOREIGN KEY (character_id) REFERENCES characters(id)");
+	wxArrayString tChapters;
+	tChapters.Add("id INTEGER PRIMARY KEY");
+	tChapters.Add("name TEXT NOT NULL");
+	tChapters.Add("synopsys TEXT");
+	tChapters.Add("position INTEGER");
+	tChapters.Add("section_id INTEGER");
+	tChapters.Add("FOREIGN KEY(section_id) REFERENCES sections(id)");
+
+	wxArrayString tScenes;
+	tScenes.Add("id INTEGER PRIMARY KEY");
+	tScenes.Add("name TEXT");
+	tScenes.Add("content TEXT");
+	tScenes.Add("chapter_id INTEGER NOT NULL");
+	tScenes.Add("character_id INTEGER");
+	tScenes.Add("FOREIGN KEY(chapter_id) REFERENCES chapters(id)");
+	tScenes.Add("FOREIGN KEY (character_id) REFERENCES characters(id)");
 
 	//////////////////// MANY-TO-MANY TABLES ////////////////////
 
-	wxString tPOVs("CREATE TABLE characters_scenes ("
-		"character_id INTEGER,"
-		"scene_id INTEGER,"
-		"FOREIGN KEY(character_id) REFERENCES characters(id),"
-		"FOREIGN KEY(scene_id) REFERENCES scenes(id));");
+	wxArrayString tCharactersInChapters;
+	tCharactersInChapters.Add("character_id INTEGER");
+	tCharactersInChapters.Add("chapter_id INTEGER");
+	tCharactersInChapters.Add("FOREIGN KEY(character_id) REFERENCES characters(id)");
+	tCharactersInChapters.Add("FOREIGN KEY(chapter_id) REFERENCES chapters(id)");
 
-	wxString tCharactersInChapters("CREATE TABLE characters_chapters ("
-		"character_id INTEGER,"
-		"chapter_id INTEGER,"
-		"FOREIGN KEY(character_id) REFERENCES characters(id),"
-		"FOREIGN KEY(chapter_id) REFERENCES chapters(id));");
+	wxArrayString tLocationsInChapters;
+	tLocationsInChapters.Add("location_id INTEGER");
+	tLocationsInChapters.Add("chapter_id INTEGER");
+	tLocationsInChapters.Add("FOREIGN KEY(location_id) REFERENCES location(id)");
+	tLocationsInChapters.Add("FOREIGN KEY(chapter_id) REFERENCES chapters(id)");
 
-	wxString tLocationsInChapters("CREATE TABLE locations_chapters ("
-		"location_id INTEGER,"
-		"chapter_id INTEGER,"
-		"FOREIGN KEY(location_id) REFERENCES location(id),"
-		"FOREIGN KEY(chapter_id) REFERENCES chapters(id));");
+	wxArrayString tItemsInChapters;
+	tItemsInChapters.Add("item_id INTEGER");
+	tItemsInChapters.Add("chapter_id INTEGER");
+	tItemsInChapters.Add("FOREIGN KEY(item_id) REFERENCES item(id)");
+	tItemsInChapters.Add("FOREIGN KEY(chapter_id) REFERENCES chapters(id)");
 
-	wxString tItemsInChapters("CREATE TABLE items_chapters ("
-		"item_id INTEGER,"
-		"chapter_id INTEGER,"
-		"FOREIGN KEY(item_id) REFERENCES item(id),"
-		"FOREIGN KEY(chapter_id) REFERENCES chapters(id));");
+	CreateTable("characters", tCharacters);
+	CreateTable("characters_custom", tCharactersCustom);
+	CreateTable("locations", tLocations);
+	CreateTable("items", tItems);
+	CreateTable("books", tBooks);
+	CreateTable("sections", tSections);
+	CreateTable("chapters", tChapters);
+	CreateTable("characters_chapters", tCharactersInChapters);
+	CreateTable("locations_chaptes", tLocationsInChapters);
+	CreateTable("items_chapters", tItemsInChapters);
+}
 
-	ExecuteUpdate(tCharacters);
-	ExecuteUpdate(tLocations);
-	ExecuteUpdate(tItems);
-	ExecuteUpdate(tBooks);
-	ExecuteUpdate(tSections);
-	ExecuteUpdate(tChapters);
-	ExecuteUpdate(tPOVs);
-	ExecuteUpdate(tCharactersInChapters);
-	ExecuteUpdate(tLocationsInChapters);
-	ExecuteUpdate(tItemsInChapters);
+int amProjectSQLDatabase::GetDocumentId(amDocument& document) {
+	wxString query("SELECT DISTINCT id FROM ");
+	query << document.tableName;
+	query << " WHERE name = '" << document.name << "'";
+
+	wxSQLite3ResultSet result = ExecuteQuery(query);
+
+	int id = -1;
+	int count = 0;
+
+	while (result.NextRow()) {
+		id = result.GetInt("id");
+		count++;
+	}
+
+	if (count > 1)
+		throw ("There was an error.");
+
+	return id;
+}
+
+bool amProjectSQLDatabase::CreateTable(const wxString& tableName, const wxArrayString& arguments,
+	bool ifNotExists) {
+	if (arguments.IsEmpty()) {
+		wxMessageBox("You can't create a table with no arguments!");
+		return false;
+	}
+
+	wxString update("CREATE TABLE ");
+	if (ifNotExists)
+		update << "IF NOT EXISTS ";
+
+	update << tableName;
+	update << " (";
+
+	bool first = true;
+
+	for (auto& it : arguments) {
+		if (!first)
+			update << ", ";
+
+		update << it;
+		first = false;
+	}
+
+	update << ");";
+	ExecuteUpdate(update);
+
+	return true;
+}
+
+bool amProjectSQLDatabase::InsertDocument(amDocument& document) {
+	wxSQLite3Statement statement = ConstructInsertStatement(document);
+	
+	statement.ExecuteUpdate();
+
+	for (auto& it : document.documents) {
+		if (it.needsForeign)
+			it.foreignKey.second = GetDocumentId(document);
+
+		InsertDocument(it);
+	}
+
+	return true;
+}
+
+bool amProjectSQLDatabase::UpdateDocument(const wxString& tableName, int id, amDocument& document) {
+
+	return false;
+}
+
+wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& document) {
+	wxString insert("INSERT INTO ");
+	insert << document.tableName << " (";
+
+	wxString columnNames;
+	wxString valueNames;
+
+	bool first = true;
+
+	if (document.name != "") {
+		if (!first) {
+			columnNames << ", ";
+			valueNames << ", ";
+		}
+
+		columnNames << "name";
+		valueNames << "'" << document.name << "'";
+
+		first = false;
+	}
+
+	for (auto& it : document.integers) {
+		if (!first) {
+			columnNames << ", ";
+			valueNames << ", ";
+		}
+
+		columnNames << it.first;
+		valueNames << it.second;
+
+		first = false;
+	}
+
+	for (auto& it : document.strings) {
+		if (!first) {
+			columnNames << ", ";
+			valueNames << ", ";
+		}
+
+		columnNames << it.first;
+		valueNames << "'" << it.second << "'";
+
+		first = false;
+	}
+
+	for (auto& it : document.memBuffers) {
+		if (!first) {
+			columnNames << ", ";
+			valueNames << ", ";
+		}
+
+		columnNames << it.first;
+		valueNames << "?";
+
+		first = false;
+	}
+
+	if (document.needsForeign) {
+		if (!first) {
+			columnNames << ", ";
+			valueNames << ", ";
+		}
+
+		columnNames << document.foreignKey.first;
+		valueNames << document.foreignKey.second;
+	}
+
+	insert << columnNames << ") VALUES (" << valueNames << ");";
+
+	try {
+		wxSQLite3Statement statement = PrepareStatement(insert);
+
+		int i = 1;
+
+		for (auto& it : document.memBuffers)
+			statement.Bind(i++, it.second);
+
+		return statement;
+	} catch (wxSQLite3Exception& e){
+		wxMessageBox(e.GetMessage());
+	}
+
+	return wxSQLite3Statement();
 }
 
 
@@ -153,13 +321,6 @@ bool amProjectManager::Init() {
 		return false;
 
 	if (m_project.amFile.IsOk()) {
-		if (!m_project.amFile.FileExists()) {
-			Book book;
-			book.title = m_project.amFile.GetName();
-
-			m_project.books.push_back(book);
-		}
-
 		if (!m_mainFrame) {
 			m_mainFrame = new amMainFrame("New Amadeus project - " + m_project.amFile.GetName(),
 				this, wxDefaultPosition, wxDefaultSize);
@@ -170,12 +331,16 @@ bool amProjectManager::Init() {
 			m_release = (m_mainFrame->GetRelease());
 		}
 
-		try {
-			wxSQLite3Database::InitializeSQLite();
-			m_storage.Open(m_project.amFile.GetFullPath());
-			m_storage.Init();
-		} catch (wxSQLite3Exception& e) {
-			wxMessageBox(wxString("Exception thrown - ") << e.GetMessage());
+		wxSQLite3Database::InitializeSQLite();
+		m_storage.Open(m_project.amFile.GetFullPath());
+
+		if (!m_storage.Init()) {
+			Book book;
+			book.title = m_project.amFile.GetName();
+
+			m_project.books.push_back(book);
+		} else {
+			LoadProject();
 		}
 
 		m_isInitialized = true;
@@ -313,98 +478,10 @@ bool amProjectManager::DoLoadProject(const wxString& path) {
 	// This is the load function. It works by getting the amount of characters
 	// (written at the beginning of the "saveAs" function), then calling the load
 	// character function that amount of times. It does that for locations, chapters, notes and the corkboard as well.
-	std::ifstream file(path.ToStdString(), std::ios::in | std::ios::binary);
 
-	if (!file.is_open()) {
-		wxMessageBox("File could not be loaded.");
-		ClearPath();
-		return false;
-	}
 	SetProjectFileName(path);
 
 	m_mainFrame->OnNewFile(wxCommandEvent());
-
-	int progressSize = 0;
-	int currentSize = 0;
-
-	char charSize, locSize, chapSize;
-
-	file.read(&charSize, sizeof(char));
-	file.read(&locSize, sizeof(char));
-	file.read(&chapSize, sizeof(char));
-
-	progressSize = charSize + locSize + chapSize;
-
-	wxProgressDialog progress("Loading project...", m_project.amFile.GetFullPath(), progressSize, m_mainFrame,
-		wxPD_APP_MODAL | wxPD_AUTO_HIDE | wxPD_SMOOTH);
-
-	wxString cImagePath(GetPath(true) + "Images\\Characters\\");
-	wxString lImagePath(GetPath(true) + "Images\\Locations\\");
-
-	m_characters.clear();
-	for (int i = 0; i < charSize; i++) {
-		Character character;
-		character.Load(file);
-
-		if (wxFileName::DirExists(cImagePath.ToStdString() + character.name.ToStdString() + ".jpg")) {
-			character.image.LoadFile(cImagePath +
-				character.name + ".jpg");
-		}
-
-		m_characters.push_back(character);
-		progress.Update(++currentSize);
-	}
-
-	char compType;
-	file.read(&compType, sizeof(char));
-	Character::cCompType = (CompType)compType;
-
-	m_locations.clear();
-	for (int i = 0; i < locSize; i++) {
-		Location location;
-		location.Load(file);
-
-		if (wxFileName::Exists(lImagePath.ToStdString() + location.name.ToStdString() + ".jpg")) {
-			location.image.LoadFile(lImagePath +
-				location.name + ".jpg");
-		}
-
-		m_locations.push_back(location);
-		progress.Update(++currentSize);
-	}
-
-	file.read(&compType, sizeof(char));
-	Location::lCompType = (CompType)compType;
-
-	for (int i = 0; i < chapSize; i++) {
-		Chapter chapter;
-		chapter.Load(file);
-		m_chapters.push_back(chapter);
-		m_chaptersNote->AddToList(chapter, i);
-		m_chaptersNote->GetGrid()->AddButton();
-
-		progress.Update(++currentSize);
-	}
-	RedeclareChapsInElements();
-	file.close();
-
-	m_outline->LoadOutline(++currentSize, &progress);
-	m_release->UpdateContent();
-
-	m_mainFrame->SetTitle(m_project.amFile.GetName() + " - Amadeus Writer");
-	m_elements->SetSearchAC(wxBookCtrlEvent());
-
-	wxCommandEvent event;
-	event.SetInt(Character::cCompType);
-	m_elements->OnCharactersSortBy(event);
-
-	event.SetInt(Location::lCompType);
-	m_elements->OnLocationsSortBy(event);
-
-	m_mainFrame->UpdateElements(wxCommandEvent());
-
-	progress.Update(++progressSize);
-	progress.Hide();
 
 	m_isSaved = true;
 	SetLastSave();
@@ -510,6 +587,8 @@ void amProjectManager::AddCharacter(Character& character, int book) {
 	m_elements->SetSearchAC(wxBookCtrlEvent());
 
 	m_outline->GetOutlineFiles()->AppendCharacter(character);
+
+	m_storage.InsertDocument(character.GenerateDocument());
 	SetSaved(false);
 }
 

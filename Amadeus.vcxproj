@@ -464,6 +464,7 @@
     <ClInclude Include="src\ChaptersGrid.h" />
     <ClInclude Include="src\ChapterWriter.h" />
     <ClInclude Include="src\Corkboard.h" />
+    <ClInclude Include="src\Document.h" />
     <ClInclude Include="src\DragList.h" />
     <ClInclude Include="src\ElementCreators.h" />
     <ClInclude Include="src\StoryElements.h" />

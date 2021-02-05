@@ -1,6 +1,9 @@
 #include "StoryElements.h"
 #include "BookElements.h"
 
+#include <wx\mstream.h>
+#include <wx\memory.h>
+
 CompType Element::elCompType = CompRole;
 CompType Character::cCompType = CompRole;
 CompType Location::lCompType = CompRole;
@@ -228,6 +231,48 @@ void Element::operator=(const Element& other) {
 //        role = (Role)size;
 //    }
 //}
+
+amDocument Character::GenerateDocument() {
+    amDocument document;
+    document.name = name;
+    document.tableName = "characters";
+
+    document.integers["role"] = role;
+    
+    document.strings["sex"] = sex;
+    document.strings["age"] = age;
+    document.strings["nationality"] = nat;
+    document.strings["height"] = height;
+    document.strings["nickname"] = nick;
+    document.strings["appearance"] = appearance;
+    document.strings["personality"] = personality;
+    document.strings["backstory"] = backstory;
+
+    if (image.IsOk()) {
+        wxMemoryOutputStream stream;
+        image.SaveFile(stream, image.GetType());
+
+        wxMemoryBuffer buffer;
+        stream.CopyTo(buffer.GetWriteBuf(stream.GetLength()), stream.GetLength());
+
+        document.memBuffers["image"] = buffer;
+    }
+
+    for (auto& it : custom) {
+        amDocument customDoc;
+        customDoc.tableName = "characters_custom";
+
+        customDoc.strings["name"] = it.first;
+        customDoc.strings["content"] = it.second;
+
+        customDoc.needsForeign = true;
+        customDoc.foreignKey.first = "character_id";
+
+        document.documents.push_back(customDoc);
+    }
+
+    return document;
+}
 
 bool Character::operator<(const Character& other) const {
     int i, j;
