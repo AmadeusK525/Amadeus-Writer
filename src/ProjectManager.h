@@ -103,10 +103,10 @@ public:
 	// with no need to load it. Makes things more convenient.
 	void SetLastSave();
 	bool GetLastSave();
-
-	void AddCharacter(Character& character, int book = -1);
-	void AddLocation(Location& location, int book = -1);
-	void AddItem(Item& item, int book = -1);
+	
+	void AddCharacter(Character& character);
+	void AddLocation(Location& location);
+	void AddItem(Item& item);
 	void AddChapter(Chapter& chapter, int book, int pos = -1);
 
 	void EditCharacter(Character& original, Character& edit, bool sort = false);

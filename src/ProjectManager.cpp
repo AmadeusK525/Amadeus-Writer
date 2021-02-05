@@ -69,6 +69,13 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tLocations.Add("role INTEGER");
 	tLocations.Add("image BLOB");
 
+	wxArrayString tLocationsCustom;
+	tCharactersCustom.Add("id INTEGER PRIMARY KEY");
+	tCharactersCustom.Add("name TEXT");
+	tCharactersCustom.Add("content TEXT");
+	tCharactersCustom.Add("location_id INTEGER");
+	tCharactersCustom.Add("FOREIGN KEY(location_id) REFERENCES locations(id)");
+
 	wxArrayString tItems; 
 	tItems.Add("id INTEGER PRIMARY KEY");
 	tItems.Add("name TEXT UNIQUE NOT NULL");
@@ -83,6 +90,13 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tItems.Add("isMagic INTEGER");
 	tItems.Add("isManMade INTEGER");
 	tItems.Add("image BLOB");
+
+	wxArrayString tItemssCustom;
+	tCharactersCustom.Add("id INTEGER PRIMARY KEY");
+	tCharactersCustom.Add("name TEXT");
+	tCharactersCustom.Add("content TEXT");
+	tCharactersCustom.Add("item_id INTEGER");
+	tCharactersCustom.Add("FOREIGN KEY(item_id) REFERENCES items(id)");
 
 	wxArrayString tBooks;
 	tBooks.Add("id INTEGER PRIMARY KEY");
@@ -141,7 +155,9 @@ void amProjectSQLDatabase::CreateAllTables() {
 	CreateTable("characters", tCharacters);
 	CreateTable("characters_custom", tCharactersCustom);
 	CreateTable("locations", tLocations);
+	CreateTable("locations_custom", tCharactersCustom);
 	CreateTable("items", tItems);
+	CreateTable("items_custom", tCharactersCustom);
 	CreateTable("books", tBooks);
 	CreateTable("sections", tSections);
 	CreateTable("chapters", tChapters);
@@ -475,10 +491,6 @@ bool amProjectManager::DoSaveProject(const wxString& path) {
 }
 
 bool amProjectManager::DoLoadProject(const wxString& path) {
-	// This is the load function. It works by getting the amount of characters
-	// (written at the beginning of the "saveAs" function), then calling the load
-	// character function that amount of times. It does that for locations, chapters, notes and the corkboard as well.
-
 	SetProjectFileName(path);
 
 	m_mainFrame->OnNewFile(wxCommandEvent());
@@ -574,14 +586,9 @@ bool amProjectManager::GetLastSave() {
 	}
 }
 
-void amProjectManager::AddCharacter(Character& character, int book) {
-	if (book == -1) {
-		m_project.gCharacters.push_back(character);
-		wxVectorSort(m_project.gCharacters);
-	} else {
-		m_project.books[book].characters.push_back(character);
-		wxVectorSort(m_project.books[book].characters);
-	}
+void amProjectManager::AddCharacter(Character& character) {
+	m_project.characters.push_back(character);
+	wxVectorSort(m_project.characters);
 
 	m_elements->UpdateCharacterList();
 	m_elements->SetSearchAC(wxBookCtrlEvent());
@@ -592,14 +599,9 @@ void amProjectManager::AddCharacter(Character& character, int book) {
 	SetSaved(false);
 }
 
-void amProjectManager::AddLocation(Location& location, int book) {
-	if (book == -1) {
-		m_project.gLocations.push_back(location);
-		wxVectorSort(m_project.gLocations);
-	} else {
-		m_project.books[book].locations.push_back(location);
-		wxVectorSort(m_project.books[book].locations);
-	}
+void amProjectManager::AddLocation(Location& location) {
+	m_project.locations.push_back(location);
+	wxVectorSort(m_project.locations);
 
 	m_elements->UpdateLocationList();
 	m_elements->SetSearchAC(wxBookCtrlEvent());
@@ -608,14 +610,9 @@ void amProjectManager::AddLocation(Location& location, int book) {
 	SetSaved(false);
 }
 
-void amProjectManager::AddItem(Item& item, int book) {
-	if (book == -1) {
-		m_project.gItems.push_back(item);
-		wxVectorSort(m_project.gItems);
-	} else {
-		m_project.books[book].items.push_back(item);
-		wxVectorSort(m_project.books[book].items);
-	}
+void amProjectManager::AddItem(Item& item) {
+	m_project.items.push_back(item);
+	wxVectorSort(m_project.items);
 
 	m_elements->UpdateItemList();
 	m_elements->SetSearchAC(wxBookCtrlEvent());
