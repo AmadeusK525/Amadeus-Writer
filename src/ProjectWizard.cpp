@@ -21,7 +21,7 @@ amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id) {
 	label->SetForegroundColour(wxColour(255, 255, 255));
 	label->SetFont(wxFontInfo(10).Bold());
 	m_dirPicker = new wxDirPickerCtrl(page2, -1, "", "Select a folder", wxDefaultPosition,
-		wxDefaultSize, wxDIRP_DEFAULT_STYLE | wxDIRP_SMALL | wxDIRP_DIR_MUST_EXIST);
+		wxDefaultSize, wxDIRP_SMALL | wxDIRP_DIR_MUST_EXIST);
 
 	wxStaticText* label2 = new wxStaticText(page3, -1, _("Please select an .amp file for\nloading your project:"));
 	label2->SetForegroundColour(wxColour(255, 255, 255));

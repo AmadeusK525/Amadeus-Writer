@@ -1,6 +1,5 @@
 #include "ChaptersGrid.h"
 #include "ChapterWriter.h"
-#include "MainFrame.h"
 
 #include "MyApp.h"
 

@@ -6,6 +6,8 @@
 
 #include <fstream>
 
+#include "Document.h"
+
 struct Chapter;
 
 using std::pair;
@@ -71,6 +73,8 @@ struct Character : public Element {
 	static CompType cCompType;
 
 	Character() = default;
+
+	amDocument GenerateDocument();
 
 	virtual void Save(std::ofstream& out) {}
 	virtual void Load(std::ifstream& in) {}

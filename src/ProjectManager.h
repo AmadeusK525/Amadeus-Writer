@@ -3,12 +3,14 @@
 #pragma once
 
 #include <wx\wx.h>
+#include <wx\sstream.h>
 #include <wx\filename.h>
 
 #include <wx\wxsqlite3.h>
 
 #include "ProjectWizard.h"
 #include "BookElements.h"
+#include "Document.h"
 
 ///////////////////////////////////////////////////////////////////
 //////////////////////////// SQLStorage ///////////////////////////
@@ -20,8 +22,17 @@ public:
 	amProjectSQLDatabase() = default;
 	amProjectSQLDatabase(wxFileName& path);
 
-	void Init();
+	bool Init();
 	void CreateAllTables();
+
+	int GetDocumentId(amDocument& document);
+
+	bool CreateTable(const wxString& tableName, const wxArrayString& arguments, bool ifNotExists = true);
+
+	bool InsertDocument(amDocument& document);
+	bool UpdateDocument(const wxString& tableName, int id, amDocument& document);
+
+	wxSQLite3Statement ConstructInsertStatement(amDocument& document);
 };
 
 
