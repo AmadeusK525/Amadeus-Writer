@@ -59,7 +59,6 @@ void amProjectSQLDatabase::CreateAllTables() {
 	wxArrayString tLocations;
 	tLocations.Add("id INTEGER PRIMARY KEY");
 	tLocations.Add("name TEXT UNIQUE NOT NULL");
-	tLocations.Add("age INTEGER");
 	tLocations.Add("general TEXT");
 	tLocations.Add("natural TEXT");
 	tLocations.Add("architecture TEXT");
@@ -607,6 +606,7 @@ void amProjectManager::AddLocation(Location& location) {
 	m_elements->SetSearchAC(wxBookCtrlEvent());
 
 	m_outline->GetOutlineFiles()->AppendLocation(location);
+	m_storage.InsertDocument(location.GenerateDocument());
 	SetSaved(false);
 }
 
@@ -618,6 +618,7 @@ void amProjectManager::AddItem(Item& item) {
 	m_elements->SetSearchAC(wxBookCtrlEvent());
 
 	m_outline->GetOutlineFiles()->AppendItem(item);
+	m_storage.InsertDocument(item.GenerateDocument());
 	SetSaved(false);
 }
 

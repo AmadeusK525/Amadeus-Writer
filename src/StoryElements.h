@@ -76,9 +76,6 @@ struct Character : public Element {
 
 	amDocument GenerateDocument();
 
-	virtual void Save(std::ofstream& out) {}
-	virtual void Load(std::ifstream& in) {}
-
 	bool operator<(const Character& other) const;
 	void operator=(const Character& other);
 };
@@ -97,8 +94,7 @@ struct Location : public Element {
 
 	Location() = default;
 
-	virtual void Save(std::ofstream& out) {}
-	virtual void Load(std::ifstream& in) {}
+	amDocument GenerateDocument();
 
 	bool operator<(const Location& other) const;
 	void operator=(const Location& other);
@@ -120,6 +116,8 @@ struct Item : public Element {
 	bool isManMade{ true };
 
 	static CompType iCompType;
+
+	amDocument GenerateDocument();
 
 	virtual void Save(std::ofstream& out) {}
 	virtual void Load(std::ifstream& in) {}
