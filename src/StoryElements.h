@@ -51,8 +51,7 @@ struct Element {
 
 	Element() = default;
 
-	virtual void Save(std::ofstream& out) = 0;
-	virtual void Load(std::ifstream& in) = 0;
+	virtual amDocument GenerateDocument() = 0;
 
 	bool operator<(const Element& other) const;
 	bool operator==(const Element& other) const;
@@ -74,7 +73,7 @@ struct Character : public Element {
 
 	Character() = default;
 
-	amDocument GenerateDocument();
+	virtual amDocument GenerateDocument();
 
 	bool operator<(const Character& other) const;
 	void operator=(const Character& other);
@@ -94,7 +93,7 @@ struct Location : public Element {
 
 	Location() = default;
 
-	amDocument GenerateDocument();
+	virtual amDocument GenerateDocument();
 
 	bool operator<(const Location& other) const;
 	void operator=(const Location& other);
@@ -117,10 +116,7 @@ struct Item : public Element {
 
 	static CompType iCompType;
 
-	amDocument GenerateDocument();
-
-	virtual void Save(std::ofstream& out) {}
-	virtual void Load(std::ifstream& in) {}
+	virtual amDocument GenerateDocument();
 
 	bool operator<(const Item& other) const;
 	void operator=(const Item& other);
