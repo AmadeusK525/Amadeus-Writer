@@ -206,7 +206,7 @@ void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event)) {
 }
 
 void amElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event)) {
-    auto it = m_manager->GetCharacters(0).begin();
+    auto it = m_manager->GetCharacters().begin();
     for (int i = 0; i < m_charList->GetFirstSelected(); i++) {
         it++;
     }
@@ -222,7 +222,7 @@ void amElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void amElementsNotebook::OnEditCharName(wxListEvent& event) {
-    auto it = m_manager->GetCharacters(0).begin();
+    auto it = m_manager->GetCharacters().begin();
     for (int i = 0; i < m_charList->GetFirstSelected(); i++) {
         it++;
     }
@@ -239,7 +239,7 @@ void amElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event)) {
     if (deleteCheck.ShowModal() == wxID_YES) {
         m_charList->DeleteItem(sel);
 
-        auto it = m_manager->GetCharacters(0).begin();
+        auto it = m_manager->GetCharacters().begin();
         for (int i = 0; i < sel; i++) {
             it++;
         }
@@ -261,7 +261,7 @@ void amElementsNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event)) {
 }
 
 void amElementsNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event)) {
-    auto it = m_manager->GetLocations(0).begin();
+    auto it = m_manager->GetLocations().begin();
     for (int i = 0; i < m_locList->GetFirstSelected(); i++) {
         it++;
     }
@@ -285,7 +285,7 @@ void amElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event)) {
     if (deleteCheck.ShowModal() == wxID_YES) {
         m_locList->DeleteItem(sel);
 
-        auto it = m_manager->GetLocations(0).begin();
+        auto it = m_manager->GetLocations().begin();
         for (int i = 0; i < sel; i++) {
             it++;
         }
@@ -307,7 +307,7 @@ void amElementsNotebook::OnItemRightClick(wxListEvent& event) {
 }
 
 void amElementsNotebook::OnEditItem(wxCommandEvent& event) {
-    auto it = m_manager->GetItems(0).begin();
+    auto it = m_manager->GetItems().begin();
     for (int i = 0; i < m_itemsList->GetFirstSelected(); i++) {
         it++;
     }
@@ -331,7 +331,7 @@ void amElementsNotebook::OnDeleteItem(wxCommandEvent& event) {
     if (deleteCheck.ShowModal() == wxID_YES) {
         m_itemsList->DeleteItem(sel);
 
-        auto it = m_manager->GetItems(0).begin();
+        auto it = m_manager->GetItems().begin();
         for (int i = 0; i < sel; i++) {
             it++;
         }
@@ -348,7 +348,7 @@ void amElementsNotebook::OnItemActivated(wxListEvent& event) {
 void amElementsNotebook::OnCharacterSelected(wxListEvent& event) {
     long sel = m_charList->GetFirstSelected();
 
-    auto it = m_manager->GetCharacters(0).begin();
+    auto it = m_manager->GetCharacters().begin();
     for (int i = 0; i < sel; i++)
         it++;
 
@@ -358,7 +358,7 @@ void amElementsNotebook::OnCharacterSelected(wxListEvent& event) {
 void amElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event)) {
     long sel = m_locList->GetFirstSelected();
 
-    auto it = m_manager->GetLocations(0).begin();
+    auto it = m_manager->GetLocations().begin();
     for (int i = 0; i < sel; i++)
         it++;
 
@@ -368,7 +368,7 @@ void amElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event)) {
 void amElementsNotebook::OnItemSelected(wxListEvent& event) {
     long sel = m_itemsList->GetFirstSelected();
 
-    auto it = m_manager->GetItems(0).begin();
+    auto it = m_manager->GetItems().begin();
     for (int i = 0; i < sel; i++)
         it++;
 
@@ -379,7 +379,7 @@ void amElementsNotebook::OnCharactersSortBy(wxCommandEvent& event) {
     m_cSortBy->SetSelection(event.GetInt());
     Character::cCompType = (CompType)event.GetInt();
 
-    wxVectorSort(m_manager->GetCharacters(0));
+    wxVectorSort(m_manager->GetCharacters());
     UpdateCharacterList();
 }
 
@@ -387,7 +387,7 @@ void amElementsNotebook::OnLocationsSortBy(wxCommandEvent& event) {
     m_lSortBy->SetSelection(event.GetInt());
     Location::lCompType = (CompType)event.GetInt();
 
-    wxVectorSort(m_manager->GetLocations(0));
+    wxVectorSort(m_manager->GetLocations());
     UpdateLocationList();
 }
 
@@ -395,7 +395,7 @@ void amElementsNotebook::OnItemsSortBy(wxCommandEvent& event) {
     m_iSortBy->SetSelection(event.GetInt());
     Item::iCompType = (CompType)event.GetInt();
 
-    wxVectorSort(m_manager->GetItems(0));
+    wxVectorSort(m_manager->GetItems());
     UpdateItemList();
 }
 
@@ -559,7 +559,7 @@ void amElementsNotebook::UpdateCharacterList() {
             m_charList->InsertItem(0, "");
     }
 
-    for (auto& it : m_manager->GetCharacters(0))
+    for (auto& it : m_manager->GetCharacters())
         UpdateCharacter(i++, it);
 
     m_charList->Thaw();
@@ -583,7 +583,7 @@ void amElementsNotebook::UpdateLocationList() {
             m_locList->InsertItem(0, "");
     }
 
-    for (auto& it : m_manager->GetLocations(0))
+    for (auto& it : m_manager->GetLocations())
         UpdateLocation(i++, it);
 
     m_locList->Thaw();
@@ -607,7 +607,7 @@ void amElementsNotebook::UpdateItemList() {
             m_itemsList->InsertItem(0, "");
     }
 
-    for (auto& it : m_manager->GetItems(0))
+    for (auto& it : m_manager->GetItems())
         UpdateItem(i++, it);
 
     m_itemsList->Thaw();

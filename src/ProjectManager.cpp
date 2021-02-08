@@ -351,7 +351,7 @@ bool amProjectManager::Init() {
 		m_storage.Open(m_project.amFile.GetFullPath());
 
 		if (!m_storage.Init()) {
-			Book book(1);
+			Book book;
 			book.title = m_project.amFile.GetName();
 
 			m_project.books.push_back(book);
@@ -532,25 +532,30 @@ void amProjectManager::AddItem(Item& item) {
 	SetSaved(false);
 }
 
-void amProjectManager::AddChapter(Chapter& chapter, int book, int pos) {
-	size_t capacityBefore = m_chapters.capacity();
-	if (pos < m_chapters.size() + 1 && pos > -1) {
-		auto it = m_chapters.begin();
+void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, int pos) {
+	Section& section = book.sections[sectionPos];
+	
+	chapter.sectionID = GetDocumentId(section.GenerateDocumentForID());
+	size_t capacityBefore = section.chapters.capacity();
+	
+	if (pos < section.chapters.size() + 1 && pos > -1) {
+		auto it = section.chapters.begin();
 		for (int i = 0; i < pos; i++) {
 			it++;
 		}
-		m_chapters.insert(it, chapter);
+		section.chapters.insert(it, chapter);
 		
-		for (int i = 0; i < m_chapters.size(); i++)
-			m_chapters[i].position = i + 1;
+		for (int i = 0; i < section.chapters.size(); i++)
+			section.chapters[i].position = i + 1;
 	} else {
-		m_chapters.push_back(chapter);
+		section.chapters.push_back(chapter);
 	}
 
-	if (m_chapters.capacity() > capacityBefore)
-		RedeclareChapsInElements();
+	if (section.chapters.capacity() > capacityBefore)
+		RedeclareChapsInElements(section);
 
 	m_chaptersNote->AddChapter(chapter, pos);
+	m_storage.InsertDocument(chapter.GenerateDocument());
 	SetSaved(false);
 }
 
@@ -737,17 +742,17 @@ void amProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter& 
 	wxLogMessage("Could not remove item '%s' from chapter '%s'", itemName, chapter.name);
 }
 
-void amProjectManager::RedeclareChapsInElements() {
-	for (auto& it : m_characters)
+void amProjectManager::RedeclareChapsInElements(Section& section) {
+	for (auto& it : m_project.characters)
 		it.chapters.clear();
 	
-	for (auto& it : m_locations)
+	for (auto& it : m_project.locations)
 		it.chapters.clear();
 
-	for (auto& it : m_items)
+	for (auto& it : m_project.items)
 		it.chapters.clear();
 
-	for (auto& it : m_chapters) {
+	for (auto& it : section.chapters) {
 		for (auto& it2 : it.characters)
 			AddChapterToCharacter(it2, it);
 
@@ -816,19 +821,19 @@ void amProjectManager::DeleteChapter(Chapter& chapter) {
 	SetSaved(false);
 }
 
-wxVector<Character> amProjectManager::GetCharacters(int bookPos) {
-	return m_project.GetCharacters(bookPos);
+wxVector<Character>& amProjectManager::GetCharacters() {
+	return m_project.GetCharacters();
 }
 
-wxVector<Location>& amProjectManager::GetLocations(int bookPos) {
-	return m_project.GetLocations(bookPos);
+wxVector<Location>& amProjectManager::GetLocations() {
+	return m_project.GetLocations();
 }
 
-wxVector<Item>& amProjectManager::GetItems(int bookPos) {
-	return m_project.GetItems(bookPos);
+wxVector<Item>& amProjectManager::GetItems() {
+	return m_project.GetItems();
 }
 
-wxVector<Chapter>& amProjectManager::GetChapters(int bookPos) {
+wxVector<Chapter> amProjectManager::GetChapters(int bookPos) {
 	return m_project.GetChapters(bookPos);
 }
 

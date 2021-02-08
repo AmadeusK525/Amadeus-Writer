@@ -109,7 +109,7 @@ public:
 	void AddCharacter(Character& character);
 	void AddLocation(Location& location);
 	void AddItem(Item& item);
-	void AddChapter(Chapter& chapter, int book, int pos = -1);
+	void AddChapter(Chapter& chapter, Book& book, int section = 1, int pos = -1);
 
 	void EditCharacter(Character& original, Character& edit, bool sort = false);
 	void EditLocation(Location& original, Location& edit, bool sort = false);
@@ -121,7 +121,7 @@ public:
 	void RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter);
 	void RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter);
 	void RemoveChapterFromItem(const wxString& itemName, Chapter& chapter);
-	void RedeclareChapsInElements();
+	void RedeclareChapsInElements(Section& section);
 
 	void DeleteCharacter(Character& character);
 	void DeleteLocation(Location& location);
@@ -129,10 +129,10 @@ public:
 	void DeleteChapter(Chapter& chapter);
 
 	wxVector<Book>& GetBooks() { return m_project.books; }
-	wxVector<Character> GetCharacters(int bookPos);
-	wxVector<Location>& GetLocations(int bookPos);
-	wxVector<Item>& GetItems(int bookPos);
-	wxVector<Chapter>& GetChapters(int bookPos);
+	wxVector<Character>& GetCharacters();
+	wxVector<Location>& GetLocations();
+	wxVector<Item>& GetItems();
+	wxVector<Chapter> GetChapters(int bookPos);
 
 	wxArrayString GetCharacterNames();
 	wxArrayString GetLocationNames();

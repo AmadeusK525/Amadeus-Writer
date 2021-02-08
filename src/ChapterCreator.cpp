@@ -180,7 +180,7 @@ void ChapterCreator::Create(wxCommandEvent& event) {
 
     chapter.position = pos + 1;
 
-    m_manager->AddChapter(chapter, pos);
+    m_manager->AddChapter(chapter, m_manager->GetBooks()[0], 1, pos);
     m_manager->GetMainFrame()->Enable();
     Destroy();
 

@@ -22,7 +22,7 @@ protected:
 
 public:
     amElementShowcase(wxWindow* parent);
-	virtual void SetData(const Element& element);
+	virtual void SetData(Element& element);
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ private:
 
 public:
 	amCharacterShowcase(wxWindow* parent);
-	virtual void SetData(const Element& charToSet);
+	virtual void SetData(Element& charToSet);
 };
 
 
@@ -87,7 +87,7 @@ private:
 public:
     amLocationShowcase(wxWindow* parent);
 
-    virtual void SetData(const Element& locToSet);
+    virtual void SetData(Element& locToSet);
 };
 
 
@@ -102,7 +102,7 @@ private:
 public:
     amItemShowcase(wxWindow* parent);
 
-    virtual void SetData(const Element& itemToSet);
+    virtual void SetData(Element& itemToSet);
 };
 
 #endif
