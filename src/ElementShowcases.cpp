@@ -28,7 +28,7 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	this->SetScrollRate(20, 20);
 }
 
-void amElementShowcase::SetData(const Element& element) {
+void amElementShowcase::SetData(Element& element) {
 	Freeze();
 	m_name->SetLabel(element.name);
 }
@@ -147,8 +147,9 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_backstory->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amCharacterShowcase::SetData(const Element& charToSet) {
-	const Character* character = dynamic_cast<const Character*>(&charToSet);
+void amCharacterShowcase::SetData(Element& charToSet) {
+	Character* character = dynamic_cast<Character*>(&charToSet);
+
 	if (!character) {
 		wxMessageBox("There was an unexpected problem when loading the Character to the panel.");
 		SetData(Character());
@@ -392,8 +393,8 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_culture->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amLocationShowcase::SetData(const Element& locToSet) {
-	const Location* location = dynamic_cast<const Location*>(&locToSet);
+void amLocationShowcase::SetData(Element& locToSet) {
+	Location* location = dynamic_cast<Location*>(&locToSet);
 
 	if (!location) {
 		wxMessageBox("There was an unexpected problem when loading the Lcoation to the panel.");
@@ -522,4 +523,4 @@ void amLocationShowcase::SetData(const Element& locToSet) {
 
 amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent) {}
 
-void amItemShowcase::SetData(const Element& itemToSet) {}
+void amItemShowcase::SetData(Element& itemToSet) {}

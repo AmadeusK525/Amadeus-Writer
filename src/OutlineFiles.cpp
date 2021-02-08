@@ -449,9 +449,9 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(pa
 }
 
 void amOutlineFilesPanel::Init() {
-	wxVector<Character>& charList = amGetManager()->GetCharacters(0);
-	wxVector<Location>& locList = amGetManager()->GetLocations(0);
-	wxVector<Item>& itemList = amGetManager()->GetItems(0);
+	wxVector<Character>& charList = amGetManager()->GetCharacters();
+	wxVector<Location>& locList = amGetManager()->GetLocations();
+	wxVector<Item>& itemList = amGetManager()->GetItems();
 
 	for (auto it = charList.begin(); it != charList.end(); it++)
 		AppendCharacter(*it);

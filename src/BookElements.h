@@ -24,6 +24,8 @@ struct Scene {
     int pos = -1;
     int chapterID = -1;
 
+    Scene(int chapterID, int pos) : chapterID(chapterID), pos(pos) {}
+
     amDocument GenerateDocument();
 };
 
@@ -42,12 +44,22 @@ struct Chapter {
     wxArrayString characters{};
     wxArrayString locations{};
     wxArrayString items{};
+
     wxVector<Note> notes{};
 
     int position = -1;
     int sectionID = -1;
 
-    Chapter() : characters(true), locations(true), items(true) {}
+    Chapter() : characters(true),
+        locations(true),
+        items(true) {}
+
+    Chapter(int sectionID, int position) :
+        sectionID(sectionID),
+        position(position),
+        characters(true),
+        locations(true),
+        items(true) {}
 
     bool HasRedNote();
     amDocument GenerateDocument();
@@ -105,10 +117,6 @@ struct Book {
 
     wxVector<Section> sections{};
 
-    Book(int pos) : pos(pos) {
-        sections.push_back(Section(pos, 1));
-    }
-
     amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
     amDocument GenerateDocumentForID();
 };
@@ -128,9 +136,9 @@ struct amProject {
 
     wxFileName amFile{};
 
-    wxVector<Character>& GetCharacters(int bookPos) { return characters; }
-    wxVector<Location>& GetLocations(int bookPos) { return locations; }
-    wxVector<Item>& GetItems(int bookPos) { return items; }
+    wxVector<Character>& GetCharacters() { return characters; }
+    wxVector<Location>& GetLocations() { return locations; }
+    wxVector<Item>& GetItems() { return items; }
     wxVector<Chapter> GetChapters(int bookPos);
 };
 
