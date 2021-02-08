@@ -15,3 +15,22 @@ wxVector<Chapter> amProject::GetChapters(int bookPos) {
 
     return grouped;
 }
+
+amDocument Book::GenerateDocument() {
+    amDocument document;
+    document.name = title;
+
+    document.strings["synopsys"] = synopsys;
+    document.strings["author"] = author;
+    document.strings["genre"] = genre;
+    document.strings["description"] = description;
+
+    for (auto& it : sections)
+        document.documents.push_back(it.GenerateDocument());
+
+    return document;
+}
+
+amDocument Section::GenerateDocument() {
+    return amDocument();
+}

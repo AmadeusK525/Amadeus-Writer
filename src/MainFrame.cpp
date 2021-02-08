@@ -9,8 +9,6 @@
 #include "ChapterCreator.h"
 #include "ElementCreators.h"
 
-
-
 #include <wx\richtext\richtextxml.h>
 #include <wx\richtext\richtexthtml.h>
 #include <wx\aboutdlg.h>
@@ -20,8 +18,6 @@
 #ifndef BOOST_FILESYSTEM_NO_DEPRECATED
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #endif
-
-
 
 BEGIN_EVENT_TABLE(amMainFrame, wxFrame)
 
@@ -66,9 +62,7 @@ END_EVENT_TABLE()
 amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const wxPoint& pos, const wxSize& size) :
     wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE) {
 
-    // This entire constructor makes the cProtagonist Frame of the application look like it does.
-    // I see no vantage in doing all of this in a separate "Init()" function and
-    // calling it in the constructor.
+    wxInitAllImageHandlers();
     m_manager = manager;
     Hide();
 
