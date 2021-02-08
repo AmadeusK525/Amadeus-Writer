@@ -73,6 +73,8 @@ struct Section {
     wxVector<Chapter> chapters{};
 
     SectionType type{ Section_Part };
+
+    amDocument GenerateDocument();
 };
 
 
@@ -91,7 +93,9 @@ struct Book {
         description{ "" },
         synopsys{ "" };
 
-    wxVector<Section> sections{};
+    wxVector<Section> sections{1};
+
+    amDocument GenerateDocument();
 };
 
 

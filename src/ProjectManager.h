@@ -140,9 +140,9 @@ public:
 
 	int GetBookCount() { return m_project.books.size(); }
 	int GetChapterCount() { return m_chapters.size(); }
-	int GetCharacterCount() { return m_characters.size(); }
-	int GetLocationCount() { return m_locations.size(); }
-	int GetItemCount() { return m_items.size(); }
+	int GetCharacterCount() { return m_project.characters.size(); }
+	int GetLocationCount() { return m_project.locations.size(); }
+	int GetItemCount() { return m_project.items.size(); }
 };
 
 #endif

@@ -69,11 +69,11 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tLocations.Add("image BLOB");
 
 	wxArrayString tLocationsCustom;
-	tCharactersCustom.Add("id INTEGER PRIMARY KEY");
-	tCharactersCustom.Add("name TEXT");
-	tCharactersCustom.Add("content TEXT");
-	tCharactersCustom.Add("location_id INTEGER");
-	tCharactersCustom.Add("FOREIGN KEY(location_id) REFERENCES locations(id)");
+	tLocationsCustom.Add("id INTEGER PRIMARY KEY");
+	tLocationsCustom.Add("name TEXT");
+	tLocationsCustom.Add("content TEXT");
+	tLocationsCustom.Add("location_id INTEGER");
+	tLocationsCustom.Add("FOREIGN KEY(location_id) REFERENCES locations(id)");
 
 	wxArrayString tItems; 
 	tItems.Add("id INTEGER PRIMARY KEY");
@@ -90,12 +90,12 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tItems.Add("isManMade INTEGER");
 	tItems.Add("image BLOB");
 
-	wxArrayString tItemssCustom;
-	tCharactersCustom.Add("id INTEGER PRIMARY KEY");
-	tCharactersCustom.Add("name TEXT");
-	tCharactersCustom.Add("content TEXT");
-	tCharactersCustom.Add("item_id INTEGER");
-	tCharactersCustom.Add("FOREIGN KEY(item_id) REFERENCES items(id)");
+	wxArrayString tItemsCustom;
+	tItemsCustom.Add("id INTEGER PRIMARY KEY");
+	tItemsCustom.Add("name TEXT");
+	tItemsCustom.Add("content TEXT");
+	tItemsCustom.Add("item_id INTEGER");
+	tItemsCustom.Add("FOREIGN KEY(item_id) REFERENCES items(id)");
 
 	wxArrayString tBooks;
 	tBooks.Add("id INTEGER PRIMARY KEY");
@@ -154,9 +154,9 @@ void amProjectSQLDatabase::CreateAllTables() {
 	CreateTable("characters", tCharacters);
 	CreateTable("characters_custom", tCharactersCustom);
 	CreateTable("locations", tLocations);
-	CreateTable("locations_custom", tCharactersCustom);
+	CreateTable("locations_custom", tLocationsCustom);
 	CreateTable("items", tItems);
-	CreateTable("items_custom", tCharactersCustom);
+	CreateTable("items_custom", tItemsCustom);
 	CreateTable("books", tBooks);
 	CreateTable("sections", tSections);
 	CreateTable("chapters", tChapters);
@@ -337,7 +337,7 @@ bool amProjectManager::Init() {
 
 	if (m_project.amFile.IsOk()) {
 		if (!m_mainFrame) {
-			m_mainFrame = new amMainFrame("New Amadeus project - " + m_project.amFile.GetName(),
+			m_mainFrame = new amMainFrame("Amadeus Writer - " + m_project.amFile.GetFullName(),
 				this, wxDefaultPosition, wxDefaultSize);
 
 			m_elements = (m_mainFrame->GetElementsNotebook());
@@ -354,6 +354,7 @@ bool amProjectManager::Init() {
 			book.title = m_project.amFile.GetName();
 
 			m_project.books.push_back(book);
+			m_storage.InsertDocument(book.GenerateDocument());
 		} else {
 			LoadProject();
 		}
