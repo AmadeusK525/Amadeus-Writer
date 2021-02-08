@@ -144,7 +144,7 @@ void OutlineTreeModel::DeleteItem(const wxDataViewItem& item) {
 	wxDataViewItemArray children;
 	GetChildren(item, children);
 
-	for (int i = 0; i < children.GetCount(); i++)
+	for (unsigned int i = 0; i < children.GetCount(); i++)
 		DeleteItem(children[i]);
 
 	OutlineTreeModelNode* parentNode = node->GetParent();
@@ -248,21 +248,21 @@ void OutlineTreeModel::Clear() {
 	OulineTreeModelNodePtrArray array;
 
 	array = m_research->GetChildren();
-	for (int i = 0; i < array.GetCount(); i++) {
+	for (unsigned int i = 0; i < array.GetCount(); i++) {
 		DeleteItem(wxDataViewItem(array[i]));
 	}
 
 	array = m_characters->GetChildren();
-	for (int i = 0; i < array.GetCount(); i++) {
+	for (unsigned int i = 0; i < array.GetCount(); i++) {
 		DeleteItem(wxDataViewItem(array[i]));
 	}
 
 	array = m_locations->GetChildren();
-	for (int i = 0; i < array.GetCount(); i++) {
+	for (unsigned int i = 0; i < array.GetCount(); i++) {
 		DeleteItem(wxDataViewItem(array[i]));
 	}
 
-	for (int i = 0; i < m_otherRoots.size(); i++)
+	for (unsigned int i = 0; i < m_otherRoots.size(); i++)
 		DeleteItem(wxDataViewItem(m_otherRoots[i]));
 }
 
@@ -356,7 +356,7 @@ unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 			n++;
 		}
 
-		for (int i = 0; i < m_otherRoots.GetCount(); i++) {
+		for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
 			array.Add(wxDataViewItem(m_otherRoots.at(i)));
 		}
 
@@ -786,7 +786,7 @@ void amOutlineFilesPanel::AppendItem(Item& item) {
 
 void amOutlineFilesPanel::DeleteCharacter(Character& character) {
 	OulineTreeModelNodePtrArray& characters = m_outlineTreeModel->GetCharacters();
-	for (int i = 0; i < characters.Count(); i++) {
+	for (unsigned int i = 0; i < characters.Count(); i++) {
 		if (characters[i]->m_title == character.name) {
 			if (m_currentNode == characters[i]) {
 				m_currentNode = nullptr;
@@ -802,7 +802,7 @@ void amOutlineFilesPanel::DeleteCharacter(Character& character) {
 
 void amOutlineFilesPanel::DeleteLocation(Location& location) {
 	OulineTreeModelNodePtrArray& locations = m_outlineTreeModel->GetLocations();
-	for (int i = 0; i < locations.Count(); i++) {
+	for (unsigned int i = 0; i < locations.Count(); i++) {
 		if (locations[i]->m_title == location.name) {
 			if (m_currentNode == locations[i]) {
 				m_currentNode = nullptr;
@@ -818,7 +818,7 @@ void amOutlineFilesPanel::DeleteLocation(Location& location) {
 
 void amOutlineFilesPanel::DeleteItem(Item& item) {
 	OulineTreeModelNodePtrArray& items = m_outlineTreeModel->GetItems();
-	for (int i = 0; i < items.Count(); i++) {
+	for (unsigned int i = 0; i < items.Count(); i++) {
 		if (items[i]->m_title == item.name) {
 			if (m_currentNode == items[i]) {
 				m_currentNode = nullptr;
@@ -1142,7 +1142,7 @@ wxXmlNode* amOutlineFilesPanel::SerializeFolder(wxDataViewItem& item) {
 	wxString name;
 	wxXmlNode* child;
 
-	for (int i = 0; i < children.GetCount(); i++) {
+	for (unsigned int i = 0; i < children.GetCount(); i++) {
 		if (m_outlineTreeModel->IsContainer(children[i])) {
 			child = SerializeFolder(children[i]);
 			node->AddChild(child);
@@ -1225,7 +1225,7 @@ bool amOutlineFilesPanel::Save() {
 	wxDataViewItemArray rootFiles;
 	m_outlineTreeModel->GetChildren(wxDataViewItem(nullptr), rootFiles);
 
-	for (int i = 0; i < rootFiles.GetCount(); i++) {
+	for (unsigned int i = 0; i < rootFiles.GetCount(); i++) {
 		if (m_outlineTreeModel->IsContainer(rootFiles[i]))
 			root->AddChild(SerializeFolder(rootFiles[i]));
 		else

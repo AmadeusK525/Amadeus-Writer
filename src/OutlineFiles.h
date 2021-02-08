@@ -159,7 +159,7 @@ public:
         if (m_items)
             delete m_items;
 
-        for (int i = 0; i < m_otherRoots.GetCount(); i++) {
+        for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
             if (m_otherRoots.at(i))
                 delete m_otherRoots.at(i);
         }

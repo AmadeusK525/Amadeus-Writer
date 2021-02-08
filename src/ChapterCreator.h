@@ -5,12 +5,8 @@
 
 #include "wx/editlbox.h"
 
-
-
 #include "DragList.h"
 #include "ChaptersGrid.h"
-
-
 
 class ChapterCreator: public wxFrame {
 private:

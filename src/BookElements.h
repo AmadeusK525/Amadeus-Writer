@@ -20,6 +20,11 @@ struct Scene {
     wxRichTextBuffer content{};
 
     wxString pointOfView{ "" };
+
+    int pos = -1;
+    int chapterID = -1;
+
+    amDocument GenerateDocument();
 };
 
 
@@ -40,21 +45,22 @@ struct Chapter {
     wxVector<Note> notes{};
 
     int position = -1;
+    int sectionID = -1;
 
     Chapter() : characters(true), locations(true), items(true) {}
 
     bool HasRedNote();
-
-    void Save(std::ofstream& out) {}
-    void Load(std::ifstream& in) {}
+    amDocument GenerateDocument();
+    amDocument GenerateDocumentForID();
 
     bool operator<(const Chapter& other) const;
     bool operator==(const Chapter& other) const;
 };
 WX_DEFINE_ARRAY_PTR(Chapter*, ChapterPtrArray);
 
+
 /////////////////////////////////////////////////////////////////
-//////////////////////////// Section //////////////////////////// 
+//////////////////////////// Section ////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 
@@ -68,13 +74,16 @@ struct Section {
     wxString name{ "" };
     wxString description{ "" };
 
-    unsigned int pos = -1;
+    int bookID = -1;
+    int pos = -1;
 
     wxVector<Chapter> chapters{};
-
     SectionType type{ Section_Part };
 
+    Section(int bookID, int pos) : bookID(bookID), pos(pos) {}
+
     amDocument GenerateDocument();
+    amDocument GenerateDocumentForID();
 };
 
 
@@ -85,17 +94,23 @@ struct Section {
 
 struct Book {
 	wxString title{ "" };
-
-	wxString publisher{ "" };
+    wxString publisher{ "" };
 
 	wxString author{ "" },
         genre{ "" },
         description{ "" },
         synopsys{ "" };
 
-    wxVector<Section> sections{1};
+    int pos = 0;
 
-    amDocument GenerateDocument();
+    wxVector<Section> sections{};
+
+    Book(int pos) : pos(pos) {
+        sections.push_back(Section(pos, 1));
+    }
+
+    amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
+    amDocument GenerateDocumentForID();
 };
 
 

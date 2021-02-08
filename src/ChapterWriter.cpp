@@ -589,7 +589,7 @@ void amChapterWriter::SaveChapter() {
     chapter.synopsys = (wxString)m_summary->GetValue();
 
     chapter.notes.clear();
-    for (int i = 0; i < m_cwNotebook->notes.size(); i++) {
+    for (unsigned int i = 0; i < m_cwNotebook->notes.size(); i++) {
         chapter.notes.push_back(m_cwNotebook->notes[i]);
     }
 
@@ -883,7 +883,7 @@ void amChapterWriterNotebook::OnFontSize(wxCommandEvent& event) {
 }
 
 bool amChapterWriterNotebook::HasRedNote() {
-    for (int i = 0; i < notes.size(); i++) {
+    for (unsigned int i = 0; i < notes.size(); i++) {
         if (notes[i].isDone == false)
             return true;
     }

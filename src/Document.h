@@ -18,7 +18,7 @@ struct amDocument {
 	map<wxString, wxString> strings{};
 	map<wxString, wxMemoryBuffer> memBuffers{};
 
-	bool needsForeign = false;
+	bool specialForeign = false;
 	pair<wxString, int> foreignKey{ "", -1 };
 
 	wxVector<amDocument> documents{};

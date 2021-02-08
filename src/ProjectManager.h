@@ -104,6 +104,8 @@ public:
 	void SetLastSave();
 	bool GetLastSave();
 	
+	int GetDocumentId(amDocument& document);
+
 	void AddCharacter(Character& character);
 	void AddLocation(Location& location);
 	void AddItem(Item& item);
@@ -138,11 +140,11 @@ public:
 
 	wxArrayString GetBookTitles();
 
-	int GetBookCount() { return m_project.books.size(); }
-	int GetChapterCount() { return m_chapters.size(); }
-	int GetCharacterCount() { return m_project.characters.size(); }
-	int GetLocationCount() { return m_project.locations.size(); }
-	int GetItemCount() { return m_project.items.size(); }
+	unsigned int GetBookCount() { return m_project.books.size(); }
+	unsigned int GetChapterCount() { return m_chapters.size(); }
+	unsigned int GetCharacterCount() { return m_project.characters.size(); }
+	unsigned int GetLocationCount() { return m_project.locations.size(); }
+	unsigned int GetItemCount() { return m_project.items.size(); }
 };
 
 #endif
