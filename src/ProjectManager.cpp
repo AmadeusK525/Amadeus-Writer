@@ -100,6 +100,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	wxArrayString tBooks;
 	tBooks.Add("id INTEGER PRIMARY KEY");
 	tBooks.Add("name TEXT NOT NULL");
+	tBooks.Add("position INTEGER UNIQUE NOT NULL");
 	tBooks.Add("author TEXT");
 	tBooks.Add("genre TEXT");
 	tBooks.Add("description TEXT");
@@ -181,7 +182,7 @@ int amProjectSQLDatabase::GetDocumentId(amDocument& document) {
 	}
 
 	if (count > 1)
-		throw ("There was an error.");
+		throw ("There were 2 or more " + document.tableName + " with the name '" + document.name + "'");
 
 	return id;
 }
@@ -222,7 +223,7 @@ bool amProjectSQLDatabase::InsertDocument(amDocument& document) {
 	statement.ExecuteUpdate();
 
 	for (auto& it : document.documents) {
-		if (it.needsForeign)
+		if (it.specialForeign)
 			it.foreignKey.second = GetDocumentId(document);
 
 		InsertDocument(it);
@@ -293,7 +294,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 		first = false;
 	}
 
-	if (document.needsForeign) {
+	if (document.specialForeign) {
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
@@ -350,7 +351,7 @@ bool amProjectManager::Init() {
 		m_storage.Open(m_project.amFile.GetFullPath());
 
 		if (!m_storage.Init()) {
-			Book book;
+			Book book(1);
 			book.title = m_project.amFile.GetName();
 
 			m_project.books.push_back(book);
@@ -481,6 +482,17 @@ bool amProjectManager::GetLastSave() {
 		ClearPath();
 		return false;
 	}
+}
+
+int amProjectManager::GetDocumentId(amDocument& document) {
+	int id = -1;
+	try {
+		id = m_storage.GetDocumentId(document);
+	} catch (wxString& e) {
+		wxMessageBox("There was an issue when saving - " + e);
+	}
+
+	return id;
 }
 
 void amProjectManager::AddCharacter(Character& character) {
@@ -631,7 +643,7 @@ void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chap
 		if (characterName == it.name) {
 
 			bool has = false;
-			for (int i = 0; i < it.chapters.size(); i++)
+			for (unsigned int i = 0; i < it.chapters.size(); i++)
 				if (it.chapters[i] == &chapter)
 					has = true;
 			
@@ -649,7 +661,7 @@ void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapte
 		if (locationName == it.name) {
 
 			bool has = false;
-			for (int i = 0; i < it.chapters.size(); i++)
+			for (unsigned int i = 0; i < it.chapters.size(); i++)
 				if (it.chapters[i] == &chapter)
 					has = true;
 
@@ -667,7 +679,7 @@ void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapt
 		if (itemName == it.name) {
 
 			bool has = false;
-			for (int i = 0; i < it.chapters.size(); i++)
+			for (unsigned int i = 0; i < it.chapters.size(); i++)
 				if (it.chapters[i] == &chapter)
 					has = true;
 

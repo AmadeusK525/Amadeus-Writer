@@ -124,7 +124,7 @@ amDocument Character::GenerateDocument() {
         customDoc.strings["name"] = it.first;
         customDoc.strings["content"] = it.second;
 
-        customDoc.needsForeign = true;
+        customDoc.specialForeign = true;
         customDoc.foreignKey.first = "character_id";
 
         document.documents.push_back(customDoc);
@@ -250,7 +250,7 @@ amDocument Location::GenerateDocument() {
         customDoc.strings["name"] = it.first;
         customDoc.strings["content"] = it.second;
 
-        customDoc.needsForeign = true;
+        customDoc.specialForeign = true;
         customDoc.foreignKey.first = "location_id";
 
         document.documents.push_back(customDoc);
@@ -378,11 +378,13 @@ amDocument Item::GenerateDocument() {
         customDoc.strings["name"] = it.first;
         customDoc.strings["content"] = it.second;
 
-        customDoc.needsForeign = true;
+        customDoc.specialForeign = true;
         customDoc.foreignKey.first = "item_id";
 
         document.documents.push_back(customDoc);
     }
+
+    return document;
 }
 
 bool Item::operator<(const Item& other) const {
