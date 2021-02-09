@@ -495,7 +495,7 @@ void amChapterWriter::OnRemoveItem(wxCommandEvent& event) {
 }
 
 void amChapterWriter::OnNextChapter(wxCommandEvent& event) {
-    if (m_chapterPos < m_manager->GetChapterCount()) {
+    if (m_chapterPos < m_manager->GetChapterCount(1)) {
         SaveChapter();
         m_chapterPos++;
         m_cwNotebook->m_textCtrl->EndAllStyles();
@@ -532,7 +532,7 @@ void amChapterWriter::CheckChapterValidity() {
     // For now, if the store chapter position is bigger than the chapter count,
     // it simply makes it so the current chapter is the last one. I'll make it something
     // else later.
-    while (m_chapterPos > m_manager->GetChapterCount())
+    while (m_chapterPos > m_manager->GetChapterCount(1))
         m_chapterPos--;
 }
 

@@ -638,7 +638,7 @@ void amCharacterCreator::Create(wxCommandEvent& event) {
 
 		character.custom = GetCustom();
 
-		m_manager->AddCharacter(character);
+		m_manager->AddCharacter(character, true);
 	} else {
 		wxMessageBox("You can't create a character without a name.");
 		return;
@@ -1060,7 +1060,7 @@ void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
 
 		location.custom = GetCustom();
 
-		m_manager->AddLocation(location);
+		m_manager->AddLocation(location, true);
 	} else {
 		wxMessageBox("You can't create a location with no name!");
 		return;
@@ -1526,7 +1526,7 @@ void amItemCreator::Create(wxCommandEvent& event) {
 		item.image = m_imagePanel->GetImage();
 		item.custom = GetCustom();
 
-		m_manager->AddItem(item);
+		m_manager->AddItem(item, true);
 	} else {
 		wxMessageBox("You can't create an item with no name!");
 		return;

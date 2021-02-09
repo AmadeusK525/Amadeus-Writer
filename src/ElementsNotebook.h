@@ -32,6 +32,8 @@ public:
 public:
 	amElementsNotebook(wxWindow* parent);
 
+	void InitShowChoices();
+
 	amCharacterShowcase* GetCharacterShowcase() { return m_charShow; }
 	amLocationShowcase* GetLocationShowcase() { return m_locShow; }
 

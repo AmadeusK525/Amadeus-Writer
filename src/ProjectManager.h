@@ -58,11 +58,6 @@ private:
 	amOutline* m_outline = nullptr;
 	amRelease* m_release = nullptr;
 
-	wxVector<Character> m_characters{};
-	wxVector<Location> m_locations{};
-	wxVector<Item> m_items{};
-	wxVector<Chapter> m_chapters{};
-
 	wxFileName m_executablePath{};
 
 	bool m_isInitialized = false;
@@ -106,9 +101,9 @@ public:
 	
 	int GetDocumentId(amDocument& document);
 
-	void AddCharacter(Character& character);
-	void AddLocation(Location& location);
-	void AddItem(Item& item);
+	void AddCharacter(Character& character, bool refreshElements);
+	void AddLocation(Location& location, bool refreshElements);
+	void AddItem(Item& item, bool refreshElements);
 	void AddChapter(Chapter& chapter, Book& book, int section = 1, int pos = -1);
 
 	void EditCharacter(Character& original, Character& edit, bool sort = false);
@@ -118,15 +113,17 @@ public:
 	void AddChapterToCharacter(const wxString& characterName, Chapter& chapter);
 	void AddChapterToLocation(const wxString& locationName, Chapter& chapter);
 	void AddChapterToItem(const wxString& itemName, Chapter& chapter);
+
 	void RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter);
 	void RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter);
 	void RemoveChapterFromItem(const wxString& itemName, Chapter& chapter);
+
 	void RedeclareChapsInElements(Section& section);
 
 	void DeleteCharacter(Character& character);
 	void DeleteLocation(Location& location);
 	void DeleteItem(Item& item);
-	void DeleteChapter(Chapter& chapter);
+	void DeleteChapter(Chapter& chapter, Section& section);
 
 	wxVector<Book>& GetBooks() { return m_project.books; }
 	wxVector<Character>& GetCharacters();
@@ -141,7 +138,7 @@ public:
 	wxArrayString GetBookTitles();
 
 	unsigned int GetBookCount() { return m_project.books.size(); }
-	unsigned int GetChapterCount() { return m_chapters.size(); }
+	unsigned int GetChapterCount(int book) { return m_project.GetChapters(book).size(); }
 	unsigned int GetCharacterCount() { return m_project.characters.size(); }
 	unsigned int GetLocationCount() { return m_project.locations.size(); }
 	unsigned int GetItemCount() { return m_project.items.size(); }

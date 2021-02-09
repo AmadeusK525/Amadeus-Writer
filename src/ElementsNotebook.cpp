@@ -85,7 +85,6 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 
     m_cShow->SetPopupControl(cBooks);
     cBooks->InsertItems(m_manager->GetBookTitles(), 0);
-    cBooks->InsertItems(sortBy, 1);
 
     wxBoxSizer* cFooterSizer = new wxBoxSizer(wxHORIZONTAL);
     cFooterSizer->Add(cSortByLabel, wxSizerFlags(0).CenterVertical());
@@ -196,6 +195,10 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 
     itemsFrame->SetSizer(itemSizer);
     this->AddPage(itemsFrame, "Items");
+}
+
+void amElementsNotebook::InitShowChoices() {
+    ((amCheckListBox*)m_cShow->GetPopupControl())->InsertItems(m_manager->GetBookTitles(), 0);
 }
 
 void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event)) {

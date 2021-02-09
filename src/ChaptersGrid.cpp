@@ -6,7 +6,7 @@
 #include "wxmemdbg.h"
 
 ChapterGrid::ChapterGrid(wxWindow* parent, amProjectManager* manager): wxScrolledWindow(parent, wxID_ANY,
-    wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN | wxTAB_TRAVERSAL) {
+    wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL) {
     m_manager = manager;
 
     m_btnSizer = new wxWrapSizer(wxHORIZONTAL);

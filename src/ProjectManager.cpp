@@ -360,6 +360,7 @@ bool amProjectManager::Init() {
 			LoadProject();
 		}
 
+		m_elements->InitShowChoices();
 		m_isInitialized = true;
 
 		return true;
@@ -495,12 +496,14 @@ int amProjectManager::GetDocumentId(amDocument& document) {
 	return id;
 }
 
-void amProjectManager::AddCharacter(Character& character) {
+void amProjectManager::AddCharacter(Character& character, bool refreshElements) {
 	m_project.characters.push_back(character);
 	wxVectorSort(m_project.characters);
 
-	m_elements->UpdateCharacterList();
-	m_elements->SetSearchAC(wxBookCtrlEvent());
+	if (refreshElements) {
+		m_elements->UpdateCharacterList();
+		m_elements->SetSearchAC(wxBookCtrlEvent());
+	}
 
 	m_outline->GetOutlineFiles()->AppendCharacter(character);
 
@@ -508,24 +511,28 @@ void amProjectManager::AddCharacter(Character& character) {
 	SetSaved(false);
 }
 
-void amProjectManager::AddLocation(Location& location) {
+void amProjectManager::AddLocation(Location& location, bool refreshElements) {
 	m_project.locations.push_back(location);
 	wxVectorSort(m_project.locations);
 
-	m_elements->UpdateLocationList();
-	m_elements->SetSearchAC(wxBookCtrlEvent());
+	if (refreshElements) {
+		m_elements->UpdateLocationList();
+		m_elements->SetSearchAC(wxBookCtrlEvent());
+	}
 
 	m_outline->GetOutlineFiles()->AppendLocation(location);
 	m_storage.InsertDocument(location.GenerateDocument());
 	SetSaved(false);
 }
 
-void amProjectManager::AddItem(Item& item) {
+void amProjectManager::AddItem(Item& item, bool refreshElements) {
 	m_project.items.push_back(item);
 	wxVectorSort(m_project.items);
 
-	m_elements->UpdateItemList();
-	m_elements->SetSearchAC(wxBookCtrlEvent());
+	if (refreshElements) {
+		m_elements->UpdateItemList();
+		m_elements->SetSearchAC(wxBookCtrlEvent());
+	}
 
 	m_outline->GetOutlineFiles()->AppendItem(item);
 	m_storage.InsertDocument(item.GenerateDocument());
@@ -573,11 +580,11 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 	original = edit;
 
 	if (sort) {
-		wxVectorSort(m_characters);
+		wxVectorSort(m_project.characters);
 		m_elements->UpdateCharacterList();
 	} else {
 		int n = 0;
-		for (auto& it : m_characters) {
+		for (auto& it : m_project.characters) {
 			if (it == original)
 				m_elements->UpdateCharacter(n++, it);
 		}
@@ -601,11 +608,11 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 	original = edit;
 
 	if (sort) {
-		wxVectorSort(m_locations);
+		wxVectorSort(m_project.locations);
 		m_elements->UpdateLocationList();
 	} else {
 		int n = 0;
-		for (auto& it : m_locations) {
+		for (auto& it : m_project.locations) {
 			if (it == original)
 				m_elements->UpdateLocation(n++, it);
 		}
@@ -629,11 +636,11 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 	original = edit;
 
 	if (sort) {
-		wxVectorSort(m_items);
+		wxVectorSort(m_project.items);
 		m_elements->UpdateItemList();
 	} else {
 		int n = 0;
-		for (auto& it : m_items) {
+		for (auto& it : m_project.items) {
 			if (it == original)
 				m_elements->UpdateItem(n++, it);
 		}
@@ -644,7 +651,7 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 }
 
 void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chapter& chapter) {
-	for (auto& it : m_characters) {
+	for (auto& it : m_project.characters) {
 		if (characterName == it.name) {
 
 			bool has = false;
@@ -662,7 +669,7 @@ void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chap
 }
 
 void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapter& chapter) {
-	for (auto& it : m_locations) {
+	for (auto& it : m_project.locations) {
 		if (locationName == it.name) {
 
 			bool has = false;
@@ -680,7 +687,7 @@ void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapte
 }
 
 void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapter) {
-	for (auto& it : m_items) {
+	for (auto& it : m_project.items) {
 		if (itemName == it.name) {
 
 			bool has = false;
@@ -698,7 +705,7 @@ void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapt
 }
 
 void amProjectManager::RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter) {
-	for (auto& it : m_characters) {
+	for (auto& it : m_project.characters) {
 		if (characterName == it.name) {
 			for (auto& it2 : it.chapters)
 				if (it2 == &chapter)
@@ -713,7 +720,7 @@ void amProjectManager::RemoveChapterFromCharacter(const wxString& characterName,
 }
 
 void amProjectManager::RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter) {
-	for (auto& it : m_locations) {
+	for (auto& it : m_project.locations) {
 		if (locationName == it.name) {
 			for (auto& it2 : it.chapters)
 				if (it2 == &chapter)
@@ -728,7 +735,7 @@ void amProjectManager::RemoveChapterFromLocation(const wxString& locationName, C
 }
 
 void amProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter& chapter) {
-	for (auto& it : m_items) {
+	for (auto& it : m_project.items) {
 		if (itemName == it.name) {
 			for (auto& it2 : it.chapters)
 				if (it2 == &chapter)
@@ -768,7 +775,7 @@ void amProjectManager::DeleteCharacter(Character& character) {
 	for (auto it : character.chapters)
 		it->characters.Remove(character.name);
 
-	m_characters.erase(&character);
+	m_project.characters.erase(&character);
 	SetSaved(false);
 }
 
@@ -776,7 +783,7 @@ void amProjectManager::DeleteLocation(Location& location) {
 	for (auto it : location.chapters)
 		it->characters.Remove(location.name);
 
-	m_locations.erase(&location);
+	m_project.locations.erase(&location);
 	SetSaved(false);
 }
 
@@ -784,13 +791,13 @@ void amProjectManager::DeleteItem(Item& item) {
 	for (auto it : item.chapters)
 		it->characters.Remove(item.name);
 
-	m_items.erase(&item);
+	m_project.items.erase(&item);
 	SetSaved(false);
 }
 
-void amProjectManager::DeleteChapter(Chapter& chapter) {
+void amProjectManager::DeleteChapter(Chapter& chapter, Section& section) {
 	for (auto& it : chapter.characters) {
-		for (auto& it2 : m_characters) {
+		for (auto& it2 : m_project.characters) {
 			
 			if (it == it2.name) {
 			
@@ -804,7 +811,7 @@ void amProjectManager::DeleteChapter(Chapter& chapter) {
 	}
 
 	for (auto& it : chapter.locations) {
-		for (auto& it2 : m_locations) {
+		for (auto& it2 : m_project.locations) {
 
 			if (it == it2.name) {
 
@@ -817,7 +824,21 @@ void amProjectManager::DeleteChapter(Chapter& chapter) {
 		}
 	}
 
-	m_chapters.erase(&chapter);
+	for (auto& it : chapter.items) {
+		for (auto& it2 : m_project.items) {
+
+			if (it == it2.name) {
+
+				for (auto& it3 : it2.chapters) {
+					if (it3 == &chapter)
+						it2.chapters.erase(&it3);
+
+				}
+			}
+		}
+	}
+
+	section.chapters.erase(&chapter);
 	SetSaved(false);
 }
 
@@ -839,7 +860,7 @@ wxVector<Chapter> amProjectManager::GetChapters(int bookPos) {
 
 wxArrayString amProjectManager::GetCharacterNames() {
 	wxArrayString names(true);
-	for (auto& it : m_characters)
+	for (auto& it : m_project.characters)
 		names.Add(it.name);
 
 	return names;
@@ -847,7 +868,7 @@ wxArrayString amProjectManager::GetCharacterNames() {
 
 wxArrayString amProjectManager::GetLocationNames() {
 	wxArrayString names(true);
-	for (auto& it : m_locations)
+	for (auto& it : m_project.locations)
 		names.Add(it.name);
 
 	return names;
@@ -855,7 +876,7 @@ wxArrayString amProjectManager::GetLocationNames() {
 
 wxArrayString amProjectManager::GetItemNames() {
 	wxArrayString names(true);
-	for (auto& it : m_items)
+	for (auto& it : m_project.items)
 		names.Add(it.name);
 
 	return names;
