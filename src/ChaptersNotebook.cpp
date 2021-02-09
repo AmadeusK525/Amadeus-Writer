@@ -44,7 +44,7 @@ void amChaptersNotebook::AddToList(Chapter& chapter, int pos) {
 
 void amChaptersNotebook::RepositionChapters() {
     int i = 1;
-    wxVector<Chapter>& chapters = m_manager->GetChapters(0);
+    wxVector<Chapter>& chapters = m_manager->GetChapters(1);
 
     for (auto it = chapters.begin(); it != chapters.end(); it++) {
         it->position = i++;

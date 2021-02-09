@@ -563,6 +563,9 @@ void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, 
 
 	m_chaptersNote->AddChapter(chapter, pos);
 	m_storage.InsertDocument(chapter.GenerateDocument());
+
+	chapter.Init();
+
 	SetSaved(false);
 }
 
@@ -854,6 +857,11 @@ wxVector<Item>& amProjectManager::GetItems() {
 	return m_project.GetItems();
 }
 
+/// <summary>
+/// Get copy of all chapters in a book, regardless of section
+/// </summary>
+/// <param name="bookPos">Book position (First book has position 1!)</param>
+/// <returns></returns>
 wxVector<Chapter> amProjectManager::GetChapters(int bookPos) {
 	return m_project.GetChapters(bookPos);
 }

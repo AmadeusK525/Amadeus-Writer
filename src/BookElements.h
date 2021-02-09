@@ -9,7 +9,6 @@
 #include "StoryElements.h"
 #include "Note.h"
 
-
 /////////////////////////////////////////////////////////////////
 ///////////////////////////// Scene /////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -61,7 +60,10 @@ struct Chapter {
         locations(true),
         items(true) {}
 
+    bool Init();
+
     bool HasRedNote();
+
     amDocument GenerateDocument();
     amDocument GenerateDocumentForID();
 
