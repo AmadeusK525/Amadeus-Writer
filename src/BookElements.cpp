@@ -2,6 +2,7 @@
 
 #include <wx\sstream.h>
 
+#include "MyApp.h"
 
 /////////////////////////////////////////////////////////////////
 ///////////////////////////// Scene /////////////////////////////
@@ -29,6 +30,15 @@ amDocument Scene::GenerateDocument() {
 /////////////////////////// Chapter /////////////////////////////
 /////////////////////////////////////////////////////////////////
 
+
+bool Chapter::Init() {
+    if (scenes.empty()) {
+        scenes.push_back(Scene(amGetManager()->GetDocumentId(GenerateDocumentForID()), 1));
+        return true;
+    }
+
+    return false;
+}
 
 bool Chapter::HasRedNote() {
     for (unsigned int i = 0; i < notes.size(); i++) {
@@ -159,7 +169,7 @@ amDocument Book::GenerateDocumentForID() {
 
 
 wxVector<Chapter> amProject::GetChapters(int bookPos) {
-    Book& book = books[bookPos];
+    Book& book = books[bookPos - 1];
     int totalSize = 0;
 
     for (auto& it : book.sections)
