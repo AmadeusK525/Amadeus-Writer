@@ -34,7 +34,7 @@ ChapterCreator::ChapterCreator(wxWindow* parent, amProjectManager* manager) :
     label1->SetForegroundColour(wxColour(245, 245, 245));
     label1->SetBackgroundColour(wxColour(40, 40, 40));
     m_nchapName = new wxTextCtrl(m_nchapPanel1, wxID_ANY, "Chapter " +
-        std::to_string(m_manager->GetChapterCount() + 1), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
+        std::to_string(m_manager->GetChapterCount(1) + 1), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
     m_nchapName->SetBackgroundColour(wxColour(70, 70, 70));
     m_nchapName->SetForegroundColour(wxColour(250, 250, 250));
     m_nchapName->SetFont(wxFont(wxFontInfo(10)));
@@ -171,7 +171,7 @@ void ChapterCreator::Create(wxCommandEvent& event) {
     if (m_nchapName->GetValue() != "" && m_nchapName->IsModified()) {
         chapter.name = m_nchapName->GetValue();
     } else {
-        chapter.name = "Chapter " + std::to_string(m_manager->GetChapterCount() + 1);
+        chapter.name = "Chapter " + std::to_string(m_manager->GetChapterCount(1) + 1);
     }
 
     chapter.synopsys = m_nchapSummary->GetValue();
