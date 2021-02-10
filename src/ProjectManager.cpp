@@ -127,6 +127,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tScenes.Add("id INTEGER PRIMARY KEY");
 	tScenes.Add("name TEXT");
 	tScenes.Add("content TEXT");
+	tScenes.Add("position INTEGER");
 	tScenes.Add("chapter_id INTEGER NOT NULL");
 	tScenes.Add("character_id INTEGER");
 	tScenes.Add("FOREIGN KEY(chapter_id) REFERENCES chapters(id)");
@@ -161,6 +162,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	CreateTable("books", tBooks);
 	CreateTable("sections", tSections);
 	CreateTable("chapters", tChapters);
+	CreateTable("scenes", tScenes);
 	CreateTable("characters_chapters", tCharactersInChapters);
 	CreateTable("locations_chaptes", tLocationsInChapters);
 	CreateTable("items_chapters", tItemsInChapters);
@@ -169,7 +171,20 @@ void amProjectSQLDatabase::CreateAllTables() {
 int amProjectSQLDatabase::GetDocumentId(amDocument& document) {
 	wxString query("SELECT DISTINCT id FROM ");
 	query << document.tableName;
-	query << " WHERE name = '" << document.name << "'";
+	query << " WHERE ";
+	
+	if (document.name != "")
+		query << "name = '" << document.name << "'";
+
+	if (document.specialForeign) {
+		if (document.name != "")
+			query << " AND ";
+
+		query << document.foreignKey.first << " = " << document.foreignKey.second;
+
+		auto& it = document.integers.begin();
+		query << " AND " << it->first << " = " << it->second;
+	}
 
 	wxSQLite3ResultSet result = ExecuteQuery(query);
 
@@ -232,7 +247,7 @@ bool amProjectSQLDatabase::InsertDocument(amDocument& document) {
 	return true;
 }
 
-bool amProjectSQLDatabase::UpdateDocument(const wxString& tableName, int id, amDocument& document) {
+bool amProjectSQLDatabase::UpdateDocument(amDocument& document) {
 
 	return false;
 }
@@ -354,14 +369,18 @@ bool amProjectManager::Init() {
 			Book book;
 			book.title = m_project.amFile.GetName();
 
-			m_project.books.push_back(book);
 			m_storage.InsertDocument(book.GenerateDocument());
+
+			book.Init();
+			m_project.books.push_back(book);
 		} else {
 			LoadProject();
 		}
 
 		m_elements->InitShowChoices();
 		m_isInitialized = true;
+
+		SetSaved(true);
 
 		return true;
 	}
@@ -539,12 +558,24 @@ void amProjectManager::AddItem(Item& item, bool refreshElements) {
 	SetSaved(false);
 }
 
+/// <summary>
+/// Add new Chapter to selected book and in specified section.
+/// </summary>
+/// <param name="chapter">Reference to chapter object</param>
+/// <param name="book">Reference to desired book object</param>
+/// <param name="sectionPos">Section position in Book (First section is number 1!)</param>
+/// <param name="pos">Where in the section will the chapter be inserted</param>
 void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, int pos) {
-	Section& section = book.sections[sectionPos];
+	Section& section = book.sections[sectionPos - 1];
 	
 	chapter.sectionID = GetDocumentId(section.GenerateDocumentForID());
 	size_t capacityBefore = section.chapters.capacity();
 	
+	m_chaptersNote->AddChapter(chapter, pos);
+	m_storage.InsertDocument(chapter.GenerateDocument());
+
+	chapter.Init();
+
 	if (pos < section.chapters.size() + 1 && pos > -1) {
 		auto it = section.chapters.begin();
 		for (int i = 0; i < pos; i++) {
@@ -560,11 +591,6 @@ void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, 
 
 	if (section.chapters.capacity() > capacityBefore)
 		RedeclareChapsInElements(section);
-
-	m_chaptersNote->AddChapter(chapter, pos);
-	m_storage.InsertDocument(chapter.GenerateDocument());
-
-	chapter.Init();
 
 	SetSaved(false);
 }
@@ -855,6 +881,10 @@ wxVector<Location>& amProjectManager::GetLocations() {
 
 wxVector<Item>& amProjectManager::GetItems() {
 	return m_project.GetItems();
+}
+
+wxVector<Chapter>& amProjectManager::GetChapters(int bookPos, int sectionPos) {
+	return m_project.GetChapters(bookPos, sectionPos);
 }
 
 /// <summary>

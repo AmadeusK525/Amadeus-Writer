@@ -30,7 +30,7 @@ public:
 	bool CreateTable(const wxString& tableName, const wxArrayString& arguments, bool ifNotExists = true);
 
 	bool InsertDocument(amDocument& document);
-	bool UpdateDocument(const wxString& tableName, int id, amDocument& document);
+	bool UpdateDocument(amDocument& document);
 
 	wxSQLite3Statement ConstructInsertStatement(amDocument& document);
 };
@@ -100,6 +100,7 @@ public:
 	bool GetLastSave();
 	
 	int GetDocumentId(amDocument& document);
+	void InsertDocument(amDocument& document) { m_storage.InsertDocument(document); }
 
 	void AddCharacter(Character& character, bool refreshElements);
 	void AddLocation(Location& location, bool refreshElements);
@@ -129,6 +130,8 @@ public:
 	wxVector<Character>& GetCharacters();
 	wxVector<Location>& GetLocations();
 	wxVector<Item>& GetItems();
+	wxVector<Chapter>& GetChapters(int bookPos, int sectionPos);
+
 	wxVector<Chapter> GetChapters(int bookPos);
 
 	wxArrayString GetCharacterNames();

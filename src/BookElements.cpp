@@ -33,7 +33,10 @@ amDocument Scene::GenerateDocument() {
 
 bool Chapter::Init() {
     if (scenes.empty()) {
-        scenes.push_back(Scene(amGetManager()->GetDocumentId(GenerateDocumentForID()), 1));
+        Scene scene(amGetManager()->GetDocumentId(GenerateDocumentForID()), 1);
+        amGetManager()->InsertDocument(scene.GenerateDocument());
+
+        scenes.push_back(scene);
         return true;
     }
 
@@ -70,6 +73,8 @@ amDocument Chapter::GenerateDocumentForID() {
     document.specialForeign = true;
     document.foreignKey.first = "section_id";
     document.foreignKey.second = sectionID;
+
+    document.integers["position"] = position;
 
     return document;
 }
@@ -114,6 +119,8 @@ amDocument Section::GenerateDocumentForID() {
     document.foreignKey.first = "book_id";
     document.foreignKey.second = bookID;
 
+    document.integers["position"] = pos;
+
     return document;
 }
 
@@ -122,6 +129,18 @@ amDocument Section::GenerateDocumentForID() {
 ///////////////////////////// Book //////////////////////////////
 /////////////////////////////////////////////////////////////////
 
+
+bool Book::Init() {
+    if (sections.empty()) {
+        Section section(amGetManager()->GetDocumentId(GenerateDocumentForID()), 1);
+        amGetManager()->InsertDocument(section.GenerateDocument());
+
+        sections.push_back(section);
+        return true;
+    }
+
+    return false;
+}
 
 amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
     amDocument document;
@@ -168,6 +187,10 @@ amDocument Book::GenerateDocumentForID() {
 /////////////////////////////////////////////////////////////////
 
 
+wxVector<Chapter>& amProject::GetChapters(int bookPos, int sectionPos) {
+    return books[bookPos - 1].sections[sectionPos - 1].chapters;
+}
+
 wxVector<Chapter> amProject::GetChapters(int bookPos) {
     Book& book = books[bookPos - 1];
     int totalSize = 0;
@@ -175,7 +198,8 @@ wxVector<Chapter> amProject::GetChapters(int bookPos) {
     for (auto& it : book.sections)
         totalSize += it.chapters.size();
 
-    wxVector<Chapter> grouped(totalSize);
+    wxVector<Chapter> grouped;
+    grouped.reserve(totalSize);
 
     for (auto& it : book.sections)
         for (auto& it2 : it.chapters)
