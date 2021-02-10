@@ -132,6 +132,11 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tScenes.Add("character_id INTEGER");
 	tScenes.Add("FOREIGN KEY(chapter_id) REFERENCES chapters(id)");
 	tScenes.Add("FOREIGN KEY (character_id) REFERENCES characters(id)");
+	
+	wxArrayString tOutlineCorkboards;
+	tOutlineCorkboards.Add("id INTEGER PRIMARY KEY");
+	tOutlineCorkboards.Add("name TEXT");
+	tOutlineCorkboards.Add("content TEXT");
 
 	//////////////////// MANY-TO-MANY TABLES ////////////////////
 
@@ -163,6 +168,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	CreateTable("sections", tSections);
 	CreateTable("chapters", tChapters);
 	CreateTable("scenes", tScenes);
+	CreateTable("outline_corkboard", tOutlineCorkboards);
 	CreateTable("characters_chapters", tCharactersInChapters);
 	CreateTable("locations_chaptes", tLocationsInChapters);
 	CreateTable("items_chapters", tItemsInChapters);
