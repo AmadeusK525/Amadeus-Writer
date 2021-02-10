@@ -1,6 +1,5 @@
 #include "ChapterWriter.h"
 
-
 #include "ElementsNotebook.h"
 
 #include <wx\popupwin.h>
@@ -33,8 +32,6 @@ EVT_TIMER(TIMER_Save, amChapterWriter::OnTimerEvent)
 EVT_CLOSE(amChapterWriter::OnClose)
 
 END_EVENT_TABLE()
-
-
 
 amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, int numb) :
     m_saveTimer(this, TIMER_Save),
@@ -257,7 +254,6 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     m_cwNotebook->notesSize.y = (m_cwNotebook->corkBoard->GetSize().y / 4) - 10;
 
     m_cwNotebook->corkBoard->size = m_cwNotebook->corkBoard->GetSize();
-    m_cwNotebook->corkBoard->SetImageAsIs(wxBitmap(wxBITMAP_PNG(corkBoard)).ConvertToImage());
 
     SetIcon(wxICON(amadeus));
 
@@ -539,22 +535,15 @@ void amChapterWriter::CheckChapterValidity() {
 void amChapterWriter::LoadChapter() {
     wxBusyCursor busy;
 
-    Chapter& chapter = m_manager->GetChapters(1)[m_chapterPos - 1];
+    Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
 
     SetTitle(chapter.name);
 
-    wxString path(m_manager->GetPath(true).ToStdString() + "Files\\Chapters\\" +
-        std::to_string(chapter.position) + " - " + chapter.name + ".xml");
-
     m_cwNotebook->Freeze();
     
-    if (wxFileName::Exists(path.ToStdString()))
-        m_cwNotebook->m_textCtrl->LoadFile(path, wxRICHTEXT_TYPE_XML);
-    else
-        m_cwNotebook->m_textCtrl->GetBuffer() = chapter.scenes[0].content;
-    
-
     chapter.scenes[0].content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
+    
+    m_cwNotebook->m_textCtrl->GetBuffer() = chapter.scenes[0].content;
     m_cwNotebook->m_textCtrl->GetBuffer().Invalidate(wxRICHTEXT_ALL);
     m_cwNotebook->m_textCtrl->RecreateBuffer();
     m_cwNotebook->m_textCtrl->Refresh();
@@ -582,7 +571,7 @@ void amChapterWriter::LoadChapter() {
 
 void amChapterWriter::SaveChapter() {
     CheckChapterValidity();
-    Chapter& chapter = m_manager->GetChapters(1)[m_chapterPos - 1];
+    Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
 
     chapter.scenes[0].content = m_cwNotebook->m_textCtrl->GetBuffer();
     chapter.scenes[0].content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
@@ -678,8 +667,7 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent) :
     attr.SetFont(wxFontInfo(10));
     attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
     attr.SetLeftIndent(63, -63);
-    //attr.SetRightIndent(63);
-    attr.SetTextColour(wxColour(245, 245, 245));
+    attr.SetTextColour(wxColour(250, 250, 250));
     m_textCtrl->SetBasicStyle(attr);
     m_textCtrl->SetBackgroundColour(wxColour(35, 35, 35));
 
@@ -728,6 +716,7 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent) :
     mainPanel->SetSizer(pageSizer);
 
     corkBoard = new ImagePanel(this, wxDefaultPosition, wxDefaultSize);
+    corkBoard->SetBackgroundColour(wxColour(45, 45, 45));
     corkBoard->EnableScrolling(false, true);
     corkBoard->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
 

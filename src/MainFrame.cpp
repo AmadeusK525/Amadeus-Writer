@@ -429,25 +429,6 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event) {
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
 void amMainFrame::OnNewChapter(wxCommandEvent& event) {
-    if (!wxFileName::Exists(m_manager->GetPath(true).ToStdString() + "Files")) {
-        wxMessageDialog* first = new wxMessageDialog(this, "It seems like you haven't saved your project yet.\nPlease do before writing any chapters.",
-            "Save before", wxOK | wxCANCEL | wxOK_DEFAULT);
-        first->SetOKCancelLabels("Save", "Cancel");
-        int aa = first->ShowModal();
-        if (aa == wxID_OK) {
-           OnSaveFile(event);
-
-            if (!m_manager->IsSaved())
-                return;
-        } else {
-            event.Skip();
-            return;
-        }
-
-        if (first)
-            delete first;
-    }
-
     ChapterCreator* create = new ChapterCreator(this, m_manager);
     create->Show();
     create->SetFocus();

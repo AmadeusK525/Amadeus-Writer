@@ -23,10 +23,8 @@ private:
 public:
     amChaptersNotebook(wxWindow* parent, amProjectManager* manager);
 
-    void AddChapter(Chapter& chapter, int pos = -1, bool Reposition = true);
+    void AddChapter(Chapter& chapter, int pos = -1);
     void AddToList(Chapter& chapter, int pos = -1);
-
-    void RepositionChapters();
 
     ChapterGrid* GetGrid() { return m_grid; }
     wxListView* GetList() { return m_list; }

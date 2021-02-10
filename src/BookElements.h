@@ -119,6 +119,12 @@ struct Book {
 
     wxVector<Section> sections{};
 
+    Book() = default;
+
+    Book(int pos) : pos(pos) {}
+
+    bool Init();
+
     amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
     amDocument GenerateDocumentForID();
 };
@@ -141,6 +147,8 @@ struct amProject {
     wxVector<Character>& GetCharacters() { return characters; }
     wxVector<Location>& GetLocations() { return locations; }
     wxVector<Item>& GetItems() { return items; }
+    wxVector<Chapter>& GetChapters(int bookPos, int sectionPos);
+
     wxVector<Chapter> GetChapters(int bookPos);
 };
 

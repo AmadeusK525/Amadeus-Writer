@@ -26,13 +26,9 @@ amChaptersNotebook::amChaptersNotebook(wxWindow* parent, amProjectManager* manag
     AddPage(m_list, "List");
 }
 
-void amChaptersNotebook::AddChapter(Chapter& chapter, int pos, bool Reposition) {
+void amChaptersNotebook::AddChapter(Chapter& chapter, int pos) {
     m_grid->AddButton();
     AddToList(chapter, pos);
-
-    // Redeclare all chapter positions  
-    if (Reposition)
-        RepositionChapters();
 }
 
 void amChaptersNotebook::AddToList(Chapter& chapter, int pos) {
@@ -40,19 +36,6 @@ void amChaptersNotebook::AddToList(Chapter& chapter, int pos) {
     m_list->SetItem(pos, 1, std::to_string(chapter.characters.size()));
     m_list->SetItem(pos, 2, std::to_string(chapter.locations.size()));
     //m_list->SetItem(pos, 3, chapter.pointOfView);
-}
-
-void amChaptersNotebook::RepositionChapters() {
-    int i = 1;
-    wxVector<Chapter>& chapters = m_manager->GetChapters(1);
-
-    for (auto it = chapters.begin(); it != chapters.end(); it++) {
-        it->position = i++;
-    }
-
-    wxFileName::Rmdir(m_manager->GetPath(true).ToStdString() + "Files\\Chapters", wxPATH_RMDIR_RECURSIVE);
-    wxFileName::Mkdir(m_manager->GetPath(true).ToStdString() + "Files\\Chapters");
-    m_manager->SaveProject();
 }
 
 void amChaptersNotebook::ClearAll() {
