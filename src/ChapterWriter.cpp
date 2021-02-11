@@ -377,7 +377,7 @@ void amChapterWriter::AddCharacter(wxCommandEvent& event) {
     wxString name = event.GetString();
     if (m_charInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToCharacter(name, m_manager->GetChapters(1)[m_chapterPos - 1]);
+        m_manager->AddChapterToCharacter(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
         UpdateCharacterList();
         m_manager->GetElementsNotebook()->UpdateCharacterList();
     }
@@ -388,7 +388,7 @@ void amChapterWriter::AddLocation(wxCommandEvent& event) {
    
     if (m_locInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToLocation(name, m_manager->GetChapters(1)[m_chapterPos - 1]);
+        m_manager->AddChapterToLocation(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
         UpdateLocationList();
         m_manager->GetElementsNotebook()->UpdateLocationList();
     }
@@ -399,7 +399,7 @@ void amChapterWriter::AddItem(wxCommandEvent& event) {
 
     if (m_itemsInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToItem(name, m_manager->GetChapters(1)[m_chapterPos - 1]);
+        m_manager->AddChapterToItem(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
         UpdateItemList();
         m_manager->GetElementsNotebook()->UpdateItemList();
     }
@@ -409,7 +409,7 @@ void amChapterWriter::UpdateCharacterList() {
     m_charInChap->DeleteAllItems();
     
     int i = 0;
-    for (auto& it : m_manager->GetChapters(1)[m_chapterPos - 1].characters) {
+    for (auto& it : m_manager->GetChapters(1, 1)[m_chapterPos - 1].characters) {
         m_charInChap->InsertItem(i++, it);
     }
 }
@@ -418,7 +418,7 @@ void amChapterWriter::UpdateLocationList() {
     m_locInChap->DeleteAllItems();
 
     int i = 0;
-    for (auto& it : m_manager->GetChapters(1)[m_chapterPos - 1].locations) {
+    for (auto& it : m_manager->GetChapters(1, 1)[m_chapterPos - 1].locations) {
         m_locInChap->InsertItem(i++, it);
     }
 }
@@ -427,7 +427,7 @@ void amChapterWriter::UpdateItemList() {
     m_itemsInChap->DeleteAllItems();
 
     int i = 0;
-    for (auto& it : m_manager->GetChapters(1)[m_chapterPos - 1].items) {
+    for (auto& it : m_manager->GetChapters(1, 1)[m_chapterPos - 1].items) {
         m_itemsInChap->InsertItem(i++, it);
     }
 }
@@ -442,7 +442,7 @@ void amChapterWriter::OnRemoveCharacter(wxCommandEvent& event) {
         wxString name = m_charInChap->GetItemText(sel);
         m_charInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromCharacter(name, m_manager->GetChapters(1)[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromCharacter(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
 
         sel = m_charInChap->GetNextSelected(sel - 1);
     }
@@ -462,7 +462,7 @@ void amChapterWriter::OnRemoveLocation(wxCommandEvent& event) {
         wxString name = m_locInChap->GetItemText(sel);
         m_locInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromLocation(name, m_manager->GetChapters(1)[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromLocation(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
 
         sel = m_locInChap->GetNextSelected(sel + 1);
     }
@@ -481,7 +481,7 @@ void amChapterWriter::OnRemoveItem(wxCommandEvent& event) {
         wxString name = m_itemsInChap->GetItemText(sel);
         m_itemsInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromItem(name, m_manager->GetChapters(1)[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromItem(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
 
         sel = m_itemsInChap->GetNextSelected(sel + 1);
     }

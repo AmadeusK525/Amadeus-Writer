@@ -52,7 +52,7 @@ bool Chapter::HasRedNote() {
     return false;
 }
 
-amDocument Chapter::GenerateDocument() {
+amDocument Chapter::GenerateDocumentSimple() {
     amDocument document;
     document.tableName = "chapters";
     document.name = name;
@@ -61,6 +61,15 @@ amDocument Chapter::GenerateDocument() {
     document.integers["section_id"] = sectionID;
 
     document.strings["synopsys"] = synopsys;
+
+    return document;
+}
+
+amDocument Chapter::GenerateDocument() {
+    amDocument document = GenerateDocumentSimple();
+    
+    for (auto& it : scenes)
+        document.documents.push_back(it.GenerateDocument());
 
     return document;
 }
@@ -93,7 +102,7 @@ bool Chapter::operator==(const Chapter& other) const {
 /////////////////////////////////////////////////////////////////
 
 
-amDocument Section::GenerateDocument() {
+amDocument Section::GenerateDocumentSimple() {
     amDocument document;
     document.tableName = "sections";
     document.name = name;
@@ -103,6 +112,12 @@ amDocument Section::GenerateDocument() {
     document.integers["type"] = type;
 
     document.strings["description"] = description;
+
+    return document;
+}
+
+amDocument Section::GenerateDocument() {
+    amDocument document = GenerateDocumentSimple();
     
     for (auto& it : chapters)
         document.documents.push_back(it.GenerateDocument());
@@ -142,7 +157,7 @@ bool Book::Init() {
     return false;
 }
 
-amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
+amDocument Book::GenerateDocumentSimple() {
     amDocument document;
     document.name = title;
     document.tableName = "books";
@@ -153,6 +168,12 @@ amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
     document.strings["author"] = author;
     document.strings["genre"] = genre;
     document.strings["description"] = description;
+
+    return document;
+}
+
+amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
+    amDocument document = GenerateDocumentSimple();
 
     if (sectionsToGen.empty()) {
         document.documents.reserve(sections.size());

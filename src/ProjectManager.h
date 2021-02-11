@@ -30,9 +30,12 @@ public:
 	bool CreateTable(const wxString& tableName, const wxArrayString& arguments, bool ifNotExists = true);
 
 	bool InsertDocument(amDocument& document);
-	bool UpdateDocument(amDocument& document);
-
+	bool UpdateDocument(amDocument& original, amDocument& edit);
+	bool DeleteDocument(amDocument& document);
 	wxSQLite3Statement ConstructInsertStatement(amDocument& document);
+	wxSQLite3Statement ConstructUpdateStatement(amDocument& document, int id);
+
+	bool RowExists(amDocument& document);
 };
 
 

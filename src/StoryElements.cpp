@@ -91,13 +91,13 @@ void Element::operator=(const Element& other) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-amDocument Character::GenerateDocument() {
+amDocument Character::GenerateDocumentSimple() {
     amDocument document;
     document.name = name;
     document.tableName = "characters";
 
     document.integers["role"] = role;
-    
+
     document.strings["sex"] = sex;
     document.strings["age"] = age;
     document.strings["nationality"] = nat;
@@ -117,11 +117,17 @@ amDocument Character::GenerateDocument() {
         document.memBuffers["image"] = buffer;
     }
 
+    return document;
+}
+
+amDocument Character::GenerateDocument() {
+    amDocument document = GenerateDocumentSimple();
+
     for (auto& it : custom) {
         amDocument customDoc;
         customDoc.tableName = "characters_custom";
 
-        customDoc.strings["name"] = it.first;
+        customDoc.name = it.first;
         customDoc.strings["content"] = it.second;
 
         customDoc.specialForeign = true;
@@ -203,13 +209,14 @@ void Character::operator=(const Character& other)  {
     role = other.role;
     image = other.image;
     sex = other.sex;
+    height = other.height;
     age = other.age;
     nat = other.nat;
     nick = other.nick;
     appearance = other.appearance;
     personality = other.personality;
     backstory = other.backstory;
-    height = other.height;
+    custom = other.custom;
     cCompType = other.cCompType;
 }
 
@@ -219,7 +226,7 @@ void Character::operator=(const Character& other)  {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-amDocument Location::GenerateDocument() {
+amDocument Location::GenerateDocumentSimple() {
     amDocument document;
     document.name = name;
     document.tableName = "locations";
@@ -242,6 +249,12 @@ amDocument Location::GenerateDocument() {
 
         document.memBuffers["image"] = buffer;
     }
+
+    return document;
+}
+
+amDocument Location::GenerateDocument() {
+    amDocument document = GenerateDocumentSimple();
 
     for (auto& it : custom) {
         amDocument customDoc;
@@ -343,7 +356,7 @@ void Location::operator=(const Location& other) {
 //////////////////////////////////// Item /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-amDocument Item::GenerateDocument() {
+amDocument Item::GenerateDocumentSimple() {
     amDocument document;
     document.name = name;
     document.tableName = "items";
@@ -370,6 +383,12 @@ amDocument Item::GenerateDocument() {
 
         document.memBuffers["image"] = buffer;
     }
+
+    return document;
+}
+
+amDocument Item::GenerateDocument() {
+    amDocument document = GenerateDocumentSimple();
 
     for (auto& it : custom) {
         amDocument customDoc;
@@ -466,5 +485,6 @@ void Item::operator=(const Item& other) {
     depth = other.depth;
     isMagic = other.isMagic;
     isManMade = other.isManMade;
+    custom = other.custom;
     iCompType = other.iCompType;
 }
