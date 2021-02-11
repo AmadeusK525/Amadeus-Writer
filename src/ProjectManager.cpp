@@ -28,6 +28,10 @@ amProjectSQLDatabase::amProjectSQLDatabase(wxFileName& path) {
 bool amProjectSQLDatabase::Init() {
 	if (!TableExists("characters")) {
 		CreateAllTables();
+
+		wxSQLite3StatementBuffer buffer;
+		wxString oba("eai");
+		wxMessageBox(buffer.Format("%q", (const char*)oba));
 		return false;
 	}
 
@@ -88,6 +92,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tItems.Add("depth TEXT");
 	tItems.Add("isMagic INTEGER");
 	tItems.Add("isManMade INTEGER");
+	tItems.Add("role INTEGER");
 	tItems.Add("image BLOB");
 
 	wxArrayString tItemsCustom;
@@ -168,9 +173,9 @@ void amProjectSQLDatabase::CreateAllTables() {
 	CreateTable("sections", tSections);
 	CreateTable("chapters", tChapters);
 	CreateTable("scenes", tScenes);
-	CreateTable("outline_corkboard", tOutlineCorkboards);
+	CreateTable("outline_corkboards", tOutlineCorkboards);
 	CreateTable("characters_chapters", tCharactersInChapters);
-	CreateTable("locations_chaptes", tLocationsInChapters);
+	CreateTable("locations_chapters", tLocationsInChapters);
 	CreateTable("items_chapters", tItemsInChapters);
 }
 
@@ -188,8 +193,10 @@ int amProjectSQLDatabase::GetDocumentId(amDocument& document) {
 
 		query << document.foreignKey.first << " = " << document.foreignKey.second;
 
-		auto& it = document.integers.begin();
-		query << " AND " << it->first << " = " << it->second;
+		if (!document.integers.empty()) {
+			auto& it = document.integers.begin();
+			query << " AND " << it->first << " = " << it->second;
+		}
 	}
 
 	wxSQLite3ResultSet result = ExecuteQuery(query);
@@ -253,9 +260,59 @@ bool amProjectSQLDatabase::InsertDocument(amDocument& document) {
 	return true;
 }
 
-bool amProjectSQLDatabase::UpdateDocument(amDocument& document) {
+bool amProjectSQLDatabase::UpdateDocument(amDocument& original, amDocument& edit) {
+	int id = GetDocumentId(original);
 
-	return false;
+	try {
+		wxSQLite3Statement statement = ConstructUpdateStatement(edit, id);
+		statement.ExecuteUpdate();
+	} catch (wxSQLite3Exception& e) {
+		wxMessageBox("Exception thrown - " + e.GetMessage());
+	}
+
+	int prevSize = original.documents.size();
+	int newSize = edit.documents.size();
+
+	if (prevSize == 0 && newSize == 0)
+		return true;
+
+	if (prevSize < newSize) {
+		int i = 0;
+
+		for (i; i < prevSize; i++) {
+			original.documents[i].foreignKey.second = id;
+			edit.documents[i].foreignKey.second = id;
+			UpdateDocument(original.documents[i], edit.documents[i]);
+		}
+
+		for (i; i < newSize; i++) {
+			edit.documents[i].foreignKey.second = id;
+			InsertDocument(edit.documents[i]);
+		}
+
+	} else {
+		if (prevSize > newSize) {
+			for (int i = prevSize - 1; i > newSize - 1; i--) {
+				original.documents[i].foreignKey.second = id;
+				DeleteDocument(original.documents[i]);
+			}
+		}
+
+		for (int i = 0; i < newSize; i++) {
+			original.documents[i].foreignKey.second = id;
+			edit.documents[i].foreignKey.second = id;
+			UpdateDocument(original.documents[i], edit.documents[i]);
+		}
+	}
+
+	return true;
+}
+
+bool amProjectSQLDatabase::DeleteDocument(amDocument& document) {
+	wxString statement("DELETE FROM ");
+	statement << document.tableName << " WHERE id = " << GetDocumentId(document) << ";";
+
+	return ExecuteUpdate(statement);
 }
 
 wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& document) {
@@ -267,6 +324,8 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 
 	bool first = true;
 
+	wxSQLite3StatementBuffer buffer;
+
 	if (document.name != "") {
 		if (!first) {
 			columnNames << ", ";
@@ -274,7 +333,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 		}
 
 		columnNames << "name";
-		valueNames << "'" << document.name << "'";
+		valueNames << "'" << buffer.Format("%q", (const char*)document.name) << "'";
 
 		first = false;
 	}
@@ -287,7 +346,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 
 		columnNames << it.first;
 		valueNames << it.second;
-
+		
 		first = false;
 	}
 
@@ -298,8 +357,8 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 		}
 
 		columnNames << it.first;
-		valueNames << "'" << it.second << "'";
-
+		valueNames << "'" << buffer.Format("%q", (const char*)it.second) << "'";
+		
 		first = false;
 	}
 
@@ -311,7 +370,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 
 		columnNames << it.first;
 		valueNames << "?";
-
+		
 		first = false;
 	}
 
@@ -341,6 +400,75 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 	}
 
 	return wxSQLite3Statement();
+}
+
+wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amDocument& document, int id) {
+	wxString update("UPDATE ");
+	update << document.tableName << " SET ";
+
+	bool first = true;
+	wxSQLite3StatementBuffer buffer;
+	if (document.name != "") {
+		if (!first)
+			update << ", ";
+
+		update << "name = '" << buffer.Format("%q", (const char*)document.name) << "'";
+		first = false;
+	}
+
+	for (auto& it : document.integers) {
+		if (!first)
+			update << ", ";
+
+		update << it.first << " = " << it.second;
+		first = false;
+	}
+
+	for (auto& it : document.strings) {
+		if (!first)
+			update << ", ";
+
+		update << it.first << " = '" << buffer.Format("%q", (const char*)it.second) << "'";
+		first = false;
+	}
+
+	for (auto& it : document.memBuffers) {
+		if (!first)
+			update << ", ";
+	
+		update << it.first << " = ?";
+		first = false;
+	}
+
+	if (document.specialForeign) {
+		if (!first)
+			update << ", ";
+
+		update << document.foreignKey.first << " = " << document.foreignKey.second;
+		first = false;
+	}
+
+	update << " WHERE id = " << id << ";";
+
+	try {
+		wxSQLite3Statement statement = PrepareStatement(update);
+
+		int i = 1;
+
+		for (auto& it : document.memBuffers)
+			statement.Bind(i++, it.second);
+
+		return statement;
+	} catch (wxSQLite3Exception& e) {
+		wxMessageBox(e.GetMessage());
+	}
+
+	return wxSQLite3Statement();
+
+}
+
+bool amProjectSQLDatabase::RowExists(amDocument& document) {
+	return GetDocumentId(document);
 }
 
 
@@ -589,8 +717,11 @@ void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, 
 		}
 		section.chapters.insert(it, chapter);
 		
-		for (int i = 0; i < section.chapters.size(); i++)
+		for (int i = 0; i < section.chapters.size(); i++) {
+			amDocument original = section.chapters[i].GenerateDocumentSimple();
 			section.chapters[i].position = i + 1;
+			m_storage.UpdateDocument(original, section.chapters[i].GenerateDocumentSimple());
+		}
 	} else {
 		section.chapters.push_back(chapter);
 	}
@@ -612,6 +743,7 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 		}
 	}
 
+	amDocument originalDoc = original.GenerateDocument();
 	original = edit;
 
 	if (sort) {
@@ -620,13 +752,19 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 	} else {
 		int n = 0;
 		for (auto& it : m_project.characters) {
-			if (it == original)
-				m_elements->UpdateCharacter(n++, it);
+			if (it == original) {
+				m_elements->UpdateCharacter(n, it);
+				break;
+			}
+
+			n++;
 		}
 	}
 
 	m_elements->m_charShow->SetData(original);
 	m_mainFrame->Enable(true);
+
+	m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
 	SetSaved(false);
 }
 
@@ -640,6 +778,7 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 		}
 	}
 
+	amDocument originalDoc = original.GenerateDocument();
 	original = edit;
 
 	if (sort) {
@@ -648,11 +787,17 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 	} else {
 		int n = 0;
 		for (auto& it : m_project.locations) {
-			if (it == original)
-				m_elements->UpdateLocation(n++, it);
+			if (it == original) {
+				m_elements->UpdateLocation(n, it);
+				break;
+			}
+
+			n++;
 		}
 		m_elements->m_locShow->SetData(original);
 		m_mainFrame->Enable(true);
+		
+		m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
 		SetSaved(false);
 	}
 }
@@ -668,6 +813,7 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 		}
 	}
 
+	amDocument originalDoc = original.GenerateDocument();
 	original = edit;
 
 	if (sort) {
@@ -676,11 +822,17 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 	} else {
 		int n = 0;
 		for (auto& it : m_project.items) {
-			if (it == original)
-				m_elements->UpdateItem(n++, it);
+			if (it == original) {
+				m_elements->UpdateItem(n, it);
+				break;
+			}
+			
+			n++;
 		}
 		m_elements->m_itemShow->SetData(original);
 		m_mainFrame->Enable(true);
+		
+		m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
 		SetSaved(false);
 	}
 }

@@ -538,7 +538,7 @@ void amCharacterCreator::SetEdit(Element* editChar) {
 }
 
 void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
-	wxVector<wxString>& vec = GetValues();
+	wxVector<wxString> vec = GetValues();
 
 	Role newRole;
 	if (vec[6] == "Protagonist")
@@ -611,7 +611,7 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 
 void amCharacterCreator::Create(wxCommandEvent& event) {
 	if (!ncFullName->IsEmpty()) {
-		wxVector<wxString>& vec = GetValues();
+		wxVector<wxString> vec = GetValues();
 
 		Character character;
 		character.name = vec[0];

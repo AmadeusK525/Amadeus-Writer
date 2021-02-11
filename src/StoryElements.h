@@ -51,6 +51,7 @@ struct Element {
 
 	Element() = default;
 
+	virtual amDocument GenerateDocumentSimple() = 0;
 	virtual amDocument GenerateDocument() = 0;
 
 	bool operator<(const Element& other) const;
@@ -73,6 +74,7 @@ struct Character : public Element {
 
 	Character() = default;
 
+	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
 
 	bool operator<(const Character& other) const;
@@ -93,6 +95,7 @@ struct Location : public Element {
 
 	Location() = default;
 
+	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
 
 	bool operator<(const Location& other) const;
@@ -116,6 +119,7 @@ struct Item : public Element {
 
 	static CompType iCompType;
 
+	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
 
 	bool operator<(const Item& other) const;

@@ -123,7 +123,7 @@ void ChapterCreator::Next(wxCommandEvent& event) {
         m_nchapList->AppendColumn("Drag chapter '" + m_tempName + "' to desired position", wxLIST_FORMAT_LEFT, 2000);
 
         int i = 0;
-        for (auto& it : m_manager->GetChapters(1)) {
+        for (auto& it : m_manager->GetChapters(1, 1)) {
             m_nchapList->InsertItem(i++, it.name);
         }
 

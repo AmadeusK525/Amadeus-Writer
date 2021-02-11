@@ -64,6 +64,7 @@ struct Chapter {
 
     bool HasRedNote();
 
+    amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();
     amDocument GenerateDocumentForID();
 
@@ -96,6 +97,7 @@ struct Section {
 
     Section(int bookID, int pos) : bookID(bookID), pos(pos) {}
 
+    amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();
     amDocument GenerateDocumentForID();
 };
@@ -125,6 +127,7 @@ struct Book {
 
     bool Init();
 
+    amDocument GenerateDocumentSimple();
     amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
     amDocument GenerateDocumentForID();
 };
