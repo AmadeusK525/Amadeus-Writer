@@ -572,7 +572,10 @@ void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 
 	Character* pCharacterToEdit = (Character*)m_elementEdit;
 
+	Hide();
+	m_manager->GetMainFrame()->Enable(); 
 	m_manager->EditCharacter(*pCharacterToEdit, character, dif);
+
 	Destroy();
 }
 
@@ -638,14 +641,15 @@ void amCharacterCreator::Create(wxCommandEvent& event) {
 
 		character.custom = GetCustom();
 
+		Hide();
+		m_manager->GetMainFrame()->Enable();
 		m_manager->AddCharacter(character, true);
 	} else {
 		wxMessageBox("You can't create a character without a name.");
 		return;
 	}
 
-	m_manager->GetMainFrame()->Enable();
-	this->Destroy();
+	Destroy();
 	event.Skip();
 }
 
@@ -948,9 +952,10 @@ void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 	Location* pLocationToEdit = (Location*)m_elementEdit;
 
 	bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != location.role;
-	m_manager->EditLocation(*pLocationToEdit, location, dif);
 
-	m_manager->GetMainFrame()->Enable(true);
+	Hide();
+	m_manager->GetMainFrame()->Enable();
+	m_manager->EditLocation(*pLocationToEdit, location, dif);
 	Destroy();
 }
 
@@ -1060,13 +1065,14 @@ void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
 
 		location.custom = GetCustom();
 
+		Hide();
+		m_manager->GetMainFrame()->Enable();
 		m_manager->AddLocation(location, true);
 	} else {
 		wxMessageBox("You can't create a location with no name!");
 		return;
 	}
 
-	m_manager->GetMainFrame()->Enable();
 	Destroy();
 }
 
@@ -1453,9 +1459,11 @@ void amItemCreator::DoEdit(wxCommandEvent& event) {
 	Item* pItemToEdit = (Item*)m_elementEdit;
 
 	bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != item.role;
+	
+	Hide();
+	m_manager->GetMainFrame()->Enable();
 	m_manager->EditItem(*pItemToEdit, item, dif);
 
-	m_manager->GetMainFrame()->Enable(true);
 	Destroy();
 }
 
@@ -1526,13 +1534,14 @@ void amItemCreator::Create(wxCommandEvent& event) {
 		item.image = m_imagePanel->GetImage();
 		item.custom = GetCustom();
 
+		Hide();
+		m_manager->GetMainFrame()->Enable();
 		m_manager->AddItem(item, true);
 	} else {
 		wxMessageBox("You can't create an item with no name!");
 		return;
 	}
 
-	m_manager->GetMainFrame()->Enable();
 	Destroy();
 }
 

@@ -26,6 +26,7 @@ struct Scene {
     Scene(int chapterID, int pos) : chapterID(chapterID), pos(pos) {}
 
     amDocument GenerateDocument();
+    amDocument GenerateDocumentForId();
 };
 
 
@@ -66,7 +67,7 @@ struct Chapter {
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();
-    amDocument GenerateDocumentForID();
+    amDocument GenerateDocumentForId();
 
     bool operator<(const Chapter& other) const;
     bool operator==(const Chapter& other) const;
@@ -99,7 +100,7 @@ struct Section {
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();
-    amDocument GenerateDocumentForID();
+    amDocument GenerateDocumentForId();
 };
 
 
@@ -129,7 +130,7 @@ struct Book {
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
-    amDocument GenerateDocumentForID();
+    amDocument GenerateDocumentForId();
 };
 
 
