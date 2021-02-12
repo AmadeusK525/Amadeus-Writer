@@ -125,10 +125,10 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tChapters.Add("FOREIGN KEY(section_id) REFERENCES sections(id)");
 
 	wxArrayString tChapterNotes;
-	tChapterNotes.Add("is INTEGER PRIMARY KEY");
+	tChapterNotes.Add("id INTEGER PRIMARY KEY");
 	tChapterNotes.Add("name TEXT");
 	tChapterNotes.Add("content TEXT");
-	tChapterNotes.Add("isResolved INTEGER");
+	tChapterNotes.Add("isDone INTEGER");
 	tChapterNotes.Add("chapter_id INTEGER");
 	tChapterNotes.Add("FOREIGN KEY (chapter_id) REFERENCES chapters(id)");
 
@@ -171,16 +171,21 @@ void amProjectSQLDatabase::CreateAllTables() {
 
 	CreateTable("characters", tCharacters);
 	CreateTable("characters_custom", tCharactersCustom);
+
 	CreateTable("locations", tLocations);
 	CreateTable("locations_custom", tLocationsCustom);
+
 	CreateTable("items", tItems);
 	CreateTable("items_custom", tItemsCustom);
+
 	CreateTable("books", tBooks);
 	CreateTable("sections", tSections);
 	CreateTable("chapters", tChapters);
 	CreateTable("chapter_notes", tChapterNotes);
 	CreateTable("scenes", tScenes);
+
 	CreateTable("outline_corkboards", tOutlineCorkboards);
+
 	CreateTable("characters_chapters", tCharactersInChapters);
 	CreateTable("locations_chapters", tLocationsInChapters);
 	CreateTable("items_chapters", tItemsInChapters);
@@ -568,6 +573,10 @@ bool amProjectManager::LoadProject() {
 	return DoLoadProject(m_project.amFile.GetFullPath());
 }
 
+void amProjectManager::SaveDocument(amDocument& original, amDocument& edit) {
+	m_storage.UpdateDocument(original, edit);
+}
+
 bool amProjectManager::DoSaveProject(const wxString& path) {
 	// Sets Save state as saved, updates the current title and all that good stuff.
 	// The attribute "saveDialog" currently does nothing.
@@ -586,11 +595,17 @@ bool amProjectManager::DoLoadProject(const wxString& path) {
 		m_mainFrame->OnNewFile(wxCommandEvent());
 
 		m_storage.Begin();
+
 		LoadCharacters();
 		LoadLocations();
+		LoadItems();
+
+		LoadBooks();
+
 		m_storage.Commit();
 
 		m_elements->UpdateAll();
+		//m_outline->LoadOutline();
 
 		m_isSaved = true;
 		SetLastSave();
@@ -599,6 +614,128 @@ bool amProjectManager::DoLoadProject(const wxString& path) {
 	}
 
 	return true;
+}
+
+void amProjectManager::LoadBooks() {
+	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM books");
+	int count = table.GetRowCount();
+	m_project.books.reserve(count);
+
+	for (int i = 0; i < count; i++) {
+		table.SetRow(i);
+		int id = table.GetInt("id");
+
+		Book book;
+
+		book.title = table.GetAsString("name");
+		book.pos = table.GetInt("position");
+		book.author = table.GetAsString("author");
+		book.genre = table.GetAsString("genre");
+		book.description = table.GetAsString("description");
+		book.synopsys = table.GetAsString("synopsys");
+
+		LoadSections(book.sections, id);
+
+		m_project.books.push_back(book);
+	}
+
+	RedeclareChapsInElements(m_project.books[0]);
+}
+
+void amProjectManager::LoadSections(wxVector<Section>& sections, int bookId) {
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM sections WHERE book_id = " +
+		std::to_string(bookId) + " ORDER BY position ASC;");
+	int i = 0;
+	while (result.NextRow()) {
+		Section section(bookId, result.GetInt("position"));
+
+		section.name = result.GetAsString("name");
+		section.description = result.GetAsString("description");
+		section.type = (SectionType)result.GetInt("type");
+
+		LoadChapters(section.chapters, result.GetInt("id"));
+
+		sections.push_back(section);
+	}
+}
+
+void amProjectManager::LoadChapters(wxVector<Chapter>& chapters, int sectionId) {
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM chapters WHERE section_id = " +
+		std::to_string(sectionId) + " ORDER BY position ASC;");
+
+	while (result.NextRow()) {
+		int chapterId = result.GetInt("id");
+
+		Chapter chapter(sectionId, result.GetInt("position"));
+
+		chapter.name = result.GetAsString("name");
+		chapter.synopsys = result.GetAsString("synopsys");
+		chapter.position = result.GetInt("position");
+
+		wxSQLite3ResultSet results2 = m_storage.ExecuteQuery("SELECT * FROM chapter_notes WHERE chapter_id = " +
+			std::to_string(chapterId) + ";");
+
+		while (results2.NextRow()) {
+			Note note(results2.GetAsString("content"), results2.GetAsString("name"));
+			note.isDone = results2.GetBool("isDone");
+
+			chapter.notes.push_back(note);
+		}
+
+		results2 = m_storage.ExecuteQuery("SELECT * FROM characters_chapters WHERE chapter_id = " +
+			std::to_string(chapterId) + ";");
+
+		while (results2.NextRow()) {
+			wxSQLite3ResultSet character = m_storage.ExecuteQuery("SELECT name FROM characters WHERE id = " +
+				std::to_string(results2.GetInt("character_id")));
+
+			chapter.characters.Add(character.GetAsString("name"));
+		}
+
+		results2 = m_storage.ExecuteQuery("SELECT * FROM locations_chapters WHERE chapter_id = " +
+			std::to_string(chapterId) + ";");
+
+		while (results2.NextRow()) {
+			wxSQLite3ResultSet location = m_storage.ExecuteQuery("SELECT name FROM locations WHERE id = " +
+				std::to_string(results2.GetInt("location_id")));
+
+			chapter.locations.Add(location.GetAsString("name"));
+		}
+
+		results2 = m_storage.ExecuteQuery("SELECT * FROM items_chapters WHERE chapter_id = " +
+			std::to_string(chapterId) + ";");
+
+		while (results2.NextRow()) {
+			wxSQLite3ResultSet item = m_storage.ExecuteQuery("SELECT name FROM items WHERE id = " +
+				std::to_string(results2.GetInt("item_id")));
+
+			chapter.items.Add(item.GetAsString("name"));
+		}
+
+		LoadScenes(chapter.scenes, chapterId);
+
+		chapters.push_back(chapter);
+		m_chaptersNote->AddChapter(chapter);
+	}
+}
+
+void amProjectManager::LoadScenes(wxVector<Scene>& scenes, int chapterId) {
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM scenes WHERE chapter_id = " +
+		std::to_string(chapterId) + " ORDER BY position ASC;");
+
+	while (result.NextRow()) {
+		Scene scene(chapterId, result.GetInt("position"));
+
+		scene.name = result.GetAsString("name");
+
+		wxStringInputStream sstream(result.GetAsString("content"));
+		scene.content.LoadFile(sstream, wxRICHTEXT_TYPE_XML);
+
+		scene.chapterID = chapterId;
+		scene.pos = result.GetInt("position");
+
+		scenes.push_back(scene);
+	}
 }
 
 void amProjectManager::LoadCharacters() {
@@ -670,7 +807,43 @@ void amProjectManager::LoadLocations() {
 	}
 }
 
-void amProjectManager::LoadItems() {}
+void amProjectManager::LoadItems() {
+	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM items");
+	int count = table.GetRowCount();
+	m_project.items.reserve(count);
+
+	for (int i = 0; i < count; i++) {
+		table.SetRow(i);
+		int id = table.GetInt("id");
+
+		Item item;
+
+		item.name = table.GetAsString("name");
+		item.width = table.GetAsString("width");
+		item.height = table.GetAsString("height");
+		item.depth = table.GetAsString("depth");
+		item.general = table.GetAsString("general");
+		item.appearance = table.GetAsString("appearance");
+		item.origin = table.GetAsString("origin");
+		item.backstory = table.GetAsString("backstory");
+		item.usage = table.GetAsString("usage");
+
+		item.isManMade = table.GetBool("isManMade");
+		item.isMagic = table.GetBool("isMagic");
+		item.role = (Role)table.GetInt("role");
+
+		//wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT image FROM characters WHERE id = ") << id << ";");
+
+		wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT name, content FROM items_custom WHERE item_id = ") <<
+			id << ";");
+
+		while (result.NextRow()) {
+			item.custom.push_back(pair<wxString, wxString>(result.GetAsString("name"), result.GetAsString("content")));
+		}
+
+		m_project.items.push_back(item);
+	}
+}
 
 void amProjectManager::SetExecutablePath(const wxString& path) {
 	m_executablePath.Assign(path);
@@ -783,8 +956,6 @@ void amProjectManager::AddCharacter(Character& character, bool refreshElements) 
 	m_storage.Begin();
 	m_storage.InsertDocument(character.GenerateDocument());
 	m_storage.Commit();
-
-	SetSaved(false);
 }
 
 void amProjectManager::AddLocation(Location& location, bool refreshElements) {
@@ -801,8 +972,6 @@ void amProjectManager::AddLocation(Location& location, bool refreshElements) {
 	m_storage.Begin();
 	m_storage.InsertDocument(location.GenerateDocument());
 	m_storage.Commit();
-
-	SetSaved(false);
 }
 
 void amProjectManager::AddItem(Item& item, bool refreshElements) {
@@ -819,8 +988,6 @@ void amProjectManager::AddItem(Item& item, bool refreshElements) {
 	m_storage.Begin();
 	m_storage.InsertDocument(item.GenerateDocument());
 	m_storage.Commit();
-
-	SetSaved(false);
 }
 
 /// <summary>
@@ -862,48 +1029,51 @@ void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, 
 	m_storage.Commit();
 
 	if (section.chapters.capacity() > capacityBefore)
-		RedeclareChapsInElements(section);
+		RedeclareChapsInElements(book);
 
 	SetSaved(false);
 }
 
 void amProjectManager::EditCharacter(Character& original, Character& edit, bool sort) {
-	m_outline->GetOutlineFiles()->DeleteCharacter(original);
-	m_outline->GetOutlineFiles()->AppendCharacter(edit);
-
-	if (sort) {
-		for (auto& it : original.chapters) {
-			it->characters.Remove(original.name);
-			it->characters.Add(edit.name);
-		}
-	}
-
-	amDocument originalDoc = original.GenerateDocument();
-	original = edit;
-
-	if (sort) {
-		wxVectorSort(m_project.characters);
-		m_elements->UpdateCharacterList();
-	} else {
-		int n = 0;
-		for (auto& it : m_project.characters) {
-			if (it == original) {
-				m_elements->UpdateCharacter(n, it);
-				break;
+	try {
+		if (sort) {
+			for (auto& it : original.chapters) {
+				it->characters.Remove(original.name);
+				it->characters.Add(edit.name);
 			}
-
-			n++;
 		}
+
+		m_outline->GetOutlineFiles()->DeleteCharacter(original);
+
+		amDocument originalDoc = original.GenerateDocument();
+		original = edit;
+
+		if (sort) {
+			wxVectorSort(m_project.characters);
+			m_elements->UpdateCharacterList();
+		} else {
+			int n = 0;
+			for (auto& it : m_project.characters) {
+				if (it == original) {
+					m_elements->UpdateCharacter(n, it);
+					break;
+				}
+
+				n++;
+			}
+		}
+
+		m_elements->m_charShow->SetData(original);
+		m_mainFrame->Enable(true);
+
+		m_storage.Begin();
+		m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
+		m_storage.Commit();
+
+		m_outline->GetOutlineFiles()->AppendCharacter(edit);
+	} catch (wxString& e) {
+		wxMessageBox(e);
 	}
-
-	m_elements->m_charShow->SetData(original);
-	m_mainFrame->Enable(true);
-
-	m_storage.Begin();
-	m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
-	m_storage.Commit();
-
-	SetSaved(false);
 }
 
 void amProjectManager::EditLocation(Location& original, Location& edit, bool sort) {
@@ -944,8 +1114,6 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 	} catch (wxString& e) {
 		wxMessageBox(e);
 	}
-
-	SetSaved(false);
 }
 
 void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
@@ -986,7 +1154,7 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 	}
 }
 
-void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chapter& chapter) {
+void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chapter& chapter, bool addToDb) {
 	for (auto& it : m_project.characters) {
 		if (characterName == it.name) {
 
@@ -997,7 +1165,9 @@ void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chap
 
 			if (!has) {
 				it.chapters.push_back(&chapter);
-				m_storage.InsertManyToMany(wxString("characters_chapters"),
+
+				if (addToDb)
+					m_storage.InsertManyToMany(wxString("characters_chapters"),
 					it.GenerateDocumentForId(),
 					wxString("character_id"),
 					chapter.GenerateDocumentForId(),
@@ -1010,7 +1180,7 @@ void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chap
 	}
 }
 
-void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapter& chapter) {
+void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapter& chapter, bool addToDb) {
 	for (auto& it : m_project.locations) {
 		if (locationName == it.name) {
 
@@ -1021,7 +1191,9 @@ void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapte
 
 			if (!has) {
 				it.chapters.push_back(&chapter);
-				m_storage.InsertManyToMany(wxString("locations_chapters"),
+
+				if (addToDb)
+					m_storage.InsertManyToMany(wxString("locations_chapters"),
 					it.GenerateDocumentForId(),
 					wxString("location_id"),
 					chapter.GenerateDocumentForId(),
@@ -1033,7 +1205,7 @@ void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapte
 	}
 }
 
-void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapter) {
+void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapter, bool addToDb) {
 	for (auto& it : m_project.items) {
 		if (itemName == it.name) {
 
@@ -1044,7 +1216,9 @@ void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapt
 
 			if (!has) {
 				it.chapters.push_back(&chapter);
-				m_storage.InsertManyToMany(wxString("items_chapters"),
+
+				if (addToDb)
+					m_storage.InsertManyToMany(wxString("items_chapters"),
 					it.GenerateDocumentForId(),
 					wxString("item_id"),
 					chapter.GenerateDocumentForId(),
@@ -1120,7 +1294,7 @@ void amProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter& 
 	wxLogMessage("Could not remove item '%s' from chapter '%s'", itemName, chapter.name);
 }
 
-void amProjectManager::RedeclareChapsInElements(Section& section) {
+void amProjectManager::RedeclareChapsInElements(Book& book) {
 	for (auto& it : m_project.characters)
 		it.chapters.clear();
 
@@ -1130,15 +1304,17 @@ void amProjectManager::RedeclareChapsInElements(Section& section) {
 	for (auto& it : m_project.items)
 		it.chapters.clear();
 
-	for (auto& it : section.chapters) {
-		for (auto& it2 : it.characters)
-			AddChapterToCharacter(it2, it);
+	for (auto& it : book.sections) {
+		for (auto& it2 : it.chapters) {
+			for (auto& it3 : it2.characters)
+				AddChapterToCharacter(it3, it2, false);
 
-		for (auto& it2 : it.locations)
-			AddChapterToLocation(it2, it);
+			for (auto& it3 : it2.locations)
+				AddChapterToLocation(it3, it2, false);
 
-		for (auto& it2 : it.items)
-			AddChapterToItem(it2, it);
+			for (auto& it3 : it2.items)
+				AddChapterToItem(it3, it2, false);
+		}
 	}
 }
 

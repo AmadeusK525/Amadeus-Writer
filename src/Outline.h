@@ -28,7 +28,7 @@ public:
     amOutline(wxWindow* parent);
 
     void SaveOutline(int& progress, wxProgressDialog* dialog);
-    void LoadOutline(int& progress, wxProgressDialog* dialog);
+    void LoadOutline();
 
     Corkboard* GetCorkboard() { return m_corkboard; }
     amOutlineFilesPanel* GetOutlineFiles() { return m_files; }

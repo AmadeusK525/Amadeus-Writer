@@ -85,8 +85,16 @@ public:
 
 	bool SaveProject();
 	bool LoadProject();
+
+	void SaveDocument(amDocument& original, amDocument& edit);
+
 	bool DoSaveProject(const wxString& path);
 	bool DoLoadProject(const wxString& path);
+
+	void LoadBooks();
+	void LoadSections(wxVector<Section>& sections, int bookId);
+	void LoadChapters(wxVector<Chapter>& chapters, int sectionId);
+	void LoadScenes(wxVector<Scene>& scenes, int chapterId);
 
 	void LoadCharacters();
 	void LoadLocations();
@@ -130,15 +138,15 @@ public:
 	void EditLocation(Location& original, Location& edit, bool sort = false);
 	void EditItem(Item& original, Item& edit, bool sort = false);
 
-	void AddChapterToCharacter(const wxString& characterName, Chapter& chapter);
-	void AddChapterToLocation(const wxString& locationName, Chapter& chapter);
-	void AddChapterToItem(const wxString& itemName, Chapter& chapter);
+	void AddChapterToCharacter(const wxString& characterName, Chapter& chapter, bool addToDb = true);
+	void AddChapterToLocation(const wxString& locationName, Chapter& chapter, bool addToDb = true);
+	void AddChapterToItem(const wxString& itemName, Chapter& chapter, bool addToDb = true);
 
 	void RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter);
 	void RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter);
 	void RemoveChapterFromItem(const wxString& itemName, Chapter& chapter);
 
-	void RedeclareChapsInElements(Section& section);
+	void RedeclareChapsInElements(Book& book);
 
 	void DeleteCharacter(Character& character);
 	void DeleteLocation(Location& location);
