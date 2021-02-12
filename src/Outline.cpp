@@ -28,10 +28,9 @@ void amOutline::SaveOutline(int& progress, wxProgressDialog* dialog) {
     m_files->Save();
 }
 
-void amOutline::LoadOutline(int& progress, wxProgressDialog* dialog) {
+void amOutline::LoadOutline() {
     m_corkboard->Load();
     m_files->Load();
-    dialog->Update(progress++);
 }
 
 void amOutline::ClearAll() {

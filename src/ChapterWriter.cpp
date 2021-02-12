@@ -563,6 +563,7 @@ void amChapterWriter::LoadChapter() {
 
     UpdateCharacterList();
     UpdateLocationList();
+    UpdateItemList();
 
     CheckNotes();
     CountWords();
@@ -573,14 +574,19 @@ void amChapterWriter::SaveChapter() {
     CheckChapterValidity();
     Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
 
+    amDocument original = chapter.GenerateDocument();
+
     chapter.scenes[0].content = m_cwNotebook->m_textCtrl->GetBuffer();
     chapter.scenes[0].content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
     chapter.synopsys = (wxString)m_summary->GetValue();
 
     chapter.notes = m_cwNotebook->notes;
 
+    m_manager->SaveDocument(original, chapter.GenerateDocument());
+
     UpdateCharacterList();
     UpdateLocationList();
+    UpdateItemList();
 }
 
 void amChapterWriter::CountWords() {
@@ -610,7 +616,6 @@ void amChapterWriter::OnTimerEvent(wxTimerEvent& event) {
 
 void amChapterWriter::OnClose(wxCloseEvent& event) {
     SaveChapter();
-    m_manager->SaveProject();
 
     Destroy();
     event.Skip();

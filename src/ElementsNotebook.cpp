@@ -157,7 +157,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     wxPanel* itemsFrame = new wxPanel(this, wxID_ANY);
     itemsFrame->SetBackgroundColour(wxColour(20, 20, 20));
     m_itemsList = new wxListView(itemsFrame, LIST_ItemsList, wxDefaultPosition, wxDefaultSize,
-        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxBORDER_NONE);
+        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
     m_itemsList->InsertColumn(0, "Name of item", wxLIST_FORMAT_CENTER, 120);
     m_itemsList->InsertColumn(1, "Is Magic", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
     m_itemsList->InsertColumn(2, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);

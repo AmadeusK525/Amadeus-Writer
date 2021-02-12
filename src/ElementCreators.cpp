@@ -583,7 +583,7 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 	Freeze();
 	wxSize size(label8->GetSize());
 
-	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title",
+	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title " + std::to_string(m_custom.size() + 1),
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
 	wxTextCtrl* content = new wxTextCtrl(m_panel2, -1, "", wxDefaultPosition,
 		wxSize(-1, ncAppearance->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -965,7 +965,7 @@ void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 	wxSize size(label6->GetSize());
 	wxSize size2(nlArchitecture->GetSize());
 
-	wxTextCtrl* label = new wxTextCtrl(panel, -1, "Title",
+	wxTextCtrl* label = new wxTextCtrl(panel, -1, "Title " + std::to_string(m_custom.size() + 1),
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE | wxTE_CENTER);
 	wxTextCtrl* content = new wxTextCtrl(panel, -1, "", wxDefaultPosition,
 		wxSize(size2.x - 10, size2.y), wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -1407,6 +1407,7 @@ void amItemCreator::SetEdit(Element* editItem) {
 	niOrigin->SetValue(item->origin);
 	niBackstory->SetValue(item->backstory);
 	niUsage->SetValue(item->usage);
+	niGeneral->SetValue(item->general);
 
 	int i = 0;
 	for (auto& it : item->custom) {
@@ -1471,7 +1472,7 @@ void amItemCreator::AddCustomAttr(wxCommandEvent& event) {
 	Freeze();
 	wxSize size(meaLabel->GetSize());
 
-	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title",
+	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title " + std::to_string(m_custom.size() + 1),
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
 	wxTextCtrl* content = new wxTextCtrl(m_panel2, -1, "", wxDefaultPosition,
 		wxSize(-1, niGeneral->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
