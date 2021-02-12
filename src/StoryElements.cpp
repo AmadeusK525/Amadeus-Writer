@@ -139,6 +139,16 @@ amDocument Character::GenerateDocument() {
     return document;
 }
 
+amDocument Character::GenerateDocumentForId() {
+    amDocument document;
+    document.name = name;
+    document.tableName = "characters";
+
+    document.integers["role"] = role;
+
+    return document;
+}
+
 bool Character::operator<(const Character& other) const {
     int i, j;
 
@@ -260,7 +270,7 @@ amDocument Location::GenerateDocument() {
         amDocument customDoc;
         customDoc.tableName = "locations_custom";
 
-        customDoc.strings["name"] = it.first;
+        customDoc.name = it.first;
         customDoc.strings["content"] = it.second;
 
         customDoc.specialForeign = true;
@@ -268,6 +278,16 @@ amDocument Location::GenerateDocument() {
 
         document.documents.push_back(customDoc);
     }
+
+    return document;
+}
+
+amDocument Location::GenerateDocumentForId() {
+    amDocument document;
+    document.name = name;
+    document.tableName = "locations";
+
+    document.integers["role"] = role;
 
     return document;
 }
@@ -394,7 +414,7 @@ amDocument Item::GenerateDocument() {
         amDocument customDoc;
         customDoc.tableName = "items_custom";
 
-        customDoc.strings["name"] = it.first;
+        customDoc.name = it.first;
         customDoc.strings["content"] = it.second;
 
         customDoc.specialForeign = true;
@@ -402,6 +422,16 @@ amDocument Item::GenerateDocument() {
 
         document.documents.push_back(customDoc);
     }
+
+    return document;
+}
+
+amDocument Item::GenerateDocumentForId() {
+    amDocument document;
+    document.name = name;
+    document.tableName = "items";
+
+    document.integers["role"] = role;
 
     return document;
 }

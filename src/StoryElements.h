@@ -53,6 +53,7 @@ struct Element {
 
 	virtual amDocument GenerateDocumentSimple() = 0;
 	virtual amDocument GenerateDocument() = 0;
+	virtual amDocument GenerateDocumentForId() = 0;
 
 	bool operator<(const Element& other) const;
 	bool operator==(const Element& other) const;
@@ -76,6 +77,7 @@ struct Character : public Element {
 
 	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
+	virtual amDocument GenerateDocumentForId();
 
 	bool operator<(const Character& other) const;
 	void operator=(const Character& other);
@@ -97,6 +99,7 @@ struct Location : public Element {
 
 	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
+	virtual amDocument GenerateDocumentForId();
 
 	bool operator<(const Location& other) const;
 	void operator=(const Location& other);
@@ -121,6 +124,7 @@ struct Item : public Element {
 
 	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
+	virtual amDocument GenerateDocumentForId();
 
 	bool operator<(const Item& other) const;
 	void operator=(const Item& other);

@@ -25,6 +25,19 @@ amDocument Scene::GenerateDocument() {
     return document;
 }
 
+amDocument Scene::GenerateDocumentForId() {
+    amDocument document;
+    document.name = name;
+    document.tableName = "scenes";
+
+    document.specialForeign = true;
+    document.foreignKey.first = "chapter_id";
+    document.foreignKey.second = chapterID;
+
+    document.integers["position"] = pos;
+    return document;
+}
+
 
 /////////////////////////////////////////////////////////////////
 /////////////////////////// Chapter /////////////////////////////
@@ -33,7 +46,7 @@ amDocument Scene::GenerateDocument() {
 
 bool Chapter::Init() {
     if (scenes.empty()) {
-        Scene scene(amGetManager()->GetDocumentId(GenerateDocumentForID()), 1);
+        Scene scene(amGetManager()->GetDocumentId(GenerateDocumentForId()), 1);
         amGetManager()->InsertDocument(scene.GenerateDocument());
 
         scenes.push_back(scene);
@@ -74,7 +87,7 @@ amDocument Chapter::GenerateDocument() {
     return document;
 }
 
-amDocument Chapter::GenerateDocumentForID() {
+amDocument Chapter::GenerateDocumentForId() {
     amDocument document;
     document.name = name;
     document.tableName = "chapters";
@@ -125,7 +138,7 @@ amDocument Section::GenerateDocument() {
     return document;
 }
 
-amDocument Section::GenerateDocumentForID() {
+amDocument Section::GenerateDocumentForId() {
     amDocument document;
     document.name = name;
     document.tableName = "sections";
@@ -147,7 +160,7 @@ amDocument Section::GenerateDocumentForID() {
 
 bool Book::Init() {
     if (sections.empty()) {
-        Section section(amGetManager()->GetDocumentId(GenerateDocumentForID()), 1);
+        Section section(amGetManager()->GetDocumentId(GenerateDocumentForId()), 1);
         amGetManager()->InsertDocument(section.GenerateDocument());
 
         sections.push_back(section);
@@ -194,7 +207,7 @@ amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
     return document;
 }
 
-amDocument Book::GenerateDocumentForID() {
+amDocument Book::GenerateDocumentForId() {
     amDocument document;
     document.name = title;
     document.tableName = "books";

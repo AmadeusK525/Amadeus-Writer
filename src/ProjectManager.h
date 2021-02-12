@@ -31,7 +31,19 @@ public:
 
 	bool InsertDocument(amDocument& document);
 	bool UpdateDocument(amDocument& original, amDocument& edit);
+	bool InsertManyToMany(wxString& tableName,
+		amDocument& doc1,
+		wxString& arg1,
+		amDocument& doc2,
+		wxString& arg2);
+
 	bool DeleteDocument(amDocument& document);
+	bool DeleteManyToMany(wxString& tableName,
+		amDocument& doc1,
+		wxString& arg1,
+		amDocument& doc2,
+		wxString& arg2);
+
 	wxSQLite3Statement ConstructInsertStatement(amDocument& document);
 	wxSQLite3Statement ConstructUpdateStatement(amDocument& document, int id);
 
@@ -75,6 +87,10 @@ public:
 	bool LoadProject();
 	bool DoSaveProject(const wxString& path);
 	bool DoLoadProject(const wxString& path);
+
+	void LoadCharacters();
+	void LoadLocations();
+	void LoadItems();
 
 	void SetExecutablePath(const wxString& path);
 	void SetProjectFileName(const wxFileName& fileName);
