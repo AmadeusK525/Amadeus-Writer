@@ -492,7 +492,7 @@ void amOutlineFilesPanel::GenerateCharacterBuffer(Character& character, wxRichTe
 
 	wxString separator("\n\n");
 
-	if (character.age != "") {
+	if (!character.age.IsEmpty()) {
 		buffer.BeginBold();
 		buffer.InsertTextWithUndo(buffer.GetText().size(), separator + _("Age: "), nullptr);
 		buffer.EndBold();

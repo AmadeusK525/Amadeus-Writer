@@ -2,7 +2,6 @@
 #define CORKBOARDSHAPES_H_
 #pragma once
 
-#include <wx\wxsf\wxShapeFramework.h>
 #include "Corkboard.h"
 
 class AutoWrapTextShape : public wxSFEditTextShape {
