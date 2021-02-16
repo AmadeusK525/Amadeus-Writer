@@ -76,12 +76,13 @@ private:
 	wxFileName m_executablePath{};
 
 	bool m_isInitialized = false;
-	bool m_isSaved = true;
 
 public:
 	amProjectManager();
 
 	bool Init();
+
+	amProjectSQLDatabase* GetStorage() { return &m_storage; }
 
 	bool SaveProject();
 	bool LoadProject();
@@ -115,9 +116,6 @@ public:
 	wxString GetTitle() { return m_project.amFile.GetName(); }
 
 	void ClearPath();
-
-	bool IsSaved() { return m_isSaved; }
-	void SetSaved(bool saved = true);
 
 	// These two go together when saving / loading. setLast writes to a file the path to the most recently
 	// worked on project. When booting up the application, the getLast function will

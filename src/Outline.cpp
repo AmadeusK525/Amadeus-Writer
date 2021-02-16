@@ -4,8 +4,6 @@
 #include "Corkboard.h"
 #include "OutlineFiles.h"
 
-
-
 amOutline::amOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     m_corkboardHolder = new wxPanel(this);
     m_corkboard = new Corkboard(m_corkboardHolder);
@@ -22,15 +20,14 @@ amOutline::amOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     AddPage(m_files, "Files");
 }
 
-void amOutline::SaveOutline(int& progress, wxProgressDialog* dialog) {
+void amOutline::SaveOutline() {
     m_corkboard->Save();
-    dialog->Update(progress++);
     m_files->Save();
 }
 
-void amOutline::LoadOutline() {
-    m_corkboard->Load();
-    m_files->Load();
+void amOutline::LoadOutline(wxStringInputStream& corkboard, wxStringInputStream& files) {
+    m_corkboard->Load(corkboard);
+    m_files->Load(files);
 }
 
 void amOutline::ClearAll() {

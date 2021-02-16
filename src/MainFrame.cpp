@@ -286,12 +286,12 @@ void amMainFrame::OnExportCorkboard(wxCommandEvent& event) {
         break;
     }
 
-    m_outline->GetCorkboard()->exportToImage(type);
+    m_outline->GetCorkboard()->ExportToImage(type);
 }
 
 void amMainFrame::OnClose(wxCloseEvent& event) {
 
-    if (event.CanVeto() && !m_manager->IsSaved()) {
+    /*if (event.CanVeto()) {
         wxMessageDialog saveBefore(this, "Project has been modified and not saved.\nDo you want to save before quitting?",
             "Quit", wxYES_NO | wxCANCEL | wxYES_DEFAULT | wxICON_EXCLAMATION);
 
@@ -316,7 +316,9 @@ void amMainFrame::OnClose(wxCloseEvent& event) {
         }
     } else {
         Destroy();
-    }
+    }*/
+
+    event.Skip();
 }
 
 void amMainFrame::OnQuit(wxCommandEvent& event) {

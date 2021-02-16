@@ -12,6 +12,7 @@
 #include <wx\progdlg.h>
 #include <wx\mstream.h>
 #include <wx\utils.h>
+#include <fstream>
 
 ///////////////////////////////////////////////////////////////////
 //////////////////////////// SQLStorage ///////////////////////////
@@ -29,6 +30,15 @@ bool amProjectSQLDatabase::Init() {
 	if (!TableExists("characters")) {
 		CreateAllTables();
 		return false;
+	}
+
+	if (!TableExists("outline_files")) {
+		wxArrayString tOutlineFiles;
+		tOutlineFiles.Add("id INTEGER PRIMARY KEY");
+		tOutlineFiles.Add("name TEXT");
+		tOutlineFiles.Add("content TEXT");
+
+		CreateTable("outline_files", tOutlineFiles);
 	}
 
 	return true;
@@ -147,6 +157,11 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tOutlineCorkboards.Add("name TEXT");
 	tOutlineCorkboards.Add("content TEXT");
 
+	wxArrayString tOutlineFiles;
+	tOutlineFiles.Add("id INTEGER PRIMARY KEY");
+	tOutlineFiles.Add("name TEXT");
+	tOutlineFiles.Add("content TEXT");
+
 	//////////////////// MANY-TO-MANY TABLES ////////////////////
 
 	wxArrayString tCharactersInChapters;
@@ -185,6 +200,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	CreateTable("scenes", tScenes);
 
 	CreateTable("outline_corkboards", tOutlineCorkboards);
+	CreateTable("outline_files", tOutlineFiles);
 
 	CreateTable("characters_chapters", tCharactersInChapters);
 	CreateTable("locations_chapters", tLocationsInChapters);
@@ -214,22 +230,20 @@ int amProjectSQLDatabase::GetDocumentId(amDocument& document) {
 		if (!nameEmpty || document.specialForeign)
 			query << " AND ";
 
-		auto& it = document.integers.begin();
+		auto it = document.integers.begin();
 		query << it->first << " = " << it->second << ";";
 	}
 
 	wxSQLite3ResultSet result = ExecuteQuery(query);
 
 	int id = -1;
-	int count = 0;
 
+	// I return the first row with found id, this is the best solution I found
+	// without throwing an exception. Maybe one day I'll try and find another one.
 	while (result.NextRow()) {
 		id = result.GetInt("id");
-		count++;
+		break;
 	}
-
-	if (count > 1)
-		throw ("There were 2 or more " + document.tableName + " with the name '" + document.name + "'");
 
 	return id;
 }
@@ -374,48 +388,44 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
-		}
+		} else
+			first = false;
 
 		columnNames << "name";
 		valueNames << "'" << buffer.Format("%q", (const char*)document.name) << "'";
-
-		first = false;
 	}
 
 	for (auto& it : document.integers) {
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
-		}
+		} else
+			first = false;
 
 		columnNames << it.first;
 		valueNames << it.second;
-
-		first = false;
 	}
 
 	for (auto& it : document.strings) {
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
-		}
+		} else
+			first = false;
 
 		columnNames << it.first;
 		valueNames << "'" << buffer.Format("%q", (const char*)it.second) << "'";
-
-		first = false;
 	}
 
 	for (auto& it : document.memBuffers) {
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
-		}
+		} else
+			first = false;
 
 		columnNames << it.first;
 		valueNames << "?";
-
-		first = false;
 	}
 
 	if (document.specialForeign) {
@@ -512,7 +522,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amDocument& do
 }
 
 bool amProjectSQLDatabase::RowExists(amDocument& document) {
-	return GetDocumentId(document);
+	return GetDocumentId(document) != -1;
 }
 
 
@@ -557,8 +567,6 @@ bool amProjectManager::Init() {
 		m_elements->InitShowChoices();
 		m_isInitialized = true;
 
-		SetSaved(true);
-
 		return true;
 	}
 
@@ -574,14 +582,15 @@ bool amProjectManager::LoadProject() {
 }
 
 void amProjectManager::SaveDocument(amDocument& original, amDocument& edit) {
-	m_storage.UpdateDocument(original, edit);
+	if (m_storage.RowExists(original))
+		m_storage.UpdateDocument(original, edit);
+	else
+		m_storage.InsertDocument(edit);
 }
 
 bool amProjectManager::DoSaveProject(const wxString& path) {
 	// Sets Save state as saved, updates the current title and all that good stuff.
 	// The attribute "saveDialog" currently does nothing.
-	SetSaved(true);
-
 	m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
 	m_mainFrame->SetFocus();
 	SetLastSave();
@@ -602,12 +611,26 @@ bool amProjectManager::DoLoadProject(const wxString& path) {
 
 		LoadBooks();
 
+		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT content FROM outline_corkboards");
+		wxString str1, str2;
+
+		while (result.NextRow())
+			str1 = result.GetAsString("content");
+
+		result = m_storage.ExecuteQuery("SELECT content FROM outline_files");
+
+		while (result.NextRow())
+			str2 = result.GetAsString("content");
+
+		wxStringInputStream corkboard(str1);
+		wxStringInputStream files(str2);
+
 		m_storage.Commit();
 
 		m_elements->UpdateAll();
-		//m_outline->LoadOutline();
+		m_outline->LoadOutline(corkboard, files);
 
-		m_isSaved = true;
+		m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
 		SetLastSave();
 	} catch (wxSQLite3Exception& e) {
 		wxMessageBox(e.GetMessage());
@@ -634,6 +657,8 @@ void amProjectManager::LoadBooks() {
 		book.description = table.GetAsString("description");
 		book.synopsys = table.GetAsString("synopsys");
 
+		book.SetId(id);
+
 		LoadSections(book.sections, id);
 
 		m_project.books.push_back(book);
@@ -646,14 +671,18 @@ void amProjectManager::LoadSections(wxVector<Section>& sections, int bookId) {
 	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM sections WHERE book_id = " +
 		std::to_string(bookId) + " ORDER BY position ASC;");
 	int i = 0;
+
 	while (result.NextRow()) {
+		int id = result.GetInt("id");
+
 		Section section(bookId, result.GetInt("position"));
 
 		section.name = result.GetAsString("name");
 		section.description = result.GetAsString("description");
 		section.type = (SectionType)result.GetInt("type");
+		section.SetId(id);
 
-		LoadChapters(section.chapters, result.GetInt("id"));
+		LoadChapters(section.chapters, id);
 
 		sections.push_back(section);
 	}
@@ -671,6 +700,8 @@ void amProjectManager::LoadChapters(wxVector<Chapter>& chapters, int sectionId) 
 		chapter.name = result.GetAsString("name");
 		chapter.synopsys = result.GetAsString("synopsys");
 		chapter.position = result.GetInt("position");
+
+		chapter.SetId(chapterId);
 
 		wxSQLite3ResultSet results2 = m_storage.ExecuteQuery("SELECT * FROM chapter_notes WHERE chapter_id = " +
 			std::to_string(chapterId) + ";");
@@ -733,13 +764,14 @@ void amProjectManager::LoadScenes(wxVector<Scene>& scenes, int chapterId) {
 
 		scene.chapterID = chapterId;
 		scene.pos = result.GetInt("position");
+		scene.SetId(result.GetInt("id"));
 
 		scenes.push_back(scene);
 	}
 }
 
 void amProjectManager::LoadCharacters() {
-	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM characters");
+	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM characters;");
 	int count = table.GetRowCount();
 	m_project.characters.reserve(count);
 
@@ -760,7 +792,18 @@ void amProjectManager::LoadCharacters() {
 		character.backstory = table.GetAsString("backstory");
 
 		character.role = (Role)table.GetInt("role");
-		//wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT image FROM characters WHERE id = ") << id << ";");
+		character.id = id;
+
+		if (!table.IsNull("image")) {
+			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "characters");
+			if (blob.IsOk() && blob.GetSize() > 12) {
+				wxMemoryBuffer imageBuf;
+				blob.Read(imageBuf, blob.GetSize(), 0);
+
+				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
+				character.image.LoadFile(stream, wxBITMAP_TYPE_BMP);
+			}
+		}
 
 		wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT name, content FROM characters_custom WHERE character_id = ") <<
 			id << ";");
@@ -771,6 +814,8 @@ void amProjectManager::LoadCharacters() {
 
 		m_project.characters.push_back(character);
 	}
+
+	wxVectorSort(m_project.characters);
 }
 
 void amProjectManager::LoadLocations() {
@@ -793,8 +838,18 @@ void amProjectManager::LoadLocations() {
 		location.culture = table.GetAsString("culture");
 
 		location.role = (Role)table.GetInt("role");
+		location.id = id;
 
-		//wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT image FROM characters WHERE id = ") << id << ";");
+		if (!table.IsNull("image")) {
+			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "locations");
+			if (blob.IsOk() && blob.GetSize() > 12) {
+				wxMemoryBuffer imageBuf;
+				blob.Read(imageBuf, blob.GetSize(), 0);
+
+				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
+				location.image.LoadFile(stream, wxBITMAP_TYPE_BMP);
+			}
+		}
 
 		wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT name, content FROM locations_custom WHERE location_id = ") <<
 			id << ";");
@@ -831,8 +886,18 @@ void amProjectManager::LoadItems() {
 		item.isManMade = table.GetBool("isManMade");
 		item.isMagic = table.GetBool("isMagic");
 		item.role = (Role)table.GetInt("role");
+		item.id = id;
 
-		//wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT image FROM characters WHERE id = ") << id << ";");
+		if (!table.IsNull("image")) {
+			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "items");
+			if (blob.IsOk() && blob.GetSize() > 12) {
+				wxMemoryBuffer imageBuf;
+				blob.Read(imageBuf, blob.GetSize(), 0);
+
+				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
+				item.image.LoadFile(stream, wxBITMAP_TYPE_BMP);
+			}
+		}
 
 		wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT name, content FROM items_custom WHERE item_id = ") <<
 			id << ";");
@@ -882,10 +947,6 @@ wxString amProjectManager::GetPath(bool withSeparator) {
 
 void amProjectManager::ClearPath() {
 	m_project.amFile.Clear();
-}
-
-void amProjectManager::SetSaved(bool saved) {
-	m_isSaved = saved;
 }
 
 void amProjectManager::SetLastSave() {
@@ -943,6 +1004,10 @@ int amProjectManager::GetDocumentId(amDocument& document) {
 }
 
 void amProjectManager::AddCharacter(Character& character, bool refreshElements) {
+	m_storage.Begin();
+	character.Save(&m_storage);
+	m_storage.Commit();
+
 	m_project.characters.push_back(character);
 	wxVectorSort(m_project.characters);
 
@@ -952,13 +1017,13 @@ void amProjectManager::AddCharacter(Character& character, bool refreshElements) 
 	}
 
 	m_outline->GetOutlineFiles()->AppendCharacter(character);
-
-	m_storage.Begin();
-	m_storage.InsertDocument(character.GenerateDocument());
-	m_storage.Commit();
 }
 
 void amProjectManager::AddLocation(Location& location, bool refreshElements) {
+	m_storage.Begin();
+	location.Save(&m_storage);
+	m_storage.Commit();
+
 	m_project.locations.push_back(location);
 	wxVectorSort(m_project.locations);
 
@@ -968,13 +1033,13 @@ void amProjectManager::AddLocation(Location& location, bool refreshElements) {
 	}
 
 	m_outline->GetOutlineFiles()->AppendLocation(location);
-
-	m_storage.Begin();
-	m_storage.InsertDocument(location.GenerateDocument());
-	m_storage.Commit();
 }
 
 void amProjectManager::AddItem(Item& item, bool refreshElements) {
+	m_storage.Begin();
+	item.Save(&m_storage);
+	m_storage.Commit();
+
 	m_project.items.push_back(item);
 	wxVectorSort(m_project.items);
 
@@ -984,10 +1049,6 @@ void amProjectManager::AddItem(Item& item, bool refreshElements) {
 	}
 
 	m_outline->GetOutlineFiles()->AppendItem(item);
-
-	m_storage.Begin();
-	m_storage.InsertDocument(item.GenerateDocument());
-	m_storage.Commit();
 }
 
 /// <summary>
@@ -1000,15 +1061,12 @@ void amProjectManager::AddItem(Item& item, bool refreshElements) {
 void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, int pos) {
 	Section& section = book.sections[sectionPos - 1];
 
-	chapter.sectionID = GetDocumentId(section.GenerateDocumentForId());
+	chapter.sectionID =section.id;
 	size_t capacityBefore = section.chapters.capacity();
 
 	m_chaptersNote->AddChapter(chapter, pos);
 
-	m_storage.Begin();
-	m_storage.InsertDocument(chapter.GenerateDocument());
-
-	chapter.Init();
+	chapter.Save(&m_storage);
 
 	if (pos < section.chapters.size() + 1 && pos > -1) {
 		auto it = section.chapters.begin();
@@ -1017,21 +1075,18 @@ void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, 
 		}
 		section.chapters.insert(it, chapter);
 
+		m_storage.Begin();
 		for (int i = 0; i < section.chapters.size(); i++) {
-			amDocument original = section.chapters[i].GenerateDocumentSimple();
 			section.chapters[i].position = i + 1;
-			m_storage.UpdateDocument(original, section.chapters[i].GenerateDocumentSimple());
+			section.chapters[i].Update(&m_storage, false, false);
 		}
+		m_storage.Commit();
 	} else {
 		section.chapters.push_back(chapter);
 	}
 
-	m_storage.Commit();
-
 	if (section.chapters.capacity() > capacityBefore)
 		RedeclareChapsInElements(book);
-
-	SetSaved(false);
 }
 
 void amProjectManager::EditCharacter(Character& original, Character& edit, bool sort) {
@@ -1044,8 +1099,6 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 		}
 
 		m_outline->GetOutlineFiles()->DeleteCharacter(original);
-
-		amDocument originalDoc = original.GenerateDocument();
 		original = edit;
 
 		if (sort) {
@@ -1067,7 +1120,7 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 		m_mainFrame->Enable(true);
 
 		m_storage.Begin();
-		m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
+		original.Update(&m_storage);
 		m_storage.Commit();
 
 		m_outline->GetOutlineFiles()->AppendCharacter(edit);
@@ -1079,7 +1132,6 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 void amProjectManager::EditLocation(Location& original, Location& edit, bool sort) {
 	try {
 		m_outline->GetOutlineFiles()->DeleteLocation(original);
-		m_outline->GetOutlineFiles()->AppendLocation(edit);
 		if (sort) {
 			for (auto& it : original.chapters) {
 				it->locations.Remove(original.name);
@@ -1087,7 +1139,6 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 			}
 		}
 
-		amDocument originalDoc = original.GenerateDocument();
 		original = edit;
 
 		if (sort) {
@@ -1108,8 +1159,10 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 
 
 			m_storage.Begin();
-			m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
+			original.Update(&m_storage);
 			m_storage.Commit();
+
+		m_outline->GetOutlineFiles()->AppendLocation(edit);
 		}
 	} catch (wxString& e) {
 		wxMessageBox(e);
@@ -1149,8 +1202,6 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 		m_storage.Begin();
 		m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
 		m_storage.Commit();
-
-		SetSaved(false);
 	}
 }
 
@@ -1320,11 +1371,10 @@ void amProjectManager::RedeclareChapsInElements(Book& book) {
 
 void amProjectManager::DeleteCharacter(Character& character) {
 	for (auto it : character.chapters)
-		it->characters.Remove(character.name);
+		RemoveChapterFromCharacter(character.name, *it);
 
-	m_project.characters.erase(&character);
 	m_storage.DeleteDocument(character.GenerateDocumentForId());
-	SetSaved(false);
+	m_project.characters.erase(&character);
 }
 
 void amProjectManager::DeleteLocation(Location& location) {
@@ -1333,7 +1383,7 @@ void amProjectManager::DeleteLocation(Location& location) {
 
 	m_project.locations.erase(&location);
 	m_storage.DeleteDocument(location.GenerateDocumentForId());
-	SetSaved(false);
+
 }
 
 void amProjectManager::DeleteItem(Item& item) {
@@ -1342,7 +1392,6 @@ void amProjectManager::DeleteItem(Item& item) {
 
 	m_project.items.erase(&item);
 	m_storage.DeleteDocument(item.GenerateDocumentForId());
-	SetSaved(false);
 }
 
 void amProjectManager::DeleteChapter(Chapter& chapter, Section& section) {
@@ -1390,7 +1439,7 @@ void amProjectManager::DeleteChapter(Chapter& chapter, Section& section) {
 
 	section.chapters.erase(&chapter);
 	m_storage.DeleteDocument(chapter.GenerateDocumentForId());
-	SetSaved(false);
+
 }
 
 wxVector<Character>& amProjectManager::GetCharacters() {

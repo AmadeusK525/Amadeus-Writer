@@ -122,6 +122,7 @@ void NoteShape::ChangeColour(wxWindowID id) {
 	m_content->SetTextColour(textFgColour);
 
 	m_currentColour = id;
+	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
 void NoteShape::OnBeginHandle(wxSFShapeHandle& handle) {
@@ -139,8 +140,8 @@ void NoteShape::OnEndHandle(wxSFShapeHandle& handle) {
 	ShouldCountLines(true);
 	ShouldClip(false);
 	
-	amGetManager()->SetSaved(false);
 	wxSFRoundRectShape::OnEndHandle(handle);
+	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
 void NoteShape::OnBeginDrag(const wxPoint& pos) {
@@ -151,6 +152,6 @@ void NoteShape::OnBeginDrag(const wxPoint& pos) {
 void NoteShape::OnEndDrag(const wxPoint& pos) {
 	ShouldCountLines(true);
 
-	amGetManager()->SetSaved(false);
 	wxSFRoundRectShape::OnEndDrag(pos);
+	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }

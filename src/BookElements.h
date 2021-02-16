@@ -7,7 +7,6 @@
 #include <wx\richtext\richtextbuffer.h>
 
 #include "StoryElements.h"
-#include "Note.h"
 
 /////////////////////////////////////////////////////////////////
 ///////////////////////////// Scene /////////////////////////////
@@ -21,9 +20,12 @@ struct Scene {
     wxString pointOfView{ "" };
 
     int pos = -1;
+    int id = -1;
     int chapterID = -1;
 
     Scene(int chapterID, int pos) : chapterID(chapterID), pos(pos) {}
+
+    void SetId(int id) { this->id = id; }
 
     amDocument GenerateDocument();
     amDocument GenerateDocumentForId();
@@ -34,6 +36,17 @@ struct Scene {
 /////////////////////////// Chapter /////////////////////////////
 /////////////////////////////////////////////////////////////////
 
+
+struct Note {
+    wxString name{ "" };
+    wxString content{ "" };
+
+    bool isDone = false;
+
+    Note(wxString content, wxString name);
+
+    amDocument GenerateDocument();
+};
 
 struct Chapter {
     wxString name{ "" };
@@ -48,6 +61,7 @@ struct Chapter {
     wxVector<Note> notes{};
 
     int position = -1;
+    int id = -1;
     int sectionID = -1;
 
     Chapter() : characters(true),
@@ -62,8 +76,12 @@ struct Chapter {
         items(true) {}
 
     bool Init();
+    void SetId(int id) { this->id = id; }
 
     bool HasRedNote();
+
+    void Save(wxSQLite3Database* db);
+    bool Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes);
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();
@@ -90,13 +108,16 @@ struct Section {
     wxString name{ "" };
     wxString description{ "" };
 
-    int bookID = -1;
     int pos = -1;
+    int id = -1;
+    int bookID = -1;
 
     wxVector<Chapter> chapters{};
     SectionType type{ Section_Part };
 
     Section(int bookID, int pos) : bookID(bookID), pos(pos) {}
+
+    void SetId(int id) { this->id = id; }
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();
@@ -119,6 +140,7 @@ struct Book {
         synopsys{ "" };
 
     int pos = 0;
+    int id = -1;
 
     wxVector<Section> sections{};
 
@@ -127,6 +149,8 @@ struct Book {
     Book(int pos) : pos(pos) {}
 
     bool Init();
+
+    void SetId(int id) { this->id = id; }
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());

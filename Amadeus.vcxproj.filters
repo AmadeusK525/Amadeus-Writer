@@ -47,22 +47,10 @@
     <ClCompile Include="src\MyApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Note.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Outline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Release.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\NoteShape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AutoWrapTextShape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ImageShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\OutlineFiles.cpp">
@@ -87,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\StoryElements.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CorkboardShapes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -118,9 +109,6 @@
     <ClInclude Include="src\MyApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Note.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Outline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -131,15 +119,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\wxmemdbg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\NoteShape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AutoWrapTextShape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ImageShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OutlineFiles.h">
@@ -167,6 +146,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Document.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CorkboardShapes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

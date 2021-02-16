@@ -8,8 +8,6 @@
 #include <wx\richtext\richtextxml.h>
 #include <wx\colordlg.h>
 
-
-
 OutlineTreeModel::OutlineTreeModel() {
 	m_research = new OutlineTreeModelNode(nullptr, _("Research"));
 	m_characters = new OutlineTreeModelNode(nullptr, _("Characters"));
@@ -843,8 +841,9 @@ void amOutlineFilesPanel::NewFile(wxCommandEvent& event) {
 	if (m_outlineTreeModel->IsCharacters(sel) || m_outlineTreeModel->IsLocations(sel))
 		return;
 
-	m_files->Select(m_outlineTreeModel->AppendFile(sel, "New file", wxRichTextBuffer()));
-	amGetManager()->SetSaved(false);
+	wxDataViewItem item = m_outlineTreeModel->AppendFile(sel, "New file", wxRichTextBuffer());
+	m_files->Select(item);
+	m_currentNode = (OutlineTreeModelNode*)item.GetID();
 }
 
 void amOutlineFilesPanel::NewFolder(wxCommandEvent& event) {
@@ -858,8 +857,9 @@ void amOutlineFilesPanel::NewFolder(wxCommandEvent& event) {
 	if (m_outlineTreeModel->IsCharacters(sel) || m_outlineTreeModel->IsLocations(sel))
 		return;
 
-	m_files->Select(m_outlineTreeModel->AppendFolder(sel, "New folder"));
-	amGetManager()->SetSaved(false);
+	wxDataViewItem item = m_outlineTreeModel->AppendFolder(sel, "New folder");
+	m_files->Select(item);
+	m_currentNode = (OutlineTreeModelNode*)item.GetID();
 }
 
 void amOutlineFilesPanel::DeleteItem(wxDataViewItem& item) {
@@ -879,16 +879,15 @@ void amOutlineFilesPanel::DeleteItem(wxDataViewItem& item) {
 	else
 		msg.insert(0, "file ");
 
-	wxMessageDialog* dlg = new wxMessageDialog(nullptr,
-		"Are you sure you want to delete " + msg + "? This action cannot be undone.", "Warning",
+	wxMessageDialog dlg(nullptr, "Are you sure you want to delete " +
+		msg + "? This action cannot be undone.", "Warning",
 		wxYES_NO | wxNO_DEFAULT | wxICON_WARNING | wxCENTER);
 
-	if (dlg->ShowModal() == wxID_YES) {
+	if (dlg.ShowModal() == wxID_YES) {
 		m_outlineTreeModel->DeleteItem(item);
 	}
 
-	if (dlg)
-		delete dlg;
+	m_currentNode = nullptr;
 }
 
 void amOutlineFilesPanel::OnKeyDownDataView(wxKeyEvent& event) {
@@ -943,7 +942,7 @@ void amOutlineFilesPanel::OnMenuDataView(wxCommandEvent& event) {
 
 		if (dlg.ShowModal() == wxID_OK) {
 			m_outlineTreeModel->SetItemForegroundColour(sel, dlg.GetColourData().GetColour());
-			amGetManager()->SetSaved(false);
+			Save();
 		}
 		
 		break;
@@ -956,14 +955,14 @@ void amOutlineFilesPanel::OnMenuDataView(wxCommandEvent& event) {
 
 		if (dlg.ShowModal() == wxID_OK) {
 			m_outlineTreeModel->SetItemBackgroundColour(sel, dlg.GetColourData().GetColour());
-			amGetManager()->SetSaved(false);
+			Save();
 		}
 
 		break;
 	}
 	case MENU_DeleteItem:
 		DeleteItem(m_files->GetSelection());
-		amGetManager()->SetSaved(false);
+		Save();
 		break;
 	}
 }
@@ -1089,7 +1088,7 @@ void amOutlineFilesPanel::OnDrop(wxDataViewEvent& event) {
 				}
 			}
 
-			amGetManager()->SetSaved(false);
+			Save();
 		} else
 			wxLogMessage(_("Dropped on item. Nothing happened."));
 
@@ -1101,7 +1100,7 @@ void amOutlineFilesPanel::OnDrop(wxDataViewEvent& event) {
 				m_outlineTreeModel->Reparent(m_nodeForDnD, nullptr);
 		}
 
-		amGetManager()->SetSaved(false);
+		Save();
 	}
 
 	m_files->Select(m_itemForDnD);
@@ -1119,7 +1118,7 @@ void amOutlineFilesPanel::SaveCurrentBuffer() {
 	if (m_currentNode) {
 		if (m_currentNode->m_buffer.GetText() != m_textCtrl->GetBuffer().GetText()) {
 			m_currentNode->m_buffer = m_textCtrl->GetBuffer();
-			amGetManager()->SetSaved(false);
+			Save();
 		}
 	}
 }
@@ -1232,21 +1231,31 @@ bool amOutlineFilesPanel::Save() {
 			root->AddChild(SerializeFile(rootFiles[i]));
 	}
 
-	if (doc.Save(amGetManager()->GetPath(true) + "Files\\Outline\\OutlineFiles.xml"))
+ 	wxStringOutputStream stream;
+	if (doc.Save(stream)) {
+		amDocument document;
+		document.tableName = "outline_files";
+		document.name = "Outline Files";
+
+		document.strings.push_back(pair<wxString, wxString>("content", stream.GetString()));
+
+		amGetManager()->SaveDocument(document, document);
+
 		return true;
-	else
+	} else
 		return false;
 }
 
-bool amOutlineFilesPanel::Load() {
+bool amOutlineFilesPanel::Load(wxStringInputStream& stream) {
 	ClearAll();
 	Init();
 
-	wxXmlDocument doc;
-	if (!doc.Load(amGetManager()->GetPath(true) + "Files\\Outline\\OutlineFiles.xml")) {
-		Init();
+	if (!stream.IsOk())
 		return false;
-	}
+
+	wxXmlDocument doc;
+	if (!doc.Load(stream))
+		return false;
 
 	wxDataViewItemArray array;
 	array.Add(wxDataViewItem(m_outlineTreeModel->GetResearchNode()));
@@ -1261,7 +1270,7 @@ bool amOutlineFilesPanel::Load() {
 		child2 = child2->GetNext();
 	}
 
-	child = child->GetNext()->GetNext()->GetNext();
+	child = child->GetNext()->GetNext()->GetNext()->GetNext();
 
 	while (child) {
 		DeserializeNode(child, wxDataViewItem(nullptr));

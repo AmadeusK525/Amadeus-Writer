@@ -73,11 +73,11 @@ void ImageShape::OnHandle(wxSFShapeHandle& handle) {
 }
 
 void ImageShape::OnEndHandle(wxSFShapeHandle& handle) {
-	amGetManager()->SetSaved(false);
 	wxSFBitmapShape::OnEndHandle(handle);
+	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
 void ImageShape::OnEndDrag(wxPoint& pos) {
-	amGetManager()->SetSaved(false);
 	wxSFBitmapShape::OnEndDrag(pos);
+	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }

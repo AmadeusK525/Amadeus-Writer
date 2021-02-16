@@ -566,9 +566,10 @@ void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 	character.backstory = vec[9];
 
 	character.image = m_imagePanel->GetImage();
-
 	character.custom = GetCustom();
+
 	character.chapters = m_elementEdit->chapters;
+	character.id = m_elementEdit->id;
 
 	Character* pCharacterToEdit = (Character*)m_elementEdit;
 
@@ -946,8 +947,10 @@ void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 		location.role = None;
 
 	location.image = m_imagePanel->GetImage();
-
 	location.custom = GetCustom();
+
+	location.chapters = m_elementEdit->chapters;
+	location.id = m_elementEdit->id;
 
 	Location* pLocationToEdit = (Location*)m_elementEdit;
 
@@ -1456,6 +1459,9 @@ void amItemCreator::DoEdit(wxCommandEvent& event) {
 
 	item.image = m_imagePanel->GetImage();
 	item.custom = GetCustom();
+
+	item.chapters = m_elementEdit->chapters;
+	item.id = m_elementEdit->id;
 
 	Item* pItemToEdit = (Item*)m_elementEdit;
 
