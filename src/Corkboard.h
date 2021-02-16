@@ -50,19 +50,19 @@ private:
 public:
     Corkboard(wxWindow* parent);
 
-    void onTool(wxCommandEvent& event);
+    void OnTool(wxCommandEvent& event);
 
-    void callFullScreen(wxCommandEvent& event);
+    void CallFullScreen(wxCommandEvent& event);
     void FullScreen(bool fs);
 
-    void setToolMode(ToolMode mode);
+    void SetToolMode(ToolMode mode);
     ToolMode getToolMode() { return toolMode; }
     wxToolBar* getToolbar() { return m_toolBar; }
 
-    void exportToImage(wxBitmapType type);
+    void ExportToImage(wxBitmapType type);
 
     void Save();
-    void Load();
+    void Load(wxStringInputStream& stream);
     
     CorkboardCanvas* getCanvas() { return m_canvas; }
 
@@ -103,8 +103,8 @@ public:
 		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
 		long style = wxHSCROLL | wxVSCROLL);
 
-	void doFullScreen(bool fs);
-	void onMenu(wxCommandEvent& event);
+	void DoFullScreen(bool fs);
+	void OnMenu(wxCommandEvent& event);
 
 	virtual void OnLeftDown(wxMouseEvent& event);
 	virtual void OnLeftUp(wxMouseEvent& event);

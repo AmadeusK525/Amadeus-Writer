@@ -574,15 +574,13 @@ void amChapterWriter::SaveChapter() {
     CheckChapterValidity();
     Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
 
-    amDocument original = chapter.GenerateDocument();
-
     chapter.scenes[0].content = m_cwNotebook->m_textCtrl->GetBuffer();
     chapter.scenes[0].content.SetBasicStyle(m_cwNotebook->m_textCtrl->GetBasicStyle());
     chapter.synopsys = (wxString)m_summary->GetValue();
 
     chapter.notes = m_cwNotebook->notes;
 
-    m_manager->SaveDocument(original, chapter.GenerateDocument());
+    chapter.Update(m_manager->GetStorage(), true, true);
 
     UpdateCharacterList();
     UpdateLocationList();
@@ -902,8 +900,8 @@ void amChapterWriterNotebook::AddNote(wxString& noteContent, wxString& noteName,
     b1->Bind(wxEVT_RADIOBUTTON, &amChapterWriterNotebook::SetRed, this);
     b2->Bind(wxEVT_RADIOBUTTON, &amChapterWriterNotebook::SetGreen, this);
 
-    b1->SetBackgroundColour(wxColour(220, 0, 0));
-    b2->SetBackgroundColour(wxColour(0, 210, 0));
+    b1->SetBackgroundColour(wxColour(120, 0, 0));
+    b2->SetBackgroundColour(wxColour(0, 140, 0));
 
     wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
     topSizer->Add(noteLabel, wxSizerFlags(8).Expand());
@@ -921,10 +919,10 @@ void amChapterWriterNotebook::AddNote(wxString& noteContent, wxString& noteName,
     notePanel->SetSizer(siz);
 
     if (isDone) {
-        notePanel->SetBackgroundColour(wxColour(0, 210, 0));
+        notePanel->SetBackgroundColour(wxColour(0, 140, 0));
         b2->SetValue(true);
     } else {
-        notePanel->SetBackgroundColour(wxColour(220, 0, 0));
+        notePanel->SetBackgroundColour(wxColour(120, 0, 0));
         b1->SetValue(true);
     }
 
@@ -965,7 +963,7 @@ void amChapterWriterNotebook::SetRed(wxCommandEvent& event) {
 
         if (sp == np) {
             it->isDone = false;
-            np->SetBackgroundColour(wxColour(220, 0, 0));
+            np->SetBackgroundColour(wxColour(120, 0, 0));
             np->Refresh();
             break;
         }
@@ -987,7 +985,7 @@ void amChapterWriterNotebook::SetGreen(wxCommandEvent& event) {
 
         if (sp == np) {
             it->isDone = true;
-            np->SetBackgroundColour(wxColour(0, 210, 0));
+            np->SetBackgroundColour(wxColour(0, 140, 0));
             np->Refresh();
             break;
         }

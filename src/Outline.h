@@ -7,7 +7,7 @@
 #include <wx/progdlg.h>
 #include <wx/splitter.h>
 
-#include <fstream>
+#include <wx\sstream.h>
 
 class amOutline;
 class amOutlineFilesPanel;
@@ -27,8 +27,8 @@ public:
 public:
     amOutline(wxWindow* parent);
 
-    void SaveOutline(int& progress, wxProgressDialog* dialog);
-    void LoadOutline();
+    void SaveOutline();
+    void LoadOutline(wxStringInputStream& corkboard, wxStringInputStream& files);
 
     Corkboard* GetCorkboard() { return m_corkboard; }
     amOutlineFilesPanel* GetOutlineFiles() { return m_files; }

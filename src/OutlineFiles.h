@@ -6,11 +6,9 @@
 #include <wx\dataview.h>
 #include <wx\toolbar.h>
 #include <wx\richtext\richtextctrl.h>
+#include <wx\sstream.h>
 
 #include "StoryElements.h"
-
-;
-
 
 class OutlineTreeModelNode;
 WX_DEFINE_ARRAY_PTR(OutlineTreeModelNode*, OulineTreeModelNodePtrArray);
@@ -319,7 +317,7 @@ public:
     wxXmlNode* SerializeFile(wxDataViewItem& item);
     void DeserializeNode(wxXmlNode* node, wxDataViewItem& parent);
     bool Save();
-    bool Load();
+    bool Load(wxStringInputStream& stream);
 
     void ClearAll();
 

@@ -4,12 +4,8 @@
 #include "MainFrame.h"
 #include "ImagePanel.h"
 #include "Outline.h"
-#include "NoteShape.h"
-#include "ImageShape.h"
-
+#include "CorkboardShapes.h"
 #include "wxmemdbg.h"
-
-
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Corkboard ///////////////////////////////////////
@@ -17,7 +13,7 @@
 
 BEGIN_EVENT_TABLE(Corkboard, wxPanel)
 
-EVT_TOOL_RANGE(TOOL_Cursor, TOOL_CorkboardFullScreen, Corkboard::onTool)
+EVT_TOOL_RANGE(TOOL_Cursor, TOOL_CorkboardFullScreen, Corkboard::OnTool)
 
 END_EVENT_TABLE()
 
@@ -49,7 +45,7 @@ Corkboard::Corkboard(wxWindow* parent) : wxPanel(parent) {
     SetSizer(corkboardSizer);
 }
 
-void Corkboard::onTool(wxCommandEvent& event) {
+void Corkboard::OnTool(wxCommandEvent& event) {
     if (m_canvas->GetMode() == CorkboardCanvas::modeCREATECONNECTION)
         m_canvas->AbortInteractiveConnection();
 
@@ -75,12 +71,12 @@ void Corkboard::onTool(wxCommandEvent& event) {
         break;
     
     case TOOL_CorkboardFullScreen:
-        callFullScreen(event);
+        CallFullScreen(event);
         break;
     }
 }
 
-void Corkboard::callFullScreen(wxCommandEvent& event) {
+void Corkboard::CallFullScreen(wxCommandEvent& event) {
     wxKeyEvent keyEvent;
     keyEvent.m_keyCode = WXK_F11;
 
@@ -104,7 +100,7 @@ void Corkboard::FullScreen(bool fs) {
     //AutoWrapTextShape::ShouldCountLines(true);
 }
 
-void Corkboard::setToolMode(ToolMode mode) {
+void Corkboard::SetToolMode(ToolMode mode) {
     switch (mode) {
     case modeDESIGN:
         m_toolBar->ToggleTool(TOOL_Cursor, true);
@@ -126,7 +122,7 @@ void Corkboard::setToolMode(ToolMode mode) {
     toolMode = mode;
 }
 
-void Corkboard::exportToImage(wxBitmapType type) {
+void Corkboard::ExportToImage(wxBitmapType type) {
 	wxString name = "Corkboard";
 	wxString dummyName = name;
 
@@ -152,16 +148,20 @@ void Corkboard::exportToImage(wxBitmapType type) {
 }
 
 void Corkboard::Save() {
-    m_canvas->SaveCanvas(m_manager->GetPath(true) + "Files\\Outline\\Corkboard Canvas.xml");
+	amDocument document;
+	document.tableName = "outline_corkboards";
+	document.name = "Corkboard Canvas";
+
+	wxStringOutputStream sstream;
+	m_canvas->SaveCanvas(sstream);
+
+	document.strings.push_back(pair<wxString, wxString>("content", sstream.GetString()));
+
+	m_manager->SaveDocument(document, document);
 }
 
-void Corkboard::Load() {
-    if (wxFileName::Exists(m_manager->GetPath(true).ToStdString() + "Files\\Outline\\Corkboard Canvas.xml")) {
-        m_canvas->LoadCanvas(m_manager->GetPath(true) + "Files\\Outline\\Corkboard Canvas.xml");
-        m_canvas->SetScale(0.1);
-        m_canvas->RefreshCanvas(true, m_canvas->GetTotalBoundingBox());
-    } else
-        m_canvas->GetDiagramManager()->Clear();
+void Corkboard::Load(wxStringInputStream& stream) {
+	m_canvas->LoadCanvas(stream);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +212,7 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 	wxSFShapeCanvas::EnableGC(true);
 }
 
-void CorkboardCanvas::doFullScreen(bool fs) {
+void CorkboardCanvas::DoFullScreen(bool fs) {
 	if (fs) {
 		parent->FullScreen(fs);
 		m_manager->GetMainFrame()->DoCorkboardFullScreen(fs, parent->getToolbar(), this);
@@ -224,7 +224,7 @@ void CorkboardCanvas::doFullScreen(bool fs) {
 	m_isFullScreen = !m_isFullScreen;
 }
 
-void CorkboardCanvas::onMenu(wxCommandEvent& event) {
+void CorkboardCanvas::OnMenu(wxCommandEvent& event) {
 	wxWindowID id = event.GetId();
 
 	if (id == MENU_NoteBlack || id == MENU_NoteBlue || id == MENU_NoteDefault ||
@@ -257,10 +257,10 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		AutoWrapTextShape::ShouldCountLines(true);
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
-		parent->setToolMode(modeDESIGN);
+		parent->SetToolMode(modeDESIGN);
 		SaveCanvasState();
 
-		parent->m_manager->SetSaved(false);
+		parent->Save();
 		break;
 	}
 	case modeIMAGE:
@@ -301,9 +301,9 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
 		SaveCanvasState();
-		parent->setToolMode(modeDESIGN);
+		parent->SetToolMode(modeDESIGN);
 
-		m_manager->SetSaved(false);
+		parent->Save();
 		break;
 	}
 
@@ -325,10 +325,10 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
-		parent->setToolMode(modeDESIGN);
+		parent->SetToolMode(modeDESIGN);
 		SaveCanvasState();
 
-		m_manager->SetSaved(false);
+		parent->Save();
 		break;
 	}
 	case modeCONNECTION:
@@ -396,7 +396,7 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 				menu.Append(MENU_DeleteImage, "Delete");
 			}
 
-			menu.Bind(wxEVT_MENU, &CorkboardCanvas::onMenu, this);
+			menu.Bind(wxEVT_MENU, &CorkboardCanvas::OnMenu, this);
 			PopupMenu(&menu);
 		}
 	}
@@ -461,13 +461,13 @@ void CorkboardCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
 void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 	switch (event.GetKeyCode()) {
 	case WXK_F11:
-		doFullScreen(!m_isFullScreen);
+		DoFullScreen(!m_isFullScreen);
 		break;
 	case WXK_ESCAPE:
 		if (m_isConnecting)
 			break;
 		if (m_isFullScreen) {
-			doFullScreen(false);
+			DoFullScreen(false);
 			m_isFullScreen = false;
 		}
 
@@ -476,42 +476,42 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 		if (m_isConnecting) {
 			event.m_keyCode = WXK_ESCAPE;
 		}
-		m_manager->SetSaved(false);
+		parent->Save();
 		break;
 
 	case WXK_NUMPAD1:
 	case 49:
 	case 99:
 	case 67:
-		parent->setToolMode(modeDESIGN);
+		parent->SetToolMode(modeDESIGN);
 		break;
 
 	case WXK_NUMPAD2:
 	case 50:
 	case 110:
 	case 78:
-		parent->setToolMode(modeNOTE);
+		parent->SetToolMode(modeNOTE);
 		break;
 
 	case WXK_NUMPAD3:
 	case 51:
 	case 105:
 	case 73:
-		parent->setToolMode(modeIMAGE);
+		parent->SetToolMode(modeIMAGE);
 		break;
 
 	case WXK_NUMPAD4:
 	case 52:
 	case 116:
 	case 84:
-		parent->setToolMode(modeTEXT);
+		parent->SetToolMode(modeTEXT);
 		break;
 
 	case WXK_NUMPAD5:
 	case 53:
 	case 108:
 	case 76:
-		parent->setToolMode(modeCONNECTION);
+		parent->SetToolMode(modeCONNECTION);
 		break;
 	}
 
@@ -545,9 +545,9 @@ void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
 		//connection->AcceptTrgNeighbour("All");
 
 		m_isConnecting = false;
-		m_manager->SetSaved(false);
+		parent->Save();
 	}
 
-	parent->setToolMode(modeDESIGN);
+	parent->SetToolMode(modeDESIGN);
 	wxSFShapeCanvas::OnConnectionFinished(connection);
 }

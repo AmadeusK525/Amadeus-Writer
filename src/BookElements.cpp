@@ -10,32 +10,33 @@
 
 
 amDocument Scene::GenerateDocument() {
-    amDocument document;
-    document.tableName = "scenes";
-    document.name = name;
+	amDocument document;
+	document.tableName = "scenes";
+	document.name = name;
 
-    document.integers["position"] = pos;
-    document.integers["chapter_id"] = chapterID;
-    
-    wxStringOutputStream stream;
-    content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
+	document.integers.reserve(2);
+	document.integers.push_back(pair<wxString, int>("position", pos));
+	document.integers.push_back(pair<wxString, int>("chapter_id", chapterID));
 
-    document.strings["content"] = stream.GetString();
+	wxStringOutputStream stream;
+	content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
 
-    return document;
+	document.strings.push_back(pair<wxString, wxString>("content", stream.GetString()));
+
+	return document;
 }
 
 amDocument Scene::GenerateDocumentForId() {
-    amDocument document;
-    document.name = name;
-    document.tableName = "scenes";
+	amDocument document;
+	document.name = name;
+	document.tableName = "scenes";
 
-    document.specialForeign = true;
-    document.foreignKey.first = "chapter_id";
-    document.foreignKey.second = chapterID;
+	document.specialForeign = true;
+	document.foreignKey.first = "chapter_id";
+	document.foreignKey.second = chapterID;
 
-    document.integers["position"] = pos;
-    return document;
+	document.integers.push_back(pair<wxString, int>("position", pos));
+	return document;
 }
 
 
@@ -45,68 +46,255 @@ amDocument Scene::GenerateDocumentForId() {
 
 
 bool Chapter::Init() {
-    if (scenes.empty()) {
-        Scene scene(amGetManager()->GetDocumentId(GenerateDocumentForId()), 1);
-        amGetManager()->InsertDocument(scene.GenerateDocument());
+	if (id == -1)
+		return false;
 
-        scenes.push_back(scene);
-        return true;
-    }
+	if (scenes.empty())
+		scenes.push_back(Scene(id, 1));
 
-    return false;
+	return true;
 }
 
 bool Chapter::HasRedNote() {
-    for (unsigned int i = 0; i < notes.size(); i++) {
-        if (notes[i].isDone == false)
-            return true;
-    }
+	for (unsigned int i = 0; i < notes.size(); i++) {
+		if (notes[i].isDone == false)
+			return true;
+	}
 
-    return false;
+	return false;
+}
+
+void Chapter::Save(wxSQLite3Database* db) {
+	try {
+		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
+
+		wxSQLite3StatementBuffer buffer;
+
+		wxString insert("INSERT INTO chapters (name, synopsys, position, section_id) VALUES (");
+		insert << "'%q', '%q', " << position << ", " << sectionID << ");";
+
+		buffer.Format((const char*)insert, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8());
+
+		storage->ExecuteUpdate(buffer);
+		SetId(storage->GetDocumentId(GenerateDocumentForId()));
+
+		Init();
+		for (auto& it : scenes) {
+			insert = "INSERT INTO scenes (name, content, position, chapter_id) VALUES ('%q', '%q', ";
+			insert << it.pos << ", " << id << ");";
+
+			wxStringOutputStream stream;
+			it.content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
+
+			buffer.Format((const char*)insert, (const char*)it.name.ToUTF8(), (const char*)stream.GetString());
+			storage->ExecuteUpdate(buffer);
+		}
+	} catch (wxSQLite3Exception& e) {
+		wxMessageBox(e.GetMessage());
+	}
+}
+
+bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes) {
+	if (id == -1)
+		return false;
+
+	try {
+		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
+
+		wxSQLite3StatementBuffer buffer;
+
+		wxString update("UPDATE chapters SET name = '%q', synopsys = '%q', position = ");
+
+		update << position << ", section_id = " << sectionID << " WHERE id = " << id << ";";
+
+		buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8());
+		storage->ExecuteUpdate(buffer);
+
+		if (updateScenes) {
+			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM scenes WHERE chapter_id = " + std::to_string(id));
+
+			int prevSize = customTable.GetRowCount();
+			int newSize = scenes.size();
+
+			if (newSize > prevSize) {
+				int i = 0;
+				for (i; i < prevSize; i++) {
+					customTable.SetRow(i);
+
+					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
+					update << scenes[i].pos << ", chapter_id = " << scenes[i].id << " WHERE id = " <<
+						customTable.GetInt("id") << ";";
+
+					wxStringOutputStream stream;
+					scenes[i].content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
+
+					buffer.Format((const char*)update, (const char*)scenes[i].name.ToUTF8(), (const char*)stream.GetString());
+					storage->ExecuteUpdate(buffer);
+				}
+
+				for (i; i < newSize; i++) {					
+					update = "INSERT INTO scenes (name, content, position, chapter_id) VALUES ('%q', '%q', ";
+					update << scenes[i].pos << ", " << id << ");";
+
+					wxStringOutputStream stream;
+					scenes[i].content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
+
+					buffer.Format((const char*)update, (const char*)scenes[i].name.ToUTF8(), (const char*)stream.GetString());
+					storage->ExecuteUpdate(buffer);
+				}
+			} else {
+				int i = 0;
+				for (i; i < newSize; i++) {
+					customTable.SetRow(i);
+
+					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
+					update << scenes[i].pos << ", chapter_id = " << scenes[i].id << " WHERE id = " <<
+						customTable.GetInt("id") << ";";
+
+					wxStringOutputStream stream;
+					scenes[i].content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
+
+					buffer.Format((const char*)update, (const char*)scenes[i].name.ToUTF8(), (const char*)stream.GetString());
+					storage->ExecuteUpdate(buffer);
+				}
+
+				if (newSize < prevSize)
+					for (i; i < prevSize; i++) {
+						customTable.SetRow(i);
+						
+						update = "DELETE FROM scenes WHERE id = ";
+						update << customTable.GetInt("id") << ";";
+
+						storage->ExecuteUpdate(update);
+					}
+			}
+		}
+
+		if (updateNotes) {
+			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM chapter_notes WHERE chapter_id = " + std::to_string(id));
+
+			int prevSize = customTable.GetRowCount();
+			int newSize = notes.size();
+
+			if (newSize > prevSize) {
+				int i = 0;
+				for (i; i < prevSize; i++) {
+					customTable.SetRow(i);
+
+					update = "UPDATE chapter_notes SET name = '%q', content = '%q', isDone = ";
+					update << notes[i].isDone << ", chapter_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
+
+					buffer.Format((const char*)update, (const char*)notes[i].name.ToUTF8(), (const char*)notes[i].content.ToUTF8());
+					storage->ExecuteUpdate(buffer);
+				}
+
+				for (i; i < newSize; i++) {
+					update = "INSERT INTO chapter_notes (name, content, isDone, chapter_id) VALUES ('%q', '%q', ";
+					update << notes[i].isDone << ", " << id << ");";
+
+					buffer.Format((const char*)update, (const char*)notes[i].name.ToUTF8(), (const char*)notes[i].content.ToUTF8());
+					storage->ExecuteUpdate(buffer);
+				}
+			} else {
+				int i = 0;
+				for (i; i < newSize; i++) {
+					customTable.SetRow(i);
+
+					update = "UPDATE chapter_notes SET name = '%q', content = '%q', isDone = ";
+					update << notes[i].isDone << ", chapter_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
+
+					buffer.Format((const char*)update, (const char*)notes[i].name.ToUTF8(), (const char*)notes[i].content.ToUTF8());
+					storage->ExecuteUpdate(buffer);
+				}
+
+				if (newSize < prevSize)
+					for (i; i < prevSize; i++) {
+						customTable.SetRow(i);
+						update = "DELETE FROM chapter_notes WHERE id = ";
+						update << customTable.GetInt("id") << ";";
+
+						storage->ExecuteUpdate(update);
+					}
+			} 
+		}
+
+	} catch (wxSQLite3Exception& e) {
+		wxMessageBox(e.GetMessage());
+	}
+
+	return true;
 }
 
 amDocument Chapter::GenerateDocumentSimple() {
-    amDocument document;
-    document.tableName = "chapters";
-    document.name = name;
+	amDocument document;
+	document.tableName = "chapters";
+	document.name = name;
 
-    document.integers["position"] = position;
-    document.integers["section_id"] = sectionID;
+	document.integers.reserve(2);
+	document.integers.push_back(pair<wxString, int>("position", position));
+	document.integers.push_back(pair<wxString, int>("section_id", sectionID));
 
-    document.strings["synopsys"] = synopsys;
+	document.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
 
-    return document;
+	return document;
 }
 
 amDocument Chapter::GenerateDocument() {
-    amDocument document = GenerateDocumentSimple();
-    
-    for (auto& it : scenes)
-        document.documents.push_back(it.GenerateDocument());
+	amDocument document = GenerateDocumentSimple();
 
-    return document;
+	document.documents.reserve(scenes.size() + notes.size());
+
+	for (auto& it : scenes)
+		document.documents.push_back(it.GenerateDocument());
+
+	for (auto& it : notes) {
+		amDocument noteDoc;
+		noteDoc.tableName = "chapter_notes";
+
+		noteDoc.name = it.name;
+		noteDoc.strings.push_back(pair<wxString, wxString>("content", it.content));
+
+		noteDoc.integers.push_back(pair<wxString, int>("isDone", it.isDone));
+
+		noteDoc.specialForeign = true;
+		noteDoc.foreignKey.first = "chapter_id";
+
+		document.documents.push_back(noteDoc);
+	}
+
+	return document;
 }
 
 amDocument Chapter::GenerateDocumentForId() {
-    amDocument document;
-    document.name = name;
-    document.tableName = "chapters";
+	amDocument document;
+	document.name = name;
+	document.tableName = "chapters";
 
-    document.specialForeign = true;
-    document.foreignKey.first = "section_id";
-    document.foreignKey.second = sectionID;
+	document.specialForeign = true;
+	document.foreignKey.first = "section_id";
+	document.foreignKey.second = sectionID;
 
-    document.integers["position"] = position;
+	document.integers.push_back(pair<wxString, int>("position", position));
 
-    return document;
+	return document;
 }
 
 bool Chapter::operator<(const Chapter& other) const {
-    return position < other.position;
+	return position < other.position;
 }
 
 bool Chapter::operator==(const Chapter& other) const {
-    return name == other.name && position == other.position;
+	return name == other.name && position == other.position;
+}
+
+Note::Note(wxString content, wxString name) {
+	this->content = content;
+	this->name = name;
+}
+
+amDocument Note::GenerateDocument() {
+
+	return amDocument();
 }
 
 
@@ -116,40 +304,42 @@ bool Chapter::operator==(const Chapter& other) const {
 
 
 amDocument Section::GenerateDocumentSimple() {
-    amDocument document;
-    document.tableName = "sections";
-    document.name = name;
+	amDocument document;
+	document.tableName = "sections";
+	document.name = name;
 
-    document.integers["book_id"] = bookID;
-    document.integers["position"] = pos;
-    document.integers["type"] = type;
+	document.integers.reserve(3);
+	document.integers.push_back(pair<wxString, int>("book_id", bookID));
+	document.integers.push_back(pair<wxString, int>("position", pos));
+	document.integers.push_back(pair<wxString, int>("type", type));
 
-    document.strings["description"] = description;
+	document.strings.push_back(pair<wxString, wxString>("description", description));
 
-    return document;
+	return document;
 }
 
 amDocument Section::GenerateDocument() {
-    amDocument document = GenerateDocumentSimple();
-    
-    for (auto& it : chapters)
-        document.documents.push_back(it.GenerateDocument());
-    
-    return document;
+	amDocument document = GenerateDocumentSimple();
+
+	document.documents.reserve(chapters.size());
+	for (auto& it : chapters)
+		document.documents.push_back(it.GenerateDocument());
+
+	return document;
 }
 
 amDocument Section::GenerateDocumentForId() {
-    amDocument document;
-    document.name = name;
-    document.tableName = "sections";
+	amDocument document;
+	document.name = name;
+	document.tableName = "sections";
 
-    document.specialForeign = true;
-    document.foreignKey.first = "book_id";
-    document.foreignKey.second = bookID;
+	document.specialForeign = true;
+	document.foreignKey.first = "book_id";
+	document.foreignKey.second = bookID;
 
-    document.integers["position"] = pos;
+	document.integers.push_back(pair<wxString, int>("position", pos));
 
-    return document;
+	return document;
 }
 
 
@@ -159,60 +349,60 @@ amDocument Section::GenerateDocumentForId() {
 
 
 bool Book::Init() {
-    if (sections.empty()) {
-        Section section(amGetManager()->GetDocumentId(GenerateDocumentForId()), 1);
-        amGetManager()->InsertDocument(section.GenerateDocument());
+	if (sections.empty()) {
+		Section section(amGetManager()->GetDocumentId(GenerateDocumentForId()), 1);
+		amGetManager()->InsertDocument(section.GenerateDocument());
 
-        sections.push_back(section);
-        return true;
-    }
+		sections.push_back(section);
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 amDocument Book::GenerateDocumentSimple() {
-    amDocument document;
-    document.name = title;
-    document.tableName = "books";
+	amDocument document;
+	document.name = title;
+	document.tableName = "books";
 
-    document.integers["position"] = pos;
+	document.integers.push_back(pair<wxString, int>("position", pos));
 
-    document.strings["synopsys"] = synopsys;
-    document.strings["author"] = author;
-    document.strings["genre"] = genre;
-    document.strings["description"] = description;
+	document.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
+	document.strings.push_back(pair<wxString, wxString>("author", author));
+	document.strings.push_back(pair<wxString, wxString>("genre", genre));
+	document.strings.push_back(pair<wxString, wxString>("description", description));
 
-    return document;
+	return document;
 }
 
 amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
-    amDocument document = GenerateDocumentSimple();
+	amDocument document = GenerateDocumentSimple();
 
-    if (sectionsToGen.empty()) {
-        document.documents.reserve(sections.size());
-        for (auto& it : sections)
-            document.documents.push_back(it.GenerateDocument());
+	if (sectionsToGen.empty()) {
+		document.documents.reserve(sections.size());
+		for (auto& it : sections)
+			document.documents.push_back(it.GenerateDocument());
 
-    } else {
-        int size = sectionsToGen.size();
-        document.documents.reserve(size);
+	} else {
+		int size = sectionsToGen.size();
+		document.documents.reserve(size);
 
-        for (auto& it : sectionsToGen) {
-            if (it < size)
-                document.documents.push_back(sections[it].GenerateDocument());
-            
-        }
-    }
+		for (auto& it : sectionsToGen) {
+			if (it < size)
+				document.documents.push_back(sections[it].GenerateDocument());
 
-    return document;
+		}
+	}
+
+	return document;
 }
 
 amDocument Book::GenerateDocumentForId() {
-    amDocument document;
-    document.name = title;
-    document.tableName = "books";
+	amDocument document;
+	document.name = title;
+	document.tableName = "books";
 
-    return document;
+	return document;
 }
 
 
@@ -222,22 +412,22 @@ amDocument Book::GenerateDocumentForId() {
 
 
 wxVector<Chapter>& amProject::GetChapters(int bookPos, int sectionPos) {
-    return books[bookPos - 1].sections[sectionPos - 1].chapters;
+	return books[bookPos - 1].sections[sectionPos - 1].chapters;
 }
 
 wxVector<Chapter> amProject::GetChapters(int bookPos) {
-    Book& book = books[bookPos - 1];
-    int totalSize = 0;
+	Book& book = books[bookPos - 1];
+	int totalSize = 0;
 
-    for (auto& it : book.sections)
-        totalSize += it.chapters.size();
+	for (auto& it : book.sections)
+		totalSize += it.chapters.size();
 
-    wxVector<Chapter> grouped;
-    grouped.reserve(totalSize);
+	wxVector<Chapter> grouped;
+	grouped.reserve(totalSize);
 
-    for (auto& it : book.sections)
-        for (auto& it2 : it.chapters)
-            grouped.push_back(it2);
+	for (auto& it : book.sections)
+		for (auto& it2 : it.chapters)
+			grouped.push_back(it2);
 
-    return grouped;
+	return grouped;
 }

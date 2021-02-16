@@ -3,8 +3,7 @@
 #pragma once
 
 #include <wx/bitmap.h>
-
-#include <fstream>
+#include <wx\wxsqlite3.h>
 
 #include "Document.h"
 
@@ -48,12 +47,18 @@ struct Element {
 	wxImage image{};
 
 	static CompType elCompType;
+	int id = -1;
 
 	Element() = default;
+
+	virtual void Save(wxSQLite3Database* db) = 0;
+	virtual bool Update(wxSQLite3Database* db) = 0;
 
 	virtual amDocument GenerateDocumentSimple() = 0;
 	virtual amDocument GenerateDocument() = 0;
 	virtual amDocument GenerateDocumentForId() = 0;
+
+	void SetId(int id) { this->id = id; }
 
 	bool operator<(const Element& other) const;
 	bool operator==(const Element& other) const;
@@ -74,6 +79,9 @@ struct Character : public Element {
 	static CompType cCompType;
 
 	Character() = default;
+
+	virtual void Save(wxSQLite3Database* db);
+	virtual bool Update(wxSQLite3Database* db);
 
 	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
@@ -96,6 +104,9 @@ struct Location : public Element {
 	static CompType lCompType;
 
 	Location() = default;
+
+	virtual void Save(wxSQLite3Database* db);
+	virtual bool Update(wxSQLite3Database* db);
 
 	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();
@@ -121,6 +132,9 @@ struct Item : public Element {
 	bool isManMade{ true };
 
 	static CompType iCompType;
+
+	virtual void Save(wxSQLite3Database* db);
+	virtual bool Update(wxSQLite3Database* db);
 
 	virtual amDocument GenerateDocumentSimple();
 	virtual amDocument GenerateDocument();

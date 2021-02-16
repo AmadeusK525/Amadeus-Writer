@@ -14,9 +14,9 @@ struct amDocument {
 	wxString tableName{ "" };
 	wxString name{ "" };
 
-	map<wxString, int> integers{};
-	map<wxString, wxString> strings{};
-	map<wxString, wxMemoryBuffer> memBuffers{};
+	wxVector<pair<wxString, int>> integers{};
+	wxVector<pair<wxString, wxString>> strings{};
+	wxVector<pair<wxString, wxMemoryBuffer>> memBuffers{};
 
 	bool specialForeign = false;
 	pair<wxString, int> foreignKey{ "", -1 };

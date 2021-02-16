@@ -209,22 +209,22 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	m_personality->SetValue(character->personality);
 	m_backstory->SetValue(character->backstory);
 
-	m_age->Show(character->age != "");
-	m_ageLabel->Show(character->age != "");
-	m_sex->Show(character->sex != "");
-	m_sexLabel->Show(character->sex != "");
-	m_height->Show(character->height != "");
-	m_heightLabel->Show(character->height != "");
-	m_nat->Show(character->nat != "");
-	m_natLabel->Show(character->nat != "");
-	m_nick->Show(character->nick != "");
-	m_nickLabel->Show(character->nick != "");
-	m_appearance->Show(character->appearance != "");
-	m_appLabel->Show(character->appearance != "");
-	m_personality->Show(character->personality != "");
-	m_perLabel->Show(character->personality != "");
-	m_backstory->Show(character->backstory != "");
-	m_bsLabel->Show(character->backstory != "");
+	m_age->Show(!character->age.IsEmpty());
+	m_ageLabel->Show(m_age->IsShown());
+	m_sex->Show(!character->sex.IsEmpty());
+	m_sexLabel->Show(m_sex->IsShown());
+	m_height->Show(!character->height.IsEmpty());
+	m_heightLabel->Show(m_height->IsShown());
+	m_nat->Show(!character->nat.IsEmpty());
+	m_natLabel->Show(m_nat->IsShown());
+	m_nick->Show(!character->nick.IsEmpty());
+	m_nickLabel->Show(m_nick->IsShown());
+	m_appearance->Show(!character->appearance.IsEmpty());
+	m_appLabel->Show(m_appearance->IsShown());
+	m_personality->Show(!character->personality.IsEmpty());
+	m_perLabel->Show(m_personality->IsShown());
+	m_backstory->Show(!character->backstory.IsEmpty());
+	m_bsLabel->Show(m_backstory->IsShown());
 
 	m_image->Show(m_image->SetImage(character->image));
 
@@ -241,14 +241,18 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 		}
 	}
 
-	wxSize size(-1, 80);
-
 	wxWindowList list;
 	list.Append(m_appearance);
 	list.Append(m_personality);
 	list.Append(m_backstory);
 
+	wxSize size(-1, 80);
+	wxBusyCursor cursor;
+
 	for (int i = 0; i < character->custom.size(); i++) {
+		if (character->custom[i].second.IsEmpty())
+			continue;
+
 		if (i >= tcsize) {
 			wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
 				wxDefaultSize, wxBORDER_DOUBLE);
@@ -270,12 +274,8 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 		list.Append(m_custom[i].second);
 		m_custom[i].first->SetLabel(character->custom[i].first);
 		m_custom[i].second->SetLabel(character->custom[i].second);
-
-		m_custom[i].first->Show(character->custom[i].second != "");
-		m_custom[i].second->Show(character->custom[i].second != "");
 	}
 
-	m_vertical->Layout();
 	m_vertical->FitInside(this);
 
 	int nol;
@@ -289,7 +289,7 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 				it->SetMinSize(size);
 		}
 	}
-
+	
 	m_vertical->FitInside(this);
 	Thaw();
 }

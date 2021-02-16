@@ -4,13 +4,4 @@
 
 #include <wx\wx.h>
 
-struct Note {
-	wxString content{ "" };
-	wxString name{ "" };
-
-	bool isDone = false;
-
-	Note(wxString content, wxString name);
-};
-
 #endif

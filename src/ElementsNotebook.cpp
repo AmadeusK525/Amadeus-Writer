@@ -241,14 +241,7 @@ void amElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event)) {
  
     if (deleteCheck.ShowModal() == wxID_YES) {
         m_charList->DeleteItem(sel);
-
-        auto it = m_manager->GetCharacters().begin();
-        for (int i = 0; i < sel; i++) {
-            it++;
-        }
-
-        m_manager->DeleteCharacter(*it);
-        m_manager->SetSaved(false);
+        m_manager->DeleteCharacter(m_manager->GetCharacters()[sel]);
     }
 }
 
@@ -294,7 +287,6 @@ void amElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event)) {
         }
 
         m_manager->DeleteLocation(*it);
-        m_manager->SetSaved(false);
     }
 }
 
@@ -340,7 +332,6 @@ void amElementsNotebook::OnDeleteItem(wxCommandEvent& event) {
         }
 
         m_manager->DeleteItem(*it);
-        m_manager->SetSaved(false);
     }
 }
 
@@ -351,31 +342,28 @@ void amElementsNotebook::OnItemActivated(wxListEvent& event) {
 void amElementsNotebook::OnCharacterSelected(wxListEvent& event) {
     long sel = m_charList->GetFirstSelected();
 
-    auto it = m_manager->GetCharacters().begin();
-    for (int i = 0; i < sel; i++)
-        it++;
-
-    m_charShow->SetData(*it);
+    if (sel != -1)
+        m_charShow->SetData(m_manager->GetCharacters()[sel]);
+    else
+        m_charShow->SetData(Character());
 }
 
 void amElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event)) {
     long sel = m_locList->GetFirstSelected();
 
-    auto it = m_manager->GetLocations().begin();
-    for (int i = 0; i < sel; i++)
-        it++;
-
-    m_locShow->SetData(*it);
+    if (sel != -1)
+        m_locShow->SetData(m_manager->GetLocations()[sel]);
+    else
+        m_locShow->SetData(Location());
 }
 
 void amElementsNotebook::OnItemSelected(wxListEvent& event) {
     long sel = m_itemsList->GetFirstSelected();
 
-    auto it = m_manager->GetItems().begin();
-    for (int i = 0; i < sel; i++)
-        it++;
-
-    m_itemShow->SetData(*it);
+    if (sel != -1)
+        m_itemShow->SetData(m_manager->GetItems()[sel]);
+    else
+        m_itemShow->SetData(Item());
 }
 
 void amElementsNotebook::OnCharactersSortBy(wxCommandEvent& event) {
