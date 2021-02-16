@@ -451,6 +451,8 @@
     <ClCompile Include="src\ProjectManager.cpp" />
     <ClCompile Include="src\ProjectWizard.cpp" />
     <ClCompile Include="src\Release.cpp" />
+    <ClCompile Include="src\Timeline.cpp" />
+    <ClCompile Include="src\TimelineShapes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\resource.h" />
@@ -475,6 +477,8 @@
     <ClInclude Include="src\ProjectManager.h" />
     <ClInclude Include="src\ProjectWizard.h" />
     <ClInclude Include="src\Release.h" />
+    <ClInclude Include="src\Timeline.h" />
+    <ClInclude Include="src\TimelineShapes.h" />
     <ClInclude Include="src\wxmemdbg.h" />
   </ItemGroup>
   <ItemGroup>

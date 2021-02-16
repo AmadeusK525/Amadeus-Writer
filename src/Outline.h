@@ -9,6 +9,8 @@
 
 #include <wx\sstream.h>
 
+#include "Timeline.h"
+
 class amOutline;
 class amOutlineFilesPanel;
 class Corkboard;
@@ -16,7 +18,8 @@ class Corkboard;
 class amOutline : public wxNotebook {
 private:
     Corkboard* m_corkboard = nullptr;
-    wxPanel* m_timeline = nullptr;
+    TimelineCanvas* m_timeline = nullptr;
+    wxSFDiagramManager m_timelineManager{};
     amOutlineFilesPanel* m_files = nullptr;
 
 public:

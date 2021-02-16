@@ -4,10 +4,11 @@
 #include "Corkboard.h"
 #include "OutlineFiles.h"
 
+
 amOutline::amOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     m_corkboardHolder = new wxPanel(this);
     m_corkboard = new Corkboard(m_corkboardHolder);
-    m_timeline = new wxPanel(this);
+    m_timeline = new TimelineCanvas(&m_timelineManager, this);
     m_files = new amOutlineFilesPanel(this);
 
     // Hack for doing corkboard fullscreen

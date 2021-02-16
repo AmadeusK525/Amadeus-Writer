@@ -32,6 +32,9 @@ void amChaptersNotebook::AddChapter(Chapter& chapter, int pos) {
 }
 
 void amChaptersNotebook::AddToList(Chapter& chapter, int pos) {
+    if (pos == -1)
+        pos = m_list->GetItemCount();
+
     m_list->InsertItem(pos, chapter.name);
     m_list->SetItem(pos, 1, std::to_string(chapter.characters.size()));
     m_list->SetItem(pos, 2, std::to_string(chapter.locations.size()));
