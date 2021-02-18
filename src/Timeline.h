@@ -80,6 +80,8 @@ public:
 
 	virtual void OnKeyDown(wxKeyEvent& event);
 
+	virtual void OnTextChange(wxSFEditTextShape* shape);
+
 	void OnScroll(wxScrollWinEvent& event);
 	void OnTimer(wxTimerEvent& event);
 
