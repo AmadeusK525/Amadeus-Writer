@@ -436,7 +436,7 @@ void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 		wxPoint toMove = wxGetMousePosition();
 		toMove = m_downPos - toMove;
 
-		Scroll((m_scrollbarPos.x + toMove.x) / 5, (m_scrollbarPos.y + toMove.y) / 5);
+		Scroll((m_scrollbarPos.x + toMove.x) / 25, (m_scrollbarPos.y + toMove.y) / 25);
 	}
 
 	// Call default behaviour.

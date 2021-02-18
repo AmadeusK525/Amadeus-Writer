@@ -7,10 +7,8 @@
 class AutoWrapTextShape : public wxSFEditTextShape {
 private:
 	wxColour m_bgColour{ 255, 255, 255 };
-	wxArrayString m_lines{};
 	wxString m_textToDraw{""};
 
-	static bool m_countLines;
 	bool m_clipRegion = false;
 
 public:
@@ -24,11 +22,14 @@ public:
 	virtual void UpdateRectSize();
 	virtual void DrawTextContent(wxDC& dc);
 
-	virtual void OnLeftDoubleClick(wxPoint& pos);
+	virtual void OnLeftDoubleClick(const wxPoint& pos);
 
 	static void ShouldCountLines(bool will) { m_countLines = will; }
 	void ShouldClip(bool will) { AutoWrapTextShape::m_clipRegion = will; }
 	void CalcWrappedText(int& length, int& numberOfLines);
+	
+public:
+	static bool m_countLines;
 };
 
 

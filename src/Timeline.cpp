@@ -180,6 +180,8 @@ void TimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 		}
 	} else
 		card->RecalculatePosition();
+
+	Refresh();
 }
 
 bool TimelineCanvas::CalculateCellDrag(wxPoint& pos) {
@@ -248,6 +250,7 @@ void TimelineCanvas::OnUpdateVirtualSize(wxRect& rect) {
 
 void TimelineCanvas::OnMouseMove(wxMouseEvent& event) {
 	if (m_nWorkingMode == modeSHAPEMOVE) {
+		AutoWrapTextShape::ShouldCountLines(false);
 		if (CalculateCellDrag(DP2LP(event.GetPosition())))
 			Refresh(false);
 	}
@@ -256,27 +259,8 @@ void TimelineCanvas::OnMouseMove(wxMouseEvent& event) {
 }
 
 void TimelineCanvas::OnMouseWheel(wxMouseEvent& event) {
-//	Freeze();
+	AutoWrapTextShape::ShouldCountLines(false);
 	wxSFShapeCanvas::OnMouseWheel(event);
-
-	/*if (event.ControlDown()) {
-		wxSize szCanvas = GetVirtualSize();
-
-		if (m_cacheZoomPoint.y == -1) {
-			m_cacheZoomPoint = DP2LP(wxRealPoint((szCanvas.x/ 2), (szCanvas.y / 2)));
-			m_cacheZoomPoint += wxSize(500 / m_Settings.m_nScale, 0);
-		}
-
-		int ux, uy;
-		GetScrollPixelsPerUnit(&ux, &uy);
-
-		Scroll(((m_cacheZoomPoint.x * m_Settings.m_nScale) - (double)szCanvas.x / 2) / ux,
-			((m_cacheZoomPoint.y * m_Settings.m_nScale) - (double)szCanvas.y / 2) / uy);
-
-		m_zoomTimer.StartOnce(500);
-	}*/
-
-//	Thaw();
 }
 
 void TimelineCanvas::OnLeftDown(wxMouseEvent& event) {
@@ -341,7 +325,15 @@ void TimelineCanvas::OnKeyDown(wxKeyEvent& event) {
 	}
 }
 
+void TimelineCanvas::OnTextChange(wxSFEditTextShape* shape) {
+	AutoWrapTextShape::ShouldCountLines(true);
+	wxSFShapeCanvas::OnTextChange(shape);
+	RefreshCanvas(true, GetTotalBoundingBox());
+}
+
 void TimelineCanvas::OnScroll(wxScrollWinEvent& event) {
+	AutoWrapTextShape::ShouldCountLines(false);
+	
 	if (!wxGetKeyState(WXK_CONTROL))
 		event.Skip();
 }

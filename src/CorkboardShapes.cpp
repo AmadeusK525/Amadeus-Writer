@@ -55,16 +55,14 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 	dc.DrawText(m_textToDraw, rect.x, rect.y);
 }
 
-void AutoWrapTextShape::OnLeftDoubleClick(wxPoint& pos) {
+void AutoWrapTextShape::OnLeftDoubleClick(const wxPoint& pos) {
 	if (GetParentCanvas()) {
 		int dx, dy;
 		wxRealPoint shpPos = GetAbsolutePosition();
 		double scale = GetParentCanvas()->GetScale();
 		GetParentCanvas()->CalcUnscrolledPosition(0, 0, &dx, &dy);
 
-		wxRect shpBB = ((wxSFShapeBase*)(m_pParentItem))->GetBoundingBox();
-		shpBB.x -= 30;
-		shpBB.y -= 30;
+		wxRect shpBB = GetBoundingBox();
 
 		m_nCurrentState = GetStyle();
 		RemoveStyle(sfsSIZE_CHANGE);
@@ -74,7 +72,8 @@ void AutoWrapTextShape::OnLeftDoubleClick(wxPoint& pos) {
 			int((shpPos.y * scale) - dy)),
 			wxSize(int(shpBB.GetWidth() * scale), int(shpBB.GetHeight() * scale)), wxTE_MULTILINE);
 
-		m_pTextCtrl->SetBackgroundColour(wxColour(255, 255, 255));
+		m_pTextCtrl->SetBackgroundColour(m_Fill.GetColour());
+		m_pTextCtrl->SetForegroundColour(m_TextColor);
 	}
 }
 
