@@ -1106,10 +1106,6 @@ void amOutlineFilesPanel::OnDrop(wxDataViewEvent& event) {
 	m_files->Select(m_itemForDnD);
 }
 
-void amOutlineFilesPanel::OnUnsplit(wxWindow* WXUNUSED(window)) {
-	SplitVertically(m_leftPanel, m_textCtrl, 200);
-}
-
 void amOutlineFilesPanel::OnTimerEvent(wxTimerEvent& event) {
 	SaveCurrentBuffer();
 }

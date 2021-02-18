@@ -308,7 +308,8 @@ public:
     void OnDropPossible(wxDataViewEvent& event);
     void OnDrop(wxDataViewEvent& event);
 
-    virtual void OnUnsplit(wxWindow* window);
+    // Prevent wxWidgets from unsplitting sidebar
+    virtual void OnDoubleClickSash(int x, int y) {}
 
     void OnTimerEvent(wxTimerEvent& event);
     void SaveCurrentBuffer();

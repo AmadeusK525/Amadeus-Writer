@@ -14,7 +14,7 @@
 
 #include <memory>
 
-class Corkboard;
+class amCorkboard;
 
 enum ToolMode {
     modeDESIGN,
@@ -28,7 +28,7 @@ enum ToolMode {
 /////////////////////////////////////// Corkboard ///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class Corkboard : public wxPanel {
+class amCorkboard : public wxPanel {
 public:
 	friend class CorkboardCanvas;
 
@@ -48,7 +48,7 @@ private:
     int currentImage = 1;
 
 public:
-    Corkboard(wxWindow* parent);
+    amCorkboard(wxWindow* parent);
 
     void OnTool(wxCommandEvent& event);
 
@@ -84,7 +84,7 @@ public:
 
 class CorkboardCanvas : public wxSFShapeCanvas {
 private:
-	Corkboard* parent = nullptr;
+	amCorkboard* parent = nullptr;
 	amProjectManager* m_manager = nullptr;
 
 	wxSFShapeBase* shapeForMenu = nullptr;
@@ -116,8 +116,11 @@ public:
 	virtual void OnMouseMove(wxMouseEvent& event);
 	virtual void OnMouseWheel(wxMouseEvent& event);
 	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
+	void OnScroll(wxScrollWinEvent& event);
 
 	virtual void OnKeyDown(wxKeyEvent& event);
+
+	virtual void OnTextChange(wxSFEditTextShape* shape);
 
 	virtual void OnConnectionFinished(wxSFLineShape* connection);
 
@@ -134,6 +137,7 @@ public:
 		MENU_NoteBlack,
 		MENU_NoteDefault
 	};
-};
 
+	DECLARE_EVENT_TABLE()
+};
 #endif

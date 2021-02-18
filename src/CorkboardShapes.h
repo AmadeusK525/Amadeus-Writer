@@ -2,12 +2,13 @@
 #define CORKBOARDSHAPES_H_
 #pragma once
 
-#include "Corkboard.h"
+#include <wx\wxsf\wxShapeFramework.h>
 
 class AutoWrapTextShape : public wxSFEditTextShape {
 private:
 	wxColour m_bgColour{ 255, 255, 255 };
 	wxArrayString m_lines{};
+	wxString m_textToDraw{""};
 
 	static bool m_countLines;
 	bool m_clipRegion = false;
@@ -41,7 +42,7 @@ protected:
 	AutoWrapTextShape* m_content = nullptr;
 
 public:
-	wxWindowID m_currentColour = CorkboardCanvas::MENU_NoteDefault;
+	wxWindowID m_currentColour;
 
 public:
 	// Enable RTTI and cloneability
@@ -86,8 +87,25 @@ public:
 	virtual void OnHandle(wxSFShapeHandle& handle);
 	virtual void OnEndHandle(wxSFShapeHandle& handle);
 
-	virtual void OnEndDrag(wxPoint& pos);
+	virtual void OnEndDrag(const wxPoint& pos);
 
 	XS_DECLARE_CLONABLE_CLASS(ImageShape)
 };
+
+
+////////////////////////////////////////////////////////////////////
+///////////////////////////// TextShape ////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+class TextShape : public wxSFEditTextShape {
+public:
+	TextShape();
+	TextShape(const TextShape& other);
+
+	virtual void OnEndHandle(wxSFShapeHandle& handle);
+	virtual void OnEndDrag(const wxPoint& pos);
+};
+
+
 #endif

@@ -1,5 +1,7 @@
 #include "CorkboardShapes.h"
 
+#include "Corkboard.h"
+
 XS_IMPLEMENT_CLONABLE_CLASS(AutoWrapTextShape,
 	wxSFEditTextShape);
 
@@ -31,7 +33,6 @@ void AutoWrapTextShape::UpdateRectSize() {
 
 void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 	dc.SetBrush(m_Fill);
-	//dc.SetBackgroundMode(wxBRUSHSTYLE_TRANSPARENT);
 
 	dc.SetTextForeground(m_TextColor);
 	dc.SetFont(m_Font);
@@ -39,7 +40,7 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 	wxRect rect(GetBoundingBox());
 
 	if (m_clipRegion)
-		m_lines.Clear();
+		m_textToDraw.Empty();
 
 	// Get wrapped text and draw all text lines
 	if (m_countLines && rect.width > 30) {
@@ -51,12 +52,7 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 		CalcWrappedText(rect.width, numberOfLines);
 	}
 
-	for (int i = 0; i < m_lines.GetCount(); i++) {
-		dc.DrawText(m_lines[i], rect.x, rect.y + i * m_nLineHeight);
-	}
-
-	//if (m_clipRegion)
-		//dc.DestroyClippingRegion();
+	dc.DrawText(m_textToDraw, rect.x, rect.y);
 }
 
 void AutoWrapTextShape::OnLeftDoubleClick(wxPoint& pos) {
@@ -83,72 +79,45 @@ void AutoWrapTextShape::OnLeftDoubleClick(wxPoint& pos) {
 }
 
 void AutoWrapTextShape::CalcWrappedText(int& lenght, int& numberOfLines) {
-	m_lines.Clear();
+	m_textToDraw = m_sText;
 
 	wxSize textSize;
-	wxString fullString = m_sText;
-	wxString intactString = fullString;
 
-	int index = 0;
-	bool hasSpace;
-	//bool hasNewLine;
-	bool isEqual;
+	int begin = 0;
+	int end = 0;
+	int strLen = m_sText.Length();
 
-	while (numberOfLines > 0) {
-		textSize = GetTextExtent();
+	int maxHeight = m_nLineHeight * numberOfLines;
 
-		if (textSize.x >= lenght - 2) {
-			index = 0;
-			do {
-				m_sText = fullString.Left(++index);
-				textSize = GetTextExtent();
+	while (numberOfLines >= 0) {
+		end += 2;
+		textSize = GetTextExtent(m_textToDraw.SubString(begin, end));
 
-				isEqual = fullString.Length() == m_sText.Length();
-				if (textSize.x >= lenght - 2 || isEqual) {
-					hasSpace = m_sText.Contains(" ");
-					/*hasNewLine = m_sText.Contains("\n");
+		if (textSize.x >= lenght - 2 && numberOfLines != 0) {
+			size_t found = m_textToDraw.rfind(" ", end);
 
-					if (hasNewLine) {
-						while (true) {
-							int where = m_sText.find_first_of("\n", 0);
-							m_sText.Remove(where, m_sText.Length() - where);
-							fullString.Remove(where);
+			if (found != std::string::npos)
+				m_textToDraw.replace(found, 1, "\n");
+			else
+				m_textToDraw.replace(end, 1, "-");
 
-							if (m_sText.IsEmpty())
-								m_sText = " ";
-						}
+			begin = found;
+			end = found;
 
-						hasSpace = false;
-					}*/
+			numberOfLines--;
+		} else if (numberOfLines == 0 || end >= strLen ||
+			GetTextExtent(m_textToDraw.Left(end)).y > maxHeight) {
+			
+			if (end < strLen) {
+				m_textToDraw.Remove(end - 5);
+				m_textToDraw << "...";
+			} else
+				m_textToDraw.Remove(end);
 
-					if (hasSpace) {
-						while (true) {
-							char s = m_sText.Last();
-							if (s == ' ')
-								break;
-
-							m_sText.Remove(m_sText.Length() - 1, 1);
-							index--;
-						}
-					} else if (!isEqual) {
-						m_sText << "-";
-					}
-
-					break;
-				}
-
-			} while (true);
-			m_lines.Add(m_sText);
-			fullString.Remove(0, m_sText.Length());
-			m_sText = fullString;
-		} else {
-			m_lines.Add(m_sText);
 			break;
 		}
-		numberOfLines--;
-	}
 
-	m_sText = intactString;
+	}
 }
 
 
@@ -162,6 +131,8 @@ XS_IMPLEMENT_CLONABLE_CLASS(NoteShape,
 	wxSFRoundRectShape);
 
 NoteShape::NoteShape() : wxSFRoundRectShape() {
+	m_currentColour = CorkboardCanvas::MENU_NoteDefault;
+
 	// Set accepted connections for the new shape.
 	AcceptConnection("All");
 	AcceptSrcNeighbour("NoteShape");
@@ -277,7 +248,7 @@ void NoteShape::ChangeColour(wxWindowID id) {
 	m_content->SetTextColour(textFgColour);
 
 	m_currentColour = id;
-	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
+	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
 void NoteShape::OnBeginHandle(wxSFShapeHandle& handle) {
@@ -296,7 +267,7 @@ void NoteShape::OnEndHandle(wxSFShapeHandle& handle) {
 	ShouldClip(false);
 
 	wxSFRoundRectShape::OnEndHandle(handle);
-	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
+	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
 void NoteShape::OnBeginDrag(const wxPoint& pos) {
@@ -308,7 +279,7 @@ void NoteShape::OnEndDrag(const wxPoint& pos) {
 	ShouldCountLines(true);
 
 	wxSFRoundRectShape::OnEndDrag(pos);
-	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
+	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
 
@@ -389,10 +360,24 @@ void ImageShape::OnHandle(wxSFShapeHandle& handle) {
 
 void ImageShape::OnEndHandle(wxSFShapeHandle& handle) {
 	wxSFBitmapShape::OnEndHandle(handle);
-	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
+	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
-void ImageShape::OnEndDrag(wxPoint& pos) {
+void ImageShape::OnEndDrag(const wxPoint& pos) {
 	wxSFBitmapShape::OnEndDrag(pos);
-	((Corkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
+	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
+}
+
+TextShape::TextShape() {}
+
+TextShape::TextShape(const TextShape& other) : wxSFEditTextShape(other) {}
+
+void TextShape::OnEndHandle(wxSFShapeHandle& handle) {
+	wxSFEditTextShape::OnEndHandle(handle);
+	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
+}
+
+void TextShape::OnEndDrag(const wxPoint& pos) {
+	wxSFEditTextShape::OnEndDrag(pos);
+	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
