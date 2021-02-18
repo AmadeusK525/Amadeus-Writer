@@ -3,11 +3,14 @@
 #pragma once
 
 #include <wx\wxsf\wxShapeFramework.h>
+#include "CorkboardShapes.h"
 
 class TimelineCard : public wxSFRoundRectShape {
 private:
 	int m_row = -1;
 	int m_col = -1;
+
+	AutoWrapTextShape* m_content = nullptr;
 
 public:
 	XS_DECLARE_CLONABLE_CLASS(TimelineCard);
@@ -26,6 +29,8 @@ public:
 
 	void IncrementColumn(int incrementBy = 1) { m_col += incrementBy; }
 	void DecrementColumn(int decrementBy = 1) { m_col -= decrementBy; }
+
+	void SetColour(wxColour& colour);
 
 	void MarkSerializableDataMembers();
 };

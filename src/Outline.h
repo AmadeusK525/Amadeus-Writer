@@ -13,13 +13,12 @@
 
 class amOutline;
 class amOutlineFilesPanel;
-class Corkboard;
+class amCorkboard;
 
 class amOutline : public wxNotebook {
 private:
-    Corkboard* m_corkboard = nullptr;
-    TimelineCanvas* m_timeline = nullptr;
-    wxSFDiagramManager m_timelineManager{};
+    amCorkboard* m_corkboard = nullptr;
+    amTimeline* m_timeline = nullptr;
     amOutlineFilesPanel* m_files = nullptr;
 
 public:
@@ -33,7 +32,8 @@ public:
     void SaveOutline();
     void LoadOutline(wxStringInputStream& corkboard, wxStringInputStream& files);
 
-    Corkboard* GetCorkboard() { return m_corkboard; }
+    amCorkboard* GetCorkboard() { return m_corkboard; }
+    amTimeline* GetTimeline() { return m_timeline; }
     amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
 
     void ClearAll();

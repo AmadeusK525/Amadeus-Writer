@@ -4,6 +4,8 @@ VisualStudioVersion = 16.0.30406.217
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Amadeus", "Amadeus.vcxproj", "{853D1FD7-20AB-586C-9699-9680F84AC985}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxSF", "F:\wxSF\src\wxSF.vcxproj", "{B79A311D-067A-B248-AA20-40AE6C6AFF12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -20,6 +22,14 @@ Global
 		{853D1FD7-20AB-586C-9699-9680F84AC985}.Release|Win32.Build.0 = Release|Win32
 		{853D1FD7-20AB-586C-9699-9680F84AC985}.Release|x64.ActiveCfg = Release|x64
 		{853D1FD7-20AB-586C-9699-9680F84AC985}.Release|x64.Build.0 = Release|x64
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Debug|Win32.Build.0 = Debug|Win32
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Debug|x64.ActiveCfg = Debug|x64
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Debug|x64.Build.0 = Debug|x64
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Release|Win32.ActiveCfg = Release|Win32
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Release|Win32.Build.0 = Release|Win32
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Release|x64.ActiveCfg = Release|x64
+		{B79A311D-067A-B248-AA20-40AE6C6AFF12}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
