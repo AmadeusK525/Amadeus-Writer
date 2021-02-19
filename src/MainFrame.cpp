@@ -357,7 +357,7 @@ void amMainFrame::EditTitle(wxCommandEvent& event) {
 }
 
 void amMainFrame::FullScreen(wxCommandEvent& event) {
-    ShowFullScreen(!IsFullScreen());
+    ShowFullScreen(!IsFullScreen(), wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION);
     m_isFrameFullScreen = !m_isFrameFullScreen;
 }
 

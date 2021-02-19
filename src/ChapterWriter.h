@@ -91,7 +91,7 @@ public:
 
     void OnTimerEvent(wxTimerEvent& event);
 
-    void ToggleFullScreen() { ShowFullScreen(!IsFullScreen()); }
+    void ToggleFullScreen() { ShowFullScreen(!IsFullScreen(), wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION); }
     void OnClose(wxCloseEvent& event);
 
     DECLARE_EVENT_TABLE()
