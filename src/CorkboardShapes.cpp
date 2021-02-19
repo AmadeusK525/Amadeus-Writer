@@ -6,7 +6,6 @@ XS_IMPLEMENT_CLONABLE_CLASS(AutoWrapTextShape,
 	wxSFEditTextShape);
 
 bool AutoWrapTextShape::m_countLines = true;
-//bool AutoWrapTextShape::m_clipRegion = false;
 
 AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape() {
 	SetFill(m_bgColour);
@@ -138,7 +137,7 @@ NoteShape::NoteShape() : wxSFRoundRectShape() {
 	AcceptTrgNeighbour("NoteShape");
 	AcceptChild("None");
 
-	SetRadius(6.0);
+	SetRadius(4.0);
 	SetFill(wxBrush(wxColour(80, 80, 80)));
 
 	AddStyle(sfsNO_FIT_TO_CHILDREN);
@@ -172,6 +171,8 @@ NoteShape::NoteShape() : wxSFRoundRectShape() {
 }
 
 NoteShape::NoteShape(const NoteShape& other) : wxSFRoundRectShape(other) {
+	m_currentColour = other.m_currentColour;
+
 	// Clone source child text object..
 	m_content = (AutoWrapTextShape*)other.m_content->Clone();
 

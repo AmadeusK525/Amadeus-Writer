@@ -18,7 +18,7 @@ EVT_TOOL_RANGE(TOOL_Cursor, TOOL_CorkboardFullScreen, amCorkboard::OnTool)
 END_EVENT_TABLE()
 
 amCorkboard::amCorkboard(wxWindow* parent) : wxPanel(parent) {
-    this->parent = (amOutline*)(parent->GetParent());
+    this->m_parent = (amOutline*)(parent->GetParent());
 	m_manager = amGetManager();
 
     m_toolBar = new wxToolBar(this, -1);
@@ -38,11 +38,11 @@ amCorkboard::amCorkboard(wxWindow* parent) : wxPanel(parent) {
     m_canvasManager.AcceptShape("All");
     m_canvas = new CorkboardCanvas(&m_canvasManager, this);
 
-    corkboardSizer = new wxBoxSizer(wxVERTICAL);
-    corkboardSizer->Add(m_toolBar, wxSizerFlags(0).Expand().Border(wxALL, 1));
-    corkboardSizer->Add(m_canvas, wxSizerFlags(1).Expand());
+    m_corkboardSizer = new wxBoxSizer(wxVERTICAL);
+    m_corkboardSizer->Add(m_toolBar, wxSizerFlags(0).Expand().Border(wxALL, 1));
+    m_corkboardSizer->Add(m_canvas, wxSizerFlags(1).Expand());
 
-    SetSizer(corkboardSizer);
+    SetSizer(m_corkboardSizer);
 }
 
 void amCorkboard::OnTool(wxCommandEvent& event) {
@@ -51,23 +51,23 @@ void amCorkboard::OnTool(wxCommandEvent& event) {
 
     switch (event.GetId()) {
     case TOOL_Cursor:
-        toolMode = modeDESIGN;
+        m_toolMode = modeDESIGN;
         break;
 
     case TOOL_NewNote:
-        toolMode = modeNOTE;
+        m_toolMode = modeNOTE;
         break;
 
     case TOOL_NewImage:
-        toolMode = modeIMAGE;
+        m_toolMode = modeIMAGE;
         break;
 
     case TOOL_NewText:
-        toolMode = modeTEXT;
+        m_toolMode = modeTEXT;
         break;
 
     case TOOL_NewConnection:
-        toolMode = modeCONNECTION;
+        m_toolMode = modeCONNECTION;
         break;
     
     case TOOL_CorkboardFullScreen:
@@ -87,15 +87,17 @@ void amCorkboard::FullScreen(bool fs) {
     AutoWrapTextShape::ShouldCountLines(false);
 
     if (fs) {
-        parent->m_corkHolderSizer->Remove(0);
+		m_parent->m_corkHolderSizer->Remove(0);
         Reparent(wxGetApp().GetTopWindow());
     } else {
-        Reparent(parent->m_corkboardHolder);
-        parent->m_corkHolderSizer->Add(this, wxSizerFlags(1).Expand());
+        Reparent(m_parent->m_corkboardHolder);
+		m_parent->m_corkHolderSizer->Add(this, wxSizerFlags(1).Expand());
     }
 
     m_toolBar->ToggleTool(TOOL_CorkboardFullScreen, fs);
-    m_canvas->Layout();
+    Layout();
+	m_canvas->Layout();
+	m_corkboardSizer->Layout();
 
     //AutoWrapTextShape::ShouldCountLines(true);
 }
@@ -119,7 +121,7 @@ void amCorkboard::SetToolMode(ToolMode mode) {
         break;
     }
 
-    toolMode = mode;
+    m_toolMode = mode;
 }
 
 void amCorkboard::ExportToImage(wxBitmapType type) {
@@ -161,7 +163,8 @@ void amCorkboard::Save() {
 }
 
 void amCorkboard::Load(wxStringInputStream& stream) {
-	m_canvas->LoadCanvas(stream);
+	if (stream.CanRead())
+		m_canvas->LoadCanvas(stream);
 }
 
 

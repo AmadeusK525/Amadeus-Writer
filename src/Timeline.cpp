@@ -1,5 +1,8 @@
 #include "Timeline.h"
+#include "Document.h"
+#include "MyApp.h"
 
+#include <wx\sstream.h>
 
 ///////////////////////////////////////////////////////////////
 //////////////////////// TimelineThread ///////////////////////
@@ -349,6 +352,9 @@ void TimelineCanvas::OnTimer(wxTimerEvent& event) {
 
 
 amTimeline::amTimeline(wxWindow* parent) : wxSplitterWindow(parent, 01, wxDefaultPosition, wxDefaultSize, 768L | wxSP_LIVE_UPDATE) {
+	this->m_parent = (amOutline*)(parent->GetParent());
+	m_manager = amGetManager();
+	
 	m_canvas = new TimelineCanvas(&m_canvasManager, this);
 
 	m_sideHolder = new wxPanel(this);
@@ -421,12 +427,7 @@ void amTimeline::OnSidebarLeftDown(wxMouseEvent& event) {
 void amTimeline::OnSidebarPaint(wxPaintEvent& event) {
 	wxPaintDC dc(m_sideHolder);
 
-	dc.SetPen(wxPen(wxColour(70, 70, 70), 2));
-	dc.SetBrush(wxBrush(wxColour(90, 90, 90)));
-
-	dc.DrawRectangle(m_pullRect);
-
-	dc.SetPen(wxPen(wxColour(130, 130, 130), 3));
+	dc.SetPen(wxPen(wxColour(140, 140, 140), 4));
 
 	int x1 = m_pullRect.x, x2 = m_pullRect.x + m_pullRect.width - 2;
 	int y = m_pullRect.height / 4 + 2;
@@ -434,4 +435,30 @@ void amTimeline::OnSidebarPaint(wxPaintEvent& event) {
 	dc.DrawLine(wxPoint(x1, y), wxPoint(x2, y));
 	dc.DrawLine(wxPoint(x1, y * 2), wxPoint(x2, y * 2));
 	dc.DrawLine(wxPoint(x1, y * 3), wxPoint(x2, y * 3));
+}
+
+void amTimeline::Save() {
+	amDocument document;
+	document.tableName = "outline_timelines";
+	document.name = "Timeline Canvas";
+
+	document.strings.push_back(pair<wxString, wxString>("content", wxString()));
+
+	wxStringOutputStream sstream(&document.strings[0].second);
+	m_canvas->SaveCanvas(sstream);
+
+	m_manager->SaveDocument(document, document);
+}
+
+void amTimeline::Load(wxStringInputStream& stream) {
+//	if (stream.CanRead() && stream.IsOk() && !stream.Eof())
+//		m_canvas->LoadCanvas(stream);
+}
+
+void amTimeline::SaveThreads(wxStringOutputStream& stream) {
+
+}
+
+void amTimeline::LoadThreads(wxStringInputStream& stream) {
+
 }

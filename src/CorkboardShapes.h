@@ -24,8 +24,8 @@ public:
 
 	virtual void OnLeftDoubleClick(const wxPoint& pos);
 
-	static void ShouldCountLines(bool will) { m_countLines = will; }
-	void ShouldClip(bool will) { AutoWrapTextShape::m_clipRegion = will; }
+	inline static void ShouldCountLines(bool will) { m_countLines = will; }
+	inline void ShouldClip(bool will) { AutoWrapTextShape::m_clipRegion = will; }
 	void CalcWrappedText(int& length, int& numberOfLines);
 	
 public:

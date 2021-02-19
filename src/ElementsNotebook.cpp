@@ -198,7 +198,10 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 }
 
 void amElementsNotebook::InitShowChoices() {
-    ((amCheckListBox*)m_cShow->GetPopupControl())->InsertItems(m_manager->GetBookTitles(), 0);
+    amCheckListBox* pList = ((amCheckListBox*)m_cShow->GetPopupControl());
+    pList->InsertItems(m_manager->GetBookTitles(), 0);
+    pList->Check(0);
+    m_cShow->SetText(m_manager->GetBookTitles()[0]);
 }
 
 void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event)) {
