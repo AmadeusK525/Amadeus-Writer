@@ -34,18 +34,18 @@ public:
 
 private:
 	amProjectManager* m_manager = nullptr;
-    amOutline* parent = nullptr;
+    amOutline* m_parent = nullptr;
     wxToolBar* m_toolBar = nullptr;
 
-    wxBoxSizer* corkboardSizer = nullptr;
+    wxBoxSizer* m_corkboardSizer = nullptr;
 
     CorkboardCanvas* m_canvas = nullptr;
     wxSFDiagramManager m_canvasManager;
 
-    ToolMode toolMode = modeDESIGN;
-    bool isDraggingRight = false;
+    ToolMode m_toolMode = modeDESIGN;
+    bool m_isDraggingRight = false;
 
-    int currentImage = 1;
+    int m_currentImage = 1;
 
 public:
     amCorkboard(wxWindow* parent);
@@ -56,7 +56,7 @@ public:
     void FullScreen(bool fs);
 
     void SetToolMode(ToolMode mode);
-    ToolMode getToolMode() { return toolMode; }
+    ToolMode getToolMode() { return m_toolMode; }
     wxToolBar* getToolbar() { return m_toolBar; }
 
     void ExportToImage(wxBitmapType type);

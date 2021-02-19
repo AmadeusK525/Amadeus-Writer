@@ -1243,11 +1243,11 @@ bool amOutlineFilesPanel::Save() {
 }
 
 bool amOutlineFilesPanel::Load(wxStringInputStream& stream) {
+	if (!stream.CanRead())
+		return false;
+
 	ClearAll();
 	Init();
-
-	if (!stream.IsOk())
-		return false;
 
 	wxXmlDocument doc;
 	if (!doc.Load(stream))

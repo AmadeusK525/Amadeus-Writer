@@ -32,15 +32,6 @@ bool amProjectSQLDatabase::Init() {
 		return false;
 	}
 
-	if (!TableExists("outline_files")) {
-		wxArrayString tOutlineFiles;
-		tOutlineFiles.Add("id INTEGER PRIMARY KEY");
-		tOutlineFiles.Add("name TEXT");
-		tOutlineFiles.Add("content TEXT");
-
-		CreateTable("outline_files", tOutlineFiles);
-	}
-
 	return true;
 }
 
@@ -157,6 +148,12 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tOutlineCorkboards.Add("name TEXT");
 	tOutlineCorkboards.Add("content TEXT");
 
+	wxArrayString tOutlineTimelines;
+	tOutlineTimelines.Add("id INTEGER PRIMARY KEY");
+	tOutlineTimelines.Add("name TEXT");
+	tOutlineTimelines.Add("content TEXT");
+	tOutlineTimelines.Add("threads_xml");
+
 	wxArrayString tOutlineFiles;
 	tOutlineFiles.Add("id INTEGER PRIMARY KEY");
 	tOutlineFiles.Add("name TEXT");
@@ -200,6 +197,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	CreateTable("scenes", tScenes);
 
 	CreateTable("outline_corkboards", tOutlineCorkboards);
+	CreateTable("outline_timelines", tOutlineTimelines);
 	CreateTable("outline_files", tOutlineFiles);
 
 	CreateTable("characters_chapters", tCharactersInChapters);
@@ -557,8 +555,7 @@ bool amProjectManager::Init() {
 			Book book;
 			book.title = m_project.amFile.GetName();
 
-			m_storage.InsertDocument(book.GenerateDocument());
-			book.Init();
+			book.Save(&m_storage);
 			m_project.books.push_back(book);
 		} else {
 			LoadProject();
@@ -569,7 +566,6 @@ bool amProjectManager::Init() {
 
 		return true;
 	}
-
 	return false;
 }
 
@@ -612,23 +608,27 @@ bool amProjectManager::DoLoadProject(const wxString& path) {
 		LoadBooks();
 
 		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT content FROM outline_corkboards");
-		wxString str1, str2;
+		wxString str1, str2, str3;
 
 		while (result.NextRow())
 			str1 = result.GetAsString("content");
 
-		result = m_storage.ExecuteQuery("SELECT content FROM outline_files");
+		result = m_storage.ExecuteQuery("SELECT content FROM outline_timelines");
 
 		while (result.NextRow())
 			str2 = result.GetAsString("content");
 
-		wxStringInputStream corkboard(str1);
-		wxStringInputStream files(str2);
+		result = m_storage.ExecuteQuery("SELECT content FROM outline_files");
+
+		while (result.NextRow())
+			str3 = result.GetAsString("content");
+
+		wxStringInputStream corkboard(str1), timeline(str2), files(str3);
 
 		m_storage.Commit();
 
 		m_elements->UpdateAll();
-		m_outline->LoadOutline(corkboard, files);
+		m_outline->LoadOutline(corkboard, timeline, files);
 
 		m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
 		SetLastSave();

@@ -30,7 +30,12 @@ public:
     amOutline(wxWindow* parent);
 
     void SaveOutline();
-    void LoadOutline(wxStringInputStream& corkboard, wxStringInputStream& files);
+    void LoadOutline(wxStringInputStream& corkboard,
+        wxStringInputStream& timeline,
+        wxStringInputStream& files);
+
+    void OnShow();
+    void OnPageChange(wxBookCtrlEvent& event);
 
     amCorkboard* GetCorkboard() { return m_corkboard; }
     amTimeline* GetTimeline() { return m_timeline; }

@@ -7,6 +7,7 @@
 #include <wx\notebook.h>
 
 #include "TimelineShapes.h"
+#include "ProjectManager.h"
 
 using std::pair;
 
@@ -99,6 +100,9 @@ private:
 
 class amTimeline : public wxSplitterWindow {
 private:
+	amProjectManager* m_manager = nullptr;
+	amOutline* m_parent = nullptr;
+
 	TimelineCanvas* m_canvas = nullptr;
 	wxSFDiagramManager m_canvasManager;
 
@@ -120,7 +124,11 @@ public:
 	void OnSidebarLeftDown(wxMouseEvent& event);
 
 	void OnSidebarPaint(wxPaintEvent& event);
+
+	void Save();
+	void Load(wxStringInputStream& stream);
+
+	void SaveThreads(wxStringOutputStream& stream);
+	void LoadThreads(wxStringInputStream& stream);
 };
-
-
 #endif

@@ -119,6 +119,9 @@ struct Section {
 
     void SetId(int id) { this->id = id; }
 
+    void Save(wxSQLite3Database* db);
+    bool Update(wxSQLite3Database* db, bool updateChapters);
+
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();
     amDocument GenerateDocumentForId();
@@ -151,6 +154,9 @@ struct Book {
     bool Init();
 
     void SetId(int id) { this->id = id; }
+
+    void Save(wxSQLite3Database* db);
+    bool Update(wxSQLite3Database* db, bool updateSections, bool updateChapters);
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
