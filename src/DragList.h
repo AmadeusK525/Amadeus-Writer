@@ -4,18 +4,18 @@
 #include "wx/panel.h"
 #include "wx/dragimag.h"
 
-#include <string>
 
-using std::string;
 
-class amdDragList : public wxListView {
+
+
+class amDragList : public wxListView {
 private:
     int m_itemDragging{};
     int m_previous{};
     wxPanel* m_posMarker = nullptr;
 
 public:
-    string m_tempName{ "" };
+    wxString m_tempName{ "" };
 
     typedef enum {
         DRAG_NONE,
@@ -33,7 +33,7 @@ private:
     void EndDragging();
 
 public:
-    amdDragList(wxWindow* parent, const wxSize& size);
+    amDragList(wxWindow* parent, const wxSize& size);
 
     void SelectItem(wxMouseEvent& evt);
 

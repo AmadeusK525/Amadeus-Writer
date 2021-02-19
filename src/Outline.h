@@ -7,17 +7,19 @@
 #include <wx/progdlg.h>
 #include <wx/splitter.h>
 
-#include <fstream>
+#include <wx\sstream.h>
 
-class amdOutline;
-class amdOutlineFilesPanel;
-class Corkboard;
+#include "Timeline.h"
 
-class amdOutline : public wxNotebook {
+class amOutline;
+class amOutlineFilesPanel;
+class amCorkboard;
+
+class amOutline : public wxNotebook {
 private:
-    Corkboard* m_corkboard = nullptr;
-    wxPanel* m_timeline = nullptr;
-    amdOutlineFilesPanel* m_files = nullptr;
+    amCorkboard* m_corkboard = nullptr;
+    amTimeline* m_timeline = nullptr;
+    amOutlineFilesPanel* m_files = nullptr;
 
 public:
     // Hack for doing corkboard fullscreen
@@ -25,13 +27,19 @@ public:
     wxBoxSizer* m_corkHolderSizer = nullptr;
 
 public:
-    amdOutline(wxWindow* parent);
+    amOutline(wxWindow* parent);
 
-    void SaveOutline(int& progress, wxProgressDialog* dialog);
-    void LoadOutline(int& progress, wxProgressDialog* dialog);
+    void SaveOutline();
+    void LoadOutline(wxStringInputStream& corkboard,
+        wxStringInputStream& timeline,
+        wxStringInputStream& files);
 
-    Corkboard* GetCorkboard() { return m_corkboard; }
-    amdOutlineFilesPanel* GetOutlineFiles() { return m_files; }
+    void OnShow();
+    void OnPageChange(wxBookCtrlEvent& event);
+
+    amCorkboard* GetCorkboard() { return m_corkboard; }
+    amTimeline* GetTimeline() { return m_timeline; }
+    amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
 
     void ClearAll();
 };

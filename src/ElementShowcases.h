@@ -6,33 +6,30 @@
 #include <wx\scrolwin.h>
 
 #include "ImagePanel.h"
-#include "Elements.h"
+#include "StoryElements.h"
 
-#include <vector>
-
-using std::vector;
 using std::pair;
 
-class amdElementShowcase: public wxScrolledWindow {
+class amElementShowcase: public wxScrolledWindow {
 protected:
     ImagePanel* m_image = nullptr;
 
     wxStaticText* m_name = nullptr,
         * m_role = nullptr;
 
-    vector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
+    wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 	wxBoxSizer* m_vertical = nullptr;
 
 public:
-    amdElementShowcase(wxWindow* parent);
-	virtual void SetData(const Element& element);
+    amElementShowcase(wxWindow* parent);
+	virtual void SetData(Element& element);
 };
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////// CharacterShowcase ///////////////////////
 ///////////////////////////////////////////////////////////////////
 
-class amdCharacterShowcase : public amdElementShowcase {
+class amCharacterShowcase : public amElementShowcase {
 private:
 	wxStaticText* m_ageLabel = nullptr,
 		* m_sexLabel = nullptr,
@@ -53,11 +50,11 @@ private:
 		* m_personality = nullptr,
 		* m_backstory = nullptr;
 
-	vector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
+	wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 
 public:
-	amdCharacterShowcase(wxWindow* parent);
-	virtual void SetData(const Element& charToSet);
+	amCharacterShowcase(wxWindow* parent);
+	virtual void SetData(Element& charToSet);
 };
 
 
@@ -66,7 +63,7 @@ public:
 ///////////////////////////////////////////////////////////////////
 
 
-class amdLocationShowcase : public amdElementShowcase {
+class amLocationShowcase : public amElementShowcase {
 private:
     wxStaticText* m_generalLabel = nullptr,
         * m_natLabel = nullptr,
@@ -88,9 +85,9 @@ private:
     bool m_first = true;
 
 public:
-    amdLocationShowcase(wxWindow* parent);
+    amLocationShowcase(wxWindow* parent);
 
-    virtual void SetData(const Element& locToSet);
+    virtual void SetData(Element& locToSet);
 };
 
 
@@ -99,13 +96,13 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-class amdItemShowcase : public amdElementShowcase {
+class amItemShowcase : public amElementShowcase {
 private:
 
 public:
-    amdItemShowcase(wxWindow* parent);
+    amItemShowcase(wxWindow* parent);
 
-    virtual void SetData(const Element& itemToSet);
+    virtual void SetData(Element& itemToSet);
 };
 
 #endif

@@ -5,16 +5,12 @@
 
 #include "wx/editlbox.h"
 
-#include <string>
-
 #include "DragList.h"
 #include "ChaptersGrid.h"
 
-using std::string;
-
 class ChapterCreator: public wxFrame {
 private:
-    amdProjectManager* m_manager = nullptr;
+    amProjectManager* m_manager = nullptr;
 
     wxPanel* m_nchapPanel1 = nullptr,
         * m_nchapPanel2 = nullptr;
@@ -24,7 +20,7 @@ private:
     wxTextCtrl* m_nchapName = nullptr;
     wxTextCtrl* m_nchapSummary = nullptr;
 
-    amdDragList* m_nchapList = nullptr;
+    amDragList* m_nchapList = nullptr;
 
     wxButton* m_nchapNext = nullptr,
         * m_nchapBack = nullptr,
@@ -32,11 +28,11 @@ private:
 
     wxBoxSizer* m_mainHor = nullptr;
 
-    string m_tempName{};
+    wxString m_tempName{};
     bool m_firstNext = true;
 
 public:
-    ChapterCreator(wxWindow* parent, amdProjectManager* manager);
+    ChapterCreator(wxWindow* parent, amProjectManager* manager);
 
     void Next(wxCommandEvent& event);
     void Back(wxCommandEvent& event);

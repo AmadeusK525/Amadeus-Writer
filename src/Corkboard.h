@@ -12,12 +12,9 @@
 #include "MainFrame.h"
 #include "Outline.h"
 
-#include <vector>
 #include <memory>
 
-class Corkboard;
-
-using std::vector;
+class amCorkboard;
 
 enum ToolMode {
     modeDESIGN,
@@ -31,41 +28,41 @@ enum ToolMode {
 /////////////////////////////////////// Corkboard ///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class Corkboard : public wxPanel {
+class amCorkboard : public wxPanel {
 public:
 	friend class CorkboardCanvas;
 
 private:
-	amdProjectManager* m_manager = nullptr;
-    amdOutline* parent = nullptr;
+	amProjectManager* m_manager = nullptr;
+    amOutline* m_parent = nullptr;
     wxToolBar* m_toolBar = nullptr;
 
-    wxBoxSizer* corkboardSizer = nullptr;
+    wxBoxSizer* m_corkboardSizer = nullptr;
 
     CorkboardCanvas* m_canvas = nullptr;
     wxSFDiagramManager m_canvasManager;
 
-    ToolMode toolMode = modeDESIGN;
-    bool isDraggingRight = false;
+    ToolMode m_toolMode = modeDESIGN;
+    bool m_isDraggingRight = false;
 
-    int currentImage = 1;
+    int m_currentImage = 1;
 
 public:
-    Corkboard(wxWindow* parent);
+    amCorkboard(wxWindow* parent);
 
-    void onTool(wxCommandEvent& event);
+    void OnTool(wxCommandEvent& event);
 
-    void callFullScreen(wxCommandEvent& event);
+    void CallFullScreen(wxCommandEvent& event);
     void FullScreen(bool fs);
 
-    void setToolMode(ToolMode mode);
-    ToolMode getToolMode() { return toolMode; }
+    void SetToolMode(ToolMode mode);
+    ToolMode getToolMode() { return m_toolMode; }
     wxToolBar* getToolbar() { return m_toolBar; }
 
-    void exportToImage(wxBitmapType type);
+    void ExportToImage(wxBitmapType type);
 
     void Save();
-    void Load();
+    void Load(wxStringInputStream& stream);
     
     CorkboardCanvas* getCanvas() { return m_canvas; }
 
@@ -87,8 +84,8 @@ public:
 
 class CorkboardCanvas : public wxSFShapeCanvas {
 private:
-	Corkboard* parent = nullptr;
-	amdProjectManager* m_manager = nullptr;
+	amCorkboard* parent = nullptr;
+	amProjectManager* m_manager = nullptr;
 
 	wxSFShapeBase* shapeForMenu = nullptr;
 
@@ -106,8 +103,8 @@ public:
 		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
 		long style = wxHSCROLL | wxVSCROLL);
 
-	void doFullScreen(bool fs);
-	void onMenu(wxCommandEvent& event);
+	void DoFullScreen(bool fs);
+	void OnMenu(wxCommandEvent& event);
 
 	virtual void OnLeftDown(wxMouseEvent& event);
 	virtual void OnLeftUp(wxMouseEvent& event);
@@ -119,8 +116,11 @@ public:
 	virtual void OnMouseMove(wxMouseEvent& event);
 	virtual void OnMouseWheel(wxMouseEvent& event);
 	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
+	void OnScroll(wxScrollWinEvent& event);
 
 	virtual void OnKeyDown(wxKeyEvent& event);
+
+	virtual void OnTextChange(wxSFEditTextShape* shape);
 
 	virtual void OnConnectionFinished(wxSFLineShape* connection);
 
@@ -137,6 +137,7 @@ public:
 		MENU_NoteBlack,
 		MENU_NoteDefault
 	};
-};
 
+	DECLARE_EVENT_TABLE()
+};
 #endif

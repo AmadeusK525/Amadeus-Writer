@@ -1,5 +1,5 @@
 #include "ChapterCreator.h"
-#include "Chapter.h"
+
 
 #include "MyApp.h"
 
@@ -16,7 +16,7 @@ EVT_CLOSE(ChapterCreator::CheckClose)
 
 END_EVENT_TABLE()
 
-ChapterCreator::ChapterCreator(wxWindow* parent, amdProjectManager* manager) :
+ChapterCreator::ChapterCreator(wxWindow* parent, amProjectManager* manager) :
     wxFrame(parent, wxID_ANY, "Create chapter", wxDefaultPosition, wxSize(500, 350), wxMINIMIZE_BOX | wxSYSTEM_MENU |
     wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT),
     m_manager(manager) {
@@ -34,7 +34,7 @@ ChapterCreator::ChapterCreator(wxWindow* parent, amdProjectManager* manager) :
     label1->SetForegroundColour(wxColour(245, 245, 245));
     label1->SetBackgroundColour(wxColour(40, 40, 40));
     m_nchapName = new wxTextCtrl(m_nchapPanel1, wxID_ANY, "Chapter " +
-        std::to_string(m_manager->GetChapterCount() + 1), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
+        std::to_string(m_manager->GetChapterCount(1) + 1), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
     m_nchapName->SetBackgroundColour(wxColour(70, 70, 70));
     m_nchapName->SetForegroundColour(wxColour(250, 250, 250));
     m_nchapName->SetFont(wxFont(wxFontInfo(10)));
@@ -64,7 +64,7 @@ ChapterCreator::ChapterCreator(wxWindow* parent, amdProjectManager* manager) :
     m_nchapPanel2->SetBackgroundColour(wxColour(40, 40, 40));
     m_nchapPanel2->Hide();
 
-    m_nchapList = new amdDragList(m_nchapPanel2, wxDefaultSize);
+    m_nchapList = new amDragList(m_nchapPanel2, wxDefaultSize);
     m_nchapList->SetBackgroundColour(wxColour(70, 70, 70));
     m_nchapList->SetForegroundColour(wxColour(240, 240, 240));
 
@@ -123,8 +123,8 @@ void ChapterCreator::Next(wxCommandEvent& event) {
         m_nchapList->AppendColumn("Drag chapter '" + m_tempName + "' to desired position", wxLIST_FORMAT_LEFT, 2000);
 
         int i = 0;
-        for (auto it = m_manager->GetChapters().begin(); it != m_manager->GetChapters().end(); it++) {
-            m_nchapList->InsertItem(i++, it->name);
+        for (auto& it : m_manager->GetChapters(1, 1)) {
+            m_nchapList->InsertItem(i++, it.name);
         }
 
         m_nchapList->InsertItem(i, m_tempName);
@@ -171,16 +171,16 @@ void ChapterCreator::Create(wxCommandEvent& event) {
     if (m_nchapName->GetValue() != "" && m_nchapName->IsModified()) {
         chapter.name = m_nchapName->GetValue();
     } else {
-        chapter.name = "Chapter " + std::to_string(m_manager->GetChapterCount() + 1);
+        chapter.name = "Chapter " + std::to_string(m_manager->GetChapterCount(1) + 1);
     }
 
-    chapter.summary = m_nchapSummary->GetValue();
+    chapter.synopsys = m_nchapSummary->GetValue();
 
     int pos = m_nchapList->FindItem(-1, m_tempName);
 
     chapter.position = pos + 1;
 
-    m_manager->AddChapter(chapter, pos);
+    m_manager->AddChapter(chapter, m_manager->GetBooks()[0], 1, pos);
     m_manager->GetMainFrame()->Enable();
     Destroy();
 

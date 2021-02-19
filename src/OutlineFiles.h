@@ -6,11 +6,9 @@
 #include <wx\dataview.h>
 #include <wx\toolbar.h>
 #include <wx\richtext\richtextctrl.h>
+#include <wx\sstream.h>
 
-#include "Elements.h"
-
-using std::vector;
-using std::string;
+#include "StoryElements.h"
 
 class OutlineTreeModelNode;
 WX_DEFINE_ARRAY_PTR(OutlineTreeModelNode*, OulineTreeModelNodePtrArray);
@@ -24,7 +22,7 @@ private:
 
 public:     // public to avoid getters/setters
     wxRichTextBuffer m_buffer{};
-    string m_title{};
+    wxString m_title{};
     bool m_isContainer = true;
 
 public:
@@ -159,7 +157,7 @@ public:
         if (m_items)
             delete m_items;
 
-        for (int i = 0; i < m_otherRoots.GetCount(); i++) {
+        for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
             if (m_otherRoots.at(i))
                 delete m_otherRoots.at(i);
         }
@@ -198,13 +196,13 @@ public:
 
     // helper methods to change the model
 
-    wxDataViewItem AddToResearch(const string& title);
-    wxDataViewItem AddToCharacters(const string& title);
-    wxDataViewItem AddToLocations(const string& title);
-    wxDataViewItem AddToItems(const string& title);
+    wxDataViewItem AddToResearch(const wxString& title);
+    wxDataViewItem AddToCharacters(const wxString& title);
+    wxDataViewItem AddToLocations(const wxString& title);
+    wxDataViewItem AddToItems(const wxString& title);
 
-    wxDataViewItem AppendFile(wxDataViewItem& parent, const string& name, const wxRichTextBuffer& buffer);
-    wxDataViewItem AppendFolder(wxDataViewItem& parent, const string& name);
+    wxDataViewItem AppendFile(wxDataViewItem& parent, const wxString& name, const wxRichTextBuffer& buffer);
+    wxDataViewItem AppendFolder(wxDataViewItem& parent, const wxString& name);
 
     bool IsResearch(wxDataViewItem& item);
     bool IsCharacters(wxDataViewItem& item);
@@ -232,7 +230,7 @@ public:
     }
 
     virtual wxString GetColumnType(unsigned int col) const {
-        return "string";
+        return "wxString";
     }
 
     virtual void GetValue(wxVariant& variant,
@@ -260,7 +258,7 @@ enum {
     TIMER_OutlineFiles
 };
 
-class amdOutlineFilesPanel : public wxSplitterWindow {
+class amOutlineFilesPanel : public wxSplitterWindow {
 private:
     wxPanel* m_leftPanel = nullptr;
     wxDataViewCtrl* m_files = nullptr;
@@ -279,7 +277,7 @@ private:
     wxTimer m_timer{ this, TIMER_OutlineFiles };
 
 public:
-    amdOutlineFilesPanel(wxWindow* parent);
+    amOutlineFilesPanel(wxWindow* parent);
     void Init();
 
     void GenerateCharacterBuffer(Character& character, wxRichTextBuffer& buffer);
@@ -310,7 +308,8 @@ public:
     void OnDropPossible(wxDataViewEvent& event);
     void OnDrop(wxDataViewEvent& event);
 
-    virtual void OnUnsplit(wxWindow* window);
+    // Prevent wxWidgets from unsplitting sidebar
+    virtual void OnDoubleClickSash(int x, int y) {}
 
     void OnTimerEvent(wxTimerEvent& event);
     void SaveCurrentBuffer();
@@ -319,7 +318,7 @@ public:
     wxXmlNode* SerializeFile(wxDataViewItem& item);
     void DeserializeNode(wxXmlNode* node, wxDataViewItem& parent);
     bool Save();
-    bool Load();
+    bool Load(wxStringInputStream& stream);
 
     void ClearAll();
 

@@ -9,8 +9,6 @@
 #include "ChapterCreator.h"
 #include "ElementCreators.h"
 
-#include "Chapter.h"
-
 #include <wx\richtext\richtextxml.h>
 #include <wx\richtext\richtexthtml.h>
 #include <wx\aboutdlg.h>
@@ -21,57 +19,50 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #endif
 
-using std::string;
-using std::vector;
+BEGIN_EVENT_TABLE(amMainFrame, wxFrame)
 
-namespace fs = boost::filesystem;
+EVT_MENU(MENU_New, amMainFrame::OnNewFile)
+EVT_MENU(MENU_Open, amMainFrame::OnOpenFile)
+EVT_MENU(MENU_Save, amMainFrame::OnSaveFile)
+EVT_MENU(MENU_SaveAs, amMainFrame::OnSaveFileAs)
+EVT_MENU(MENU_ExportCorkboardPNG, amMainFrame::OnExportCorkboard)
+EVT_MENU(MENU_ExportCorkboardBMP, amMainFrame::OnExportCorkboard)
+EVT_MENU(MENU_Quit, amMainFrame::OnQuit)
 
-BEGIN_EVENT_TABLE(amdMainFrame, wxFrame)
+EVT_MENU(MENU_Update, amMainFrame::UpdateElements)
+EVT_MENU(MENU_ProjectName, amMainFrame::EditTitle)
 
-EVT_MENU(MENU_New, amdMainFrame::OnNewFile)
-EVT_MENU(MENU_Open, amdMainFrame::OnOpenFile)
-EVT_MENU(MENU_Save, amdMainFrame::OnSaveFile)
-EVT_MENU(MENU_SaveAs, amdMainFrame::OnSaveFileAs)
-EVT_MENU(MENU_ExportCorkboardPNG, amdMainFrame::OnExportCorkboard)
-EVT_MENU(MENU_ExportCorkboardBMP, amdMainFrame::OnExportCorkboard)
-EVT_MENU(MENU_Quit, amdMainFrame::OnQuit)
+EVT_MENU(MENU_NewChapter, amMainFrame::OnNewChapter)
+EVT_MENU(MENU_NewCharacter, amMainFrame::OnNewCharacter)
+EVT_MENU(MENU_NewLocation, amMainFrame::OnNewLocation)
+EVT_MENU(MENU_NewItem, amMainFrame::OnNewItem)
 
-EVT_MENU(MENU_Update, amdMainFrame::UpdateElements)
-EVT_MENU(MENU_ProjectName, amdMainFrame::EditTitle)
+EVT_TOOL(TOOL_NewChapter, amMainFrame::OnNewChapter)
+EVT_TOOL(TOOL_NewCharacter, amMainFrame::OnNewCharacter)
+EVT_TOOL(TOOL_NewLocation, amMainFrame::OnNewLocation)
+EVT_TOOL(TOOL_NewItem, amMainFrame::OnNewItem)
 
-EVT_MENU(MENU_NewChapter, amdMainFrame::OnNewChapter)
-EVT_MENU(MENU_NewCharacter, amdMainFrame::OnNewCharacter)
-EVT_MENU(MENU_NewLocation, amdMainFrame::OnNewLocation)
-EVT_MENU(MENU_NewItem, amdMainFrame::OnNewItem)
+EVT_TOOL(TOOL_Save, amMainFrame::OnSaveFile)
+EVT_MENU(TOOL_FullScreen, amMainFrame::FullScreen)
 
-EVT_TOOL(TOOL_NewChapter, amdMainFrame::OnNewChapter)
-EVT_TOOL(TOOL_NewCharacter, amdMainFrame::OnNewCharacter)
-EVT_TOOL(TOOL_NewLocation, amdMainFrame::OnNewLocation)
-EVT_TOOL(TOOL_NewItem, amdMainFrame::OnNewItem)
+EVT_MENU(wxID_ABOUT, amMainFrame::OnAbout)
 
-EVT_TOOL(TOOL_Save, amdMainFrame::OnSaveFile)
-EVT_MENU(TOOL_FullScreen, amdMainFrame::FullScreen)
+EVT_BUTTON(BUTTON_Overview, amMainFrame::OnMainButtons)
+EVT_BUTTON(BUTTON_Elem, amMainFrame::OnMainButtons)
+EVT_BUTTON(BUTTON_Chapters, amMainFrame::OnMainButtons)
+EVT_BUTTON(BUTTON_Release, amMainFrame::OnMainButtons)
+EVT_BUTTON(BUTTON_Outline, amMainFrame::OnMainButtons)
 
-EVT_MENU(wxID_ABOUT, amdMainFrame::OnAbout)
+EVT_SEARCH(TOOL_Search, amMainFrame::Search)
 
-EVT_BUTTON(BUTTON_Overview, amdMainFrame::OnMainButtons)
-EVT_BUTTON(BUTTON_Elem, amdMainFrame::OnMainButtons)
-EVT_BUTTON(BUTTON_Chapters, amdMainFrame::OnMainButtons)
-EVT_BUTTON(BUTTON_Release, amdMainFrame::OnMainButtons)
-EVT_BUTTON(BUTTON_Outline, amdMainFrame::OnMainButtons)
-
-EVT_SEARCH(TOOL_Search, amdMainFrame::Search)
-
-EVT_CLOSE(amdMainFrame::OnClose)
+EVT_CLOSE(amMainFrame::OnClose)
 
 END_EVENT_TABLE()
 
-amdMainFrame::amdMainFrame(const wxString& title, amdProjectManager* manager, const wxPoint& pos, const wxSize& size) :
+amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const wxPoint& pos, const wxSize& size) :
     wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE) {
 
-    // This entire constructor makes the cProtagonist Frame of the application look like it does.
-    // I see no vantage in doing all of this in a separate "Init()" function and
-    // calling it in the constructor.
+    wxInitAllImageHandlers();
     m_manager = manager;
     Hide();
 
@@ -130,16 +121,16 @@ amdMainFrame::amdMainFrame(const wxString& title, amdProjectManager* manager, co
     m_overview->Show();
 
     //Setting up notebook Elements page
-    m_elements = new amdElementsNotebook(m_mainBook);
+    m_elements = new amElementsNotebook(m_mainBook);
     m_elements->Hide();
 
-    m_chaptersNote = new amdChaptersNotebook(m_mainBook, m_manager);
+    m_chaptersNote = new amChaptersNotebook(m_mainBook, m_manager);
     m_chaptersNote->Hide();
 
-    m_outline = new amdOutline(m_mainBook);
+    m_outline = new amOutline(m_mainBook);
     m_outline->Hide();
 
-    m_release = new amdRelease(m_mainBook);
+    m_release = new amRelease(m_mainBook);
     m_release->Hide();
 
     m_mainBook->ShowNewPage(m_overview);
@@ -240,7 +231,7 @@ amdMainFrame::amdMainFrame(const wxString& title, amdProjectManager* manager, co
     Show();
 }
 
-void amdMainFrame::OnNewFile(wxCommandEvent& event) {
+void amMainFrame::OnNewFile(wxCommandEvent& event) {
     // Updating everything that needs to be reset.
     m_elements->ClearAll();
     m_outline->ClearAll();
@@ -250,7 +241,7 @@ void amdMainFrame::OnNewFile(wxCommandEvent& event) {
     SetTitle("New Amadeus project");
 }
 
-void amdMainFrame::OnOpenFile(wxCommandEvent& event) {
+void amMainFrame::OnOpenFile(wxCommandEvent& event) {
     wxFileDialog openDialog(this, "Choose a file to open", wxEmptyString, wxEmptyString,
         "Amadeus Project files (*.amp)|*.amp",
         wxFD_OPEN, wxDefaultPosition);
@@ -259,11 +250,11 @@ void amdMainFrame::OnOpenFile(wxCommandEvent& event) {
         m_manager->DoLoadProject(openDialog.GetPath());
 }
 
-void amdMainFrame::OnSaveFile(wxCommandEvent& event) {
+void amMainFrame::OnSaveFile(wxCommandEvent& event) {
     // First, check whether the current path of the project exists. If it doesn't,
     // the "OnSaveFileAs" is called, which calls back the "saveAs" function.
-    if (!fs::exists(m_manager->GetPath(false).ToStdString())) {
-        amdMainFrame::OnSaveFileAs(event);
+    if (!wxFileName::Exists(m_manager->GetPath(false).ToStdString())) {
+        amMainFrame::OnSaveFileAs(event);
     } else {
         m_manager->SaveProject();
         SetFocus();
@@ -271,38 +262,20 @@ void amdMainFrame::OnSaveFile(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amdMainFrame::OnSaveFileAs(wxCommandEvent& event) {
+void amMainFrame::OnSaveFileAs(wxCommandEvent& event) {
     wxFileDialog saveDialog(this, "Save file as...", wxEmptyString, wxEmptyString,
         "Amadeus Project files (*.amp)|*.amp",
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
     if (saveDialog.ShowModal() == wxID_OK) {
-        string fullPath(saveDialog.GetPath().ToStdString());
-        fullPath.erase(fullPath.size() - 4, 4);
-        fullPath += "\\" + saveDialog.GetFilename();
-
-        m_manager->SetCurrentDocPath(fullPath);
-
-        fullPath = m_manager->GetPath(true);
-
-        fs::create_directory(fullPath);
-        fs::create_directory(fullPath + "Images");
-        fs::create_directory(fullPath + "Images\\Characters");
-        fs::create_directory(fullPath + "Images\\Locations");
-        fs::create_directory(fullPath + "Images\\Corkboard");
-        fs::create_directory(fullPath + "Files");
-        fs::create_directory(fullPath + "Files\\Corkboard");
-        fs::create_directory(fullPath + "Files\\Chapters");
-        fs::create_directory(fullPath + "Files\\Outline");
-
-
+        m_manager->SetProjectFileName(saveDialog.GetPath());
         OnSaveFile(event);
     }
 
     event.Skip();
 }
 
-void amdMainFrame::OnExportCorkboard(wxCommandEvent& event) {
+void amMainFrame::OnExportCorkboard(wxCommandEvent& event) {
     wxBitmapType type;
     switch (event.GetId()) {
     case MENU_ExportCorkboardPNG:
@@ -313,12 +286,12 @@ void amdMainFrame::OnExportCorkboard(wxCommandEvent& event) {
         break;
     }
 
-    m_outline->GetCorkboard()->exportToImage(type);
+    m_outline->GetCorkboard()->ExportToImage(type);
 }
 
-void amdMainFrame::OnClose(wxCloseEvent& event) {
+void amMainFrame::OnClose(wxCloseEvent& event) {
 
-    if (event.CanVeto() && !m_manager->IsSaved()) {
+    /*if (event.CanVeto()) {
         wxMessageDialog saveBefore(this, "Project has been modified and not saved.\nDo you want to save before quitting?",
             "Quit", wxYES_NO | wxCANCEL | wxYES_DEFAULT | wxICON_EXCLAMATION);
 
@@ -343,16 +316,18 @@ void amdMainFrame::OnClose(wxCloseEvent& event) {
         }
     } else {
         Destroy();
-    }
+    }*/
+
+    event.Skip();
 }
 
-void amdMainFrame::OnQuit(wxCommandEvent& event) {
+void amMainFrame::OnQuit(wxCommandEvent& event) {
     Close(true);
 }
 
-void amdMainFrame::EditTitle(wxCommandEvent& event) {
-    /*string temp(m_manager->GetTitle());
-    temp.erase(m_manager->GetTitle().size() - 4, string::npos);
+void amMainFrame::EditTitle(wxCommandEvent& event) {
+    /*wxString temp(m_manager->GetTitle());
+    temp.erase(m_manager->GetTitle().size() - 4, wxString::npos);
 
     wxTextEntryDialog newTitle(this, "Change project name - '" +
         temp + "':", "New title", "Teste");
@@ -364,7 +339,7 @@ void amdMainFrame::EditTitle(wxCommandEvent& event) {
         fs::rename(currentDocFile, currentDocFolder + "\\" + currentTitle);
         currentDocFile = currentDocFolder + "\\" + currentTitle;
 
-        currentDocFolder.erase(currentDocFolder.size() - previousTitle.size() + 4, string::npos);
+        currentDocFolder.erase(currentDocFolder.size() - previousTitle.size() + 4, wxString::npos);
         currentDocFolder += newTitle.GetValue();
 
         fs::rename(previousDocFolder, currentDocFolder);
@@ -381,12 +356,12 @@ void amdMainFrame::EditTitle(wxCommandEvent& event) {
     Show();*/
 }
 
-void amdMainFrame::FullScreen(wxCommandEvent& event) {
+void amMainFrame::FullScreen(wxCommandEvent& event) {
     ShowFullScreen(!IsFullScreen());
     m_isFrameFullScreen = !m_isFrameFullScreen;
 }
 
-void amdMainFrame::OnAbout(wxCommandEvent& event) {
+void amMainFrame::OnAbout(wxCommandEvent& event) {
     wxAboutDialogInfo info;
     info.SetName("AmadeusWriter");
     info.SetVersion("0.5.2");
@@ -400,7 +375,7 @@ void amdMainFrame::OnAbout(wxCommandEvent& event) {
     wxAboutBox(info, this);
 }
 
-void amdMainFrame::OnMainButtons(wxCommandEvent& event) {
+void amMainFrame::OnMainButtons(wxCommandEvent& event) {
     int page;
     bool showToolBar;
     bool showSearch;
@@ -452,29 +427,14 @@ void amdMainFrame::OnMainButtons(wxCommandEvent& event) {
     m_toolBar->Show(showToolBar);
     m_elements->m_searchBar->Show(showSearch);
     m_verticalSizer->Layout();
+
+    if (page == 3) {
+        m_outline->OnShow();
+    }
 }
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
-void amdMainFrame::OnNewChapter(wxCommandEvent& event) {
-    if (!fs::is_directory(m_manager->GetPath(true).ToStdString() + "Files")) {
-        wxMessageDialog* first = new wxMessageDialog(this, "It seems like you haven't saved your project yet.\nPlease do before writing any chapters.",
-            "Save before", wxOK | wxCANCEL | wxOK_DEFAULT);
-        first->SetOKCancelLabels("Save", "Cancel");
-        int aa = first->ShowModal();
-        if (aa == wxID_OK) {
-           OnSaveFile(event);
-
-            if (!m_manager->IsSaved())
-                return;
-        } else {
-            event.Skip();
-            return;
-        }
-
-        if (first)
-            delete first;
-    }
-
+void amMainFrame::OnNewChapter(wxCommandEvent& event) {
     ChapterCreator* create = new ChapterCreator(this, m_manager);
     create->Show();
     create->SetFocus();
@@ -482,8 +442,8 @@ void amdMainFrame::OnNewChapter(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amdMainFrame::OnNewCharacter(wxCommandEvent& event) {
-    amdCharacterCreator* create = new amdCharacterCreator(this, m_manager, -1,
+void amMainFrame::OnNewCharacter(wxCommandEvent& event) {
+    amCharacterCreator* create = new amCharacterCreator(this, m_manager, -1,
         "Create character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
     create->Show();
     create->SetFocus();
@@ -491,8 +451,8 @@ void amdMainFrame::OnNewCharacter(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amdMainFrame::OnNewLocation(wxCommandEvent& event) {
-    amdLocationCreator* create = new amdLocationCreator(this, m_manager, -1, "Create location",
+void amMainFrame::OnNewLocation(wxCommandEvent& event) {
+    amLocationCreator* create = new amLocationCreator(this, m_manager, -1, "Create location",
         wxDefaultPosition, FromDIP(wxSize(900, 650)));
     create->Show();
     create->SetFocus();
@@ -500,8 +460,8 @@ void amdMainFrame::OnNewLocation(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amdMainFrame::OnNewItem(wxCommandEvent& event) {
-    amdItemCreator* create = new amdItemCreator(this, m_manager, -1, "Create item",
+void amMainFrame::OnNewItem(wxCommandEvent& event) {
+    amItemCreator* create = new amItemCreator(this, m_manager, -1, "Create item",
         wxDefaultPosition, FromDIP(wxSize(900, 720)));
     create->Show();
     create->SetFocus();
@@ -509,13 +469,13 @@ void amdMainFrame::OnNewItem(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amdMainFrame::Search(wxCommandEvent& event) {
+void amMainFrame::Search(wxCommandEvent& event) {
     // Get which page (Characters, Locations or Items) is currently displayed.
     int sel = m_elements->GetSelection();
     int item;
 
-    // Get the searched string.
-    string nameSearch = event.GetString();
+    // Get the searched wxString.
+    wxString nameSearch = event.GetString();
     wxMenu menu;
 
     // Switch accordingly to current page being displayed, then either display a message
@@ -557,7 +517,7 @@ void amdMainFrame::Search(wxCommandEvent& event) {
     }
 }
 
-void amdMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, wxWindow* canvas) {
+void amMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, wxWindow* canvas) {
     m_mainPanel->Show(!doFullScreen);
     
     if (doFullScreen) {
@@ -574,7 +534,7 @@ void amdMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, w
     Layout();
 }
 
-//void amdMainFrame::setLast() {
+//void amMainFrame::setLast() {
 //    // This function is called at every Save and it writes a file named 88165468
 //    // next to the executable. In the file, there are paths to the project.
 //    // These paths are used when loading so that the user doesn't need to manually
@@ -590,7 +550,7 @@ void amdMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, w
 //    last.close();
 //}
 
-//void amdMainFrame::getLast() {
+//void amMainFrame::getLast() {
 //    // Nothing special here, just reads the 88165468 file and, if succesful, calls the load function.
 //    // Else, just clear the paths and load a standard new project.
 //    std::ifstream last(m_manager->GetExecutablePath().ToStdString() + "\\88165468", std::ios::binary | std::ios::in);
@@ -609,31 +569,31 @@ void amdMainFrame::DoCorkboardFullScreen(bool doFullScreen, wxWindow* toolBar, w
 //        last.close();
 //    }
 //
-//    if (fs::exists(m_manager->GetFullPath().ToStdString()))
+//    if (wxFileName::Exists(m_manager->GetFullPath().ToStdString()))
 //        m_manager->LoadProject(m_manager->GetFullPath());
 //    else
 //        m_manager->ClearPath();
 //    
 //}
 
-amdElementsNotebook* amdMainFrame::GetElementsNotebook() {
+amElementsNotebook* amMainFrame::GetElementsNotebook() {
     return m_elements;
 }
 
-amdChaptersNotebook* amdMainFrame::GetChaptersNotebook() {
+amChaptersNotebook* amMainFrame::GetChaptersNotebook() {
     return m_chaptersNote;
 }
 
-amdOutline* amdMainFrame::GetOutline() {
+amOutline* amMainFrame::GetOutline() {
     return m_outline;
 }
 
-amdRelease* amdMainFrame::GetRelease() {
+amRelease* amMainFrame::GetRelease() {
     return m_release;
 }
 
 // I don't think I actually use this function since I made "UpdateAll" static,
 // will probably get rid of it after further investigating.
-void amdMainFrame::UpdateElements(wxCommandEvent& event) {
+void amMainFrame::UpdateElements(wxCommandEvent& event) {
     m_elements->UpdateAll();
 }
