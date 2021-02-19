@@ -1,6 +1,6 @@
 #include "ElementShowcases.h"
 
-amdElementShowcase::amdElementShowcase(wxWindow* parent) :
+amElementShowcase::amElementShowcase(wxWindow* parent) :
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL) {
 	wxFont font(wxFontInfo(12).Bold());
 
@@ -28,7 +28,7 @@ amdElementShowcase::amdElementShowcase(wxWindow* parent) :
 	this->SetScrollRate(20, 20);
 }
 
-void amdElementShowcase::SetData(const Element& element) {
+void amElementShowcase::SetData(Element& element) {
 	Freeze();
 	m_name->SetLabel(element.name);
 }
@@ -39,7 +39,7 @@ void amdElementShowcase::SetData(const Element& element) {
 ///////////////////////////////////////////////////////////////////
 
 
-amdCharacterShowcase::amdCharacterShowcase(wxWindow* parent) : amdElementShowcase(parent) {
+amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(parent) {
 
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(11));
@@ -147,8 +147,9 @@ amdCharacterShowcase::amdCharacterShowcase(wxWindow* parent) : amdElementShowcas
 	m_backstory->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amdCharacterShowcase::SetData(const Element& charToSet) {
-	const Character* character = dynamic_cast<const Character*>(&charToSet);
+void amCharacterShowcase::SetData(Element& charToSet) {
+	Character* character = dynamic_cast<Character*>(&charToSet);
+
 	if (!character) {
 		wxMessageBox("There was an unexpected problem when loading the Character to the panel.");
 		SetData(Character());
@@ -171,7 +172,7 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 	m_nat->SetLabel(character->nat);
 	m_nick->SetLabel(character->nick);
 
-	string role("");
+	wxString role("");
 	wxColour rolebg(220, 220, 220);
 	wxColour rolefg(10, 10, 10);
 	switch (character->role) {
@@ -208,22 +209,22 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 	m_personality->SetValue(character->personality);
 	m_backstory->SetValue(character->backstory);
 
-	m_age->Show(character->age != "");
-	m_ageLabel->Show(character->age != "");
-	m_sex->Show(character->sex != "");
-	m_sexLabel->Show(character->sex != "");
-	m_height->Show(character->height != "");
-	m_heightLabel->Show(character->height != "");
-	m_nat->Show(character->nat != "");
-	m_natLabel->Show(character->nat != "");
-	m_nick->Show(character->nick != "");
-	m_nickLabel->Show(character->nick != "");
-	m_appearance->Show(character->appearance != "");
-	m_appLabel->Show(character->appearance != "");
-	m_personality->Show(character->personality != "");
-	m_perLabel->Show(character->personality != "");
-	m_backstory->Show(character->backstory != "");
-	m_bsLabel->Show(character->backstory != "");
+	m_age->Show(!character->age.IsEmpty());
+	m_ageLabel->Show(m_age->IsShown());
+	m_sex->Show(!character->sex.IsEmpty());
+	m_sexLabel->Show(m_sex->IsShown());
+	m_height->Show(!character->height.IsEmpty());
+	m_heightLabel->Show(m_height->IsShown());
+	m_nat->Show(!character->nat.IsEmpty());
+	m_natLabel->Show(m_nat->IsShown());
+	m_nick->Show(!character->nick.IsEmpty());
+	m_nickLabel->Show(m_nick->IsShown());
+	m_appearance->Show(!character->appearance.IsEmpty());
+	m_appLabel->Show(m_appearance->IsShown());
+	m_personality->Show(!character->personality.IsEmpty());
+	m_perLabel->Show(m_personality->IsShown());
+	m_backstory->Show(!character->backstory.IsEmpty());
+	m_bsLabel->Show(m_backstory->IsShown());
 
 	m_image->Show(m_image->SetImage(character->image));
 
@@ -240,14 +241,18 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 		}
 	}
 
-	wxSize size(-1, 80);
-
 	wxWindowList list;
 	list.Append(m_appearance);
 	list.Append(m_personality);
 	list.Append(m_backstory);
 
+	wxSize size(-1, 80);
+	wxBusyCursor cursor;
+
 	for (int i = 0; i < character->custom.size(); i++) {
+		if (character->custom[i].second.IsEmpty())
+			continue;
+
 		if (i >= tcsize) {
 			wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
 				wxDefaultSize, wxBORDER_DOUBLE);
@@ -269,12 +274,8 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 		list.Append(m_custom[i].second);
 		m_custom[i].first->SetLabel(character->custom[i].first);
 		m_custom[i].second->SetLabel(character->custom[i].second);
-
-		m_custom[i].first->Show(character->custom[i].second != "");
-		m_custom[i].second->Show(character->custom[i].second != "");
 	}
 
-	m_vertical->Layout();
 	m_vertical->FitInside(this);
 
 	int nol;
@@ -288,7 +289,7 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 				it->SetMinSize(size);
 		}
 	}
-
+	
 	m_vertical->FitInside(this);
 	Thaw();
 }
@@ -299,7 +300,7 @@ void amdCharacterShowcase::SetData(const Element& charToSet) {
 ///////////////////////////////////////////////////////////////////
 
 
-amdLocationShowcase::amdLocationShowcase(wxWindow* parent) :amdElementShowcase(parent) {
+amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(parent) {
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(9));
 
@@ -392,8 +393,8 @@ amdLocationShowcase::amdLocationShowcase(wxWindow* parent) :amdElementShowcase(p
 	m_culture->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amdLocationShowcase::SetData(const Element& locToSet) {
-	const Location* location = dynamic_cast<const Location*>(&locToSet);
+void amLocationShowcase::SetData(Element& locToSet) {
+	Location* location = dynamic_cast<Location*>(&locToSet);
 
 	if (!location) {
 		wxMessageBox("There was an unexpected problem when loading the Lcoation to the panel.");
@@ -520,6 +521,6 @@ void amdLocationShowcase::SetData(const Element& locToSet) {
 	Thaw();
 }
 
-amdItemShowcase::amdItemShowcase(wxWindow* parent) : amdElementShowcase(parent) {}
+amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent) {}
 
-void amdItemShowcase::SetData(const Element& itemToSet) {}
+void amItemShowcase::SetData(Element& itemToSet) {}

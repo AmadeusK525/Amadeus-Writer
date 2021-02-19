@@ -5,20 +5,15 @@
 #include <wx\wx.h>
 #include <wx\wrapsizer.h>
 
-#include "Elements.h"
+#include "StoryElements.h"
 #include "ProjectManager.h"
 #include "ImagePanel.h"
 
-#include <vector>
-#include <string>
-
-using std::string;
-using std::vector;
 using std::pair;
 
-class amdElementCreator: public wxFrame {
+class amElementCreator: public wxFrame {
 protected:
-    amdProjectManager* m_manager = nullptr;
+    amProjectManager* m_manager = nullptr;
 
     wxPanel* m_panel1 = nullptr,
         * m_panel3 = nullptr,
@@ -27,8 +22,8 @@ protected:
 
     ImagePanel* m_imagePanel = nullptr;
 
-    vector<pair<wxTextCtrl*, wxTextCtrl*>> m_custom{};
-    vector<wxButton*> m_minusButtons{};
+    wxVector<pair<wxTextCtrl*, wxTextCtrl*>> m_custom{};
+    wxVector<wxButton*> m_minusButtons{};
 
     wxButton* m_addCustom = nullptr;
     wxBoxSizer* m_customSizer = nullptr;
@@ -44,17 +39,17 @@ protected:
     Element* m_elementEdit = nullptr;
 
 public:
-    amdElementCreator(wxWindow* parent,
-        amdProjectManager* m_manager,
+    amElementCreator(wxWindow* parent,
+        amProjectManager* m_manager,
         long id = wxID_ANY,
-        const string& label = "Create element",
+        const wxString& label = "Create element",
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxSize(600, 600),
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-    virtual vector<string> GetValues() = 0;
-    vector<pair<string, string>> GetCustom();
+    virtual wxVector<wxString> GetValues() = 0;
+    wxVector<pair<wxString, wxString>> GetCustom();
 
     virtual void SetEdit(Element* element) = 0;
     virtual void DoEdit(wxCommandEvent& event) = 0;
@@ -104,7 +99,7 @@ public:
 /////////////////////////////////////////////////////////////////////
 
 
-class amdCharacterCreator : public amdElementCreator {
+class amCharacterCreator : public amElementCreator {
 private:
     wxTextCtrl* ncFullName = nullptr,
         * ncNickname = nullptr,
@@ -126,16 +121,16 @@ private:
         * ncSecon = nullptr;
 
 public:
-    amdCharacterCreator(wxWindow* parent,
-        amdProjectManager* manager,
+    amCharacterCreator(wxWindow* parent,
+        amProjectManager* manager,
         long id = wxID_ANY,
-        const string& label = "Create character",
+        const wxString& label = "Create character",
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxSize(520, 585),
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-    virtual vector<string> GetValues();
+    virtual wxVector<wxString> GetValues();
 
     virtual void SetEdit(Element* editChar);
     virtual void DoEdit(wxCommandEvent& event);
@@ -152,7 +147,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 
-class amdLocationCreator : public amdElementCreator {
+class amLocationCreator : public amElementCreator {
 private:
     wxTextCtrl* nlName = nullptr,
         * nlGeneral = nullptr,
@@ -169,16 +164,16 @@ private:
     wxWrapSizer* m_nlcustomSizer = nullptr;
 
 public:
-    amdLocationCreator(wxWindow* parent,
-        amdProjectManager* manager,
+    amLocationCreator(wxWindow* parent,
+        amProjectManager* manager,
         long id,
-        const string& label,
+        const wxString& label,
         const wxPoint& pos,
         const wxSize& size,
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
-    virtual vector<string> GetValues();
+    virtual wxVector<wxString> GetValues();
 
     virtual void SetEdit(Element* editLoc);
     virtual void DoEdit(wxCommandEvent& event);
@@ -197,7 +192,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 
-class amdItemCreator : public amdElementCreator {
+class amItemCreator : public amElementCreator {
 private:
     wxTextCtrl* niName = nullptr,
         * niGeneral = nullptr,
@@ -221,16 +216,16 @@ private:
     wxBoxSizer* niMeaSizer = nullptr;
 
 public:
-    amdItemCreator(wxWindow* parent,
-        amdProjectManager* manager,
+    amItemCreator(wxWindow* parent,
+        amProjectManager* manager,
         long id,
-        const string& label,
+        const wxString& label,
         const wxPoint& pos,
         const wxSize& size,
         long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
         wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
-    virtual vector<string> GetValues();
+    virtual wxVector<wxString> GetValues();
 
     virtual void SetEdit(Element* editItem);
     virtual void DoEdit(wxCommandEvent& event);

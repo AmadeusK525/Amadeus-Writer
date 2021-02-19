@@ -9,17 +9,17 @@
 #include <wx\stattext.h>
 #include <wx\statline.h>
 
-BEGIN_EVENT_TABLE(amdElementCreator, wxFrame)
+BEGIN_EVENT_TABLE(amElementCreator, wxFrame)
 
-EVT_BUTTON(BUTTON_SetImage, amdElementCreator::SetImage)
-EVT_BUTTON(BUTTON_RemoveImage, amdElementCreator::RemoveImage)
+EVT_BUTTON(BUTTON_SetImage, amElementCreator::SetImage)
+EVT_BUTTON(BUTTON_RemoveImage, amElementCreator::RemoveImage)
 
-EVT_CLOSE(amdElementCreator::CheckClose)
+EVT_CLOSE(amElementCreator::CheckClose)
 
 END_EVENT_TABLE()
 
-amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
+amElementCreator::amElementCreator(wxWindow* parent, amProjectManager* manager,
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
 	wxFrame(parent, id, label, pos, size, style) {
 
 	m_manager = manager;
@@ -45,7 +45,7 @@ amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manage
 
 	m_addCustom = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(25, 25));
 	m_addCustom->SetBitmap(wxBITMAP_PNG(plus));
-	m_addCustom->Bind(wxEVT_BUTTON, &amdElementCreator::AddCustomAttr, this);
+	m_addCustom->Bind(wxEVT_BUTTON, &amElementCreator::AddCustomAttr, this);
 
 	wxBoxSizer* customHorSiz = new wxBoxSizer(wxHORIZONTAL);
 	customHorSiz->Add(customLabel, wxSizerFlags(1));
@@ -89,9 +89,9 @@ amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manage
 	m_back = new wxButton(m_btnPanel, BUTTON_Back1, "Back", wxPoint(15, 505), wxSize(90, 30));
 	m_cancel = new wxButton(m_btnPanel, BUTTON_Cancel, "Cancel", wxPoint(400, 505), wxSize(90, 30));
 
-	m_next->Bind(wxEVT_BUTTON, &amdElementCreator::Next, this);
-	m_back->Bind(wxEVT_BUTTON, &amdElementCreator::Back, this);
-	m_cancel->Bind(wxEVT_BUTTON, &amdElementCreator::Cancel, this);
+	m_next->Bind(wxEVT_BUTTON, &amElementCreator::Next, this);
+	m_back->Bind(wxEVT_BUTTON, &amElementCreator::Back, this);
+	m_cancel->Bind(wxEVT_BUTTON, &amElementCreator::Cancel, this);
 
 	wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
 	btnSizer->Add(m_back, wxSizerFlags(0).Border(wxTOP | wxBOTTOM, 10));
@@ -112,18 +112,18 @@ amdElementCreator::amdElementCreator(wxWindow* parent, amdProjectManager* manage
 	SetSizer(m_mainSizer);
 }
 
-vector<pair<string, string>> amdElementCreator::GetCustom() {
-	vector<pair<string, string>> vec;
+wxVector<pair<wxString, wxString>> amElementCreator::GetCustom() {
+	wxVector<pair<wxString, wxString>> vec;
 
 	for (auto& it : m_custom) {
-		pair<string, string> pair(it.first->GetValue(), it.second->GetValue());
+		pair<wxString, wxString> pair(it.first->GetValue(), it.second->GetValue());
 		vec.push_back(pair);
 	}
 
 	return vec;
 }
 
-void amdElementCreator::RemoveCustomAttr(wxCommandEvent& event) {
+void amElementCreator::RemoveCustomAttr(wxCommandEvent& event) {
 	Freeze();
 	wxButton* minus = (wxButton*)event.GetEventObject();
 
@@ -149,13 +149,13 @@ void amdElementCreator::RemoveCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amdElementCreator::Cancel(wxCommandEvent& event) {
+void amElementCreator::Cancel(wxCommandEvent& event) {
 	m_manager->GetMainFrame()->Enable();
 	this->Destroy();
 	event.Skip();
 }
 
-void amdElementCreator::Next(wxCommandEvent& event) {
+void amElementCreator::Next(wxCommandEvent& event) {
 	bool show1 = false, show2 = false, show3 = false;
 
 	switch (event.GetId()) {
@@ -202,7 +202,7 @@ void amdElementCreator::Next(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amdElementCreator::Back(wxCommandEvent& event) {
+void amElementCreator::Back(wxCommandEvent& event) {
 	bool show1 = false, show2 = false, show3 = false;
 
 	switch (event.GetId()) {
@@ -241,7 +241,7 @@ void amdElementCreator::Back(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amdElementCreator::SetImage(wxCommandEvent& event) {
+void amElementCreator::SetImage(wxCommandEvent& event) {
 	wxFileDialog choose(this, "Select an image", wxEmptyString, wxEmptyString,
 		"JPG, JPEG and PNG(*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
 		wxFD_OPEN, wxDefaultPosition);
@@ -257,7 +257,7 @@ void amdElementCreator::SetImage(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amdElementCreator::RemoveImage(wxCommandEvent& event) {
+void amElementCreator::RemoveImage(wxCommandEvent& event) {
 	m_imagePanel->SetImage(wxImage());
 	m_removeImage->Hide();
 	m_mainSizer->Layout();
@@ -271,9 +271,9 @@ void amdElementCreator::RemoveImage(wxCommandEvent& event) {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-amdCharacterCreator::amdCharacterCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
-	amdElementCreator(parent, manager, id, label, pos, size, style) {
+amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manager,
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
+	amElementCreator(parent, manager, id, label, pos, size, style) {
 
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
@@ -445,8 +445,8 @@ amdCharacterCreator::amdCharacterCreator(wxWindow* parent, amdProjectManager* ma
 	Layout();
 }
 
-vector<string> amdCharacterCreator::GetValues() {
-	vector<string> vec;
+wxVector<wxString> amCharacterCreator::GetValues() {
+	wxVector<wxString> vec;
 
 	vec.push_back(ncFullName->GetValue().ToStdString());
 
@@ -477,7 +477,7 @@ vector<string> amdCharacterCreator::GetValues() {
 	return vec;
 }
 
-void amdCharacterCreator::SetEdit(Element* editChar) {
+void amCharacterCreator::SetEdit(Element* editChar) {
 	Character* character = dynamic_cast<Character*>(editChar);
 	if (!character) {
 		wxMessageBox("There was an unexpected error. Editing could not be start.");
@@ -537,8 +537,8 @@ void amdCharacterCreator::SetEdit(Element* editChar) {
 	SetTitle("Edit character - '" + m_elementEdit->name + "'");
 }
 
-void amdCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
-	vector<string>& vec = GetValues();
+void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
+	wxVector<wxString> vec = GetValues();
 
 	Role newRole;
 	if (vec[6] == "Protagonist")
@@ -566,21 +566,25 @@ void amdCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 	character.backstory = vec[9];
 
 	character.image = m_imagePanel->GetImage();
-
 	character.custom = GetCustom();
+
 	character.chapters = m_elementEdit->chapters;
+	character.id = m_elementEdit->id;
 
 	Character* pCharacterToEdit = (Character*)m_elementEdit;
 
+	Hide();
+	m_manager->GetMainFrame()->Enable(); 
 	m_manager->EditCharacter(*pCharacterToEdit, character, dif);
+
 	Destroy();
 }
 
-void amdCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
+void amCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 	Freeze();
 	wxSize size(label8->GetSize());
 
-	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title",
+	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title " + std::to_string(m_custom.size() + 1),
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
 	wxTextCtrl* content = new wxTextCtrl(m_panel2, -1, "", wxDefaultPosition,
 		wxSize(-1, ncAppearance->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -592,7 +596,7 @@ void amdCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
 	minus->SetBitmap(wxBITMAP_PNG(minus));
-	minus->Bind(wxEVT_BUTTON, &amdCharacterCreator::RemoveCustomAttr, this);
+	minus->Bind(wxEVT_BUTTON, &amCharacterCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
 	topSizer->Add(label, wxSizerFlags(1));
@@ -609,9 +613,9 @@ void amdCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amdCharacterCreator::Create(wxCommandEvent& event) {
+void amCharacterCreator::Create(wxCommandEvent& event) {
 	if (!ncFullName->IsEmpty()) {
-		vector<string>& vec = GetValues();
+		wxVector<wxString> vec = GetValues();
 
 		Character character;
 		character.name = vec[0];
@@ -638,18 +642,19 @@ void amdCharacterCreator::Create(wxCommandEvent& event) {
 
 		character.custom = GetCustom();
 
-		m_manager->AddCharacter(character);
+		Hide();
+		m_manager->GetMainFrame()->Enable();
+		m_manager->AddCharacter(character, true);
 	} else {
 		wxMessageBox("You can't create a character without a name.");
 		return;
 	}
 
-	m_manager->GetMainFrame()->Enable();
-	this->Destroy();
+	Destroy();
 	event.Skip();
 }
 
-void amdCharacterCreator::CheckClose(wxCloseEvent& event) {
+void amCharacterCreator::CheckClose(wxCloseEvent& event) {
 
 	if (ncFullName->IsModified() || ncAge->IsModified() || ncNationality->IsModified() ||
 		ncHeight->IsModified() || ncNickname->IsModified() ||
@@ -683,9 +688,9 @@ void amdCharacterCreator::CheckClose(wxCloseEvent& event) {
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-amdLocationCreator::amdLocationCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
-	amdElementCreator(parent, manager, id, label, pos, size, style) {
+amLocationCreator::amLocationCreator(wxWindow* parent, amProjectManager* manager,
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
+	amElementCreator(parent, manager, id, label, pos, size, style) {
 
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
@@ -848,30 +853,30 @@ amdLocationCreator::amdLocationCreator(wxWindow* parent, amdProjectManager* mana
 	this->Show();
 }
 
-vector<string> amdLocationCreator::GetValues() {
-	vector<string> vec;
+wxVector<wxString> amLocationCreator::GetValues() {
+	wxVector<wxString> vec;
 
-	vec.push_back((string)nlName->GetValue());
-	vec.push_back((string)nlGeneral->GetValue());
-	vec.push_back((string)nlNatural->GetValue());
-	vec.push_back((string)nlArchitecture->GetValue());
-	vec.push_back((string)nlPolitics->GetValue());
-	vec.push_back((string)nlEconomy->GetValue());
-	vec.push_back((string)nlCulture->GetValue());
+	vec.push_back((wxString)nlName->GetValue());
+	vec.push_back((wxString)nlGeneral->GetValue());
+	vec.push_back((wxString)nlNatural->GetValue());
+	vec.push_back((wxString)nlArchitecture->GetValue());
+	vec.push_back((wxString)nlPolitics->GetValue());
+	vec.push_back((wxString)nlEconomy->GetValue());
+	vec.push_back((wxString)nlCulture->GetValue());
 
-	string importance;
+	wxString importance;
 	if (nlHigh->GetValue()) {
 		importance = nlHigh->GetLabel();
 	} else {
 		importance = nlLow->GetLabel();
 	}
 
-	vec.push_back((string)importance);
+	vec.push_back((wxString)importance);
 
 	return vec;
 }
 
-void amdLocationCreator::SetEdit(Element* editLoc) {
+void amLocationCreator::SetEdit(Element* editLoc) {
 	Location* location = dynamic_cast<Location*>(editLoc);
 	if (!location) {
 		wxMessageBox("There was an unexpected error. Editing could not start.");
@@ -921,8 +926,8 @@ void amdLocationCreator::SetEdit(Element* editLoc) {
 	SetTitle("Edit location - '" + m_elementEdit->name + "'");
 }
 
-void amdLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
-	vector<string> vec = GetValues();
+void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
+	wxVector<wxString> vec = GetValues();
 
 	Location location;
 
@@ -942,25 +947,28 @@ void amdLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 		location.role = None;
 
 	location.image = m_imagePanel->GetImage();
-
 	location.custom = GetCustom();
+
+	location.chapters = m_elementEdit->chapters;
+	location.id = m_elementEdit->id;
 
 	Location* pLocationToEdit = (Location*)m_elementEdit;
 
 	bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != location.role;
-	m_manager->EditLocation(*pLocationToEdit, location, dif);
 
-	m_manager->GetMainFrame()->Enable(true);
+	Hide();
+	m_manager->GetMainFrame()->Enable();
+	m_manager->EditLocation(*pLocationToEdit, location, dif);
 	Destroy();
 }
 
-void amdLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
+void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 	Freeze();
 	wxPanel* panel = new wxPanel(m_panel2);
 	wxSize size(label6->GetSize());
 	wxSize size2(nlArchitecture->GetSize());
 
-	wxTextCtrl* label = new wxTextCtrl(panel, -1, "Title",
+	wxTextCtrl* label = new wxTextCtrl(panel, -1, "Title " + std::to_string(m_custom.size() + 1),
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE | wxTE_CENTER);
 	wxTextCtrl* content = new wxTextCtrl(panel, -1, "", wxDefaultPosition,
 		wxSize(size2.x - 10, size2.y), wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -974,7 +982,7 @@ void amdLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 
 	wxButton* minus = new wxButton(panel, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
 	minus->SetBitmap(wxBITMAP_PNG(minus));
-	minus->Bind(wxEVT_BUTTON, &amdLocationCreator::RemoveCustomAttr, this);
+	minus->Bind(wxEVT_BUTTON, &amLocationCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* hor = new wxBoxSizer(wxHORIZONTAL);
 	hor->Add(label, wxSizerFlags(1));
@@ -996,7 +1004,7 @@ void amdLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 	Thaw();
 }
 
-void amdLocationCreator::RemoveCustomAttr(wxCommandEvent& event) {
+void amLocationCreator::RemoveCustomAttr(wxCommandEvent& event) {
 	Freeze();
 	wxButton* minus = (wxButton*)event.GetEventObject();
 
@@ -1020,7 +1028,7 @@ void amdLocationCreator::RemoveCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amdLocationCreator::RecolorCustoms() {
+void amLocationCreator::RecolorCustoms() {
 	wxColour red(230, 0, 20);
 	wxColour grey(200, 200, 200);
 
@@ -1035,9 +1043,9 @@ void amdLocationCreator::RecolorCustoms() {
 	}
 }
 
-void amdLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
+void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
 	if (!nlName->IsEmpty()) {
-		std::vector<std::string> vec = GetValues();
+		wxVector<wxString> vec = GetValues();
 
 		Location location;
 
@@ -1060,17 +1068,18 @@ void amdLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
 
 		location.custom = GetCustom();
 
-		m_manager->AddLocation(location);
+		Hide();
+		m_manager->GetMainFrame()->Enable();
+		m_manager->AddLocation(location, true);
 	} else {
 		wxMessageBox("You can't create a location with no name!");
 		return;
 	}
 
-	m_manager->GetMainFrame()->Enable();
 	Destroy();
 }
 
-void amdLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
+void amLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
 
 	if (nlArchitecture->IsModified() || nlName->IsModified() || nlGeneral->IsModified() ||
 		nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified()) {
@@ -1094,15 +1103,15 @@ void amdLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
 /////////////////////////////////// Item Creator ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-amdItemCreator::amdItemCreator(wxWindow* parent, amdProjectManager* manager,
-	long id, const string& label, const wxPoint& pos, const wxSize& size, long style) :
-	amdElementCreator(parent, manager, id, label, pos, size, style) {
+amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
+	amElementCreator(parent, manager, id, label, pos, size, style) {
 
 	wxColour dark(40, 40, 40);
 	wxColour darker(30, 30, 30);
 	wxColour txtCol(255, 255, 255);
 
-	m_panel1->Bind(wxEVT_PAINT, &amdItemCreator::OnPaint, this);
+	m_panel1->Bind(wxEVT_PAINT, &amItemCreator::OnPaint, this);
 
 	wxStaticText* nameLabel = new wxStaticText(m_panel1, wxID_ANY, "Name:",
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_NONE);
@@ -1337,8 +1346,8 @@ amdItemCreator::amdItemCreator(wxWindow* parent, amdProjectManager* manager,
 	SetIcon(wxICON(itemIcon));
 }
 
-vector<string> amdItemCreator::GetValues() {
-	vector<string> vec;
+wxVector<wxString> amItemCreator::GetValues() {
+	wxVector<wxString> vec;
 
 	vec.push_back(niName->GetValue().ToStdString());
 
@@ -1371,7 +1380,7 @@ vector<string> amdItemCreator::GetValues() {
 	return vec;
 }
 
-void amdItemCreator::SetEdit(Element* editItem) {
+void amItemCreator::SetEdit(Element* editItem) {
 	Item* item = dynamic_cast<Item*>(editItem);
 	if (!item) {
 		wxMessageBox("There was an unexpected error. Editing could not start.");
@@ -1401,6 +1410,7 @@ void amdItemCreator::SetEdit(Element* editItem) {
 	niOrigin->SetValue(item->origin);
 	niBackstory->SetValue(item->backstory);
 	niUsage->SetValue(item->usage);
+	niGeneral->SetValue(item->general);
 
 	int i = 0;
 	for (auto& it : item->custom) {
@@ -1417,8 +1427,8 @@ void amdItemCreator::SetEdit(Element* editItem) {
 	SetTitle("Edit item - '" + m_elementEdit->name + "'");
 }
 
-void amdItemCreator::DoEdit(wxCommandEvent& event) {
-	vector<string> vec = GetValues();
+void amItemCreator::DoEdit(wxCommandEvent& event) {
+	wxVector<wxString> vec = GetValues();
 
 	Item item;
 	item.name = vec[0];
@@ -1450,20 +1460,25 @@ void amdItemCreator::DoEdit(wxCommandEvent& event) {
 	item.image = m_imagePanel->GetImage();
 	item.custom = GetCustom();
 
+	item.chapters = m_elementEdit->chapters;
+	item.id = m_elementEdit->id;
+
 	Item* pItemToEdit = (Item*)m_elementEdit;
 
 	bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != item.role;
+	
+	Hide();
+	m_manager->GetMainFrame()->Enable();
 	m_manager->EditItem(*pItemToEdit, item, dif);
 
-	m_manager->GetMainFrame()->Enable(true);
 	Destroy();
 }
 
-void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {
+void amItemCreator::AddCustomAttr(wxCommandEvent& event) {
 	Freeze();
 	wxSize size(meaLabel->GetSize());
 
-	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title",
+	wxTextCtrl* label = new wxTextCtrl(m_panel2, -1, "Title " + std::to_string(m_custom.size() + 1),
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
 	wxTextCtrl* content = new wxTextCtrl(m_panel2, -1, "", wxDefaultPosition,
 		wxSize(-1, niGeneral->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -1475,7 +1490,7 @@ void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
 	minus->SetBitmap(wxBITMAP_PNG(minus));
-	minus->Bind(wxEVT_BUTTON, &amdCharacterCreator::RemoveCustomAttr, this);
+	minus->Bind(wxEVT_BUTTON, &amCharacterCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
 	topSizer->Add(label, wxSizerFlags(1));
@@ -1492,9 +1507,9 @@ void amdItemCreator::AddCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amdItemCreator::Create(wxCommandEvent& event) {
+void amItemCreator::Create(wxCommandEvent& event) {
 	if (!niName->IsEmpty()) {
-		std::vector<std::string> vec = GetValues();
+		wxVector<wxString> vec = GetValues();
 
 		Item item;
 		item.name = vec[0];
@@ -1526,17 +1541,18 @@ void amdItemCreator::Create(wxCommandEvent& event) {
 		item.image = m_imagePanel->GetImage();
 		item.custom = GetCustom();
 
-		m_manager->AddItem(item);
+		Hide();
+		m_manager->GetMainFrame()->Enable();
+		m_manager->AddItem(item, true);
 	} else {
 		wxMessageBox("You can't create an item with no name!");
 		return;
 	}
 
-	m_manager->GetMainFrame()->Enable();
 	Destroy();
 }
 
-void amdItemCreator::CheckClose(wxCloseEvent& event) {
+void amItemCreator::CheckClose(wxCloseEvent& event) {
 	if (niGeneral->IsModified() || niName->IsModified() || niAppearance->IsModified() ||
 		niBackstory->IsModified() || niOrigin->IsModified() || niUsage->IsModified()) {
 
@@ -1554,7 +1570,7 @@ void amdItemCreator::CheckClose(wxCloseEvent& event) {
 	}
 }
 
-void amdItemCreator::OnPaint(wxPaintEvent& event) {
+void amItemCreator::OnPaint(wxPaintEvent& event) {
 	wxPaintDC dc(m_panel1);
 
 	wxRect rect;

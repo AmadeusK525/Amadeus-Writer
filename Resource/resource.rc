@@ -44,8 +44,6 @@ underline RCDATA "Assets\\Underline.png"
 
 savePng RCDATA "Assets\\Save.png"
 
-corkBoard RCDATA "Assets\\CorkBoard.png"
-
 // set this to 1 if you don't want to use manifest resource (manifest resource
 // is needed to enable visual styles on Windows XP - see docs/msw/winxp.txt
 // for more information)

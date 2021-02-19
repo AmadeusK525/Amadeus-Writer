@@ -1,18 +1,15 @@
 #include "Outline.h"
 
-#include <boost/filesystem.hpp>
-
 #include "MainFrame.h"
 #include "Corkboard.h"
 #include "OutlineFiles.h"
 
-namespace fs = boost::filesystem;
 
-amdOutline::amdOutline(wxWindow* parent) : wxNotebook(parent, -1) {
+amOutline::amOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     m_corkboardHolder = new wxPanel(this);
-    m_corkboard = new Corkboard(m_corkboardHolder);
-    m_timeline = new wxPanel(this);
-    m_files = new amdOutlineFilesPanel(this);
+    m_corkboard = new amCorkboard(m_corkboardHolder);
+    m_timeline = new amTimeline(this);
+    m_files = new amOutlineFilesPanel(this);
 
     // Hack for doing corkboard fullscreen
     m_corkHolderSizer = new wxBoxSizer(wxVERTICAL);
@@ -22,21 +19,53 @@ amdOutline::amdOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     AddPage(m_corkboardHolder, "Corkboard");
     AddPage(m_timeline, "Timeline");
     AddPage(m_files, "Files");
+
+    Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, &amOutline::OnPageChange, this);
 }
 
-void amdOutline::SaveOutline(int& progress, wxProgressDialog* dialog) {
+void amOutline::SaveOutline() {
     m_corkboard->Save();
-    dialog->Update(progress++);
+    m_timeline->Save();
     m_files->Save();
 }
 
-void amdOutline::LoadOutline(int& progress, wxProgressDialog* dialog) {
-    m_corkboard->Load();
-    m_files->Load();
-    dialog->Update(progress++);
+void amOutline::LoadOutline(wxStringInputStream& corkboard,
+    wxStringInputStream& timeline,
+    wxStringInputStream& files) {
+
+    m_corkboard->Load(corkboard);
+    m_timeline->Load(timeline);
+    m_files->Load(files);
 }
 
-void amdOutline::ClearAll() {
+void amOutline::OnShow() {
+    wxBookCtrlEvent event;
+    event.SetSelection(GetSelection());
+
+    OnPageChange(event);
+}
+
+void amOutline::OnPageChange(wxBookCtrlEvent& event) {
+    switch (event.GetSelection()) {
+    case 0:
+        AutoWrapTextShape::ShouldCountLines(true);
+        m_corkboard->Refresh(true);
+        break;
+
+    case 1:
+        AutoWrapTextShape::ShouldCountLines(true);
+        m_timeline->Refresh(true);
+        break;
+
+    default:
+        AutoWrapTextShape::ShouldCountLines(false);
+        break;
+    }
+
+    event.Skip();
+}
+
+void amOutline::ClearAll() {
     m_corkboard->getCanvas()->GetDiagramManager()->Clear();
     m_corkboard->getCanvas()->Refresh(true);
 
