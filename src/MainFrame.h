@@ -5,6 +5,7 @@
 
 #include <wx\wx.h>
 #include <wx\simplebook.h>
+#include <wx\splitter.h>
 
 #include "ProjectManager.h"
 
@@ -70,9 +71,11 @@ public:
     void OnClose(wxCloseEvent& event);
     void OnMainButtons(wxCommandEvent& event);
 
+    void OnSashChanged(wxSplitterEvent& event);
+
     void Search(wxCommandEvent& event);
 
-    void DoCorkboardFullScreen(bool fs, wxWindow* toolBar, wxWindow* canvas);
+    void DoSubWindowFullScreen(bool fs, wxWindow* window);
 
     DECLARE_EVENT_TABLE()
 };
@@ -115,4 +118,21 @@ enum {
     BUTTON_Outline
 };
 
+
+/////////////////////////////////////////////////////////////////
+////////////////////////// Utility class ////////////////////////
+/////////////////////////////////////////////////////////////////
+
+
+class amSplitterWindow : public wxSplitterWindow {
+public:
+    amSplitterWindow(wxWindow* parent,
+        wxWindowID 	id = wxID_ANY,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxSP_NOBORDER | wxSP_NO_XP_THEME | wxSP_THIN_SASH,
+        const wxString& name = "splitterWindow") : wxSplitterWindow(parent, id, pos, size, style, name) {}
+
+    virtual void OnDoubleClickSash(int x, int y) {}
+};
 #endif

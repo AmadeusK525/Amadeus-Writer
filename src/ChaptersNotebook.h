@@ -26,6 +26,8 @@ public:
     void AddChapter(Chapter& chapter, int pos = -1);
     void AddToList(Chapter& chapter, int pos = -1);
 
+    void LayoutGrid();
+
     ChapterGrid* GetGrid() { return m_grid; }
     wxListView* GetList() { return m_list; }
 

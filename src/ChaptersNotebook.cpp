@@ -1,11 +1,8 @@
 #include "ChaptersNotebook.h"
-
 #include "ChaptersGrid.h"
-
 #include "MyApp.h"
 
 #include <wx\dir.h>
-
 
 amChaptersNotebook::amChaptersNotebook(wxWindow* parent, amProjectManager* manager) :
     wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager) {
@@ -39,6 +36,11 @@ void amChaptersNotebook::AddToList(Chapter& chapter, int pos) {
     m_list->SetItem(pos, 1, std::to_string(chapter.characters.size()));
     m_list->SetItem(pos, 2, std::to_string(chapter.locations.size()));
     //m_list->SetItem(pos, 3, chapter.pointOfView);
+}
+
+void amChaptersNotebook::LayoutGrid() {
+    m_grid->SetVirtualSize(m_grid->GetClientSize());
+    m_grid->Layout();
 }
 
 void amChaptersNotebook::ClearAll() {

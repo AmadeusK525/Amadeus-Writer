@@ -8,7 +8,8 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	m_role->SetBackgroundColour(wxColour(220, 220, 220));
 	m_role->SetFont(font);
 
-	m_name = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxALIGN_CENTER | wxBORDER_SIMPLE);
+	m_name = new wxStaticText(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, 22), wxALIGN_CENTER | wxBORDER_NONE);
+	m_name->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_name->SetBackgroundColour(wxColour(250, 250, 250));
 	m_name->SetFont(font);
 
@@ -48,27 +49,30 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_ageLabel->SetFont(font);
 	m_ageLabel->SetBackgroundColour(wxColour(190, 190, 190));
 	m_ageLabel->Show(false);
-	m_age = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(45, 20), wxBORDER_SIMPLE);
-	m_age->SetFont(font2);
+	m_age = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(45, 20), wxBORDER_NONE);
+	m_age->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_age->SetBackgroundColour(wxColour(225, 225, 225));
+	m_age->SetFont(font2);
 	m_age->Show(false);
 
 	m_sexLabel = new wxStaticText(this, -1, "Sex:");
 	m_sexLabel->SetFont(font);
 	m_sexLabel->SetBackgroundColour(wxColour(190, 190, 190));
 	m_sexLabel->Show(false);
-	m_sex = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE);
-	m_sex->SetFont(font2);
+	m_sex = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_NONE);
+	m_sex->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_sex->SetBackgroundColour(wxColour(225, 225, 225));
+	m_sex->SetFont(font2);
 	m_sex->Show(false);
 
 	m_heightLabel = new wxStaticText(this, -1, "Height:");
 	m_heightLabel->SetFont(font);
 	m_heightLabel->SetBackgroundColour(wxColour(190, 190, 190));
 	m_heightLabel->Show(false);
-	m_height = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_SIMPLE);
-	m_height->SetFont(font2);
+	m_height = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(70, 20), wxBORDER_NONE);
+	m_height->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_height->SetBackgroundColour(wxColour(225, 225, 225));
+	m_height->SetFont(font2);
 	m_height->Show(false);
 
 	wxBoxSizer* firstLine = new wxBoxSizer(wxHORIZONTAL);
@@ -83,18 +87,20 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_nickLabel->SetFont(font);
 	m_nickLabel->SetBackgroundColour(wxColour(190, 190, 190));
 	m_nickLabel->Show(false);
-	m_nick = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 20), wxBORDER_SIMPLE);
-	m_nick->SetFont(font2);
+	m_nick = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(100, 20), wxBORDER_NONE);
+	m_nick->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_nick->SetBackgroundColour(wxColour(225, 225, 225));
+	m_nick->SetFont(font2);
 	m_nick->Show(false);
 
 	m_natLabel = new wxStaticText(this, -1, "Nationality:");
 	m_natLabel->SetFont(font);
 	m_natLabel->SetBackgroundColour(wxColour(190, 190, 190));
 	m_natLabel->Show(false);
-	m_nat = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(120, 20), wxBORDER_SIMPLE);
-	m_nat->SetFont(font2);
+	m_nat = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(120, 20), wxBORDER_NONE);
+	m_nat->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_nat->SetBackgroundColour(wxColour(225, 225, 225));
+	m_nat->SetFont(font2);
 	m_nat->Show(false);
 
 	wxBoxSizer* secondLine = new wxBoxSizer(wxHORIZONTAL);
@@ -108,9 +114,10 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_appLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_appLabel->Show(false);
 	m_appearance = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_appearance->SetFont(wxFontInfo(9));
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_appearance->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_appearance->SetBackgroundColour(wxColour(225, 225, 225));
+	m_appearance->SetFont(wxFontInfo(9));
 	m_appearance->Show(false);
 
 	m_perLabel = new wxStaticText(this, -1, "Personality", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE);
@@ -118,9 +125,10 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_perLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_perLabel->Show(false);
 	m_personality = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_personality->SetFont(wxFontInfo(9));
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_personality->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_personality->SetBackgroundColour(wxColour(225, 225, 225));
+	m_personality->SetFont(wxFontInfo(9));
 	m_personality->Show(false);
 
 	m_bsLabel = new wxStaticText(this, -1, "Backstory", wxDefaultPosition, wxDefaultSize, wxBORDER_DOUBLE);
@@ -128,9 +136,10 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_bsLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_bsLabel->Show(false);
 	m_backstory = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_backstory->SetFont(wxFontInfo(9));
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_backstory->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_backstory->SetBackgroundColour(wxColour(225, 225, 225));
+	m_backstory->SetFont(wxFontInfo(9));
 	m_backstory->Show(false);
 
 	m_vertical->Add(firstLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM | wxLEFT | wxRIGHT, 10));
@@ -260,9 +269,10 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 			label->SetBackgroundColour(wxColour(180, 180, 180));
 
 			wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
-				size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-			content->SetFont(wxFontInfo(9));
+				size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+			content->SetBackgroundStyle(wxBG_STYLE_PAINT);
 			content->SetBackgroundColour(wxColour(225, 225, 225));
+			content->SetFont(wxFontInfo(9));
 			content->SetCursor(wxCURSOR_DEFAULT);
 
 			m_vertical->Add(label, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
@@ -309,9 +319,10 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_generalLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_generalLabel->Show(false);
 	m_general = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_general->SetFont(font2);
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_general->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_general->SetBackgroundColour(wxColour(225, 225, 225));
+	m_general->SetFont(font2);
 	m_general->Show(false);
 
 	m_natLabel = new wxStaticText(this, -1, "Natural Aspects", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_DOUBLE);
@@ -319,9 +330,10 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_natLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_natLabel->Show(false);
 	m_natural = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_natural->SetFont(font2);
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_natural->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_natural->SetBackgroundColour(wxColour(225, 225, 225));
+	m_natural->SetFont(font2);
 	m_natural->Show(false);
 
 	m_archLabel = new wxStaticText(this, -1, "Architecture", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_DOUBLE);
@@ -329,9 +341,10 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_archLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_archLabel->Show(false);
 	m_architecture = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_architecture->SetFont(font2);
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_architecture->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_architecture->SetBackgroundColour(wxColour(225, 225, 225));
+	m_architecture->SetFont(font2);
 	m_architecture->Show(false);
 
 	m_ecoLabel = new wxStaticText(this, -1, "Economy", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_DOUBLE);
@@ -339,9 +352,10 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_ecoLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_ecoLabel->Show(false);
 	m_economy = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_economy->SetFont(font2);
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_economy->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_economy->SetBackgroundColour(wxColour(225, 225, 225));
+	m_economy->SetFont(font2);
 	m_economy->Show(false);
 
 	m_culLabel = new wxStaticText(this, -1, "Culture", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_DOUBLE);
@@ -349,9 +363,10 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_culLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_culLabel->Show(false);
 	m_culture = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_culture->SetFont(font2);
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_culture->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_culture->SetBackgroundColour(wxColour(225, 225, 225));
+	m_culture->SetFont(font2);
 	m_culture->Show(false);
 
 	m_poliLabel = new wxStaticText(this, -1, "Politics", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_DOUBLE);
@@ -359,9 +374,10 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_poliLabel->SetBackgroundColour(wxColour(180, 180, 180));
 	m_poliLabel->Show(false);
 	m_politics = new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(-1, 80),
-		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
-	m_politics->SetFont(font2);
+		wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
+	m_politics->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_politics->SetBackgroundColour(wxColour(225, 225, 225));
+	m_politics->SetFont(font2);
 	m_politics->Show(false);
 
 	m_firstColumn = new wxBoxSizer(wxVERTICAL);
@@ -473,7 +489,7 @@ void amLocationShowcase::SetData(Element& locToSet) {
 			wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
 				wxDefaultSize, wxBORDER_DOUBLE);
 			wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
-				size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
+				size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
 
 			if (m_first) {
 				m_firstColumn->Add(label, wxSizerFlags(0).Left());
@@ -486,8 +502,9 @@ void amLocationShowcase::SetData(Element& locToSet) {
 			label->SetFont(wxFontInfo(12).Bold());
 			label->SetBackgroundColour(wxColour(180, 180, 180));
 
-			content->SetFont(wxFontInfo(9));
+			content->SetBackgroundStyle(wxBG_STYLE_PAINT);
 			content->SetBackgroundColour(wxColour(225, 225, 225));
+			content->SetFont(wxFontInfo(9));
 			content->SetCursor(wxCURSOR_DEFAULT);
 
 			m_first = !m_first;

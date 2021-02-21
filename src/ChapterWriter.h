@@ -7,16 +7,10 @@
 #include <wx\aui\aui.h>
 #include <wx\wrapsizer.h>
 
-
-#include <list>
-
 #include "ProjectManager.h"
 #include "ImagePanel.h"
 #include "ChaptersNotebook.h"
 #include "Note.h"
-
-
-using std::list;
 
 struct amChapterWriterNotebook;
 
@@ -91,6 +85,10 @@ public:
 
     void OnTimerEvent(wxTimerEvent& event);
 
+    void OnListResize(wxSizeEvent& event);
+    void OnLeftSplitterChanging(wxSplitterEvent& event);
+    void OnLeftSplitterChanged(wxSplitterEvent& event);
+
     void ToggleFullScreen() { ShowFullScreen(!IsFullScreen()); }
     void OnClose(wxCloseEvent& event);
 
@@ -121,7 +119,7 @@ enum {
 
 
 struct amChapterWriterNotebook : public wxAuiNotebook {
-    amChapterWriter* parent = nullptr;
+    amChapterWriter* m_parent = nullptr;
 
     wxToolBar* contentTool = nullptr;
     wxComboBox* fontSize = nullptr;
@@ -136,7 +134,7 @@ struct amChapterWriterNotebook : public wxAuiNotebook {
     wxPanel* selNote = nullptr;
     wxSize notesSize{};
 
-    amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent);
+    amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWriter* chapterWriter);
 
     void OnText(wxCommandEvent& event);
     void OnKeyDown(wxRichTextEvent& event);

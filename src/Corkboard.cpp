@@ -88,7 +88,7 @@ void amCorkboard::FullScreen(bool fs) {
 
     if (fs) {
 		m_parent->m_corkHolderSizer->Remove(0);
-        Reparent(wxGetApp().GetTopWindow());
+        Reparent(m_manager->GetMainFrame());
     } else {
         Reparent(m_parent->m_corkboardHolder);
 		m_parent->m_corkHolderSizer->Add(this, wxSizerFlags(1).Expand());
@@ -223,9 +223,9 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 void CorkboardCanvas::DoFullScreen(bool fs) {
 	if (fs) {
 		parent->FullScreen(fs);
-		m_manager->GetMainFrame()->DoCorkboardFullScreen(fs, parent->getToolbar(), this);
+		m_manager->GetMainFrame()->DoSubWindowFullScreen(fs, m_parent);
 	} else {
-		m_manager->GetMainFrame()->DoCorkboardFullScreen(fs, parent->getToolbar(), this);
+		m_manager->GetMainFrame()->DoSubWindowFullScreen(fs, m_parent);
 		parent->FullScreen(fs);
 	}
 
