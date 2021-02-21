@@ -395,8 +395,8 @@ EVT_TIMER(TIMER_OutlineFiles, amOutlineFilesPanel::OnTimerEvent)
 END_EVENT_TABLE()
 
 amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(parent, -1, wxDefaultPosition,
-	wxDefaultSize, wxSP_LIVE_UPDATE | wxSP_NOBORDER | wxSP_THIN_SASH | wxSP_NO_XP_THEME | wxBORDER_NONE) {
-	m_textCtrl = new wxRichTextCtrl(this);
+	wxDefaultSize, wxSP_LIVE_UPDATE | wxSP_NOBORDER | wxSP_THIN_SASH | wxBORDER_NONE) {
+	m_textCtrl = new wxRichTextCtrl(this,-1, "", wxDefaultPosition, wxDefaultSize, 32L | wxBORDER_NONE);
 	m_textCtrl->SetBackgroundColour(wxColour(40, 40, 40));
 	m_textCtrl->Refresh();
 
@@ -407,7 +407,7 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(pa
 
 	m_leftPanel = new wxPanel(this);
 	m_files = new wxDataViewCtrl(m_leftPanel, TREE_Files, wxDefaultPosition, wxDefaultSize,
-		wxDV_NO_HEADER | wxDV_SINGLE);
+		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
 	m_files->GetMainWindow()->Bind(wxEVT_KEY_DOWN, &amOutlineFilesPanel::OnKeyDownDataView, this);
 	m_files->GetMainWindow()->Bind(wxEVT_RIGHT_DOWN, &amOutlineFilesPanel::OnRightDownDataView, this);
 

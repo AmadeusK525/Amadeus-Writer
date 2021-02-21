@@ -41,7 +41,7 @@ wxListView* amElementsNotebook::m_locList;
 wxListView* amElementsNotebook::m_itemsList;
 
 amElementsNotebook::amElementsNotebook(wxWindow* parent) :
-    wxNotebook(parent, NOTEBOOK_THIS) {
+    wxNotebook(parent, NOTEBOOK_THIS, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE) {
     m_manager = amGetManager();
 
     //Setting up first notebook tab with a characters list

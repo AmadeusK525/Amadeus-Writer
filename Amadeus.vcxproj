@@ -326,7 +326,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\wxsqlite3-4.6.4\include;F:\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;NDEBUG;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -342,9 +342,9 @@
       <AdditionalIncludeDirectories>$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;.;$(WXWIN)\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw31u_html.lib;wxbase31u_xml.lib;wxmsw31u_richtext.lib;wxmsw31u_aui.lib;wxmsw$(wxShortVersionString)u_core.lib;wxbase$(wxShortVersionString)u.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxregexu.lib;wxexpat.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28u_wxsf.lib;wxsqlite3.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_x64_lib\;$(WXWIN)\lib\vc_x64_lib;$(WXWIN)\lib\vc_x64_lib\mswu;%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>F:\wxSF\lib\vc_x64_lib;$(WXWIN)\lib\vc_x64_lib;$(WXWIN)\lib\vc_x64_lib\mswu;F:\wxsqlite3-4.6.4\lib\vc_x64_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
@@ -453,6 +453,7 @@
     <ClCompile Include="src\Release.cpp" />
     <ClCompile Include="src\Timeline.cpp" />
     <ClCompile Include="src\TimelineShapes.cpp" />
+    <ClCompile Include="src\WordProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource\resource.h" />
@@ -479,6 +480,7 @@
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\Timeline.h" />
     <ClInclude Include="src\TimelineShapes.h" />
+    <ClInclude Include="src\WordProcessor.h" />
     <ClInclude Include="src\wxmemdbg.h" />
   </ItemGroup>
   <ItemGroup>

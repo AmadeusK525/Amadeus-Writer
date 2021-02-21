@@ -61,19 +61,20 @@ void TimelineCard::SetColour(wxColour& colour) {
 	unsigned char b = colour.Blue();
 
 	if (r >= 215)
-		r == 255;
+		r = 255;
 	else
 		r += 40;
 
 	if (g >= 215)
-		g == 255;
+		g = 255;
 	else
 		g += 40;
 
 	if (b >= 215)
-		b == 255;
+		b = 255;
 	else
 		b += 40;
+
 	m_content->SetFill(wxColour(r, g, b));
 }
 
