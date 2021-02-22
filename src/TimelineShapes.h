@@ -10,7 +10,7 @@ private:
 	int m_row = -1;
 	int m_col = -1;
 
-	AutoWrapTextShape* m_content = nullptr;
+	AutoWrapTextShape* m_title = nullptr, * m_content = nullptr;
 
 public:
 	XS_DECLARE_CLONABLE_CLASS(TimelineCard);

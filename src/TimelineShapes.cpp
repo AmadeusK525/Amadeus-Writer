@@ -13,6 +13,34 @@ TimelineCard::TimelineCard() {
 
 	AddStyle(sfsSHOW_SHADOW);
 
+	m_title = new AutoWrapTextShape();
+
+	if (m_title) {
+		m_title->SetVAlign(wxSFShapeBase::valignTOP);
+		m_title->SetHAlign(wxSFShapeBase::halignCENTER);
+
+		m_title->SetVBorder(5.0);
+		m_title->SetHeight(20);
+		m_title->ForceMultiline(false);
+
+		// Set required shape style(s)
+		m_title->SetStyle(sfsALWAYS_INSIDE | sfsHOVERING | sfsPROCESS_DEL |
+			sfsPROPAGATE_SELECTION | sfsPROPAGATE_DRAGGING | sfsPROPAGATE_INTERACTIVE_CONNECTION);
+
+		// Components of composite shapes created at runtime in parent
+		// shape constructor cannot be re-created by the serializer so
+		// it is important to disable their automatic serialization ...
+		m_title->EnableSerialization(false);
+
+		// ... but their properties can be serialized in the standard way:
+		XS_SERIALIZE_DYNAMIC_OBJECT_NO_CREATE(m_title, "title");
+
+		// Assign the text shape to the parent shape.
+		AddChild(m_title);
+		m_title->SetFont(wxFontInfo(12).Bold());
+		m_title->SetFill(wxBrush(wxColour(255, 255, 255, 128)));
+	}
+
 	m_content = new AutoWrapTextShape();
 
 	if (m_content) {
@@ -20,6 +48,7 @@ TimelineCard::TimelineCard() {
 		m_content->SetHAlign(wxSFShapeBase::halignCENTER);
 
 		m_content->SetVBorder(10.0);
+		m_content->SetTopSpace(40);
 
 		// Set required shape style(s)
 		m_content->SetStyle(sfsALWAYS_INSIDE | sfsHOVERING | sfsPROCESS_DEL |
