@@ -278,10 +278,10 @@ void TimelineCanvas::OnLeftUp(wxMouseEvent& event) {
 		GetSelectedShapes(sel);
 
 		TimelineCard* pSel = nullptr;
-		for (int i = 0; i < sel.GetCount(); i++) {
-			pSel = (TimelineCard*)sel[i];
+		if (!sel.IsEmpty()) {
+			pSel = (TimelineCard*)sel[0];
 			pSel->SetRow(m_curDragCell.first.y);
-			SetCardToColumn(m_curDragCell.first.x + i, pSel);
+			SetCardToColumn(m_curDragCell.first.x, pSel);
 
 			if (m_propagateColour)
 				pSel->SetColour(GetThreadColour(m_curDragCell.first.y));

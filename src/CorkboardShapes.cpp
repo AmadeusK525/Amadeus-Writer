@@ -9,6 +9,7 @@ bool AutoWrapTextShape::m_countLines = true;
 
 AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape() {
 	SetFill(m_bgColour);
+	m_sText = "";
 }
 
 AutoWrapTextShape::AutoWrapTextShape(const AutoWrapTextShape& other) : wxSFEditTextShape(other) {
@@ -18,16 +19,24 @@ AutoWrapTextShape::AutoWrapTextShape(const AutoWrapTextShape& other) : wxSFEditT
 }
 
 void AutoWrapTextShape::UpdateRectSize() {
-	wxSize tsize = ((wxSFShapeBase*)(m_pParentItem))->GetBoundingBox().GetSize();
-	tsize.y -= 30;
+	wxSFShapeBase* parent = GetParentShape();
 
-	if (tsize.IsFullySpecified()) {
-		if (tsize.x <= 0) tsize.x = 1;
-		if (tsize.y <= 0) tsize.y = 1;
-
-		m_nRectSize.x = (double)tsize.x;
-		m_nRectSize.y = (double)tsize.y;
+	if (!parent) {
+		wxSFEditTextShape::UpdateRectSize();
+		return;
 	}
+
+	wxSize tsize = parent->GetBoundingBox().GetSize();
+	tsize.y -= m_topSpace;
+
+	if (m_height == -1) {
+		if (tsize.y <= 1) tsize.y = 10;
+		m_nRectSize.y = (double)tsize.y;
+	} else
+		m_nRectSize.y = m_height - m_topSpace;
+
+	if (tsize.x <= 1) tsize.x = 10;
+	m_nRectSize.x = (double)tsize.x;
 }
 
 void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
@@ -45,13 +54,15 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 	if (m_countLines && rect.width > 30) {
 		int numberOfLines = 1;
 
-		if (m_nLineHeight > 0)
-			numberOfLines = rect.height / m_nLineHeight;
-
-		CalcWrappedText(rect.width, numberOfLines);
+		CalcWrappedText(rect.width, rect.height);
 	}
 
 	dc.DrawText(m_textToDraw, rect.x, rect.y);
+}
+
+void AutoWrapTextShape::SetHeight(int height) {
+	m_height = height;
+	m_nRectSize.y = height;
 }
 
 void AutoWrapTextShape::OnLeftDoubleClick(const wxPoint& pos) {
@@ -66,18 +77,25 @@ void AutoWrapTextShape::OnLeftDoubleClick(const wxPoint& pos) {
 		m_nCurrentState = GetStyle();
 		RemoveStyle(sfsSIZE_CHANGE);
 
+		int style = wxTE_BESTWRAP;
+		if (m_forceMultiline)
+			style = wxTE_MULTILINE;
+
 		m_pTextCtrl = new wxSFContentCtrl(GetParentCanvas(), wxID_ANY,
 			this, m_sText, wxPoint(int((shpPos.x * scale) - dx),
 			int((shpPos.y * scale) - dy)),
-			wxSize(int(shpBB.GetWidth() * scale), int(shpBB.GetHeight() * scale)), wxTE_MULTILINE);
+			wxSize(int(shpBB.GetWidth() * scale), int(shpBB.GetHeight() * scale)), style);
 
 		m_pTextCtrl->SetBackgroundColour(m_Fill.GetColour());
 		m_pTextCtrl->SetForegroundColour(m_TextColor);
 	}
 }
 
-void AutoWrapTextShape::CalcWrappedText(int& lenght, int& numberOfLines) {
+void AutoWrapTextShape::CalcWrappedText(int length, int height) {
 	m_textToDraw = m_sText;
+
+	if (m_textToDraw.IsEmpty())
+		return;
 
 	wxSize textSize;
 
@@ -85,13 +103,25 @@ void AutoWrapTextShape::CalcWrappedText(int& lenght, int& numberOfLines) {
 	int end = 0;
 	int strLen = m_sText.Length();
 
-	int maxHeight = m_nLineHeight * numberOfLines;
+	int numberOfLines = 1;
+	if (m_nLineHeight > 0)
+		numberOfLines = height / m_nLineHeight;
+
+	bool first = true;
+	int maxChar = 0;
 
 	while (numberOfLines >= 0) {
-		end += 2;
+		if (end >= begin + maxChar || first)
+			end += 2;
+		else
+			end += maxChar;
+
+		if (end > strLen)
+			end = strLen;
+
 		textSize = GetTextExtent(m_textToDraw.SubString(begin, end));
 
-		if (textSize.x >= lenght - 2 && numberOfLines != 0) {
+		if (textSize.x >= length - 2 && numberOfLines != 0) {
 			size_t found = m_textToDraw.rfind(" ", end);
 
 			if (found != std::string::npos)
@@ -104,10 +134,10 @@ void AutoWrapTextShape::CalcWrappedText(int& lenght, int& numberOfLines) {
 
 			numberOfLines--;
 		} else if (numberOfLines == 0 || end >= strLen ||
-			GetTextExtent(m_textToDraw.Left(end)).y > maxHeight) {
-			
+			GetTextExtent(m_textToDraw.Left(end)).y > height) {
+
 			if (end < strLen) {
-				m_textToDraw.Remove(end - 5);
+				m_textToDraw.Remove(end - 3);
 				m_textToDraw << "...";
 			} else
 				m_textToDraw.Remove(end);
@@ -149,6 +179,7 @@ NoteShape::NoteShape() : wxSFRoundRectShape() {
 		m_content->SetHAlign(wxSFShapeBase::halignCENTER);
 
 		m_content->SetVBorder(10.0);
+		m_content->SetTopSpace(30.0);
 
 		// Set required shape style(s)
 		m_content->SetStyle(sfsALWAYS_INSIDE | sfsHOVERING | sfsPROCESS_DEL |
@@ -167,7 +198,8 @@ NoteShape::NoteShape() : wxSFRoundRectShape() {
 	}
 
 	Scale(2.3, 2.6);
-	m_content->SetText("New note");
+
+	XS_SERIALIZE_INT_EX(m_currentColour, "currentColour", CorkboardCanvas::MENU_NoteDefault);
 }
 
 NoteShape::NoteShape(const NoteShape& other) : wxSFRoundRectShape(other) {

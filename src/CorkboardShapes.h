@@ -9,7 +9,11 @@ private:
 	wxColour m_bgColour{ 255, 255, 255 };
 	wxString m_textToDraw{""};
 
+	double m_topSpace = 0;
+	int m_height = -1;
+
 	bool m_clipRegion = false;
+	bool m_forceMultiline = true;
 
 public:
 	XS_DECLARE_CLONABLE_CLASS(AutoWrapTextShape);
@@ -22,11 +26,19 @@ public:
 	virtual void UpdateRectSize();
 	virtual void DrawTextContent(wxDC& dc);
 
+	/// <summary>
+	/// Only works if shape is valigned to bottom!
+	/// </summary>
+	/// <param name="points"></param>
+	inline void SetTopSpace(int points) { m_topSpace = points; }
+	inline void ForceMultiline(bool forceMultiline) { m_forceMultiline = forceMultiline; }
+	void SetHeight(int height);
+
 	virtual void OnLeftDoubleClick(const wxPoint& pos);
 
 	inline static void ShouldCountLines(bool will) { m_countLines = will; }
 	inline void ShouldClip(bool will) { AutoWrapTextShape::m_clipRegion = will; }
-	void CalcWrappedText(int& length, int& numberOfLines);
+	void CalcWrappedText(int length, int height);
 	
 public:
 	static bool m_countLines;
