@@ -8,7 +8,8 @@
 //////////////////////// TimelineThread ///////////////////////
 ///////////////////////////////////////////////////////////////
 
-int TimelineThread::m_height = 10;
+
+int TimelineThread::m_height = 20;
 
 void TimelineThread::Draw(wxDC& dc, int width) {
 	dc.SetPen(wxPen(m_colour));
@@ -30,7 +31,7 @@ int TimelineSection::m_titleOffset = 100;
 void TimelineSection::AppendCard() {
 	m_last++;
 
-	if (m_last - m_first >= 2)
+	if (m_last - m_first >= 1)
 		m_separators.push_back(m_insideRect.x + m_insideRect.width);
 
 	m_insideRect.width += 340;
@@ -39,7 +40,7 @@ void TimelineSection::AppendCard() {
 void TimelineSection::PrependCard() {
 	m_first--;
 
-	if (m_last - m_first >= 2)
+	if (m_last - m_first >= 1)
 		m_separators.insert(m_separators.begin(), m_insideRect.x);
 
 	m_insideRect.x -= TimelineCard::GetWidth() + TimelineCard::GetHorizontalSpacing();
@@ -103,6 +104,15 @@ void TimelineSection::Draw(wxDC& dc, int virtualHeight, bool drawSeparators) {
 	dc.DrawLine(m_insideRect.GetBottomLeft() + wxPoint(0, 10), m_insideRect.GetBottomRight() + wxPoint(0, 10));
 }
 
+bool TimelineSection::EmptyContains(wxPoint& pos) {
+	wxRect rect(m_insideRect);
+
+	rect.x -= m_markerWidth;
+	rect.width += (2 * m_markerWidth);
+
+	return rect.Contains(pos);
+}
+
 void TimelineSection::RecalculatePosition() {
 	int cardHorizontalSpacing = TimelineCard::GetHorizontalSpacing();
 	int cardWidth = TimelineCard::GetWidth();
@@ -113,7 +123,7 @@ void TimelineSection::RecalculatePosition() {
 		(m_pos * m_horSpacing) +
 		(m_pos * 2 * m_markerWidth) + m_markerWidth;
 	
-	m_insideRect.width = (cardSpace * (m_last - m_first));
+	m_insideRect.width = (cardSpace * (m_last - m_first + 1));
 	m_insideRect.height = ((TimelineCanvas*)m_canvas)->GetBottom();
 
 	for (int i = 0; i < m_separators.size(); i++)
@@ -234,7 +244,7 @@ void TimelineCanvas::AppendSection() {
 	ShapeList shapes;
 	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), shapes);
 
-	TimelineSection section(m_sections.size(), shapes.size(), shapes.size(), this);
+	TimelineSection section(m_sections.size(), shapes.size(), shapes.size() - 1, this);
 	m_sections.push_back(section);
 	
 	AddCard(0, 0, m_sections.size() - 1);
@@ -362,22 +372,35 @@ bool TimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 	return true;
 }
 
+bool TimelineCanvas::SetCardToRow(int row, TimelineCard* shape) {
+	if (shape->GetRow() == row)
+		return false;
+
+	shape->SetRow(row);
+
+	if (m_propagateColour)
+		shape->SetColour(GetThreadColour(row));
+
+	return true;
+}
+
 bool TimelineCanvas::CalculateCellDrag(wxPoint& pos) {
 	bool changed = false;
+	bool hitPopulatedSection = false;
 
 	for (int i = 0; i < m_sections.size(); i++) {
 		if (m_sections[i].Contains(pos)) {
 			m_curDragSection = i;
 			wxPoint cell = m_sections[i].GetCellInPosition(pos);
 
-			if (cell.y != m_curDragCell.first.y) {
+			if (cell.y != m_curDragCell.first.y || m_isDragOnEmptySection) {
 				m_curDragCell.first.y = cell.y;
 				m_curDragCell.second.y = (TimelineCard::GetVerticalSpacing() * (cell.y + 1)) +
 					(TimelineCard::GetHeight() * cell.y);
 				changed = true;
 			}
 
-			if (cell.x != m_curDragCell.first.x) {
+			if (cell.x != m_curDragCell.first.x || m_isDragOnEmptySection) {
 				int cardHorSpacing = TimelineCard::GetHorizontalSpacing();
 				int sectionMarkerWidth = TimelineSection::GetMarkerWidth();
 
@@ -387,6 +410,36 @@ bool TimelineCanvas::CalculateCellDrag(wxPoint& pos) {
 					(i * (TimelineSection::GetHorizontalSpcaing() + (sectionMarkerWidth * 2)));
 
 				changed = true;
+			}
+
+			hitPopulatedSection = true;
+			m_isDragOnEmptySection = false;
+			break;
+		}
+	}
+
+	if (!hitPopulatedSection) {
+		for (int i = 0; i < m_sections.size(); i++) {
+			if (m_sections[i].GetFirst() > m_sections[i].GetLast()) {
+				if (m_sections[i].EmptyContains(pos)) {
+					m_curDragSection = i;
+					
+					for (int j = 0; j < m_threads.size(); j++) {
+						if (m_threads[j].GetRect().Contains(pos)) {
+							m_curDragCell.first.y = j;
+							m_curDragCell.second.y = m_threads[j].GetRect().GetTop();
+							break;
+						}
+					}
+
+					m_curDragCell.first.x = m_sections[i].GetFirst();
+					m_curDragCell.second.x = m_sections[i].GetRect().GetLeft();
+
+					changed = true;
+					
+					m_isDragOnEmptySection = true;
+					break;
+				}
 			}
 		}
 	}
@@ -440,7 +493,11 @@ void TimelineCanvas::DrawForeground(wxDC& dc, bool fromPaint) {
 }
 
 void TimelineCanvas::OnUpdateVirtualSize(wxRect& rect) {
-	rect.width += 300;
+	if (m_sections.empty())
+		rect.width += 300;
+	else
+		rect.width = m_sections.back().GetRect().GetRight() + 300;
+
 	rect.height += 300;
 }
 
@@ -473,7 +530,7 @@ void TimelineCanvas::OnLeftUp(wxMouseEvent& event) {
 		TimelineCard* pSel = nullptr;
 		if (!sel.IsEmpty()) {
 			pSel = (TimelineCard*)sel[0];
-			pSel->SetRow(m_curDragCell.first.y);
+			SetCardToRow(m_curDragCell.first.y, pSel);
 
 			int prevSection = pSel->GetSection();
 			int column = m_curDragCell.first.x;
@@ -489,9 +546,6 @@ void TimelineCanvas::OnLeftUp(wxMouseEvent& event) {
 			
 			if (!SetCardToColumn(column, pSel))
 				pSel->RecalculatePosition();
-
-			if (m_propagateColour)
-				pSel->SetColour(GetThreadColour(m_curDragCell.first.y));
 		}
 	}
 

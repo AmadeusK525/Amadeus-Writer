@@ -106,6 +106,8 @@ public:
 	void Draw(wxDC& dc, int virtualHeight, bool drawSeparators);
 
 	bool Contains(wxPoint& pos) { return m_insideRect.Contains(pos); }
+	bool EmptyContains(wxPoint& pos);
+
 	void RecalculatePosition();
 };
 
@@ -122,6 +124,7 @@ private:
 
 	pair<wxPoint, wxRect> m_curDragCell{ wxPoint(-1, -1), wxRect(-1,-1, 300, 200) };
 	int m_curDragSection = 0;
+	bool m_isDragOnEmptySection = false;
 
 	bool m_drawSeparators = true;
 	bool m_propagateColour = true;
@@ -140,6 +143,7 @@ public:
 
 	pair<int, int> SetCardToSection(int section, TimelineCard* shape);
 	bool SetCardToColumn(int column, TimelineCard* shape);
+	bool SetCardToRow(int row, TimelineCard* shape);
 	
 	bool CalculateCellDrag(wxPoint& pos);
 

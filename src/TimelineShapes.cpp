@@ -5,7 +5,7 @@
 XS_IMPLEMENT_CLONABLE_CLASS(TimelineCard, wxSFRoundRectShape);
 
 int TimelineCard::m_verSpacing = 10;
-int TimelineCard::m_horSpacing = 20;
+int TimelineCard::m_horSpacing = 40;
 int TimelineCard::m_width = 250;
 int TimelineCard::m_height = 150;
 

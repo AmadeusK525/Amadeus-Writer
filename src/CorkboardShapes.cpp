@@ -8,14 +8,16 @@ XS_IMPLEMENT_CLONABLE_CLASS(AutoWrapTextShape,
 bool AutoWrapTextShape::m_countLines = true;
 
 AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape() {
-	SetFill(m_bgColour);
-	m_sText = "";
+	SetFill(wxColour(255,255,255));
+	m_textToDraw = "";
+
+	MarkSerializableDataMembers();
 }
 
 AutoWrapTextShape::AutoWrapTextShape(const AutoWrapTextShape& other) : wxSFEditTextShape(other) {
-	SetFill(m_bgColour);
-	m_sText = other.m_sText;
-	m_bgColour = other.m_bgColour;
+	m_textToDraw = other.m_textToDraw;
+
+	MarkSerializableDataMembers();
 }
 
 void AutoWrapTextShape::UpdateRectSize() {
@@ -127,7 +129,7 @@ void AutoWrapTextShape::CalcWrappedText(int length, int height) {
 			if (found != std::string::npos)
 				m_textToDraw.replace(found, 1, "\n");
 			else
-				m_textToDraw.replace(end, 1, "-");
+				m_textToDraw.replace(end, 2, "-\n");
 
 			begin = found;
 			end = found;
@@ -146,6 +148,13 @@ void AutoWrapTextShape::CalcWrappedText(int length, int height) {
 		}
 
 	}
+}
+
+void AutoWrapTextShape::MarkSerializableDataMembers() {
+	XS_SERIALIZE_STRING_EX(m_textToDraw, "textToDraw", "");
+	XS_SERIALIZE_DOUBLE_EX(m_topSpace, "topSpace", 0.0);
+	XS_SERIALIZE_INT_EX(m_height, "height", -1);
+	XS_SERIALIZE_BOOL_EX(m_forceMultiline, "forceMultiline", true);
 }
 
 
