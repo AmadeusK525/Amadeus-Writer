@@ -17,17 +17,96 @@ using std::pair;
 ///////////////////////////////////////////////////////////////
 
 
-struct TimelineThread {
-	wxRect rect{ -1,-1,-1,-1 };
+class TimelineThread {
+private:
+	wxRect m_boundingRect{ -1,-1,-1,-1 };
 
-	wxVector<pair<int, wxColour>> stats;
- 
+	int m_y = -1;
+	wxColour m_colour{ 0,0,0 };
+
+	wxString m_character{ "" };
+
+	static int m_height;
+
+public:
 	TimelineThread() = default;
-	TimelineThread(int y, wxColour& colour) {
-		stats.push_back(pair<int, wxColour>(y, colour));
-	};
+	TimelineThread(int y, wxColour& colour): m_y(y), m_colour(colour) {}
 
 	void Draw(wxDC& dc, int width);
+
+	inline int GetY() { return m_y; }
+	inline void SetY(int y) { m_y = y; }
+
+	inline static int GetHeight() { return m_height; }
+	inline static void SetHeight(int height) { m_height = height; }
+
+	inline wxColour& GetColour() { return m_colour; }
+	inline void SetColour(wxColour& colour) { m_colour = colour; }
+
+	inline wxString& GetCharacter() { return m_character; }
+
+	inline wxRect& GetRect() { return m_boundingRect; }
+	inline void SetRect(wxRect& rect) { m_boundingRect = rect; }
+
+};
+
+
+///////////////////////////////////////////////////////////////
+//////////////////////// TimelineSection //////////////////////
+///////////////////////////////////////////////////////////////
+
+
+class TimelineSection {
+private:
+	wxSFShapeCanvas* m_canvas = nullptr;
+
+	wxString m_name{ "" };
+
+	int m_pos = -1;
+	int m_first = -1, m_last = -1;
+
+	static int m_markerWidth, m_horSpacing;
+	static int m_titleOffset;
+
+	wxRect m_insideRect{ -1,0,-1,-1 };
+	wxVector<int> m_separators{};
+
+public:
+	TimelineSection(int pos, int first, int last, wxSFShapeCanvas* canvas) {
+		m_pos = pos;
+
+		m_first = first;
+		m_last = last;
+
+		m_canvas = canvas;
+
+		RecalculatePosition();
+	}
+
+	void AppendCard();
+	void PrependCard();
+	void RemoveCardFromEnd();
+	void RemoveCardFromBeggining();
+
+	void ShiftLeft();
+	void ShiftRight();
+
+	inline int GetFirst() { return m_first; }
+	inline int GetLast() { return m_last; }
+	inline int GetPos() { return m_pos; }
+
+	inline static int GetMarkerWidth() { return m_markerWidth; }
+	inline static int GetHorizontalSpcaing() { return m_horSpacing; }
+
+	inline wxRect& GetRect() { return m_insideRect; }
+	inline void SetHeight(int height) { m_insideRect.height = height; }
+
+	wxPoint GetCellInPosition(wxPoint& pos);
+
+	void Draw(wxDC& dc, int virtualHeight, bool drawSeparators);
+
+	bool Contains(wxPoint& pos) { return m_insideRect.Contains(pos); }
+	void RecalculatePosition();
 };
 
 
@@ -39,17 +118,13 @@ struct TimelineThread {
 class TimelineCanvas : public wxSFShapeCanvas {
 private:
 	wxVector<TimelineThread> m_threads{};
-	wxVector<int> m_separators;
+	wxVector<TimelineSection> m_sections{};
 
-	std::pair<wxPoint, wxRect> m_curDragCell{ wxPoint(-1, -1), wxRect(-1,-1, 300, 200) };
+	pair<wxPoint, wxRect> m_curDragCell{ wxPoint(-1, -1), wxRect(-1,-1, 300, 200) };
+	int m_curDragSection = 0;
 
 	bool m_drawSeparators = true;
 	bool m_propagateColour = true;
-
-	wxBitmap m_dragShapeBmp{};
-
-	wxRealPoint m_cacheZoomPoint{ -1,-1 };
-	wxTimer m_zoomTimer{};
 
 public:
 	TimelineCanvas(wxSFDiagramManager* manager, wxWindow* parent, wxWindowID id = -1,
@@ -59,13 +134,17 @@ public:
 	void InitSidebar();
 
 	void AddThread(int pos, wxColour& colour, bool refresh = true);
-	TimelineCard* AddCard(int row, int col, bool recalcPos = true);
+	TimelineCard* AddCard(int row, int col, int section, bool recalcPos = true);
 
-	void SetCardToColumn(int column, TimelineCard* shape);
+	void AppendSection();
+
+	pair<int, int> SetCardToSection(int section, TimelineCard* shape);
+	bool SetCardToColumn(int column, TimelineCard* shape);
 	
 	bool CalculateCellDrag(wxPoint& pos);
 
 	wxColour GetThreadColour(int thread);
+	int GetBottom();
 
 	virtual void DrawBackground(wxDC& dc, bool fromPaint);
 	virtual void DrawForeground(wxDC& dc, bool fromPaint);
@@ -84,7 +163,6 @@ public:
 	virtual void OnTextChange(wxSFEditTextShape* shape);
 
 	void OnScroll(wxScrollWinEvent& event);
-	void OnTimer(wxTimerEvent& event);
 
 	DECLARE_EVENT_TABLE()
 
