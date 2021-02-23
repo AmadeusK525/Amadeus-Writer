@@ -1,15 +1,23 @@
 #include "TimelineShapes.h"
 
+#include "Timeline.h"
+
 XS_IMPLEMENT_CLONABLE_CLASS(TimelineCard, wxSFRoundRectShape);
+
+int TimelineCard::m_verSpacing = 10;
+int TimelineCard::m_horSpacing = 20;
+int TimelineCard::m_width = 250;
+int TimelineCard::m_height = 150;
 
 TimelineCard::TimelineCard() {
 	SetRadius(0.3);
-	SetRectSize(300, 200);
+	SetRectSize(m_width, m_height);
 
 	RemoveStyle(sfsPOSITION_CHANGE);
 	RemoveStyle(sfsSHOW_HANDLES);
-	AddStyle(sfsHIGHLIGHTING);
 	RemoveStyle(sfsSIZE_CHANGE);
+	AddStyle(sfsHIGHLIGHTING);
+	AddStyle(sfsHOVERING);
 
 	AddStyle(sfsSHOW_SHADOW);
 
@@ -79,7 +87,17 @@ TimelineCard::TimelineCard(const TimelineCard& other) : wxSFRoundRectShape(other
 }
 
 void TimelineCard::RecalculatePosition() {
-	MoveTo((40 * m_col) + 20 + (300 * m_col), (20 * (m_row + 1)) + (200 * m_row));
+	int sectionMarkerWidth = TimelineSection::GetMarkerWidth();
+	int sectionHorSpacing = TimelineSection::GetHorizontalSpcaing();
+
+	int x = ((m_width + m_horSpacing) * m_col) +
+		(sectionMarkerWidth + (m_horSpacing / 2)) +
+		(m_section * (sectionHorSpacing + (sectionMarkerWidth * 2)));
+	
+	int y = (m_verSpacing * (m_row + 1)) +
+		(m_height * m_row);
+
+	MoveTo(x, y);
 }
 
 void TimelineCard::SetColour(wxColour& colour) {
@@ -110,4 +128,8 @@ void TimelineCard::SetColour(wxColour& colour) {
 void TimelineCard::MarkSerializableDataMembers() {
 	XS_SERIALIZE_EX(m_row, wxT("row"), -1);
 	XS_SERIALIZE_EX(m_col, wxT("column"), -1);
+}
+
+bool TimelineCard::operator<(const TimelineCard& other) {
+	return m_col < other.m_col;
 }
