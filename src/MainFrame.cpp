@@ -433,10 +433,6 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event) {
 	m_toolBar->Show(showToolBar);
 	m_elements->m_searchBar->Show(showSearch);
 	m_verticalSizer->Layout();
-
-	if (page == 3) {
-		m_outline->OnShow();
-	}
 }
 
 // These next 3 functions are for opening up the frames used on creating characters, locations and chapters.

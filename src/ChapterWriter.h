@@ -6,9 +6,9 @@
 #include <wx\richtext\richtextctrl.h>
 #include <wx\aui\aui.h>
 #include <wx\wrapsizer.h>
+#include <wx\scrolwin.h>
 
 #include "ProjectManager.h"
-#include "ImagePanel.h"
 #include "ChaptersNotebook.h"
 #include "Note.h"
 
@@ -118,23 +118,33 @@ enum {
 };
 
 
-struct amChapterWriterNotebook : public wxAuiNotebook {
+class amChapterWriterNotebook : public wxAuiNotebook {
+private:
     amChapterWriter* m_parent = nullptr;
 
-    wxToolBar* contentTool = nullptr;
-    wxComboBox* fontSize = nullptr;
-    wxSlider* contentScale = nullptr;
+    wxToolBar* m_contentToolbar = nullptr;
+    wxComboBox* m_fontSize = nullptr;
+    wxSlider* m_contentScale = nullptr;
 
     wxRichTextCtrl* m_textCtrl = nullptr;
-    wxRichTextStyleSheet* styleSheet = nullptr;
-    wxVector<Note> notes;
-    ImagePanel* corkBoard = nullptr;
+    wxRichTextStyleSheet* m_styleSheet = nullptr;
+    wxVector<Note> m_notes;
+    wxScrolledWindow* m_corkboard = nullptr;
 
-    wxWrapSizer* notesSizer = nullptr;
-    wxPanel* selNote = nullptr;
-    wxSize notesSize{};
+    wxWrapSizer* m_notesSizer = nullptr;
+    wxPanel* m_selNote = nullptr;
+    wxSize m_noteSize{};
 
+public:
     amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWriter* chapterWriter);
+
+    wxRichTextCtrl* GetTextCtrl() { return m_textCtrl; }
+    wxPanel* GetCorkboard() { return m_corkboard; }
+    
+    wxVector<Note>& GetNotes() { return m_notes; }
+    wxWrapSizer* GetNotesSizer() { return m_notesSizer; }
+
+    void SetNoteSize(wxSize& size) { m_noteSize = size; }
 
     void OnText(wxCommandEvent& event);
     void OnKeyDown(wxRichTextEvent& event);

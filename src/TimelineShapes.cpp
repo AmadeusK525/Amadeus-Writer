@@ -90,12 +90,14 @@ void TimelineCard::RecalculatePosition() {
 	int sectionMarkerWidth = TimelineSection::GetMarkerWidth();
 	int sectionHorSpacing = TimelineSection::GetHorizontalSpcaing();
 
-	int x = ((m_width + m_horSpacing) * m_col) +
-		(sectionMarkerWidth + (m_horSpacing / 2)) +
-		(m_section * (sectionHorSpacing + (sectionMarkerWidth * 2)));
+	int x = ((m_width + m_horSpacing) * m_col)
+		+ (sectionMarkerWidth + (m_horSpacing / 2))
+		+ (m_section * (sectionHorSpacing + (sectionMarkerWidth * 2))
+		+ TimelineThread::GetTitleOffset());
 	
 	int y = (m_verSpacing * (m_row + 1)) +
-		(m_height * m_row);
+		(m_height * m_row) +
+		TimelineSection::GetTitleOffset();
 
 	MoveTo(x, y);
 }

@@ -11,9 +11,6 @@ private:
 	double m_topSpace = 0.0;
 	int m_height = -1;
 
-	bool m_clipRegion = false;
-	bool m_forceMultiline = true;
-
 public:
 	XS_DECLARE_CLONABLE_CLASS(AutoWrapTextShape);
 
@@ -30,19 +27,16 @@ public:
 	/// </summary>
 	/// <param name="points"></param>
 	inline void SetTopSpace(int points) { m_topSpace = points; }
-	inline void ForceMultiline(bool forceMultiline) { m_forceMultiline = forceMultiline; }
 	void SetHeight(int height);
 
 	virtual void OnLeftDoubleClick(const wxPoint& pos);
 
-	inline static void ShouldCountLines(bool will) { m_countLines = will; }
-	inline void ShouldClip(bool will) { AutoWrapTextShape::m_clipRegion = will; }
-	void CalcWrappedText(int length, int height);
+	inline void EmtpyDrawText() { m_textToDraw.Empty(); }
+	
+	void CalcWrappedText();
+	void DoCalcWrappedText(int length, int height);
 
 	void MarkSerializableDataMembers();
-	
-public:
-	static bool m_countLines;
 };
 
 
@@ -68,15 +62,12 @@ public:
 	virtual ~NoteShape() {}
 
 	void ChangeColour(wxWindowID id);
-
-	void ShouldCountLines(bool count) { m_content->ShouldCountLines(count); }
-	void ShouldClip(bool will) { m_content->ShouldClip(will); }
+	void EmtpyDrawText() { m_content->EmtpyDrawText(); }
 
 	virtual void OnBeginHandle(wxSFShapeHandle& handle);
 	virtual void OnHandle(wxSFShapeHandle& handle);
 	virtual void OnEndHandle(wxSFShapeHandle& handle);
 
-	virtual void OnBeginDrag(const wxPoint& pos);
 	virtual void OnEndDrag(const wxPoint& pos);
 };
 

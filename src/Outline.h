@@ -34,9 +34,6 @@ public:
         wxStringInputStream& timeline,
         wxStringInputStream& files);
 
-    void OnShow();
-    void OnPageChange(wxBookCtrlEvent& event);
-
     amCorkboard* GetCorkboard() { return m_corkboard; }
     amTimeline* GetTimeline() { return m_timeline; }
     amOutlineFilesPanel* GetOutlineFiles() { return m_files; }

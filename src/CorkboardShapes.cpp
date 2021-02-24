@@ -5,10 +5,9 @@
 XS_IMPLEMENT_CLONABLE_CLASS(AutoWrapTextShape,
 	wxSFEditTextShape);
 
-bool AutoWrapTextShape::m_countLines = true;
-
 AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape() {
 	SetFill(wxColour(255,255,255));
+	m_sText = "";
 	m_textToDraw = "";
 
 	MarkSerializableDataMembers();
@@ -49,16 +48,6 @@ void AutoWrapTextShape::DrawTextContent(wxDC& dc) {
 
 	wxRect rect(GetBoundingBox());
 
-	if (m_clipRegion)
-		m_textToDraw.Empty();
-
-	// Get wrapped text and draw all text lines
-	if (m_countLines && rect.width > 30) {
-		int numberOfLines = 1;
-
-		CalcWrappedText(rect.width, rect.height);
-	}
-
 	dc.DrawText(m_textToDraw, rect.x, rect.y);
 }
 
@@ -80,7 +69,7 @@ void AutoWrapTextShape::OnLeftDoubleClick(const wxPoint& pos) {
 		RemoveStyle(sfsSIZE_CHANGE);
 
 		int style = wxTE_BESTWRAP;
-		if (m_forceMultiline)
+		if (m_fForceMultiline)
 			style = wxTE_MULTILINE;
 
 		m_pTextCtrl = new wxSFContentCtrl(GetParentCanvas(), wxID_ANY,
@@ -93,7 +82,12 @@ void AutoWrapTextShape::OnLeftDoubleClick(const wxPoint& pos) {
 	}
 }
 
-void AutoWrapTextShape::CalcWrappedText(int length, int height) {
+void AutoWrapTextShape::CalcWrappedText() {
+	if (m_nRectSize.x > 30)
+		DoCalcWrappedText(m_nRectSize.x, m_nRectSize.y);
+}
+
+void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 	m_textToDraw = m_sText;
 
 	if (m_textToDraw.IsEmpty())
@@ -123,17 +117,23 @@ void AutoWrapTextShape::CalcWrappedText(int length, int height) {
 
 		textSize = GetTextExtent(m_textToDraw.SubString(begin, end));
 
+		// This is done due to a bug that cause m_nLineHeight to be 0 before getting the text extent
+		if (numberOfLines == 1)
+			numberOfLines = height / m_nLineHeight;
+
 		if (textSize.x >= length - 2 && numberOfLines != 0) {
+			maxChar = end - 1;
 			size_t found = m_textToDraw.rfind(" ", end);
 
-			if (found != std::string::npos)
+			if (found != std::string::npos) {
 				m_textToDraw.replace(found, 1, "\n");
-			else
-				m_textToDraw.replace(end, 2, "-\n");
+				begin = found;
+			} else {
+				m_textToDraw.replace(maxChar, 2, "-\n");
+				begin = maxChar + 1;
+			}
 
-			begin = found;
-			end = found;
-
+			end = begin;
 			numberOfLines--;
 		} else if (numberOfLines == 0 || end >= strLen ||
 			GetTextExtent(m_textToDraw.Left(end)).y > height) {
@@ -154,7 +154,6 @@ void AutoWrapTextShape::MarkSerializableDataMembers() {
 	XS_SERIALIZE_STRING_EX(m_textToDraw, "textToDraw", "");
 	XS_SERIALIZE_DOUBLE_EX(m_topSpace, "topSpace", 0.0);
 	XS_SERIALIZE_INT_EX(m_height, "height", -1);
-	XS_SERIALIZE_BOOL_EX(m_forceMultiline, "forceMultiline", true);
 }
 
 
@@ -293,8 +292,8 @@ void NoteShape::ChangeColour(wxWindowID id) {
 }
 
 void NoteShape::OnBeginHandle(wxSFShapeHandle& handle) {
-	ShouldCountLines(false);
-	ShouldClip(true);
+	EmtpyDrawText();
+	//m_content->ShouldIndividualCount(true);
 	wxSFRoundRectShape::OnBeginHandle(handle);
 }
 
@@ -304,21 +303,12 @@ void NoteShape::OnHandle(wxSFShapeHandle& handle) {
 }
 
 void NoteShape::OnEndHandle(wxSFShapeHandle& handle) {
-	ShouldCountLines(true);
-	ShouldClip(false);
-
+	m_content->CalcWrappedText();
 	wxSFRoundRectShape::OnEndHandle(handle);
 	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }
 
-void NoteShape::OnBeginDrag(const wxPoint& pos) {
-	ShouldCountLines(false);
-	wxSFRoundRectShape::OnBeginDrag(pos);
-}
-
 void NoteShape::OnEndDrag(const wxPoint& pos) {
-	ShouldCountLines(true);
-
 	wxSFRoundRectShape::OnEndDrag(pos);
 	((amCorkboard*)((CorkboardCanvas*)GetParentCanvas())->GetParent())->Save();
 }

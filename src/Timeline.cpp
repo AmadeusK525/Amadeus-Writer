@@ -9,13 +9,79 @@
 ///////////////////////////////////////////////////////////////
 
 
-int TimelineThread::m_height = 20;
+int TimelineThread::m_height = 10;
+int TimelineThread::m_width = 1000;
+int TimelineThread::m_titleOffset = 250;
+wxPen TimelineThread::m_hoverPen{ wxColour(130,130,225), 4 };
+wxPen TimelineThread::m_selectedPen{ wxColour(110,110,200), 5 };
 
-void TimelineThread::Draw(wxDC& dc, int width) {
+void TimelineThread::Draw(wxDC& dc) {
+	if (m_isSelected && m_drawSelected)
+		DrawSelected(dc);
+	else if (m_isHovering)
+		DrawHover(dc);
+	else
+		DrawNormal(dc);
+}
+
+void TimelineThread::DrawNormal(wxDC& dc) {
 	dc.SetPen(wxPen(m_colour));
 	dc.SetBrush(wxBrush(m_colour));
 
-	dc.DrawRectangle(wxPoint(0, m_y), wxSize(width, m_height));
+	dc.DrawRectangle(wxPoint(0, m_y), wxSize(m_width, m_height));
+}
+
+void TimelineThread::DrawHover(wxDC& dc) {
+	dc.SetPen(m_hoverPen);
+	dc.SetBrush(wxBrush(m_colour));
+
+	dc.DrawRectangle(wxPoint(0, m_y), wxSize(m_width, m_height));
+}
+
+void TimelineThread::DrawSelected(wxDC& dc) {
+	dc.SetPen(m_selectedPen);
+	dc.SetBrush(wxBrush(m_colour));
+
+	dc.DrawRectangle(wxPoint(0, m_y), wxSize(m_width, m_height));
+}
+
+void TimelineThread::Refresh(bool delayed) {
+	wxRect rect(m_boundingRect);
+	rect.width = m_canvas->GetVirtualSize().x / m_canvas->GetScale();
+
+	if (delayed)
+		m_canvas->InvalidateRect(rect);
+	else
+		m_canvas->RefreshCanvas(true, rect);
+}
+
+
+void TimelineThread::OnLeftDown(const wxPoint& pos) {
+	m_isSelected = true;
+	Refresh();
+
+	if (m_canvas)
+		((TimelineCanvas*)m_canvas)->OnThreadSelected(this);
+}
+
+void TimelineThread::KillFocus() {
+	m_isSelected = false;
+	Refresh();
+
+	if (m_canvas)
+		((TimelineCanvas*)m_canvas)->OnThreadUnselected(this);
+}
+
+void TimelineThread::OnMouseMove(const wxPoint& pos) {
+	m_isHovering = true;
+
+	if (!m_isSelected)
+		Refresh();
+}
+
+void TimelineThread::OnMouseLeave() {
+	m_isHovering = false;
+	Refresh();
 }
 
 
@@ -26,7 +92,7 @@ void TimelineThread::Draw(wxDC& dc, int width) {
 
 int TimelineSection::m_horSpacing = 400;
 int TimelineSection::m_markerWidth = 20;
-int TimelineSection::m_titleOffset = 100;
+int TimelineSection::m_titleOffset = 200;
 
 void TimelineSection::AppendCard() {
 	m_last++;
@@ -34,7 +100,8 @@ void TimelineSection::AppendCard() {
 	if (m_last - m_first >= 1)
 		m_separators.push_back(m_insideRect.x + m_insideRect.width);
 
-	m_insideRect.width += 340;
+	m_isEmpty = false;
+	RecalculatePosition();
 }
 
 void TimelineSection::PrependCard() {
@@ -43,7 +110,8 @@ void TimelineSection::PrependCard() {
 	if (m_last - m_first >= 1)
 		m_separators.insert(m_separators.begin(), m_insideRect.x);
 
-	m_insideRect.x -= TimelineCard::GetWidth() + TimelineCard::GetHorizontalSpacing();
+	m_isEmpty = false;
+	RecalculatePosition();
 }
 
 void TimelineSection::RemoveCardFromEnd() {
@@ -52,7 +120,8 @@ void TimelineSection::RemoveCardFromEnd() {
 	if (!m_separators.empty())
 		m_separators.pop_back();
 
-	m_insideRect.width -= TimelineCard::GetWidth() + TimelineCard::GetHorizontalSpacing();
+	m_isEmpty = m_last < m_first;
+	RecalculatePosition();
 }
 
 void TimelineSection::RemoveCardFromBeggining() {
@@ -61,7 +130,8 @@ void TimelineSection::RemoveCardFromBeggining() {
 	if (!m_separators.empty())
 		m_separators.erase(m_separators.begin());
 
-	m_insideRect.x += TimelineCard::GetWidth() + TimelineCard::GetHorizontalSpacing();
+	m_isEmpty = m_last < m_first;
+	RecalculatePosition();
 }
 
 void TimelineSection::ShiftLeft() {
@@ -80,28 +150,44 @@ wxPoint TimelineSection::GetCellInPosition(wxPoint& pos) {
 	int xCell = ((pos.x - m_insideRect.x) /
 		(TimelineCard::GetHorizontalSpacing() + TimelineCard::GetWidth())) + m_first;
 
-	int yCell = ((pos.y - (TimelineCard::GetVerticalSpacing() / 2)) / (TimelineCard::GetVerticalSpacing() + TimelineCard::GetHeight()));
+	int yCell;
+	
+	if (pos.y <= m_titleOffset)
+		yCell = 0;
+	else
+		yCell = (((pos.y - (TimelineCard::GetVerticalSpacing() / 2)) - GetTitleOffset()) /
+		(TimelineCard::GetVerticalSpacing() + TimelineCard::GetHeight()));
 
 	return wxPoint(xCell, yCell);
 }
 
-void TimelineSection::Draw(wxDC& dc, int virtualHeight, bool drawSeparators) {
+void TimelineSection::DrawNormal(wxDC& dc, int virtualHeight, bool drawSeparators) {
 	dc.SetPen(wxPen(wxColour(255, 255, 255), 2));
 	dc.SetBrush(wxBrush(wxColour(0,0,0)));
 
 	dc.DrawRectangle(m_insideRect.GetTopLeft() - wxPoint(m_markerWidth, 0), wxSize(m_markerWidth, m_insideRect.height + 10));
 	dc.DrawRectangle(m_insideRect.GetTopRight(), wxSize(m_markerWidth, m_insideRect.height + 10));
 
-	dc.SetPen(wxPen(wxColour(0, 0, 0, 128), 2, wxPENSTYLE_LONG_DASH));
+	dc.SetPen(wxPen(wxColour(90, 90, 90), 2, wxPENSTYLE_LONG_DASH));
 	
 	if (drawSeparators) {
-		for (auto& it : m_separators) {
-			dc.DrawLine(wxPoint(it, 0), wxPoint(it, m_insideRect.height));
-		}
+		for (auto& it : m_separators)
+			dc.DrawLine(wxPoint(it, m_separatorY), wxPoint(it, m_insideRect.height));
 	}
 
+	dc.DrawLine(wxPoint(m_insideRect.GetLeft(), m_separatorY), wxPoint(m_insideRect.GetRight(), m_separatorY));
+
 	dc.DrawLine(m_insideRect.GetBottomLeft(), m_insideRect.GetBottomRight());
-	dc.DrawLine(m_insideRect.GetBottomLeft() + wxPoint(0, 10), m_insideRect.GetBottomRight() + wxPoint(0, 10));
+	dc.DrawLine(wxPoint(m_insideRect.GetLeft(), m_bottom1), wxPoint(m_insideRect.GetRight(), m_bottom2));
+
+	if (!m_isEmpty) {
+		dc.SetFont(m_titleFont);
+
+		dc.SetPen(wxPen(wxColour(255, 255, 255)));
+		dc.SetBrush(wxBrush(wxColour(0, 0, 0)));
+		
+		dc.DrawText(m_titleToDraw, wxPoint(m_insideRect.GetLeft() + 20, 40));
+	}
 }
 
 bool TimelineSection::EmptyContains(wxPoint& pos) {
@@ -113,21 +199,63 @@ bool TimelineSection::EmptyContains(wxPoint& pos) {
 	return rect.Contains(pos);
 }
 
+void TimelineSection::CalculateTitleWrap() {
+	if (m_title.IsEmpty() || m_isEmpty) {
+		m_titleToDraw.Empty();
+		return;
+	}
+
+	m_titleToDraw = m_title;
+
+	wxClientDC dc(m_canvas);
+	wxGraphicsContext* pGC = wxGraphicsContext::Create(dc);
+	pGC->SetFont(m_titleFont, wxColour(0,0,0));
+
+	int index = 0;
+	int strLen = m_titleToDraw.Length();
+
+	double wd = -1, hd = -1;
+
+	int maxWidth = m_insideRect.GetWidth() - 20;
+
+	while (index <= strLen + 1) {
+		index += 2;
+
+		if (index == strLen)
+			index = strLen;
+
+		pGC->GetTextExtent(m_titleToDraw.SubString(0, index), &wd, &hd);
+
+		if (wd >= maxWidth) {
+			m_titleToDraw.Remove(index - 3);
+			m_titleToDraw << "...";
+			break;
+		}
+	}
+}
+
 void TimelineSection::RecalculatePosition() {
 	int cardHorizontalSpacing = TimelineCard::GetHorizontalSpacing();
 	int cardWidth = TimelineCard::GetWidth();
 
 	int cardSpace = cardHorizontalSpacing + cardWidth;
 
-	m_insideRect.x = (cardSpace * m_first) +
-		(m_pos * m_horSpacing) +
-		(m_pos * 2 * m_markerWidth) + m_markerWidth;
+	m_insideRect.x = (cardSpace * m_first) 
+		+ (m_pos * m_horSpacing)
+		+ (m_pos * 2 * m_markerWidth) 
+		+ m_markerWidth
+		+ TimelineThread::GetTitleOffset();
 	
 	m_insideRect.width = (cardSpace * (m_last - m_first + 1));
 	m_insideRect.height = ((TimelineCanvas*)m_canvas)->GetBottom();
 
 	for (int i = 0; i < m_separators.size(); i++)
 		m_separators[i] = m_insideRect.x + (cardSpace * (i + 1));
+
+	m_bottom2 = (m_insideRect.GetBottomLeft() + wxPoint(0, 10)).y;
+	m_bottom1 = (m_insideRect.GetBottomRight() + wxPoint(0, 10)).y;
+
+	CalculateTitleWrap();
 }
 
 
@@ -191,18 +319,20 @@ TimelineCanvas::TimelineCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	m_curDragCell.second.height = TimelineCard::GetHeight();
 	m_curDragCell.second.width = TimelineCard::GetWidth();
 
+	m_threadSelectionTimer.Bind(wxEVT_TIMER, &TimelineCanvas::OnThreadSelectionTimer, this);
+
 	UpdateVirtualSize();
 	Refresh(true);
 }
 
 void TimelineCanvas::AddThread(int pos, wxColour& colour, bool refresh) {
 	if (pos >= m_threads.size())
-		m_threads.push_back(TimelineThread(-1, colour));
+		m_threads.push_back(TimelineThread(-1, colour, this));
 	else {
 		int i = 0;
 		for (auto& it : m_threads) {
 			if (i++ == pos)
-				m_threads.insert(&it, TimelineThread(-1, colour));
+				m_threads.insert(&it, TimelineThread(-1, colour, this));
 		}
 	}
 
@@ -220,13 +350,10 @@ void TimelineCanvas::AddThread(int pos, wxColour& colour, bool refresh) {
 /// <param name="section"></param>
 /// <param name="recalcPos"></param>
 /// <returns></returns>
-TimelineCard* TimelineCanvas::AddCard(int row, int col, int section, bool recalcPos) {
+TimelineCard* TimelineCanvas::AddCard(int row, int col, int section) {
 	TimelineCard* shape = (TimelineCard*)GetDiagramManager()->AddShape(CLASSINFO(TimelineCard), wxPoint());
-	shape->SetRow(row);
 
-	if (recalcPos)
-		shape->RecalculatePosition();
-
+	SetCardToRow(row, shape);
 	SetCardToSection(section, shape);
 	SetCardToColumn(m_sections[section].GetFirst() + col, shape);
 
@@ -246,8 +373,6 @@ void TimelineCanvas::AppendSection() {
 
 	TimelineSection section(m_sections.size(), shapes.size(), shapes.size() - 1, this);
 	m_sections.push_back(section);
-	
-	AddCard(0, 0, m_sections.size() - 1);
 }
 
 void TimelineCanvas::RepositionThreads() {
@@ -262,7 +387,8 @@ void TimelineCanvas::RepositionThreads() {
 	for (int i = 0; i < m_threads.size(); i++) {
 		m_threads[i].SetY(((cardVerSpacing + cardHeight) * (i + 1)) 
 			- (cardHeight / 2) 
-			- (threadHeight / 2));
+			- (threadHeight / 2)
+			+ TimelineSection::GetTitleOffset());
 
 		m_threads[i].SetRect(wxRect(0,
 			m_threads[i].GetY() + (threadHeight / 2) - (cardHeight / 2) - (cardVerSpacing / 2),
@@ -296,33 +422,25 @@ pair<int, int> TimelineCanvas::SetCardToSection(int section, TimelineCard* shape
 
 	if (prevSection > section) {
 		if (prevSection - section > 1)
-			for (int i = section + 1; i < prevSection; i++) {
+			for (int i = section + 1; i < prevSection; i++)
 				m_sections[i].ShiftRight();
-				m_sections[i].RecalculatePosition();
-			}
 
-		if (prevSection < m_sections.size()) {
+		if (prevSection < m_sections.size())
 			m_sections[prevSection].RemoveCardFromBeggining();
-			m_sections[prevSection].RecalculatePosition();
-		}
+		
 
 		m_sections[section].AppendCard();
 	} else {
 		if (section - prevSection > 1)
-			for (int i = prevSection + 1; i < section; i++) {
+			for (int i = prevSection + 1; i < section; i++)
 				m_sections[i].ShiftLeft();
-				m_sections[i].RecalculatePosition();
-			}
 
-		if (prevSection < m_sections.size()) {
+		if (prevSection < m_sections.size())
 			m_sections[prevSection].RemoveCardFromEnd();
-			m_sections[prevSection].RecalculatePosition();
-		}
 
 		m_sections[section].PrependCard();
 	}
 
-	m_sections[section].RecalculatePosition();
 	return pair<int, int>(m_sections[section].GetFirst(), m_sections[section].GetLast());
 }
 
@@ -396,7 +514,7 @@ bool TimelineCanvas::CalculateCellDrag(wxPoint& pos) {
 			if (cell.y != m_curDragCell.first.y || m_isDragOnEmptySection) {
 				m_curDragCell.first.y = cell.y;
 				m_curDragCell.second.y = (TimelineCard::GetVerticalSpacing() * (cell.y + 1)) +
-					(TimelineCard::GetHeight() * cell.y);
+					(TimelineCard::GetHeight() * cell.y) + TimelineSection::GetTitleOffset();
 				changed = true;
 			}
 
@@ -405,9 +523,10 @@ bool TimelineCanvas::CalculateCellDrag(wxPoint& pos) {
 				int sectionMarkerWidth = TimelineSection::GetMarkerWidth();
 
 				m_curDragCell.first.x = cell.x;
-				m_curDragCell.second.x = ((TimelineCard::GetWidth() + cardHorSpacing) * cell.x) +
-					(sectionMarkerWidth + (cardHorSpacing / 2)) +
-					(i * (TimelineSection::GetHorizontalSpcaing() + (sectionMarkerWidth * 2)));
+				m_curDragCell.second.x = ((TimelineCard::GetWidth() + cardHorSpacing) * cell.x) 
+					+ (sectionMarkerWidth + (cardHorSpacing / 2)) 
+					+ (i * (TimelineSection::GetHorizontalSpcaing() + (sectionMarkerWidth * 2))
+					+ TimelineThread::GetTitleOffset());
 
 				changed = true;
 			}
@@ -466,20 +585,39 @@ int TimelineCanvas::GetBottom() {
 	return bottom;
 }
 
+void TimelineCanvas::OnThreadSelected(TimelineThread* thread) {
+	m_threadSelectionTimer.Start(700);
+}
+
+void TimelineCanvas::OnThreadUnselected(TimelineThread* thread) {
+	m_threadSelectionTimer.Stop();
+}
+
+void TimelineCanvas::OnThreadSelectionTimer(wxTimerEvent& event) {
+	if (m_selectedThread) {
+		m_selectedThread->SetDrawSelected(!m_selectedThread->GetDrawSelected());
+		
+		if (IsShownOnScreen())
+			m_selectedThread->Refresh(false);
+		else
+			m_selectedThread->Refresh(true);
+	}
+}
+
 void TimelineCanvas::DrawBackground(wxDC& dc, bool fromPaint) {
 	wxSFShapeCanvas::DrawBackground(dc, fromPaint);
 
 	int threadWidth = GetVirtualSize().x / GetScale();
 
-	for (auto& it : m_threads)
-		it.Draw(dc, threadWidth);
+	for (TimelineThread& thread : m_threads)
+		thread.Draw(dc);
 }
 
 void TimelineCanvas::DrawForeground(wxDC& dc, bool fromPaint) {
 	int virtualHeight = GetVirtualSize().y / GetScale();
 
 	for (auto& it : m_sections)
-		it.Draw(dc, virtualHeight, m_drawSeparators);
+		it.DrawNormal(dc, virtualHeight, m_drawSeparators);
 
 	dc.SetPen(wxPen(wxColour(180, 180, 255, 128), 2));
 	dc.SetBrush(wxBrush(wxColour(200, 200, 255, 128)));
@@ -499,25 +637,65 @@ void TimelineCanvas::OnUpdateVirtualSize(wxRect& rect) {
 		rect.width = m_sections.back().GetRect().GetRight() + 300;
 
 	rect.height += 300;
+
+	TimelineThread::SetWidth(rect.width / m_Settings.m_nScale);
 }
 
 void TimelineCanvas::OnMouseMove(wxMouseEvent& event) {
+	wxPoint pos = DP2LP(event.GetPosition());
+
 	if (m_nWorkingMode == modeSHAPEMOVE) {
-		AutoWrapTextShape::ShouldCountLines(false);
-		if (CalculateCellDrag(DP2LP(event.GetPosition())))
+		if (CalculateCellDrag(pos))
 			Refresh(false);
 	}
 
+	bool hasThreadHover = false;
+	for (TimelineThread& thread : m_threads) {
+		if (thread.Contains(pos)) {
+			if (m_threadUnderMouse && m_threadUnderMouse != &thread)
+				m_threadUnderMouse->OnMouseLeave();
+
+			m_threadUnderMouse = &thread;
+			thread.OnMouseMove(pos);
+			
+			hasThreadHover = true;
+			break;
+		}
+	}
+
+	if (!hasThreadHover && m_threadUnderMouse) {
+		m_threadUnderMouse->OnMouseLeave();
+		m_threadUnderMouse = nullptr;
+	}
+	
 	wxSFShapeCanvas::OnMouseMove(event);
 }
 
-void TimelineCanvas::OnMouseWheel(wxMouseEvent& event) {
-	AutoWrapTextShape::ShouldCountLines(false);
-	wxSFShapeCanvas::OnMouseWheel(event);
-}
-
 void TimelineCanvas::OnLeftDown(wxMouseEvent& event) {
-	CalculateCellDrag(DP2LP(event.GetPosition()));
+	wxPoint pos = DP2LP(event.GetPosition());
+
+	if (GetShapeUnderCursor())
+		CalculateCellDrag(pos);
+	else {
+		bool hitThread = false;
+		for (TimelineThread& thread : m_threads) {
+			if (thread.Contains(pos)) {
+				if (m_selectedThread && m_selectedThread != &thread)
+					m_selectedThread->KillFocus();
+
+				thread.OnLeftDown(pos);
+				m_selectedThread = &thread;
+
+				hitThread = true;
+				break;
+			}
+		}
+
+		if (!hitThread && m_selectedThread) {
+			m_selectedThread->KillFocus();
+			m_selectedThread = nullptr;
+		}
+	}
 
 	wxSFShapeCanvas::OnLeftDown(event);
 }
@@ -581,7 +759,7 @@ void TimelineCanvas::OnKeyDown(wxKeyEvent& event) {
 		switch (event.GetKeyCode()) {
 		case 90:
 		case 122:
-			Undo();
+			//Undo();
 			break;
 
 		default:
@@ -591,14 +769,15 @@ void TimelineCanvas::OnKeyDown(wxKeyEvent& event) {
 }
 
 void TimelineCanvas::OnTextChange(wxSFEditTextShape* shape) {
-	AutoWrapTextShape::ShouldCountLines(true);
+	AutoWrapTextShape* pShape = dynamic_cast<AutoWrapTextShape*>(shape);
+
+	if (pShape)
+		pShape->CalcWrappedText();
+
 	wxSFShapeCanvas::OnTextChange(shape);
-	RefreshCanvas(true, GetTotalBoundingBox());
 }
 
-void TimelineCanvas::OnScroll(wxScrollWinEvent& event) {
-	AutoWrapTextShape::ShouldCountLines(false);
-	
+void TimelineCanvas::OnScroll(wxScrollWinEvent& event) {	
 	if (!wxGetKeyState(WXK_CONTROL))
 		event.Skip();
 }
