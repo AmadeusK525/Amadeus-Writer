@@ -114,7 +114,6 @@ public:
 
 	virtual void OnUpdateVirtualSize(wxRect& vrtrect);
 	virtual void OnMouseMove(wxMouseEvent& event);
-	virtual void OnMouseWheel(wxMouseEvent& event);
 	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
 	void OnScroll(wxScrollWinEvent& event);
 

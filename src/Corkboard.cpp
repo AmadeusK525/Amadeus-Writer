@@ -84,8 +84,6 @@ void amCorkboard::CallFullScreen(wxCommandEvent& event) {
 }
 
 void amCorkboard::FullScreen(bool fs) {
-    AutoWrapTextShape::ShouldCountLines(false);
-
     if (fs) {
 		m_parent->m_corkHolderSizer->Remove(0);
         Reparent(m_manager->GetMainFrame());
@@ -98,8 +96,6 @@ void amCorkboard::FullScreen(bool fs) {
     Layout();
 	m_canvas->Layout();
 	m_corkboardSizer->Layout();
-
-    //AutoWrapTextShape::ShouldCountLines(true);
 }
 
 void amCorkboard::SetToolMode(ToolMode mode) {
@@ -247,8 +243,6 @@ void CorkboardCanvas::OnMenu(wxCommandEvent& event) {
 }
 
 void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
-	AutoWrapTextShape::ShouldCountLines(false);
-
 	switch (parent->getToolMode()) {
 	case modeNOTE:
 	{
@@ -262,7 +256,6 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		// Show shadows only on the topmost shapes.
 		ShowShadows(m_showShadows, wxSFShapeCanvas::shadowTOPMOST);
 
-		AutoWrapTextShape::ShouldCountLines(true);
 		// ... and then perform standard operations provided by the shape canvas:
 		Refresh(false);
 		parent->SetToolMode(modeDESIGN);
@@ -343,7 +336,6 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 	case modeCONNECTION:
 		if (GetMode() == modeREADY) {
 			StartInteractiveConnection(CLASSINFO(wxSFCurveShape), event.GetPosition());
-			AutoWrapTextShape::ShouldCountLines(false);
 			m_isConnecting = true;
 		} else
 			wxSFShapeCanvas::OnLeftDown(event);
@@ -429,7 +421,6 @@ void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 	// If right mouse button has been clicked, calculate drag and begin.
 
 	if (m_beginDraggingRight) {
-		AutoWrapTextShape::ShouldCountLines(false);
 		m_isDraggingRight = true;
 		m_beginDraggingRight = false;
 		SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
@@ -445,12 +436,6 @@ void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 	// Call default behaviour.
 	wxSFShapeCanvas::OnMouseMove(event);
 	event.Skip();
-}
-
-void CorkboardCanvas::OnMouseWheel(wxMouseEvent& event) {
-	AutoWrapTextShape::ShouldCountLines(false);
-
-	wxSFShapeCanvas::OnMouseWheel(event);
 }
 
 void CorkboardCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
@@ -526,6 +511,11 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 }
 
 void CorkboardCanvas::OnTextChange(wxSFEditTextShape* shape) {
+	AutoWrapTextShape* pShape = dynamic_cast<AutoWrapTextShape*>(shape);
+
+	if (pShape)
+		pShape->CalcWrappedText();
+
 	wxSFShapeCanvas::OnTextChange(shape);
 	parent->Save();
 }

@@ -1227,13 +1227,14 @@ bool amOutlineFilesPanel::Save() {
 			root->AddChild(SerializeFile(rootFiles[i]));
 	}
 
- 	wxStringOutputStream stream;
+	amDocument document;
+	document.strings.push_back(pair<wxString, wxString>("content", wxString()));
+
+	wxStringOutputStream stream(&document.strings.begin()->second);
+	
 	if (doc.Save(stream)) {
-		amDocument document;
 		document.tableName = "outline_files";
 		document.name = "Outline Files";
-
-		document.strings.push_back(pair<wxString, wxString>("content", stream.GetString()));
 
 		amGetManager()->SaveDocument(document, document);
 
