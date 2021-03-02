@@ -7,6 +7,8 @@
 #include "CorkboardShapes.h"
 #include "wxmemdbg.h"
 
+#include <thread>
+
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Corkboard ///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -146,16 +148,26 @@ void amCorkboard::ExportToImage(wxBitmapType type) {
 }
 
 void amCorkboard::Save() {
-	amDocument document;
-	document.tableName = "outline_corkboards";
-	document.name = "Corkboard Canvas";
+	if (!m_isSaving) {
+		std::thread thread([&]() {
+			m_isSaving = true;
 
-	document.strings.push_back(pair<wxString, wxString>("content", wxString()));
+			amDocument document;
+			document.tableName = "outline_corkboards";
+			document.name = "Corkboard Canvas";
 
-	wxStringOutputStream sstream(&document.strings[0].second);
-	m_canvas->SaveCanvas(sstream);
+			document.strings.push_back(pair<wxString, wxString>("content", wxString()));
 
-	m_manager->SaveDocument(document, document);
+			wxStringOutputStream sstream(&document.strings[0].second);
+			m_canvas->SaveCanvas(sstream);
+
+			m_manager->SaveDocument(document, document);
+			m_isSaving = false;
+			}
+		);
+
+		thread.detach();
+	}
 }
 
 void amCorkboard::Load(wxStringInputStream& stream) {
@@ -186,16 +198,12 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 	RemoveStyle(sfsMULTI_SIZE_CHANGE);
 
 	// Fill background with gradient color.
-	AddStyle(sfsGRADIENT_BACKGROUND);
-	SetGradientFrom(wxColour(255, 250, 220));
-	SetGradientTo(wxColour(240, 150, 70));
+	AddStyle(sfsGRADIENT_BACKGROUND);	
+	SetGradientFrom(wxColour(20, 20, 20));
+	SetGradientTo(wxColour(30, 30, 30));
 
 	// Canvas background can be printed/ommited during the canvas printing job.
 	AddStyle(sfsPRINT_BACKGROUND);
-
-	// Edited default shadow.
-	SetShadowFill(wxBrush(wxColour(110, 70, 60)));
-	//SetShadowOffset(wxRealPoint(4.5, 4.5));
 
 	SetScrollRate(25, 25);
 
@@ -225,6 +233,7 @@ void CorkboardCanvas::DoFullScreen(bool fs) {
 		parent->FullScreen(fs);
 	}
 
+	parent->GetParent()->Layout();
 	m_isFullScreen = !m_isFullScreen;
 }
 
@@ -450,6 +459,8 @@ void CorkboardCanvas::OnScroll(wxScrollWinEvent& event) {
 }
 
 void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
+	bool save = false;
+
 	switch (event.GetKeyCode()) {
 	case WXK_F11:
 		DoFullScreen(!m_isFullScreen);
@@ -464,10 +475,10 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 
 		break;
 	case WXK_DELETE:
-		if (m_isConnecting) {
+		if (m_isConnecting)
 			event.m_keyCode = WXK_ESCAPE;
-		}
-		parent->Save();
+		
+		save = true;
 		break;
 
 	case WXK_NUMPAD1:
@@ -504,10 +515,18 @@ void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {
 	case 76:
 		parent->SetToolMode(modeCONNECTION);
 		break;
+
+	case 90:
+	case 122:
+		if (event.ControlDown())
+			Undo();
+		
+		break;
 	}
 
 	// Call default behaviour.
 	wxSFShapeCanvas::OnKeyDown(event);
+	parent->Save();
 }
 
 void CorkboardCanvas::OnTextChange(wxSFEditTextShape* shape) {
@@ -522,7 +541,7 @@ void CorkboardCanvas::OnTextChange(wxSFEditTextShape* shape) {
 
 void CorkboardCanvas::OnConnectionFinished(wxSFLineShape* connection) {
 	if (connection) {
-		connection->SetLinePen(wxPen(wxColour(150, 0, 0), 3));
+		connection->SetLinePen(wxPen(wxColour(200, 0, 0), 3));
 		connection->SetTrgArrow(CLASSINFO(wxSFSolidArrow));
 
 		connection->AcceptChild("wxSFTextShape");

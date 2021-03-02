@@ -4,7 +4,7 @@
 #include "wx/bitmap.h"
 #include "wx/custombgwin.h"
 
-class ImagePanel : public wxCustomBackgroundWindow<wxScrolledWindow> {
+class ImagePanel : public wxCustomBackgroundWindow<wxPanel> {
 private:
     wxImage image{};
 

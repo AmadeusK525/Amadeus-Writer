@@ -43,6 +43,8 @@ struct Element {
 
 	wxVector<pair<wxString, wxString>> custom{ 0 };
 
+	wxVector<wxString> aliases{};
+
 	wxVector<Chapter*> chapters{};
 	wxImage image{};
 

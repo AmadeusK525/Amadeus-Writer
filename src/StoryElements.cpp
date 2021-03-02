@@ -120,7 +120,7 @@ void Character::Save(wxSQLite3Database* db) {
 		if (doImage) {
 			wxMemoryOutputStream stream;
 
-			image.SaveFile(stream, wxBITMAP_TYPE_BMP);
+			image.SaveFile(stream, wxBITMAP_TYPE_PNG);
 
 			wxMemoryBuffer membuffer;
 			membuffer.SetBufSize(stream.GetSize());
@@ -174,7 +174,7 @@ bool Character::Update(wxSQLite3Database* db) {
 	if (doImage) {
 		wxMemoryOutputStream stream;
 
-		image.SaveFile(stream, wxBITMAP_TYPE_BMP);
+		image.SaveFile(stream, wxBITMAP_TYPE_PNG);
 
 		wxMemoryBuffer membuffer;
 		membuffer.SetBufSize(stream.GetSize());

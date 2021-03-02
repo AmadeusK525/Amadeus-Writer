@@ -8,6 +8,8 @@
 #include <wx\richtext\richtextxml.h>
 #include <wx\colordlg.h>
 
+#include <thread>
+
 OutlineTreeModel::OutlineTreeModel() {
 	m_research = new OutlineTreeModelNode(nullptr, _("Research"));
 	m_characters = new OutlineTreeModelNode(nullptr, _("Characters"));
@@ -995,7 +997,6 @@ void amOutlineFilesPanel::OnSelectionChanged(wxDataViewEvent& event) {
 		m_textCtrl->SetEditable(true);
 
 	m_textCtrl->GetBuffer().Invalidate(wxRICHTEXT_ALL);
-	m_textCtrl->RecreateBuffer();
 	m_textCtrl->Refresh();
 
 	m_currentNode = node;
@@ -1208,39 +1209,56 @@ void amOutlineFilesPanel::DeserializeNode(wxXmlNode* node, wxDataViewItem& paren
 }
 
 bool amOutlineFilesPanel::Save() {
-	if (!wxFileName::Exists(amGetManager()->GetPath(true).ToStdString()))
-		return false;
-	
-	SaveCurrentBuffer();
-	wxXmlDocument doc;
-	
-	wxXmlNode* root = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "AO-Files");
-	doc.SetRoot(root);
+	bool succeeded = false;
 
-	wxDataViewItemArray rootFiles;
-	m_outlineTreeModel->GetChildren(wxDataViewItem(nullptr), rootFiles);
+	if (!m_isSaving) {
+		std::thread thread([&]() {
+			m_isSaving = true;
 
-	for (unsigned int i = 0; i < rootFiles.GetCount(); i++) {
-		if (m_outlineTreeModel->IsContainer(rootFiles[i]))
-			root->AddChild(SerializeFolder(rootFiles[i]));
-		else
-			root->AddChild(SerializeFile(rootFiles[i]));
+			if (!wxFileName::Exists(amGetManager()->GetPath(true).ToStdString())) {
+				succeeded = false;
+				return;
+			}
+
+			SaveCurrentBuffer();
+			wxXmlDocument doc;
+
+			wxXmlNode* root = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "AO-Files");
+			doc.SetRoot(root);
+
+			wxDataViewItemArray rootFiles;
+			m_outlineTreeModel->GetChildren(wxDataViewItem(nullptr), rootFiles);
+
+			for (unsigned int i = 0; i < rootFiles.GetCount(); i++) {
+				if (m_outlineTreeModel->IsContainer(rootFiles[i]))
+					root->AddChild(SerializeFolder(rootFiles[i]));
+				else
+					root->AddChild(SerializeFile(rootFiles[i]));
+			}
+
+			amDocument document;
+			document.strings.push_back(pair<wxString, wxString>("content", wxString()));
+
+			wxStringOutputStream stream(&document.strings.begin()->second);
+
+			if (doc.Save(stream)) {
+				document.tableName = "outline_files";
+				document.name = "Outline Files";
+
+				amGetManager()->SaveDocument(document, document);
+
+				succeeded = true;
+			} else
+				succeeded = false;
+
+			m_isSaving = false;
+			}
+		);
+
+		thread.detach();
 	}
 
-	amDocument document;
-	document.strings.push_back(pair<wxString, wxString>("content", wxString()));
-
-	wxStringOutputStream stream(&document.strings.begin()->second);
-	
-	if (doc.Save(stream)) {
-		document.tableName = "outline_files";
-		document.name = "Outline Files";
-
-		amGetManager()->SaveDocument(document, document);
-
-		return true;
-	} else
-		return false;
+	return succeeded;
 }
 
 bool amOutlineFilesPanel::Load(wxStringInputStream& stream) {

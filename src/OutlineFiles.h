@@ -275,6 +275,7 @@ private:
     wxDataViewItem m_itemForDnD{};
 
     wxTimer m_timer{ this, TIMER_OutlineFiles };
+    bool m_isSaving = false;
 
 public:
     amOutlineFilesPanel(wxWindow* parent);

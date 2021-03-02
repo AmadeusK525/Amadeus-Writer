@@ -1,6 +1,5 @@
 #include "ChapterCreator.h"
 
-
 #include "MyApp.h"
 
 #include "wxmemdbg.h"
