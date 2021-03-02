@@ -3,24 +3,30 @@
 #pragma once
 
 #include <wx\wxsf\wxShapeFramework.h>
-#include <wx\splitter.h>
 #include <wx\notebook.h>
 #include <wx\timer.h>
 
 #include "TimelineShapes.h"
 #include "ProjectManager.h"
+#include "UtilityClasses.h"
 
 using std::pair;
 
+class TimelineThread;
+class TimelineSection;
+class TimelineCanvas;
+class amTimeline;
+class amTimelineSidebar;
 
-///////////////////////////////////////////////////////////////
-//////////////////////// TimelineThread ///////////////////////
-///////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////// TimelineThread //////////////////////////
+/////////////////////////////////////////////////////////////////////
 
 
-class TimelineThread {
+class TimelineThread : public xsSerializable {
 private:
-	wxSFShapeCanvas* m_canvas = nullptr;
+	TimelineCanvas* m_canvas = nullptr;
 	wxRect m_boundingRect{ -1,-1,-1,-1 };
 
 	int m_y = -1;
@@ -38,7 +44,7 @@ private:
 
 public:
 	TimelineThread() = default;
-	TimelineThread(int y, wxColour& colour, wxSFShapeCanvas* canvas) :
+	TimelineThread(int y, wxColour& colour, TimelineCanvas* canvas) :
 		m_y(y), m_colour(colour), m_canvas(canvas) {}
 
 	void Draw(wxDC& dc);
@@ -77,18 +83,26 @@ public:
 };
 
 
-///////////////////////////////////////////////////////////////
-//////////////////////// TimelineSection //////////////////////
-///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+//////////////////////////// TimelineSection //////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 
-class TimelineSection {
+class TimelineSection : public xsSerializable {
 private:
-	wxSFShapeCanvas* m_canvas = nullptr;
+	TimelineCanvas* m_canvas = nullptr;
 
 	wxString m_title{ "Section" };
 	wxString m_titleToDraw{ "Section" };
 	wxFont m_titleFont{ wxFontInfo(45).Bold().AntiAliased() };
+
+	static wxBrush m_fill;
+	static wxBrush m_textBackground;
+	static wxPen m_border;
+	static wxPen m_separatorPen;
+	static wxColour m_textShadow;
+
+	int m_titleHeight = -1;
 
 	int m_pos = -1;
 	int m_first = -1, m_last = -1;
@@ -105,7 +119,7 @@ private:
 	int m_separatorY;
 
 public:
-	TimelineSection(int pos, int first, int last, wxSFShapeCanvas* canvas, const wxString& title = wxEmptyString) {
+	TimelineSection(int pos, int first, int last, TimelineCanvas* canvas, const wxString& title = wxEmptyString) {
 		m_pos = pos;
 
 		m_first = first;
@@ -155,13 +169,15 @@ public:
 };
 
 
-///////////////////////////////////////////////////////////////
-//////////////////////// TimelineCanvas ///////////////////////
-///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+//////////////////////////// TimelineCanvas ///////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 
 class TimelineCanvas : public wxSFShapeCanvas {
 private:
+	amTimeline* m_parent = nullptr;
+
 	wxVector<TimelineThread> m_threads{};
 	wxVector<TimelineSection> m_sections{};
 
@@ -202,6 +218,8 @@ public:
 	void OnThreadUnselected(TimelineThread* thread);
 	void OnThreadSelectionTimer(wxTimerEvent& event);
 
+	TimelineThread* GetSelectedThread() { return m_selectedThread; }
+
 	virtual void DrawBackground(wxDC& dc, bool fromPaint);
 	virtual void DrawForeground(wxDC& dc, bool fromPaint);
 
@@ -231,7 +249,7 @@ private:
 ////////////////////////////////////////////////////////////////////
 
 
-class amTimeline : public wxSplitterWindow {
+class amTimeline : public amSplitterWindow {
 private:
 	amProjectManager* m_manager = nullptr;
 	amOutline* m_parent = nullptr;
@@ -239,29 +257,51 @@ private:
 	TimelineCanvas* m_canvas = nullptr;
 	wxSFDiagramManager m_canvasManager;
 
-	wxPanel* m_sideHolder = nullptr;
-	wxNotebook* m_sidebar = nullptr;
-
-	wxRect m_pullRect{ 5, 5, 30, 30 };
+	amTimelineSidebar* m_sidebar = nullptr;
 
 	bool m_isSidebarShown = false;
 
 public:
 	amTimeline(wxWindow* parent);
 
-	void ShowSidebar(bool show);
+	void ShowSidebar();
 
-	virtual void OnDoubleClickSash(int x, int y) {}
-
-	void OnSidebarMouseMove(wxMouseEvent& event);
-	void OnSidebarLeftDown(wxMouseEvent& event);
-
-	void OnSidebarPaint(wxPaintEvent& event);
+	void SetThreadData(TimelineThread* thread);
+	void SetSectionData(TimelineSection* section);
+	void SetCardData(TimelineCard* card);
 
 	void Save();
 	void Load(wxStringInputStream& stream);
 
 	void SaveThreads(wxStringOutputStream& stream);
 	void LoadThreads(wxStringInputStream& stream);
+};
+
+
+////////////////////////////////////////////////////////////////////
+///////////////////////// Timeline Sidebar /////////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+class amTimelineSidebar : public wxPanel {
+	amTimeline* m_parent = nullptr;
+
+	wxNotebook* m_content = nullptr;
+	wxScrolledWindow* m_threadPanel = nullptr;
+
+	wxRect m_pullRect{ 5, 5, 30, 30 };
+
+public:
+	amTimelineSidebar(wxWindow* parent);
+
+	void ShowContent(bool show = true);
+
+	void SetThreadData(TimelineThread* thread);
+	void SetSectionData(TimelineSection* section);
+	void SetCardData(TimelineCard* card);
+
+	void OnPaint(wxPaintEvent& event);
+	void OnMouseMove(wxMouseEvent& event);
+	void OnLeftDown(wxMouseEvent& event);
 };
 #endif

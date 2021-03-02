@@ -67,8 +67,10 @@ public:
     void UpdateElements(wxCommandEvent& event);
 
     void OnAbout(wxCommandEvent& event);
-
     void OnClose(wxCloseEvent& event);
+
+    void OnMainButtonEnter(wxMouseEvent& event);
+    void OnMainButtonLeave(wxMouseEvent& event);
     void OnMainButtons(wxCommandEvent& event);
 
     void OnSashChanged(wxSplitterEvent& event);
@@ -116,23 +118,5 @@ enum {
     BUTTON_Chapters,
     BUTTON_Release,
     BUTTON_Outline
-};
-
-
-/////////////////////////////////////////////////////////////////
-////////////////////////// Utility class ////////////////////////
-/////////////////////////////////////////////////////////////////
-
-
-class amSplitterWindow : public wxSplitterWindow {
-public:
-    amSplitterWindow(wxWindow* parent,
-        wxWindowID 	id = wxID_ANY,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxSP_NOBORDER | wxSP_NO_XP_THEME | wxSP_THIN_SASH,
-        const wxString& name = "splitterWindow") : wxSplitterWindow(parent, id, pos, size, style, name) {}
-
-    virtual void OnDoubleClickSash(int x, int y) {}
 };
 #endif

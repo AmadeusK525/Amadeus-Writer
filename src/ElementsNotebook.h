@@ -17,6 +17,9 @@ private:
 	amProjectManager* m_manager = nullptr;
 
 public:
+	wxListView* m_charList = nullptr, * m_locList = nullptr, * m_itemsList = nullptr;
+	wxImageList* m_charImageList = nullptr, * m_locImageList = nullptr, * m_itemsImageList = nullptr;
+
 	amCharacterShowcase* m_charShow = nullptr;
 	amLocationShowcase* m_locShow = nullptr;
 	amItemShowcase* m_itemShow = nullptr;
@@ -31,6 +34,7 @@ public:
 
 public:
 	amElementsNotebook(wxWindow* parent);
+	~amElementsNotebook();
 
 	void InitShowChoices();
 
@@ -75,10 +79,6 @@ public:
 	void UpdateLocationList();
 	void UpdateItemList();
 	void UpdateAll();
-
-	static wxListView* m_charList;
-	static wxListView* m_locList;
-	static wxListView* m_itemsList;
 
 	DECLARE_EVENT_TABLE()
 };

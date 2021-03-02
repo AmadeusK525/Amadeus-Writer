@@ -14,6 +14,9 @@
 #include <wx\utils.h>
 #include <fstream>
 
+#include <thread>
+
+
 ///////////////////////////////////////////////////////////////////
 //////////////////////////// SQLStorage ///////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -1098,10 +1101,15 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 			}
 		}
 
-		m_outline->GetOutlineFiles()->DeleteCharacter(original);
-		original = edit;
-
-		if (sort) {
+	m_outline->GetOutlineFiles()->DeleteCharacter(original);
+	original = edit;
+	std::thread thread([&]() {
+		m_storage.Begin();
+		original.Update(&m_storage);
+		m_storage.Commit();
+		}
+	);
+	if (sort) {
 			wxVectorSort(m_project.characters);
 			m_elements->UpdateCharacterList();
 		} else {
@@ -1116,14 +1124,13 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 			}
 		}
 
-		m_elements->m_charShow->SetData(original);
-		m_mainFrame->Enable(true);
+	m_elements->m_charShow->SetData(original);
+	m_mainFrame->Enable(true);
 
-		m_storage.Begin();
-		original.Update(&m_storage);
-		m_storage.Commit();
+	thread.detach();
 
-		m_outline->GetOutlineFiles()->AppendCharacter(edit);
+	m_outline->GetOutlineFiles()->AppendCharacter(edit);
+
 	} catch (wxString& e) {
 		wxMessageBox(e);
 	}
@@ -1140,7 +1147,12 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 		}
 
 		original = edit;
-
+		std::thread thread([&]() {
+			m_storage.Begin();
+			original.Update(&m_storage);
+			m_storage.Commit();
+			}
+		);
 		if (sort) {
 			wxVectorSort(m_project.locations);
 			m_elements->UpdateLocationList();
@@ -1154,54 +1166,60 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 
 				n++;
 			}
-			m_elements->m_locShow->SetData(original);
-			m_mainFrame->Enable(true);
+		}
+		
+		m_elements->m_locShow->SetData(original);
+		m_mainFrame->Enable(true);
 
-
-			m_storage.Begin();
-			original.Update(&m_storage);
-			m_storage.Commit();
+		thread.detach();
 
 		m_outline->GetOutlineFiles()->AppendLocation(edit);
-		}
 	} catch (wxString& e) {
 		wxMessageBox(e);
 	}
 }
 
 void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
-	m_outline->GetOutlineFiles()->DeleteItem(original);
-	m_outline->GetOutlineFiles()->AppendItem(edit);
+	try {
+		m_outline->GetOutlineFiles()->DeleteItem(original);
 
-	if (sort) {
-		for (auto& it : original.chapters) {
-			it->items.Remove(original.name);
-			it->items.Add(edit.name);
-		}
-	}
-
-	amDocument originalDoc = original.GenerateDocument();
-	original = edit;
-
-	if (sort) {
-		wxVectorSort(m_project.items);
-		m_elements->UpdateItemList();
-	} else {
-		int n = 0;
-		for (auto& it : m_project.items) {
-			if (it == original) {
-				m_elements->UpdateItem(n, it);
-				break;
+		if (sort) {
+			for (auto& it : original.chapters) {
+				it->items.Remove(original.name);
+				it->items.Add(edit.name);
 			}
+		}
 
-			n++;
+		original = edit;
+		std::thread thread([&]() {
+			m_storage.Begin();
+			original.Update(&m_storage);
+			m_storage.Commit();
+			}
+		);
+
+		if (sort) {
+			wxVectorSort(m_project.items);
+			m_elements->UpdateItemList();
+		} else {
+			int n = 0;
+			for (auto& it : m_project.items) {
+				if (it == original) {
+					m_elements->UpdateItem(n, it);
+					break;
+				}
+
+				n++;
+			}
 		}
 		m_elements->m_itemShow->SetData(original);
 		m_mainFrame->Enable(true);
 
-		m_storage.Begin();
-		m_storage.UpdateDocument(originalDoc, edit.GenerateDocument());
-		m_storage.Commit();
+		thread.detach();
+
+		m_outline->GetOutlineFiles()->AppendItem(edit);
+	} catch (wxString& e) {
+		wxMessageBox(e);
 	}
 }
 

@@ -144,7 +144,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>F:\wxsqlite3-4.6.4\include;F:\wxSF\include;$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;%(AdditionalIncludeDirectories);$(WXWIN)\include\msvc;F:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\wxsqlite3-4.6.4\include;F:\wxSF\include;$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;%(AdditionalIncludeDirectories);$(WXWIN)\include\msvc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -204,7 +204,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <OptimizeReferences>true</OptimizeReferences>
+      <OptimizeReferences>false</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <Bscmake>
@@ -290,7 +290,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories);C:\Boost\boost_1_73_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\wxsqlite3-4.6.4\include;F:\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -308,9 +308,9 @@
       <AdditionalIncludeDirectories>$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;.;$(WXWIN)\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28ud_wxsf.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28ud_wxsf.lib;wxsqlite3d.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\wxSF\lib\vc_x64_lib\;$(WXWIN)\lib\vc_x64_lib;$(WXWIN)\lib\vc_x64_lib\mswud;%(AdditionalLibraryDirectories);C:\Boost\boost_1_73_0\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>F:\wxsqlite3-4.6.4\lib\vc_x64_lib;F:\wxSF\lib\vc_x64_lib\;$(WXWIN)\lib\vc_x64_lib;$(WXWIN)\lib\vc_x64_lib\mswud;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
@@ -453,6 +453,7 @@
     <ClCompile Include="src\Release.cpp" />
     <ClCompile Include="src\Timeline.cpp" />
     <ClCompile Include="src\TimelineShapes.cpp" />
+    <ClCompile Include="src\UtilityClasses.cpp" />
     <ClCompile Include="src\WordProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -480,6 +481,7 @@
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\Timeline.h" />
     <ClInclude Include="src\TimelineShapes.h" />
+    <ClInclude Include="src\UtilityClasses.h" />
     <ClInclude Include="src\WordProcessor.h" />
     <ClInclude Include="src\wxmemdbg.h" />
   </ItemGroup>

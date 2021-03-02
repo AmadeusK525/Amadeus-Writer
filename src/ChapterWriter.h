@@ -12,7 +12,7 @@
 #include "ChaptersNotebook.h"
 #include "Note.h"
 
-struct amChapterWriterNotebook;
+class amChapterWriterNotebook;
 
 class amChapterWriter : public wxFrame {
 private:
@@ -118,10 +118,11 @@ enum {
 };
 
 
-class amChapterWriterNotebook : public wxAuiNotebook {
+class amChapterWriterNotebook : public wxPanel {
 private:
     amChapterWriter* m_parent = nullptr;
-
+    wxAuiNotebook* m_notebook = nullptr;
+    
     wxToolBar* m_contentToolbar = nullptr;
     wxComboBox* m_fontSize = nullptr;
     wxSlider* m_contentScale = nullptr;
@@ -147,7 +148,6 @@ public:
     void SetNoteSize(wxSize& size) { m_noteSize = size; }
 
     void OnText(wxCommandEvent& event);
-    void OnKeyDown(wxRichTextEvent& event);
 
     void OnBold(wxCommandEvent& event);
     void OnItalic(wxCommandEvent& event);
@@ -156,6 +156,7 @@ public:
     void OnAlignCenter(wxCommandEvent& event);
     void OnAlignCenterJust(wxCommandEvent& event);
     void OnAlignRight(wxCommandEvent& event);
+    void OnTestCircle(wxCommandEvent& event);
 
     void OnZoom(wxCommandEvent& event);
 
@@ -201,6 +202,7 @@ enum {
     TOOL_ContentScale,
     TOOL_ChapterFullScreen,
     TOOL_PageView,
+    TOOL_TestCircle,
 
     MENU_Delete,
     TEXT_Content

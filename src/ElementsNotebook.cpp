@@ -11,6 +11,28 @@
 
 #include "wxmemdbg.h"
 
+wxImage amGetScaledImage(int maxWidth, int maxHeight, wxImage& image) {
+    int width = image.GetWidth();
+    int height = image.GetHeight();
+
+    double ratio;
+
+    int neww;
+    int newh;
+
+    ratio = (double)width / height;
+
+    if (width > height) {
+        neww = maxWidth;
+        newh = ratio / maxWidth;
+    } else {
+        newh = maxHeight;
+        neww = maxHeight * ratio;
+    }
+
+    return image.Scale(neww, newh, wxIMAGE_QUALITY_HIGH);
+}
+
 BEGIN_EVENT_TABLE(amElementsNotebook, wxNotebook)
 
 EVT_LIST_ITEM_FOCUSED(LIST_CharList, amElementsNotebook::OnCharacterSelected)
@@ -36,10 +58,6 @@ EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, amElementsNotebook::SetSearchAC)
 
 END_EVENT_TABLE()
 
-wxListView* amElementsNotebook::m_charList;
-wxListView* amElementsNotebook::m_locList;
-wxListView* amElementsNotebook::m_itemsList;
-
 amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     wxNotebook(parent, NOTEBOOK_THIS, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE) {
     m_manager = amGetManager();
@@ -49,7 +67,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     charFrame->SetBackgroundColour(wxColour(20, 20, 20));
 
     m_charList = new wxListView(charFrame, LIST_CharList, wxDefaultPosition, wxDefaultSize,
-        wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
+        wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
     m_charList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, 190);
     m_charList->InsertColumn(1, "Sex", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
     m_charList->InsertColumn(2, "Role", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
@@ -60,6 +78,9 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_charList->SetBackgroundColour(wxColour(45, 45, 45));
     m_charList->SetForegroundColour(wxColour(245, 245, 245));
 
+    m_charImageList = new wxImageList(16, 16, false, 0);
+    m_charList->SetImageList(m_charImageList, wxIMAGE_LIST_SMALL);
+
     wxArrayString sortBy;
     sortBy.Add("Role");
     sortBy.Add("Name (A-Z)");
@@ -67,7 +88,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     sortBy.Add("Chapters");
     sortBy.Add("First appearance");
     sortBy.Add("Last appearance");
-
+    
     wxStaticText* cSortByLabel = new wxStaticText(charFrame, -1, "Sort by:");
     cSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
     cSortByLabel->SetFont(wxFontInfo(11).Bold());
@@ -195,6 +216,18 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 
     itemsFrame->SetSizer(itemSizer);
     this->AddPage(itemsFrame, "Items");
+}
+
+amElementsNotebook::~amElementsNotebook() {
+    if (m_charImageList)
+        delete m_charImageList;
+
+    if (m_locImageList)
+        delete m_locImageList;
+
+    if (m_itemsImageList)
+        delete m_itemsImageList;
+
 }
 
 void amElementsNotebook::InitShowChoices() {
@@ -449,6 +482,11 @@ void amElementsNotebook::UpdateCharacter(int n, Character& character) {
     }
 
     m_charList->SetItem(n, 5, std::to_string(character.chapters.size()));
+
+    if (character.image.IsOk())
+        m_charList->SetItemColumnImage(n, 0, m_charImageList->Add(wxBitmap(character.image.Scale(16,16, wxIMAGE_QUALITY_HIGH))));
+    else        
+        m_charList->SetItemColumnImage(n, 0, -1);
 }
 
 void amElementsNotebook::UpdateLocation(int n, Location& location) {
@@ -543,6 +581,8 @@ void amElementsNotebook::UpdateCharacterList() {
     int mfsize = m_manager->GetCharacterCount();
     int dif;
 
+    m_charImageList->RemoveAll();
+
     if (tlsize > mfsize) {
         dif = tlsize - mfsize;
         for (int j = 0; j < dif; j++)
@@ -555,7 +595,7 @@ void amElementsNotebook::UpdateCharacterList() {
 
     for (auto& it : m_manager->GetCharacters())
         UpdateCharacter(i++, it);
-
+    
     m_charList->Thaw();
 }
 

@@ -1,6 +1,6 @@
 #include "ChapterWriter.h"
-
 #include "ElementsNotebook.h"
+#include "UtilityClasses.h"
 
 #include <wx\popupwin.h>
 #include <wx\listbox.h>
@@ -8,6 +8,7 @@
 #include <wx\dcbuffer.h>
 #include <wx\dcgraph.h>
 #include <wx\splitter.h>
+#include <wx\wfstream.h>
 
 #include <sstream>
 
@@ -59,6 +60,9 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
 
     leftSplitter->SetBackgroundColour(wxColour(20, 20, 20));
     rightSplitter->SetBackgroundColour(wxColour(20, 20, 20));
+
+    leftSplitter->SetMinimumPaneSize(30);
+    rightSplitter->SetMinimumPaneSize(30);
 
     m_cwNotebook = new amChapterWriterNotebook(leftSplitter, this);
 
@@ -185,23 +189,16 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     wxPanel* rightPanel = new wxPanel(rightSplitter, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
-    wxPanel* sumPanel = new wxPanel(rightPanel);
-
-    m_summary = new wxTextCtrl(sumPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_NONE);
+    m_summary = new wxTextCtrl(rightPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_NONE);
     m_summary->SetBackgroundColour(wxColour(35, 35, 35));
     m_summary->SetForegroundColour(wxColour(245, 245, 245));
     m_summary->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
-    wxStaticText* sumLabel = new wxStaticText(sumPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
+    wxStaticText* sumLabel = new wxStaticText(rightPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     sumLabel->SetBackgroundColour(wxColour(150, 0, 0));
     sumLabel->SetFont(wxFont(wxFontInfo(10).Bold().AntiAliased()));
     sumLabel->SetForegroundColour(wxColour(255, 255, 255));
     sumLabel->SetBackgroundStyle(wxBG_STYLE_PAINT);
-
-    wxBoxSizer* sumSizer = new wxBoxSizer(wxVERTICAL);
-    sumSizer->Add(sumLabel, wxSizerFlags(0).Expand());
-    sumSizer->Add(m_summary, wxSizerFlags(1).Expand());
-    sumPanel->SetSizer(sumSizer);
 
     m_noteChecker = new wxStaticText(rightPanel, -1, "Nothing to show.", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     m_noteChecker->SetBackgroundColour(wxColour(20, 20, 20));
@@ -219,7 +216,7 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     m_note->SetFont(wxFont(wxFontInfo(9)));
     m_note->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
-    wxPanel* nbHolder = new wxPanel(rightPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_DEFAULT);
+    wxPanel* nbHolder = new wxPanel(rightPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     nbHolder->SetBackgroundColour(wxColour(255, 250, 205));
 
     m_noteClear = new wxButton(nbHolder, BUTTON_NoteClear, "Clear");
@@ -239,12 +236,13 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     rightButton->SetBitmap(wxBITMAP_PNG(arrowRight));
 
     m_rightSizer = new wxBoxSizer(wxVERTICAL);
-    m_rightSizer->Add(sumPanel, wxSizerFlags(2).Expand().Border(wxALL, 8));
+    m_rightSizer->Add(sumLabel, wxSizerFlags(0).Expand().Border(wxLEFT | wxTOP | wxRIGHT, 8));
+    m_rightSizer->Add(m_summary, wxSizerFlags(2).Expand().Border(wxLEFT | wxRIGHT, 8));
     m_rightSizer->AddStretchSpacer(1);
     m_rightSizer->Add(m_noteChecker, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 8));
     m_rightSizer->Add(m_noteLabel, wxSizerFlags(0).Expand().Border(wxTOP | wxRIGHT | wxLEFT, 8));
     m_rightSizer->Add(m_note, wxSizerFlags(2).Expand().Border(wxRIGHT | wxLEFT, 8));
-    m_rightSizer->Add(nbHolder, wxSizerFlags(0).Expand().Border(wxBOTTOM | wxRIGHT | wxLEFT, 9));
+    m_rightSizer->Add(nbHolder, wxSizerFlags(0).Expand().Border(wxBOTTOM | wxRIGHT | wxLEFT, 8));
     m_rightSizer->Add(rightButton, wxSizerFlags(0).Left().Border(wxLEFT | wxBOTTOM, 8));
 
     rightPanel->SetSizer(m_rightSizer);
@@ -259,8 +257,8 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     SetSize(FromDIP(wxSize(1100, 700)));
     Maximize();
 
-    leftSplitter->SplitVertically(leftNotebook, m_cwNotebook, FromDIP(250));
-    rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1100));
+    leftSplitter->SplitVertically(leftNotebook, m_cwNotebook, FromDIP(230));
+    rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1110));
 
     wxMenuBar* menu = new wxMenuBar();
     wxMenu* menu1 = new wxMenu();
@@ -275,7 +273,7 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     m_statusBar->SetBackgroundColour(wxColour(120, 120, 120));
 
     wxSize noteSize((m_cwNotebook->GetCorkboard()->GetSize()));
-    m_cwNotebook->SetNoteSize(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10));
+    m_cwNotebook->SetNoteSize(FromDIP(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10)));
 
     SetIcon(wxICON(amadeus));
 
@@ -573,7 +571,6 @@ void amChapterWriter::LoadChapter() {
     
     textCtrl->GetBuffer() = chapter.scenes[0].content;
     textCtrl->GetBuffer().Invalidate(wxRICHTEXT_ALL);
-    textCtrl->RecreateBuffer();
     textCtrl->Refresh();
 
     m_summary->SetValue(chapter.synopsys);
@@ -680,7 +677,7 @@ void amChapterWriter::OnClose(wxCloseEvent& event) {
 /////////////////////////// amChapterWriterNotebook //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE(amChapterWriterNotebook, wxAuiNotebook)
+BEGIN_EVENT_TABLE(amChapterWriterNotebook, wxPanel)
 
 EVT_TOOL(TOOL_Bold, amChapterWriterNotebook::OnBold)
 EVT_TOOL(TOOL_Italic, amChapterWriterNotebook::OnItalic)
@@ -689,6 +686,7 @@ EVT_TOOL(TOOL_AlignLeft, amChapterWriterNotebook::OnAlignLeft)
 EVT_TOOL(TOOL_AlignCenter, amChapterWriterNotebook::OnAlignCenter)
 EVT_TOOL(TOOL_AlignCenterJust, amChapterWriterNotebook::OnAlignCenterJust)
 EVT_TOOL(TOOL_AlignRight, amChapterWriterNotebook::OnAlignRight)
+EVT_TOOL(TOOL_TestCircle, amChapterWriterNotebook::OnTestCircle)
 
 EVT_SLIDER(TOOL_ContentScale, amChapterWriterNotebook::OnZoom)
 EVT_TOOL(TOOL_ChapterFullScreen, amChapterWriterNotebook::OnFullScreen)
@@ -706,32 +704,14 @@ EVT_UPDATE_UI(TOOL_FontSize, amChapterWriterNotebook::OnUpdateFontSize)
 EVT_COMBOBOX(TOOL_FontSize, amChapterWriterNotebook::OnFontSize)
 
 EVT_TEXT(TEXT_Content, amChapterWriterNotebook::OnText)
-EVT_RICHTEXT_CONSUMING_CHARACTER(TEXT_Content, amChapterWriterNotebook::OnKeyDown)
 
 END_EVENT_TABLE()
 
 amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWriter* chapterWriter) :
-    wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT |
-    wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_TOP | wxBORDER_NONE) {
-
+    wxPanel(parent) {
     m_parent = chapterWriter;
 
-    wxPanel* mainPanel = new wxPanel(this, 1, wxDefaultPosition, wxDefaultSize);
-    mainPanel->SetBackgroundColour(wxColour(100, 100, 100));
-
-    m_textCtrl = new wxRichTextCtrl(mainPanel, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
-        wxRE_MULTILINE | wxBORDER_NONE);
-    wxRichTextBuffer::AddHandler(new wxRichTextPlainTextHandler);
-
-    wxRichTextAttr attr;
-    attr.SetFont(wxFontInfo(10));
-    attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
-    attr.SetLeftIndent(63, -63);
-    attr.SetTextColour(wxColour(250, 250, 250));
-    m_textCtrl->SetBasicStyle(attr);
-    m_textCtrl->SetBackgroundColour(wxColour(35, 35, 35));
-
-    m_contentToolbar = new wxToolBar(mainPanel, -1, wxDefaultPosition, wxSize(-1, -1));
+    m_contentToolbar = new wxToolBar(this, -1, wxDefaultPosition, wxSize(-1, -1));
     m_contentToolbar->AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(bold), wxBITMAP_PNG(bold), "Bold");
     m_contentToolbar->AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italic), wxBITMAP_PNG(italic), "italic");
     m_contentToolbar->AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underline), wxBITMAP_PNG(underline), "Underline");
@@ -769,13 +749,23 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWrit
 
     m_contentToolbar->Realize();
 
-    wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
-    pageSizer->Add(m_contentToolbar, wxSizerFlags(0).Expand().Border(wxBOTTOM, 3));
-    pageSizer->Add(m_textCtrl, wxSizerFlags(1).Expand());
+    m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT |
+        wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_BOTTOM | wxBORDER_NONE);
 
-    mainPanel->SetSizer(pageSizer);
+    m_textCtrl = new wxRichTextCtrl(m_notebook, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
+        wxRE_MULTILINE | wxBORDER_NONE);
+    wxRichTextBuffer::AddHandler(new wxRichTextPlainTextHandler);
+    //wxRichTextBuffer::AddFieldType(new amWPCommentTag("commentTag"));
 
-    m_corkboard = new ImagePanel(this, wxDefaultPosition, wxDefaultSize);
+    wxRichTextAttr attr;
+    attr.SetFont(wxFontInfo(10));
+    attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
+    attr.SetLeftIndent(63, -63);
+    attr.SetTextColour(wxColour(250, 250, 250));
+    m_textCtrl->SetBasicStyle(attr);
+    m_textCtrl->SetBackgroundColour(wxColour(35, 35, 35));
+
+    m_corkboard = new wxScrolledWindow(m_notebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     m_corkboard->SetBackgroundColour(wxColour(45, 45, 45));
     m_corkboard->EnableScrolling(false, true);
     m_corkboard->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
@@ -784,8 +774,14 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWrit
     m_corkboard->SetSizer(m_notesSizer);
     m_corkboard->SetScrollRate(15, 15);
 
-    AddPage(mainPanel, "Main");
-    AddPage(m_corkboard, "Notes");
+    m_notebook->AddPage(m_textCtrl, "Main");
+    m_notebook->AddPage(m_corkboard, "Notes");
+
+    wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(m_contentToolbar, wxSizerFlags(0).Expand());
+    sizer->Add(m_notebook, wxSizerFlags(1).Expand());
+
+    SetSizer(sizer);
 
     wxTimer m_timer(this, 12345);
     m_timer.Start(10000);
@@ -793,31 +789,6 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWrit
 
 void amChapterWriterNotebook::OnText(wxCommandEvent& WXUNUSED(event)) {
     m_parent->m_statusBar->SetStatusText("Chapter modified. Autosaving soon...", 0);
-}
-
-void amChapterWriterNotebook::OnKeyDown(wxRichTextEvent& event) {
-    if (wxGetKeyState(WXK_CONTROL)) {
-        switch (event.GetCharacter()) {
-        case 'n':
-        case 'N':
-        case 'b':
-        case 'B':
-            OnBold(event);
-            break;
-
-        case 'i':
-        case 'I':
-            OnItalic(event);
-            break;
-
-        case 's':
-        case 'S':
-        case 'u':
-        case 'U':
-            OnUnderline(event);
-            break;
-        }
-    }
 }
 
 void amChapterWriterNotebook::OnBold(wxCommandEvent& event) {
@@ -853,6 +824,31 @@ void amChapterWriterNotebook::OnAlignCenterJust(wxCommandEvent& event) {
 void amChapterWriterNotebook::OnAlignRight(wxCommandEvent& event) {
     m_textCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
     OnText(event);
+}
+
+void amChapterWriterNotebook::OnTestCircle(wxCommandEvent& event) {
+    wxRichTextRange sel = m_textCtrl->GetSelectionRange();
+    wxRichTextBuffer& buf = m_textCtrl->GetBuffer();
+
+    
+    wxRichTextProperties prop;
+    prop.SetProperty("commentStart", true);
+
+    buf.InsertFieldWithUndo(&buf, sel.GetStart(), "commentTag", prop, m_textCtrl, 0, m_textCtrl->GetBasicStyle());
+
+    prop.SetProperty("commentStart", false);
+    buf.InsertFieldWithUndo(&buf, sel.GetEnd() + 1, "commentTag", prop, m_textCtrl, 0, m_textCtrl->GetBasicStyle());
+
+    for (auto& it : buf.GetChildren()) {
+        //it.spli
+    }
+
+    wxFFileOutputStream fileStream("F:\\RTCdump.txt");
+    wxTextOutputStream textStream(fileStream);
+
+    m_textCtrl->GetBuffer().Dump(textStream);
+
+    fileStream.Close();
 }
 
 void amChapterWriterNotebook::OnZoom(wxCommandEvent& event) {

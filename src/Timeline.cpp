@@ -4,6 +4,7 @@
 
 #include <wx\sstream.h>
 
+
 ///////////////////////////////////////////////////////////////
 //////////////////////// TimelineThread ///////////////////////
 ///////////////////////////////////////////////////////////////
@@ -12,7 +13,7 @@
 int TimelineThread::m_height = 10;
 int TimelineThread::m_width = 1000;
 int TimelineThread::m_titleOffset = 250;
-wxPen TimelineThread::m_hoverPen{ wxColour(130,130,225), 4 };
+wxPen TimelineThread::m_hoverPen{ wxColour(160,160,245), 4 };
 wxPen TimelineThread::m_selectedPen{ wxColour(110,110,200), 5 };
 
 void TimelineThread::Draw(wxDC& dc) {
@@ -55,21 +56,22 @@ void TimelineThread::Refresh(bool delayed) {
 		m_canvas->RefreshCanvas(true, rect);
 }
 
-
 void TimelineThread::OnLeftDown(const wxPoint& pos) {
 	m_isSelected = true;
+	m_drawSelected = true;
 	Refresh();
 
 	if (m_canvas)
-		((TimelineCanvas*)m_canvas)->OnThreadSelected(this);
+		m_canvas->OnThreadSelected(this);
 }
 
 void TimelineThread::KillFocus() {
 	m_isSelected = false;
+	m_drawSelected = false;
 	Refresh();
 
 	if (m_canvas)
-		((TimelineCanvas*)m_canvas)->OnThreadUnselected(this);
+		m_canvas->OnThreadUnselected(this);
 }
 
 void TimelineThread::OnMouseMove(const wxPoint& pos) {
@@ -93,6 +95,12 @@ void TimelineThread::OnMouseLeave() {
 int TimelineSection::m_horSpacing = 400;
 int TimelineSection::m_markerWidth = 20;
 int TimelineSection::m_titleOffset = 200;
+
+wxBrush TimelineSection::m_fill{ wxColour(250,250,250) };
+wxBrush TimelineSection::m_textBackground{ wxColour(0, 0, 0, 80) };
+wxPen TimelineSection::m_border{ wxColour(0,0,0), 4 };
+wxPen TimelineSection::m_separatorPen{ wxColour(130, 130, 130), 2, wxPENSTYLE_LONG_DASH };
+wxColour TimelineSection::m_textShadow{ 0, 0, 0 };
 
 void TimelineSection::AppendCard() {
 	m_last++;
@@ -162,14 +170,26 @@ wxPoint TimelineSection::GetCellInPosition(wxPoint& pos) {
 }
 
 void TimelineSection::DrawNormal(wxDC& dc, int virtualHeight, bool drawSeparators) {
-	dc.SetPen(wxPen(wxColour(255, 255, 255), 2));
-	dc.SetBrush(wxBrush(wxColour(0,0,0)));
+	dc.SetPen(m_border);
+	dc.SetBrush(m_fill);
 
 	dc.DrawRectangle(m_insideRect.GetTopLeft() - wxPoint(m_markerWidth, 0), wxSize(m_markerWidth, m_insideRect.height + 10));
 	dc.DrawRectangle(m_insideRect.GetTopRight(), wxSize(m_markerWidth, m_insideRect.height + 10));
 
-	dc.SetPen(wxPen(wxColour(90, 90, 90), 2, wxPENSTYLE_LONG_DASH));
+	if (!m_isEmpty) {
+		dc.SetFont(m_titleFont);
+
+		//dc.SetTextForeground(m_textShadow);
+		//dc.DrawText(m_titleToDraw, wxPoint(m_insideRect.GetLeft() + 23, 43));
+		dc.SetBrush(m_textBackground);
+		dc.SetPen(wxNullPen);
+		dc.DrawRectangle(wxPoint(m_insideRect.GetLeft(), 30), wxSize(m_insideRect.GetWidth(), m_titleHeight));
+
+		dc.SetTextForeground(m_fill.GetColour());
+		dc.DrawText(m_titleToDraw, wxPoint(m_insideRect.GetLeft() + 20, 40));
+	}
 	
+	dc.SetPen(m_separatorPen);
 	if (drawSeparators) {
 		for (auto& it : m_separators)
 			dc.DrawLine(wxPoint(it, m_separatorY), wxPoint(it, m_insideRect.height));
@@ -179,15 +199,6 @@ void TimelineSection::DrawNormal(wxDC& dc, int virtualHeight, bool drawSeparator
 
 	dc.DrawLine(m_insideRect.GetBottomLeft(), m_insideRect.GetBottomRight());
 	dc.DrawLine(wxPoint(m_insideRect.GetLeft(), m_bottom1), wxPoint(m_insideRect.GetRight(), m_bottom2));
-
-	if (!m_isEmpty) {
-		dc.SetFont(m_titleFont);
-
-		dc.SetPen(wxPen(wxColour(255, 255, 255)));
-		dc.SetBrush(wxBrush(wxColour(0, 0, 0)));
-		
-		dc.DrawText(m_titleToDraw, wxPoint(m_insideRect.GetLeft() + 20, 40));
-	}
 }
 
 bool TimelineSection::EmptyContains(wxPoint& pos) {
@@ -229,6 +240,7 @@ void TimelineSection::CalculateTitleWrap() {
 		if (wd >= maxWidth) {
 			m_titleToDraw.Remove(index - 3);
 			m_titleToDraw << "...";
+			m_titleHeight = hd + 20;
 			break;
 		}
 	}
@@ -247,7 +259,7 @@ void TimelineSection::RecalculatePosition() {
 		+ TimelineThread::GetTitleOffset();
 	
 	m_insideRect.width = (cardSpace * (m_last - m_first + 1));
-	m_insideRect.height = ((TimelineCanvas*)m_canvas)->GetBottom();
+	m_insideRect.height = m_canvas->GetBottom();
 
 	for (int i = 0; i < m_separators.size(); i++)
 		m_separators[i] = m_insideRect.x + (cardSpace * (i + 1));
@@ -278,8 +290,8 @@ TimelineCanvas::TimelineCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	RemoveStyle(sfsMULTI_SIZE_CHANGE);
 
 	AddStyle(sfsGRADIENT_BACKGROUND);
-	SetGradientFrom(wxColour(255, 250, 220));
-	SetGradientTo(wxColour(240, 150, 70));
+	SetGradientFrom(wxColour(20, 20, 20));
+	SetGradientTo(wxColour(30, 30, 30));
 
 	AddStyle(sfsPRINT_BACKGROUND);
 
@@ -587,6 +599,7 @@ int TimelineCanvas::GetBottom() {
 
 void TimelineCanvas::OnThreadSelected(TimelineThread* thread) {
 	m_threadSelectionTimer.Start(700);
+	m_parent->SetThreadData(thread);
 }
 
 void TimelineCanvas::OnThreadUnselected(TimelineThread* thread) {
@@ -788,44 +801,27 @@ void TimelineCanvas::OnScroll(wxScrollWinEvent& event) {
 ////////////////////////////////////////////////////////////////////
 
 
-amTimeline::amTimeline(wxWindow* parent) : wxSplitterWindow(parent, 01, wxDefaultPosition, wxDefaultSize, 768L | wxSP_LIVE_UPDATE) {
+amTimeline::amTimeline(wxWindow* parent) : amSplitterWindow(parent) {
 	this->m_parent = (amOutline*)(parent->GetParent());
 	m_manager = amGetManager();
 	
 	m_canvas = new TimelineCanvas(&m_canvasManager, this);
-
-	m_sideHolder = new wxPanel(this);
-	m_sideHolder->SetBackgroundColour(wxColour(60, 60, 60));
-
-	m_sidebar = new wxNotebook(m_sideHolder, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	m_sidebar->SetBackgroundColour(wxColour(60, 60, 60));
-	m_sideHolder->Bind(wxEVT_MOTION, &amTimeline::OnSidebarMouseMove, this);
-	m_sideHolder->Bind(wxEVT_LEFT_DOWN, &amTimeline::OnSidebarLeftDown, this);
-	m_sideHolder->Bind(wxEVT_PAINT, &amTimeline::OnSidebarPaint, this);
-
-	wxPanel* emptyPanel = new wxPanel(m_sidebar);
-	emptyPanel->SetBackgroundColour(wxColour(60, 60, 60));
-
-	m_sidebar->AddPage(emptyPanel, _("Panel"));
-
-	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-	sizer->Add(m_sidebar, wxSizerFlags(1).Expand().Border(wxTOP, 40));
-
-	m_sideHolder->SetSizer(sizer);
-	m_sidebar->Hide();
+	m_sidebar = new amTimelineSidebar(this);
 
 	SetMinimumPaneSize(40);
-	SplitVertically(m_canvas, m_sideHolder, 99999);
+	SplitVertically(m_canvas, m_sidebar, 99999);
 	SetSashGravity(1.0);
 	SetSashInvisible(true);
 }
 
-void amTimeline::ShowSidebar(bool show) {
+void amTimeline::ShowSidebar() {
 	int i = 1;
 	int j = GetSashPosition();
 
 	wxSize canvasSize = m_canvas->GetClientSize();
-	m_sidebar->Show(show);
+
+	bool show = !m_isSidebarShown;
+	m_sidebar->ShowContent(show);
 
 	if (show) {
 		while (i <= 220) {
@@ -842,36 +838,22 @@ void amTimeline::ShowSidebar(bool show) {
 
 		m_canvas->ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
 	}
-
 	m_isSidebarShown = show;
 
-	m_sideHolder->Layout();
-	m_sideHolder->Refresh();
+	m_sidebar->Layout();
+	m_sidebar->Refresh();
 }
 
-void amTimeline::OnSidebarMouseMove(wxMouseEvent& event) {
-	if (m_pullRect.Contains(event.GetPosition()))
-		wxSetCursor(wxCURSOR_CLOSED_HAND);
-	else
-		wxSetCursor(wxCURSOR_DEFAULT);
+void amTimeline::SetThreadData(TimelineThread* thread) {
+	m_sidebar->SetThreadData(thread);
 }
 
-void amTimeline::OnSidebarLeftDown(wxMouseEvent& event) {
-	if (m_pullRect.Contains(event.GetPosition()))
-		ShowSidebar(!m_isSidebarShown);
+void amTimeline::SetSectionData(TimelineSection* section) {
+	m_sidebar->SetSectionData(section);
 }
 
-void amTimeline::OnSidebarPaint(wxPaintEvent& event) {
-	wxPaintDC dc(m_sideHolder);
-
-	dc.SetPen(wxPen(wxColour(140, 140, 140), 4));
-
-	int x1 = m_pullRect.x, x2 = m_pullRect.x + m_pullRect.width - 2;
-	int y = m_pullRect.height / 4 + 2;
-
-	dc.DrawLine(wxPoint(x1, y), wxPoint(x2, y));
-	dc.DrawLine(wxPoint(x1, y * 2), wxPoint(x2, y * 2));
-	dc.DrawLine(wxPoint(x1, y * 3), wxPoint(x2, y * 3));
+void amTimeline::SetCardData(TimelineCard* card) {
+	m_sidebar->SetCardData(card);
 }
 
 void amTimeline::Save() {
@@ -899,3 +881,68 @@ void amTimeline::SaveThreads(wxStringOutputStream& stream) {
 void amTimeline::LoadThreads(wxStringInputStream& stream) {
 
 }
+
+
+////////////////////////////////////////////////////////////////////
+///////////////////////// Timeline Sidebar /////////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+amTimelineSidebar::amTimelineSidebar(wxWindow* parent) : wxPanel(parent) {
+	m_parent = (amTimeline*)parent;
+
+	SetBackgroundColour(wxColour(60, 60, 60));
+
+	m_content = new wxNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	m_content->SetBackgroundColour(wxColour(60, 60, 60));
+
+	m_threadPanel = new wxScrolledWindow(m_content);
+	m_threadPanel->SetBackgroundColour(wxColour(60, 60, 60));
+
+	m_content->AddPage(m_threadPanel, "Threads");
+
+	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+	sizer->Add(m_content, wxSizerFlags(1).Expand().Border(wxTOP, 40));
+
+	SetSizer(sizer);
+	m_content->Hide();
+
+	Bind(wxEVT_PAINT, &amTimelineSidebar::OnPaint, this);
+	Bind(wxEVT_MOTION, &amTimelineSidebar::OnMouseMove, this);
+	Bind(wxEVT_LEFT_DOWN, &amTimelineSidebar::OnLeftDown, this);
+}
+
+void amTimelineSidebar::ShowContent(bool show) {
+	m_content->Show(show);
+}
+
+void amTimelineSidebar::OnPaint(wxPaintEvent& event) {
+	wxPaintDC dc(this);
+
+	dc.SetPen(wxPen(wxColour(140, 140, 140), 4));
+
+	int x1 = m_pullRect.x, x2 = m_pullRect.x + m_pullRect.width - 2;
+	int y = m_pullRect.height / 4 + 2;
+
+	dc.DrawLine(wxPoint(x1, y), wxPoint(x2, y));
+	dc.DrawLine(wxPoint(x1, y * 2), wxPoint(x2, y * 2));
+	dc.DrawLine(wxPoint(x1, y * 3), wxPoint(x2, y * 3));
+}
+
+void amTimelineSidebar::OnMouseMove(wxMouseEvent& event) {
+	if (m_pullRect.Contains(event.GetPosition()))
+		wxSetCursor(wxCURSOR_CLOSED_HAND);
+	else
+		wxSetCursor(wxCURSOR_DEFAULT);
+}
+
+void amTimelineSidebar::OnLeftDown(wxMouseEvent& event) {
+	if (m_pullRect.Contains(event.GetPosition()))
+		m_parent->ShowSidebar();
+}
+
+void amTimelineSidebar::SetThreadData(TimelineThread* thread) {}
+
+void amTimelineSidebar::SetSectionData(TimelineSection* section) {}
+
+void amTimelineSidebar::SetCardData(TimelineCard* card) {}

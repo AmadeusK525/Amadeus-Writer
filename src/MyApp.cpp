@@ -14,6 +14,7 @@ amProjectManager* amGetManager() {
 
 bool MyApp::OnInit() {
     m_locale.Init(wxLANGUAGE_DEFAULT);
+    wxInitAllImageHandlers();
 
     m_manager = new amProjectManager();
     m_manager->SetExecutablePath(argv.GetArguments()[0]);

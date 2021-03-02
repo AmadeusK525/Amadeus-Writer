@@ -29,6 +29,7 @@ void AutoWrapTextShape::UpdateRectSize() {
 
 	wxSize tsize = parent->GetBoundingBox().GetSize();
 	tsize.y -= m_topSpace;
+	tsize.x -= 2;
 
 	if (m_height == -1) {
 		if (tsize.y <= 1) tsize.y = 10;

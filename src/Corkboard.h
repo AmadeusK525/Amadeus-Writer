@@ -47,6 +47,8 @@ private:
 
     int m_currentImage = 1;
 
+	bool m_isSaving = false;
+
 public:
     amCorkboard(wxWindow* parent);
 

@@ -9,15 +9,13 @@
 #include "ChapterCreator.h"
 #include "ElementCreators.h"
 
+#include "UtilityClasses.h"
+
 #include <wx\richtext\richtextxml.h>
 #include <wx\richtext\richtexthtml.h>
 #include <wx\aboutdlg.h>
 
 #include "wxmemdbg.h"
-
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#endif
 
 BEGIN_EVENT_TABLE(amMainFrame, wxFrame)
 
@@ -62,7 +60,6 @@ END_EVENT_TABLE()
 amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const wxPoint& pos, const wxSize& size) :
 	wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE) {
 
-	wxInitAllImageHandlers();
 	m_manager = manager;
 	Hide();
 
@@ -96,19 +93,28 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_mainButtons[1] = new wxButton(m_selPanel, BUTTON_Elem, "Elements");
 	m_mainButtons[1]->SetFont(font);
-	m_mainButtons[1]->SetBackgroundColour(wxColour(255, 255, 255));
+	m_mainButtons[1]->SetBackgroundColour(wxColour(20, 20, 20));
+	m_mainButtons[1]->SetForegroundColour(wxColour(245, 245, 245));
 
 	m_mainButtons[2] = new wxButton(m_selPanel, BUTTON_Chapters, "Chapters");
 	m_mainButtons[2]->SetFont(font);
-	m_mainButtons[2]->SetBackgroundColour(wxColour(255, 255, 255));
+	m_mainButtons[2]->SetBackgroundColour(wxColour(20, 20, 20));
+	m_mainButtons[2]->SetForegroundColour(wxColour(245, 245, 245));
 
 	m_mainButtons[3] = new wxButton(m_selPanel, BUTTON_Outline, "Outline");
 	m_mainButtons[3]->SetFont(font);
-	m_mainButtons[3]->SetBackgroundColour(wxColour(255, 255, 255));
+	m_mainButtons[3]->SetBackgroundColour(wxColour(20, 20, 20));
+	m_mainButtons[3]->SetForegroundColour(wxColour(245, 245, 245));
 
 	m_mainButtons[4] = new wxButton(m_selPanel, BUTTON_Release, "Release");
 	m_mainButtons[4]->SetFont(font);
-	m_mainButtons[4]->SetBackgroundColour(wxColour(255, 255, 255));
+	m_mainButtons[4]->SetBackgroundColour(wxColour(20, 20, 20));
+	m_mainButtons[4]->SetForegroundColour(wxColour(245, 245, 245));
+
+	for (auto& it : m_mainButtons) {
+		it->Bind(wxEVT_ENTER_WINDOW, &amMainFrame::OnMainButtonEnter, this);
+		it->Bind(wxEVT_LEAVE_WINDOW, &amMainFrame::OnMainButtonLeave, this);
+	}
 
 	m_buttonSizer = new wxBoxSizer(wxVERTICAL);
 	m_buttonSizer->Add(m_mainButtons[0], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
@@ -218,7 +224,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_toolBar->Realize();
 
 	splitter->SplitVertically(m_selPanel, m_mainBook, 250);
-	splitter->SetSashGravity(1.7);
+	splitter->SetSashGravity(0.0);
 
 	m_verticalSizer = new wxBoxSizer(wxVERTICAL);
 	m_verticalSizer->Add(m_toolBar, wxSizerFlags(0).Expand());
@@ -381,6 +387,14 @@ void amMainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutBox(info, this);
 }
 
+void amMainFrame::OnMainButtonEnter(wxMouseEvent& event) {
+	((wxButton*)event.GetEventObject())->SetForegroundColour(wxColour(20, 20, 20));
+}
+
+void amMainFrame::OnMainButtonLeave(wxMouseEvent& event) {
+	((wxButton*)event.GetEventObject())->SetForegroundColour(wxColour(245, 245, 245));
+}
+
 void amMainFrame::OnMainButtons(wxCommandEvent& event) {
 	int page;
 	bool showToolBar;
@@ -420,13 +434,10 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event) {
 	}
 
 	for (int i = 0; i < 5; i++) {
-		if (i == page) {
+		if (i == page)
 			m_mainButtons[i]->SetBackgroundColour(wxColour(130, 0, 0));
-			m_mainButtons[i]->SetForegroundColour(wxColour(245, 245, 245));
-		} else {
-			m_mainButtons[i]->SetBackgroundColour(wxColour(255, 255, 255));
-			m_mainButtons[i]->SetForegroundColour(wxColour(10, 10, 10));
-		}
+		else
+			m_mainButtons[i]->SetBackgroundColour(wxColour(20, 20, 20));
 	}
 
 	m_mainBook->ChangeSelection(page);
