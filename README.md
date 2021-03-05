@@ -42,6 +42,6 @@
 ![Corkboard showcase](Assets/Screenshots/Corkboard-Showcase.png)
 ![Timeline showcase](Assets/Screenshots/Timeline-Showcase.png)
 ![Outline files showcase](Assets/Screenshots/Outline-Files-Showcase.png)
-![Chapter table showcase](Assets/Screenshots/Chapter-Table-Showcase.png)
-![Chapter writer showcase](Assets/Screenshots/Chapter-Writer-Showcase.png)
+![Chapter table showcase](Assets/Screenshots/Story-Table-Showcase.png)
+![Chapter writer showcase](Assets/Screenshots/Story-Writer-Showcase.png)
 ![Chapter notes showcase](Assets/Screenshots/Chapter-Notes-Showcase.png)
