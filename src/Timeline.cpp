@@ -321,11 +321,6 @@ TimelineCanvas::TimelineCanvas(wxSFDiagramManager* manager, wxWindow* parent,
 	}
 
 	AppendSection();
-
-	/*for (int i = 6; i < 56; i++) {
-		shape = AddCard(rand() % 6, i);
-	}*/
-	
 	RepositionThreads();
 
 	m_curDragCell.second.height = TimelineCard::GetHeight();

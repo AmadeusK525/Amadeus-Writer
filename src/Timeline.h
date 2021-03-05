@@ -130,7 +130,7 @@ public:
 		m_separatorY = GetTitleOffset();
 
 		if (title == wxEmptyString)
-			m_title = "Section " + std::to_string(pos + 1) + " - Very, very big title";
+			m_title = "Section " + std::to_string(pos + 1);
 		else
 			m_title = title;
 

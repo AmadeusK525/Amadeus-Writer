@@ -323,6 +323,7 @@ void CorkboardCanvas::OnLeftDown(wxMouseEvent& event) {
 		shape->AcceptConnection("All");
 		shape->AcceptSrcNeighbour("All");
 		shape->AcceptTrgNeighbour("All");
+		shape->SetTextColour(wxColour(250, 250, 250));
 
 		shape->Scale(2.0, 2.0);
 		shape->RemoveStyle(wxSFEditTextShape::sfsSHOW_SHADOW);
