@@ -10,7 +10,13 @@
 
 #include <thread>
 
+
+wxVector<wxIcon> OutlineTreeModelNode::m_icons{};
+
+
 OutlineTreeModel::OutlineTreeModel() {
+	OutlineTreeModelNode::InitAllIcons();
+
 	m_research = new OutlineTreeModelNode(nullptr, _("Research"));
 	m_characters = new OutlineTreeModelNode(nullptr, _("Characters"));
 	m_locations = new OutlineTreeModelNode(nullptr, _("Locations"));
@@ -268,12 +274,21 @@ void OutlineTreeModel::Clear() {
 
 void OutlineTreeModel::GetValue(wxVariant& variant,
 	const wxDataViewItem& item, unsigned int col) const {
-
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	
+
+	wxDataViewIconText it;
+	it.SetText(node->m_title);
+
+	if (node == m_research)
+		it.SetIcon(node->m_icons[0]);
+	else if (node->m_isContainer)
+		it.SetIcon(node->m_icons[1]);
+	else
+		it.SetIcon(node->m_icons[2]);
+
 	switch (col) {
 	case 0:
-		variant = node->m_title;
+		variant << it;
 		break;
 	default:
 		break;
@@ -284,9 +299,12 @@ bool OutlineTreeModel::SetValue(const wxVariant& variant,
 	const wxDataViewItem& item, unsigned int col) {
 
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
+	wxDataViewIconText it;
+	it << variant;
+
 	switch (col) {
 	case 0:
-		node->m_title = variant.GetString();
+		node->m_title = it.GetText();
 		return true;
 
 	default:
@@ -385,6 +403,9 @@ EVT_DATAVIEW_SELECTION_CHANGED(TREE_Files, amOutlineFilesPanel::OnSelectionChang
 EVT_DATAVIEW_ITEM_EDITING_STARTED(TREE_Files, amOutlineFilesPanel::OnEditingStart)
 EVT_DATAVIEW_ITEM_EDITING_DONE(TREE_Files, amOutlineFilesPanel::OnEditingEnd)
 
+EVT_DATAVIEW_ITEM_EXPANDED(TREE_Files, amOutlineFilesPanel::OnItemExpanded)
+EVT_DATAVIEW_ITEM_COLLAPSED(TREE_Files, amOutlineFilesPanel::OnItemCollapsed)
+
 EVT_DATAVIEW_ITEM_BEGIN_DRAG(TREE_Files, amOutlineFilesPanel::OnBeginDrag)
 EVT_DATAVIEW_ITEM_DROP_POSSIBLE(TREE_Files, amOutlineFilesPanel::OnDropPossible)
 EVT_DATAVIEW_ITEM_DROP(TREE_Files, amOutlineFilesPanel::OnDrop)
@@ -425,13 +446,15 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(pa
 	m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
 	m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
 	m_files->SetBackgroundColour(wxColour(250, 250, 250));
+	m_files->GetMainWindow()->SetBackgroundColour(wxColour(20, 20, 20));
 
 	m_outlineTreeModel = new OutlineTreeModel();
 	m_files->AssociateModel(m_outlineTreeModel.get());
 
-	wxDataViewTextRenderer* tr = new wxDataViewTextRenderer(wxDataViewTextRenderer::GetDefaultType(),
+	wxDataViewIconTextRenderer* itr = new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
 		wxDATAVIEW_CELL_EDITABLE);
-	wxDataViewColumn* column0 = new wxDataViewColumn(_("Files"), tr, 0, FromDIP(200), wxALIGN_LEFT);
+	itr->EnableEllipsize(wxELLIPSIZE_END);
+	wxDataViewColumn* column0 = new wxDataViewColumn(_("Files"), itr, 0, FromDIP(200), wxALIGN_LEFT);
 	m_files->AppendColumn(column0);
 
 	wxBoxSizer* panSizer = new wxBoxSizer(wxVERTICAL);
@@ -453,14 +476,14 @@ void amOutlineFilesPanel::Init() {
 	wxVector<Location>& locList = amGetManager()->GetLocations();
 	wxVector<Item>& itemList = amGetManager()->GetItems();
 
-	for (auto it = charList.begin(); it != charList.end(); it++)
-		AppendCharacter(*it);
+	for (Character& character : charList)
+		AppendCharacter(character);
 
-	for (auto it = locList.begin(); it != locList.end(); it++)
-		AppendLocation(*it);
+	for (Location& location : locList)
+		AppendLocation(location);
 
-	for (auto it = itemList.begin(); it != itemList.end(); it++)
-		AppendItem(*it);
+	for (Item& item : itemList)
+		AppendItem(item);
 }
 
 void amOutlineFilesPanel::GenerateCharacterBuffer(Character& character, wxRichTextBuffer& buffer) {
@@ -555,7 +578,7 @@ void amOutlineFilesPanel::GenerateCharacterBuffer(Character& character, wxRichTe
 		buffer.InsertTextWithUndo(buffer.GetText().size(), character.backstory, nullptr);
 	}
 
-	for (auto& it : character.custom) {
+	for (pair<wxString, wxString>& it : character.custom) {
 		if (it.second != "") {
 			buffer.BeginBold();
 			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
@@ -653,7 +676,7 @@ void amOutlineFilesPanel::GenerateLocationBuffer(Location& location, wxRichTextB
 		buffer.InsertTextWithUndo(buffer.GetText().size(), location.culture, nullptr);
 	}
 
-	for (auto& it : location.custom) {
+	for (pair<wxString, wxString>& it : location.custom) {
 		if (it.second != "") {
 			buffer.BeginBold();
 			buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
@@ -709,58 +732,7 @@ void amOutlineFilesPanel::GenerateItemBuffer(Item& item, wxRichTextBuffer& buffe
 	}
 	buffer.InsertTextWithUndo(buffer.GetText().size(), role, nullptr);
 
-	//if (item.general != "") {
-	//	buffer.BeginBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nGeneral:\n", nullptr);
-	//	buffer.EndBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), item.general, nullptr);
-	//}
-
-	//if (item.natural != "") {
-	//	buffer.BeginBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nNatural characteristics:\n", nullptr);
-	//	buffer.EndBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.natural, nullptr);
-	//}
-
-	//if (location.architecture != "") {
-	//	buffer.BeginBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nArchitecture:\n", nullptr);
-	//	buffer.EndBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.architecture, nullptr);
-	//}
-
-	//if (location.politics != "") {
-	//	buffer.BeginBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nPolitics:\n", nullptr);
-	//	buffer.EndBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.politics, nullptr);
-	//}
-
-	//if (location.economy != "") {
-	//	buffer.BeginBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nEconomy:\n", nullptr);
-	//	buffer.EndBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.economy, nullptr);
-	//}
-
-	//if (location.culture != "") {
-	//	buffer.BeginBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\nCulture:\n", nullptr);
-	//	buffer.EndBold();
-	//	buffer.InsertTextWithUndo(buffer.GetText().size(), location.culture, nullptr);
-	//}
-
-	//for (auto& it : location.custom) {
-	//	if (it.second != "") {
-	//		buffer.BeginBold();
-	//		buffer.InsertTextWithUndo(buffer.GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
-	//		buffer.EndBold();
-	//		buffer.InsertTextWithUndo(buffer.GetText().size(), it.second, nullptr);
-	//	}
-	//}
-
-	//buffer.SetName(location.name);
+	buffer.SetName(item.name);
 }
 
 void amOutlineFilesPanel::AppendCharacter(Character& character) {
@@ -846,6 +818,7 @@ void amOutlineFilesPanel::NewFile(wxCommandEvent& event) {
 	wxDataViewItem item = m_outlineTreeModel->AppendFile(sel, "New file", wxRichTextBuffer());
 	m_files->Select(item);
 	m_currentNode = (OutlineTreeModelNode*)item.GetID();
+	Save();
 }
 
 void amOutlineFilesPanel::NewFolder(wxCommandEvent& event) {
@@ -862,6 +835,7 @@ void amOutlineFilesPanel::NewFolder(wxCommandEvent& event) {
 	wxDataViewItem item = m_outlineTreeModel->AppendFolder(sel, "New folder");
 	m_files->Select(item);
 	m_currentNode = (OutlineTreeModelNode*)item.GetID();
+	Save();
 }
 
 void amOutlineFilesPanel::DeleteItem(wxDataViewItem& item) {
@@ -1016,7 +990,13 @@ void amOutlineFilesPanel::OnEditingStart(wxDataViewEvent& event) {
 		event.Allow();
 }
 
-void amOutlineFilesPanel::OnEditingEnd(wxDataViewEvent& WXUNUSED(event)) {}
+void amOutlineFilesPanel::OnEditingEnd(wxDataViewEvent& WXUNUSED(event)) {
+	Save();
+}
+
+void amOutlineFilesPanel::OnItemExpanded(wxDataViewEvent& event) {}
+
+void amOutlineFilesPanel::OnItemCollapsed(wxDataViewEvent& event) {}
 
 void amOutlineFilesPanel::OnBeginDrag(wxDataViewEvent& event) {
 	wxDataViewItem item(event.GetItem());
@@ -1108,15 +1088,13 @@ void amOutlineFilesPanel::OnDrop(wxDataViewEvent& event) {
 }
 
 void amOutlineFilesPanel::OnTimerEvent(wxTimerEvent& event) {
-	SaveCurrentBuffer();
+	Save();
 }
 
 void amOutlineFilesPanel::SaveCurrentBuffer() {
-	if (m_currentNode) {
-		if (m_currentNode->m_buffer.GetText() != m_textCtrl->GetBuffer().GetText()) {
+	if (m_currentNode && IsShownOnScreen()) {
+		if (m_currentNode->m_buffer.GetText() != m_textCtrl->GetBuffer().GetText())
 			m_currentNode->m_buffer = m_textCtrl->GetBuffer();
-			Save();
-		}
 	}
 }
 
@@ -1211,14 +1189,9 @@ void amOutlineFilesPanel::DeserializeNode(wxXmlNode* node, wxDataViewItem& paren
 bool amOutlineFilesPanel::Save() {
 	bool succeeded = false;
 
-	if (!m_isSaving) {
+	if (!m_isSaving && IsShownOnScreen()) {
 		std::thread thread([&]() {
 			m_isSaving = true;
-
-			if (!wxFileName::Exists(amGetManager()->GetPath(true).ToStdString())) {
-				succeeded = false;
-				return;
-			}
 
 			SaveCurrentBuffer();
 			wxXmlDocument doc;

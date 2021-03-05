@@ -3,7 +3,7 @@
 #include "ProjectWizard.h"
 #include "MainFrame.h"
 #include "ElementsNotebook.h"
-#include "ChaptersGrid.h"
+#include "StoryNotebook.h"
 #include "Outline.h"
 #include "Release.h"
 #include "OutlineFiles.h"
@@ -231,7 +231,7 @@ int amProjectSQLDatabase::GetDocumentId(amDocument& document) {
 		if (!nameEmpty || document.specialForeign)
 			query << " AND ";
 
-		auto it = document.integers.begin();
+		pair<wxString, int>* it = document.integers.begin();
 		query << it->first << " = " << it->second << ";";
 	}
 
@@ -265,11 +265,11 @@ bool amProjectSQLDatabase::CreateTable(const wxString& tableName, const wxArrayS
 
 	bool first = true;
 
-	for (auto& it : arguments) {
+	for (auto& str : arguments) {
 		if (!first)
 			update << ", ";
 
-		update << it;
+		update << str;
 		first = false;
 	}
 
@@ -284,11 +284,11 @@ bool amProjectSQLDatabase::InsertDocument(amDocument& document) {
 
 	statement.ExecuteUpdate();
 
-	for (auto& it : document.documents) {
-		if (it.specialForeign)
-			it.foreignKey.second = GetDocumentId(document);
+	for (amDocument& documentIt : document.documents) {
+		if (documentIt.specialForeign)
+			documentIt.foreignKey.second = GetDocumentId(document);
 
-		InsertDocument(it);
+		InsertDocument(documentIt);
 	}
 	return true;
 }
@@ -340,18 +340,23 @@ bool amProjectSQLDatabase::UpdateDocument(amDocument& original, amDocument& edit
 	return true;
 }
 
-bool amProjectSQLDatabase::InsertManyToMany(wxString& tableName,
-	amDocument& doc1,
-	wxString& arg1,
-	amDocument& doc2,
-	wxString& arg2) {
-
+bool amProjectSQLDatabase::InsertManyToMany(const wxString& tableName,
+	int docID1, const wxString& arg1,
+	int docID2, const wxString& arg2) {
+	
 	wxString insert("INSERT INTO ");
 	insert << tableName << " (" << arg1 << ", " << arg2 << ") VALUES (";
 
-	insert << GetDocumentId(doc1) << ", " << GetDocumentId(doc2) << ");";
+	insert << docID1 << ", " << docID2 << ");";
 
 	return ExecuteUpdate(insert);
+}
+
+bool amProjectSQLDatabase::InsertManyToMany(const wxString& tableName,
+	amDocument& doc1, const wxString& arg1,
+	amDocument& doc2, const wxString& arg2) {
+
+	return InsertManyToMany(tableName, GetDocumentId(doc1), arg1, GetDocumentId(doc2), arg2);
 }
 
 bool amProjectSQLDatabase::DeleteDocument(amDocument& document) {
@@ -361,17 +366,22 @@ bool amProjectSQLDatabase::DeleteDocument(amDocument& document) {
 	return ExecuteUpdate(statement);
 }
 
-bool amProjectSQLDatabase::DeleteManyToMany(wxString& tableName,
-	amDocument& doc1,
-	wxString& arg1,
-	amDocument& doc2,
-	wxString& arg2) {
+bool amProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
+	int docID1, const wxString& arg1,
+	int docID2, const wxString& arg2) {
 
 	wxString statement("DELETE FROM ");
-	statement << tableName << " WHERE " << arg1 << " = " << GetDocumentId(doc1);
-	statement << " AND " << arg2 << " = " << GetDocumentId(doc2) << ";";
+	statement << tableName << " WHERE " << arg1 << " = " << docID1;
+	statement << " AND " << arg2 << " = " << docID2 << ";";
 
 	return ExecuteUpdate(statement);
+}
+
+bool amProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
+	amDocument& doc1, const wxString& arg1,
+	amDocument& doc2, const wxString& arg2) {
+
+	return DeleteManyToMany(tableName, GetDocumentId(doc1), arg1, GetDocumentId(doc2), arg2);
 }
 
 wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& document) {
@@ -396,7 +406,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 		valueNames << "'" << buffer.Format("%q", (const char*)document.name) << "'";
 	}
 
-	for (auto& it : document.integers) {
+	for (pair<wxString, int>& it : document.integers) {
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
@@ -407,7 +417,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 		valueNames << it.second;
 	}
 
-	for (auto& it : document.strings) {
+	for (pair<wxString, wxString>& it : document.strings) {
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
@@ -418,7 +428,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 		valueNames << "'" << buffer.Format("%q", (const char*)it.second) << "'";
 	}
 
-	for (auto& it : document.memBuffers) {
+	for (pair<wxString, wxMemoryBuffer>& it : document.memBuffers) {
 		if (!first) {
 			columnNames << ", ";
 			valueNames << ", ";
@@ -446,7 +456,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amDocument& do
 
 		int i = 1;
 
-		for (auto& it : document.memBuffers)
+		for (pair<wxString, wxMemoryBuffer>& it : document.memBuffers)
 			statement.Bind(i++, it.second);
 
 		return statement;
@@ -471,7 +481,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amDocument& do
 		first = false;
 	}
 
-	for (auto& it : document.integers) {
+	for (pair<wxString, int>& it : document.integers) {
 		if (!first)
 			update << ", ";
 
@@ -479,7 +489,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amDocument& do
 		first = false;
 	}
 
-	for (auto& it : document.strings) {
+	for (pair<wxString, wxString>& it : document.strings) {
 		if (!first)
 			update << ", ";
 
@@ -487,7 +497,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amDocument& do
 		first = false;
 	}
 
-	for (auto& it : document.memBuffers) {
+	for (pair<wxString, wxMemoryBuffer>& it : document.memBuffers) {
 		if (!first)
 			update << ", ";
 
@@ -510,7 +520,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amDocument& do
 
 		int i = 1;
 
-		for (auto& it : document.memBuffers)
+		for (pair<wxString, wxMemoryBuffer>& it : document.memBuffers)
 			statement.Bind(i++, it.second);
 
 		return statement;
@@ -546,7 +556,7 @@ bool amProjectManager::Init() {
 				this, wxDefaultPosition, wxDefaultSize);
 
 			m_elements = (m_mainFrame->GetElementsNotebook());
-			m_chaptersNote = (m_mainFrame->GetChaptersNotebook());
+			m_storyNotebook = (m_mainFrame->GetStoryNotebook());
 			m_outline = (m_mainFrame->GetOutline());
 			m_release = (m_mainFrame->GetRelease());
 		}
@@ -749,7 +759,7 @@ void amProjectManager::LoadChapters(wxVector<Chapter>& chapters, int sectionId) 
 		LoadScenes(chapter.scenes, chapterId);
 
 		chapters.push_back(chapter);
-		m_chaptersNote->AddChapter(chapter);
+		m_storyNotebook->AddChapter(chapter);
 	}
 }
 
@@ -804,7 +814,7 @@ void amProjectManager::LoadCharacters() {
 				blob.Read(imageBuf, blob.GetSize(), 0);
 
 				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
-				character.image.LoadFile(stream, wxBITMAP_TYPE_BMP);
+				character.image.LoadFile(stream, wxBITMAP_TYPE_PNG);
 			}
 		}
 
@@ -850,7 +860,7 @@ void amProjectManager::LoadLocations() {
 				blob.Read(imageBuf, blob.GetSize(), 0);
 
 				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
-				location.image.LoadFile(stream, wxBITMAP_TYPE_BMP);
+				location.image.LoadFile(stream, wxBITMAP_TYPE_PNG);
 			}
 		}
 
@@ -898,7 +908,7 @@ void amProjectManager::LoadItems() {
 				blob.Read(imageBuf, blob.GetSize(), 0);
 
 				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
-				item.image.LoadFile(stream, wxBITMAP_TYPE_BMP);
+				item.image.LoadFile(stream, wxBITMAP_TYPE_PNG);
 			}
 		}
 
@@ -929,8 +939,8 @@ amElementsNotebook* amProjectManager::GetElementsNotebook() {
 	return m_elements;
 }
 
-amChaptersNotebook* amProjectManager::GetChaptersNotebook() {
-	return m_chaptersNote;
+amStoryNotebook* amProjectManager::GetStoryNotebook() {
+	return m_storyNotebook;
 }
 
 amOutline* amProjectManager::GetOutline() {
@@ -1067,16 +1077,16 @@ void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, 
 	chapter.sectionID =section.id;
 	size_t capacityBefore = section.chapters.capacity();
 
-	m_chaptersNote->AddChapter(chapter, pos);
+	m_storyNotebook->AddChapter(chapter, pos);
 
 	chapter.Save(&m_storage);
 
 	if (pos < section.chapters.size() + 1 && pos > -1) {
-		auto it = section.chapters.begin();
+		Chapter* chapterIt = section.chapters.begin();
 		for (int i = 0; i < pos; i++) {
-			it++;
+			chapterIt++;
 		}
-		section.chapters.insert(it, chapter);
+		section.chapters.insert(chapterIt, chapter);
 
 		m_storage.Begin();
 		for (int i = 0; i < section.chapters.size(); i++) {
@@ -1095,9 +1105,9 @@ void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, 
 void amProjectManager::EditCharacter(Character& original, Character& edit, bool sort) {
 	try {
 		if (sort) {
-			for (auto& it : original.chapters) {
-				it->characters.Remove(original.name);
-				it->characters.Add(edit.name);
+			for (Chapter* chapter : original.chapters) {
+				chapter->characters.Remove(original.name);
+				chapter->characters.Add(edit.name);
 			}
 		}
 
@@ -1114,9 +1124,9 @@ void amProjectManager::EditCharacter(Character& original, Character& edit, bool 
 			m_elements->UpdateCharacterList();
 		} else {
 			int n = 0;
-			for (auto& it : m_project.characters) {
-				if (it == original) {
-					m_elements->UpdateCharacter(n, it);
+			for (Character& character : m_project.characters) {
+				if (character == original) {
+					m_elements->UpdateCharacter(n, character);
 					break;
 				}
 
@@ -1140,9 +1150,9 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 	try {
 		m_outline->GetOutlineFiles()->DeleteLocation(original);
 		if (sort) {
-			for (auto& it : original.chapters) {
-				it->locations.Remove(original.name);
-				it->locations.Add(edit.name);
+			for (Chapter* chapter : original.chapters) {
+				chapter->characters.Remove(original.name);
+				chapter->characters.Add(edit.name);
 			}
 		}
 
@@ -1158,9 +1168,9 @@ void amProjectManager::EditLocation(Location& original, Location& edit, bool sor
 			m_elements->UpdateLocationList();
 		} else {
 			int n = 0;
-			for (auto& it : m_project.locations) {
-				if (it == original) {
-					m_elements->UpdateLocation(n, it);
+			for (Location& location : m_project.locations) {
+				if (location == original) {
+					m_elements->UpdateLocation(n, location);
 					break;
 				}
 
@@ -1184,9 +1194,9 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 		m_outline->GetOutlineFiles()->DeleteItem(original);
 
 		if (sort) {
-			for (auto& it : original.chapters) {
-				it->items.Remove(original.name);
-				it->items.Add(edit.name);
+			for (Chapter* chapter : original.chapters) {
+				chapter->characters.Remove(original.name);
+				chapter->characters.Add(edit.name);
 			}
 		}
 
@@ -1203,9 +1213,9 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 			m_elements->UpdateItemList();
 		} else {
 			int n = 0;
-			for (auto& it : m_project.items) {
-				if (it == original) {
-					m_elements->UpdateItem(n, it);
+			for (Item& item : m_project.items) {
+				if (item == original) {
+					m_elements->UpdateItem(n, item);
 					break;
 				}
 
@@ -1224,23 +1234,21 @@ void amProjectManager::EditItem(Item& original, Item& edit, bool sort) {
 }
 
 void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chapter& chapter, bool addToDb) {
-	for (auto& it : m_project.characters) {
-		if (characterName == it.name) {
+	for (Character& character : m_project.characters) {
+		if (characterName == character.name) {
 
 			bool has = false;
-			for (unsigned int i = 0; i < it.chapters.size(); i++)
-				if (it.chapters[i] == &chapter)
+			for (unsigned int i = 0; i < character.chapters.size(); i++)
+				if (character.chapters[i] == &chapter)
 					has = true;
 
 			if (!has) {
-				it.chapters.push_back(&chapter);
+				character.chapters.push_back(&chapter);
 
 				if (addToDb)
-					m_storage.InsertManyToMany(wxString("characters_chapters"),
-					it.GenerateDocumentForId(),
-					wxString("character_id"),
-					chapter.GenerateDocumentForId(),
-					wxString("chapter_id"));
+					m_storage.InsertManyToMany("characters_chapters",
+					character.id, "character_id",
+					chapter.id, "chapter_id");
 			}
 
 			if (chapter.characters.Index(characterName) == -1)
@@ -1250,23 +1258,21 @@ void amProjectManager::AddChapterToCharacter(const wxString& characterName, Chap
 }
 
 void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapter& chapter, bool addToDb) {
-	for (auto& it : m_project.locations) {
-		if (locationName == it.name) {
+	for (Location& location : m_project.locations) {
+		if (locationName == location.name) {
 
 			bool has = false;
-			for (unsigned int i = 0; i < it.chapters.size(); i++)
-				if (it.chapters[i] == &chapter)
+			for (unsigned int i = 0; i < location.chapters.size(); i++)
+				if (location.chapters[i] == &chapter)
 					has = true;
 
 			if (!has) {
-				it.chapters.push_back(&chapter);
+				location.chapters.push_back(&chapter);
 
 				if (addToDb)
-					m_storage.InsertManyToMany(wxString("locations_chapters"),
-					it.GenerateDocumentForId(),
-					wxString("location_id"),
-					chapter.GenerateDocumentForId(),
-					wxString("chapter_id"));
+					m_storage.InsertManyToMany("locations_chapters",
+					location.id, "location_id",
+					chapter.id, "chapter_id");
 			}
 			if (chapter.locations.Index(locationName) == -1)
 				chapter.locations.Add(locationName);
@@ -1275,23 +1281,20 @@ void amProjectManager::AddChapterToLocation(const wxString& locationName, Chapte
 }
 
 void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapter, bool addToDb) {
-	for (auto& it : m_project.items) {
-		if (itemName == it.name) {
-
+	for (Item& item : m_project.items) {
+		if (itemName == item.name) {
 			bool has = false;
-			for (unsigned int i = 0; i < it.chapters.size(); i++)
-				if (it.chapters[i] == &chapter)
+			for (unsigned int i = 0; i < item.chapters.size(); i++)
+				if (item.chapters[i] == &chapter)
 					has = true;
 
 			if (!has) {
-				it.chapters.push_back(&chapter);
+				item.chapters.push_back(&chapter);
 
 				if (addToDb)
-					m_storage.InsertManyToMany(wxString("items_chapters"),
-					it.GenerateDocumentForId(),
-					wxString("item_id"),
-					chapter.GenerateDocumentForId(),
-					wxString("chapter_id"));
+					m_storage.InsertManyToMany("items_chapters",
+					item.id, "item_id",
+					chapter.id, "chapter_id");
 			}
 
 			if (chapter.items.Index(itemName) == -1)
@@ -1301,17 +1304,19 @@ void amProjectManager::AddChapterToItem(const wxString& itemName, Chapter& chapt
 }
 
 void amProjectManager::RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter) {
-	for (auto& it : m_project.characters) {
-		if (characterName == it.name) {
-			for (auto& it2 : it.chapters)
-				if (it2 == &chapter) {
-					it.chapters.erase(&it2);
-					m_storage.DeleteManyToMany(wxString("characters_chapters"),
-						it.GenerateDocumentForId(),
-						wxString("character_id"),
-						chapter.GenerateDocumentForId(),
-						wxString("chapter_id"));
+	for (Character& character : m_project.characters) {
+		if (characterName == character.name) {
+			for (wxVector<Chapter*>::iterator chapterIt = character.chapters.begin();
+				chapterIt != character.chapters.end(); chapterIt++) {
+				if (*(*chapterIt) == chapter) {
+					character.chapters.erase(chapterIt);
+					m_storage.DeleteManyToMany("characters_chapters",
+						character.id, "character_id",
+						chapter.id, "chapter_id");
+				
+					break;
 				}
+			}
 
 			chapter.characters.Remove(characterName);
 			return;
@@ -1322,17 +1327,19 @@ void amProjectManager::RemoveChapterFromCharacter(const wxString& characterName,
 }
 
 void amProjectManager::RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter) {
-	for (auto& it : m_project.locations) {
-		if (locationName == it.name) {
-			for (auto& it2 : it.chapters)
-				if (it2 == &chapter) {
-					it.chapters.erase(&it2);
-					m_storage.DeleteManyToMany(wxString("locations_chapters"),
-						it.GenerateDocumentForId(),
-						wxString("location_id"),
-						chapter.GenerateDocumentForId(),
-						wxString("chapter_id"));
+	for (Location& location : m_project.locations) {
+		if (locationName == location.name) {
+			for (wxVector<Chapter*>::iterator chapterIt = location.chapters.begin();
+				chapterIt != location.chapters.end(); chapterIt++) {
+				if (*(*chapterIt) == chapter) {
+					location.chapters.erase(chapterIt);
+					m_storage.DeleteManyToMany("locations_chapters",
+						location.id, "location_id",
+						chapter.id, "chapter_id");
+
+					break;
 				}
+			}
 
 			chapter.locations.Remove(locationName);
 			return;
@@ -1343,17 +1350,19 @@ void amProjectManager::RemoveChapterFromLocation(const wxString& locationName, C
 }
 
 void amProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter& chapter) {
-	for (auto& it : m_project.items) {
-		if (itemName == it.name) {
-			for (auto& it2 : it.chapters)
-				if (it2 == &chapter) {
-					it.chapters.erase(&it2);
-					m_storage.DeleteManyToMany(wxString("items_chapters"),
-						it.GenerateDocumentForId(),
-						wxString("item_id"),
-						chapter.GenerateDocumentForId(),
-						wxString("chapter_id"));
+	for (Item& item : m_project.items) {
+		if (itemName == item.name) {
+			for (wxVector<Chapter*>::iterator chapterIt = item.chapters.begin();
+				chapterIt != item.chapters.end(); chapterIt++) {
+				if (*(*chapterIt) == chapter) {
+					item.chapters.erase(chapterIt);
+					m_storage.DeleteManyToMany("items_chapters",
+						item.id, "item_id",
+						chapter.id, "chapter_id");
+				
+					break;
 				}
+			}
 
 			chapter.items.Remove(itemName);
 			return;
@@ -1364,40 +1373,40 @@ void amProjectManager::RemoveChapterFromItem(const wxString& itemName, Chapter& 
 }
 
 void amProjectManager::RedeclareChapsInElements(Book& book) {
-	for (auto& it : m_project.characters)
-		it.chapters.clear();
+	for (Character& character : m_project.characters)
+		character.chapters.clear();
 
-	for (auto& it : m_project.locations)
-		it.chapters.clear();
+	for (Location& location : m_project.locations)
+		location.chapters.clear();
 
-	for (auto& it : m_project.items)
-		it.chapters.clear();
+	for (Item& item : m_project.items)
+		item.chapters.clear();
 
-	for (auto& it : book.sections) {
-		for (auto& it2 : it.chapters) {
-			for (auto& it3 : it2.characters)
-				AddChapterToCharacter(it3, it2, false);
+	for (Section& section : book.sections) {
+		for (Chapter& chapter : section.chapters) {
+			for (wxString& characterName : chapter.characters)
+				AddChapterToCharacter(characterName, chapter, false);
 
-			for (auto& it3 : it2.locations)
-				AddChapterToLocation(it3, it2, false);
+			for (wxString& locationName : chapter.locations)
+				AddChapterToLocation(locationName, chapter, false);
 
-			for (auto& it3 : it2.items)
-				AddChapterToItem(it3, it2, false);
+			for (wxString& itemName : chapter.items)
+				AddChapterToItem(itemName, chapter, false);
 		}
 	}
 }
 
 void amProjectManager::DeleteCharacter(Character& character) {
-	for (auto it : character.chapters)
-		RemoveChapterFromCharacter(character.name, *it);
+	for (Chapter* chapter : character.chapters)
+		RemoveChapterFromCharacter(character.name, *chapter);
 
 	m_storage.DeleteDocument(character.GenerateDocumentForId());
 	m_project.characters.erase(&character);
 }
 
 void amProjectManager::DeleteLocation(Location& location) {
-	for (auto it : location.chapters)
-		it->characters.Remove(location.name);
+	for (Chapter* chapter : location.chapters)
+		chapter->characters.Remove(location.name);
 
 	m_project.locations.erase(&location);
 	m_storage.DeleteDocument(location.GenerateDocumentForId());
@@ -1405,50 +1414,50 @@ void amProjectManager::DeleteLocation(Location& location) {
 }
 
 void amProjectManager::DeleteItem(Item& item) {
-	for (auto it : item.chapters)
-		it->characters.Remove(item.name);
+	for (Chapter* chapter : item.chapters)
+		chapter->characters.Remove(item.name);
 
 	m_project.items.erase(&item);
 	m_storage.DeleteDocument(item.GenerateDocumentForId());
 }
 
 void amProjectManager::DeleteChapter(Chapter& chapter, Section& section) {
-	for (auto& it : chapter.characters) {
-		for (auto& it2 : m_project.characters) {
+	for (wxString& characterName : chapter.characters) {
+		for (Character& character : m_project.characters) {
 
-			if (it == it2.name) {
+			if (characterName == character.name) {
 
-				for (auto& it3 : it2.chapters) {
-					if (it3 == &chapter)
-						it2.chapters.erase(&it3);
-
-				}
-			}
-		}
-	}
-
-	for (auto& it : chapter.locations) {
-		for (auto& it2 : m_project.locations) {
-
-			if (it == it2.name) {
-
-				for (auto& it3 : it2.chapters) {
-					if (it3 == &chapter)
-						it2.chapters.erase(&it3);
+				for (Chapter* chapterIt : character.chapters) {
+					if (chapterIt == &chapter)
+						character.chapters.erase(&chapterIt);
 
 				}
 			}
 		}
 	}
 
-	for (auto& it : chapter.items) {
-		for (auto& it2 : m_project.items) {
+	for (wxString& locationName : chapter.locations) {
+		for (Location& location : m_project.locations) {
 
-			if (it == it2.name) {
+			if (locationName == location.name) {
 
-				for (auto& it3 : it2.chapters) {
-					if (it3 == &chapter)
-						it2.chapters.erase(&it3);
+				for (Chapter* chapterIt : location.chapters) {
+					if (chapterIt == &chapter)
+						location.chapters.erase(&chapterIt);
+
+				}
+			}
+		}
+	}
+
+	for (wxString& itemName : chapter.items) {
+		for (Item& item : m_project.items) {
+
+			if (itemName == item.name) {
+
+				for (Chapter* chapterIt : item.chapters) {
+					if (chapterIt == &chapter)
+						item.chapters.erase(&chapterIt);
 
 				}
 			}
@@ -1487,32 +1496,32 @@ wxVector<Chapter> amProjectManager::GetChapters(int bookPos) {
 
 wxArrayString amProjectManager::GetCharacterNames() {
 	wxArrayString names(true);
-	for (auto& it : m_project.characters)
-		names.Add(it.name);
+	for (Character& character : m_project.characters)
+		names.Add(character.name);
 
 	return names;
 }
 
 wxArrayString amProjectManager::GetLocationNames() {
 	wxArrayString names(true);
-	for (auto& it : m_project.locations)
-		names.Add(it.name);
+	for (Location& location : m_project.locations)
+		names.Add(location.name);
 
 	return names;
 }
 
 wxArrayString amProjectManager::GetItemNames() {
 	wxArrayString names(true);
-	for (auto& it : m_project.items)
-		names.Add(it.name);
+	for (Item& item : m_project.items)
+		names.Add(item.name);
 
 	return names;
 }
 
 wxArrayString amProjectManager::GetBookTitles() {
 	wxArrayString names;
-	for (auto& it : m_project.books)
-		names.Add(it.title);
+	for (Book& book : m_project.books)
+		names.Add(book.title);
 
 	return names;
 }

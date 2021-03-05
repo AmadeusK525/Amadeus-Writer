@@ -2,6 +2,7 @@
 
 #include "MainFrame.h"
 #include "Corkboard.h"
+#include "Timeline.h"
 #include "OutlineFiles.h"
 
 

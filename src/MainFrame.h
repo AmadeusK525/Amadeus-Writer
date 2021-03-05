@@ -18,7 +18,7 @@ private:
 
     wxPanel* m_overview = nullptr;
     amElementsNotebook* m_elements = nullptr;
-    amChaptersNotebook* m_chaptersNote = nullptr;
+    amStoryNotebook* m_storyNotebook = nullptr;
     amOutline* m_outline = nullptr;
     amRelease* m_release = nullptr;
 
@@ -45,7 +45,7 @@ public:
         const wxSize& size = wxDefaultSize);
 
     amElementsNotebook* GetElementsNotebook();
-    amChaptersNotebook* GetChaptersNotebook();
+    amStoryNotebook* GetStoryNotebook();
     amOutline* GetOutline();
     amRelease* GetRelease();
 

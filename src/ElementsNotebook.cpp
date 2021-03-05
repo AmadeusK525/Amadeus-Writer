@@ -17,20 +17,24 @@ wxImage amGetScaledImage(int maxWidth, int maxHeight, wxImage& image) {
 
     double ratio;
 
-    int neww;
-    int newh;
+    int neww, xoffset;
+    int newh, yoffset;
 
     ratio = (double)width / height;
 
     if (width > height) {
         neww = maxWidth;
-        newh = ratio / maxWidth;
+        newh = maxWidth / ratio;
+        xoffset = 0;
+        yoffset = (maxHeight / 2) - (newh / 2);
     } else {
         newh = maxHeight;
         neww = maxHeight * ratio;
+        yoffset = 0;
+        xoffset = (maxWidth / 2) - (neww / 2);
     }
 
-    return image.Scale(neww, newh, wxIMAGE_QUALITY_HIGH);
+    return image.Scale(neww, newh, wxIMAGE_QUALITY_HIGH).Size(wxSize(maxWidth, maxHeight), wxPoint(xoffset, yoffset));
 }
 
 BEGIN_EVENT_TABLE(amElementsNotebook, wxNotebook)
@@ -78,7 +82,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_charList->SetBackgroundColour(wxColour(45, 45, 45));
     m_charList->SetForegroundColour(wxColour(245, 245, 245));
 
-    m_charImageList = new wxImageList(16, 16, false, 0);
+    m_charImageList = new wxImageList(24, 24);
     m_charList->SetImageList(m_charImageList, wxIMAGE_LIST_SMALL);
 
     wxArrayString sortBy;
@@ -145,6 +149,9 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_locList->SetForegroundColour(wxColour(245, 245, 245));
     m_locList->SetMinSize(wxSize(300, 400));
 
+    m_locImageList = new wxImageList(24, 24);
+    m_locList->SetImageList(m_locImageList, wxIMAGE_LIST_SMALL);
+
     wxStaticText* lSortByLabel = new wxStaticText(locFrame, -1, "Sort by:");
     lSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
     lSortByLabel->SetFont(wxFontInfo(11).Bold());
@@ -189,6 +196,9 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_itemsList->SetBackgroundColour(wxColour(45, 45, 45));
     m_itemsList->SetForegroundColour(wxColour(245, 245, 245));
     m_itemsList->SetMinSize(wxSize(300, 400));
+
+    m_itemsImageList = new wxImageList(24, 24);
+    m_itemsList->SetImageList(m_itemsImageList, wxIMAGE_LIST_SMALL);
 
     wxStaticText* iSortByLabel = new wxStaticText(itemsFrame, -1, "Sort by:");
     iSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
@@ -245,28 +255,18 @@ void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event)) {
 }
 
 void amElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event)) {
-    auto it = m_manager->GetCharacters().begin();
-    for (int i = 0; i < m_charList->GetFirstSelected(); i++) {
-        it++;
-    }
-
     amCharacterCreator* edit = new amCharacterCreator(m_manager->GetMainFrame(), m_manager, -1,
-        "Create character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
+        "Edit character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
 
     edit->CenterOnParent();
-    edit->SetEdit(it);
+    edit->SetEdit(&m_manager->GetCharacters()[m_charList->GetFirstSelected()]);
     edit->Show(true);
 
     m_manager->GetMainFrame()->Enable(false);
 }
 
 void amElementsNotebook::OnEditCharName(wxListEvent& event) {
-    auto it = m_manager->GetCharacters().begin();
-    for (int i = 0; i < m_charList->GetFirstSelected(); i++) {
-        it++;
-    }
-
-    it->name = event.GetLabel();
+    m_manager->GetCharacters()[m_charList->GetFirstSelected()].name = event.GetLabel();
 }
 
 void amElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event)) {
@@ -293,16 +293,11 @@ void amElementsNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event)) {
 }
 
 void amElementsNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event)) {
-    auto it = m_manager->GetLocations().begin();
-    for (int i = 0; i < m_locList->GetFirstSelected(); i++) {
-        it++;
-    }
-
     amLocationCreator* edit = new amLocationCreator(m_manager->GetMainFrame(), m_manager, -1,
         "Edit location - ''", wxDefaultPosition, FromDIP(wxSize(900, 650)));
 
     edit->CenterOnParent();
-    edit->SetEdit(it);
+    edit->SetEdit(&m_manager->GetLocations()[m_locList->GetFirstSelected()]);
     edit->Show(true);
 
     m_manager->GetMainFrame()->Enable(false);
@@ -316,13 +311,7 @@ void amElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event)) {
 
     if (deleteCheck.ShowModal() == wxID_YES) {
         m_locList->DeleteItem(sel);
-
-        auto it = m_manager->GetLocations().begin();
-        for (int i = 0; i < sel; i++) {
-            it++;
-        }
-
-        m_manager->DeleteLocation(*it);
+        m_manager->DeleteLocation(m_manager->GetLocations()[sel]);
     }
 }
 
@@ -338,16 +327,11 @@ void amElementsNotebook::OnItemRightClick(wxListEvent& event) {
 }
 
 void amElementsNotebook::OnEditItem(wxCommandEvent& event) {
-    auto it = m_manager->GetItems().begin();
-    for (int i = 0; i < m_itemsList->GetFirstSelected(); i++) {
-        it++;
-    }
-
     amItemCreator* edit = new amItemCreator(m_manager->GetMainFrame(), m_manager, -1,
         "Edit item - ''", wxDefaultPosition, FromDIP(wxSize(900, 720)));
 
     edit->CenterOnParent();
-    edit->SetEdit(it);
+    edit->SetEdit(&m_manager->GetItems()[m_itemsList->GetFirstSelected()]);
     edit->Show(true);
 
     m_manager->GetMainFrame()->Enable(false);
@@ -361,13 +345,7 @@ void amElementsNotebook::OnDeleteItem(wxCommandEvent& event) {
 
     if (deleteCheck.ShowModal() == wxID_YES) {
         m_itemsList->DeleteItem(sel);
-
-        auto it = m_manager->GetItems().begin();
-        for (int i = 0; i < sel; i++) {
-            it++;
-        }
-
-        m_manager->DeleteItem(*it);
+        m_manager->DeleteItem(m_manager->GetItems()[sel]);
     }
 }
 
@@ -466,12 +444,12 @@ void amElementsNotebook::UpdateCharacter(int n, Character& character) {
     if (!character.chapters.empty()) {
         int first = 99999;
         int last = -1;
-        for (auto& it : character.chapters) {
-            if (it->position < first)
-                first = it->position;
+        for (Chapter* chapter : character.chapters) {
+            if (chapter->position < first)
+                first = chapter->position;
 
-            if (it->position > last)
-                last = it->position;
+            if (chapter->position > last)
+                last = chapter->position;
         }
 
         m_charList->SetItem(n, 3, wxString("Chapter ") << first);
@@ -484,8 +462,8 @@ void amElementsNotebook::UpdateCharacter(int n, Character& character) {
     m_charList->SetItem(n, 5, std::to_string(character.chapters.size()));
 
     if (character.image.IsOk())
-        m_charList->SetItemColumnImage(n, 0, m_charImageList->Add(wxBitmap(character.image.Scale(16,16, wxIMAGE_QUALITY_HIGH))));
-    else        
+        m_charList->SetItemColumnImage(n, 0, m_charImageList->Add(wxBitmap(amGetScaledImage(24, 24, character.image))));
+    else
         m_charList->SetItemColumnImage(n, 0, -1);
 }
 
@@ -512,12 +490,12 @@ void amElementsNotebook::UpdateLocation(int n, Location& location) {
         int first = 999999;
         int last = -1;
 
-        for (auto& it : location.chapters) {
-            if (it->position < first)
-                first = it->position;
+        for (Chapter* chapter : location.chapters) {
+            if (chapter->position < first)
+                first = chapter->position;
         
-            if (it->position > last)
-                last = it->position;
+            if (chapter->position > last)
+                last = chapter->position;
         }
 
         m_locList->SetItem(n, 2, wxString("Chapter ") << first);
@@ -527,6 +505,11 @@ void amElementsNotebook::UpdateLocation(int n, Location& location) {
         m_locList->SetItem(n, 3, "-");
     }
     m_locList->SetItem(n, 4, std::to_string(location.chapters.size()));
+
+    if (location.image.IsOk())
+        m_locList->SetItemColumnImage(n, 0, m_locImageList->Add(wxBitmap(amGetScaledImage(24, 24, location.image))));
+    else
+        m_locList->SetItemColumnImage(n, 0, -1);
 }
 
 void amElementsNotebook::UpdateItem(int n, Item& item) {
@@ -556,12 +539,12 @@ void amElementsNotebook::UpdateItem(int n, Item& item) {
         int first = 999999;
         int last = -1;
 
-        for (auto& it : item.chapters) {
-            if (it->position < first)
-                first = it->position;
+        for (Chapter* chapter : item.chapters) {
+            if (chapter->position < first)
+                first = chapter->position;
 
-            if (it->position > last)
-                last = it->position;
+            if (chapter->position > last)
+                last = chapter->position;
         }
 
         m_itemsList->SetItem(n, 3, wxString("Chapter ") << first);
@@ -571,6 +554,11 @@ void amElementsNotebook::UpdateItem(int n, Item& item) {
         m_itemsList->SetItem(n, 4, "-");
     }
     m_itemsList->SetItem(n, 5, std::to_string(item.chapters.size()));
+
+    if (item.image.IsOk())
+        m_itemsList->SetItemColumnImage(n, 0, m_itemsImageList->Add(wxBitmap(amGetScaledImage(24, 24, item.image))));
+    else
+        m_itemsList->SetItemColumnImage(n, 0, -1);
 }
 
 void amElementsNotebook::UpdateCharacterList() {
@@ -593,8 +581,8 @@ void amElementsNotebook::UpdateCharacterList() {
             m_charList->InsertItem(0, "");
     }
 
-    for (auto& it : m_manager->GetCharacters())
-        UpdateCharacter(i++, it);
+    for (Character& character : m_manager->GetCharacters())
+        UpdateCharacter(i++, character);
     
     m_charList->Thaw();
 }
@@ -617,8 +605,8 @@ void amElementsNotebook::UpdateLocationList() {
             m_locList->InsertItem(0, "");
     }
 
-    for (auto& it : m_manager->GetLocations())
-        UpdateLocation(i++, it);
+    for (Location& location : m_manager->GetLocations())
+        UpdateLocation(i++, location);
 
     m_locList->Thaw();
 }
@@ -641,8 +629,8 @@ void amElementsNotebook::UpdateItemList() {
             m_itemsList->InsertItem(0, "");
     }
 
-    for (auto& it : m_manager->GetItems())
-        UpdateItem(i++, it);
+    for (Item& item : m_manager->GetItems())
+        UpdateItem(i++, item);
 
     m_itemsList->Thaw();
 }

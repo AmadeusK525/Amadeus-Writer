@@ -308,7 +308,7 @@
       <AdditionalIncludeDirectories>$(WXWIN)\lib\$(wxOutDirName)\$(wxIncSubDir);$(WXWIN)\include;.;$(WXWIN)\samples;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw28ud_wxsf.lib;wxsqlite3d.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw$(wxShortVersionString)ud_core.lib;wxbase$(wxShortVersionString)ud.lib;wxtiffd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxregexud.lib;wxexpatd.lib;kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;winspool.lib;winmm.lib;shell32.lib;shlwapi.lib;comctl32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;advapi32.lib;version.lib;wsock32.lib;wininet.lib;%(AdditionalDependencies);wxmsw31ud_html.lib;wxbase31ud_xml.lib;wxmsw31ud_richtext.lib;wxmsw31ud_aui.lib;wxmsw28ud_wxsf.lib;wxsqlite3d.lib</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>F:\wxsqlite3-4.6.4\lib\vc_x64_lib;F:\wxSF\lib\vc_x64_lib\;$(WXWIN)\lib\vc_x64_lib;$(WXWIN)\lib\vc_x64_lib\mswud;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -433,9 +433,8 @@
   <ItemGroup>
     <ClCompile Include="src\BookElements.cpp" />
     <ClCompile Include="src\ChapterCreator.cpp" />
-    <ClCompile Include="src\ChaptersNotebook.cpp" />
-    <ClCompile Include="src\ChaptersGrid.cpp" />
-    <ClCompile Include="src\ChapterWriter.cpp" />
+    <ClCompile Include="src\StoryNotebook.cpp" />
+    <ClCompile Include="src\StoryWriter.cpp" />
     <ClCompile Include="src\Corkboard.cpp" />
     <ClCompile Include="src\CorkboardShapes.cpp" />
     <ClCompile Include="src\DragList.cpp" />
@@ -460,9 +459,8 @@
     <ClInclude Include="Resource\resource.h" />
     <ClInclude Include="src\BookElements.h" />
     <ClInclude Include="src\ChapterCreator.h" />
-    <ClInclude Include="src\ChaptersNotebook.h" />
-    <ClInclude Include="src\ChaptersGrid.h" />
-    <ClInclude Include="src\ChapterWriter.h" />
+    <ClInclude Include="src\StoryNotebook.h" />
+    <ClInclude Include="src\StoryWriter.h" />
     <ClInclude Include="src\Corkboard.h" />
     <ClInclude Include="src\CorkboardShapes.h" />
     <ClInclude Include="src\Document.h" />

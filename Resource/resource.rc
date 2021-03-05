@@ -11,9 +11,11 @@ characterIcon ICON "Assets\\AddCharacter.ico"
 locationIcon ICON "Assets\\AddLocation.ico"
 itemIcon ICON "Assets\\AddItem.ico"
 
-research ICON "Assets\\Research.ico"
 addFile RCDATA "Assets\\AddFile.png"
 addFolder RCDATA "Assets\\AddFolder.png"
+researchIcon ICON "Assets\\Research.ico"
+folderIcon ICON "Assets\\Folder.ico"
+fileIcon ICON "Assets\\File.ico"
 
 chapterPng RCDATA "Assets\\AddChapter.png"
 scenePng RCDATA "Assets\\AddScene.png"
@@ -41,6 +43,7 @@ rightAlign RCDATA "Assets\\AlignRight.png"
 bold RCDATA "Assets\\Bold.png"
 italic RCDATA "Assets\\Italic.png"
 underline RCDATA "Assets\\Underline.png"
+noteView RCDATA "Assets\\NoteView.png"
 
 savePng RCDATA "Assets\\Save.png"
 

@@ -25,6 +25,8 @@ public:     // public to avoid getters/setters
     wxString m_title{};
     bool m_isContainer = true;
 
+    static wxVector<wxIcon> m_icons;
+
 public:
     OutlineTreeModelNode(OutlineTreeModelNode* parent,
         const wxString& title, const wxRichTextBuffer& buffer) {
@@ -37,8 +39,8 @@ public:
 
         m_isContainer = false;
 
-        m_attr.SetBackgroundColour(wxColour(250, 250, 250));
-        m_attr.SetColour(wxColour(20, 20, 20));
+        m_attr.SetBackgroundColour(wxColour(40, 40, 40));
+        m_attr.SetColour(wxColour(250, 250, 250));
         m_attr.SetBold(false);
         m_attr.SetItalic(false);
         m_attr.SetStrikethrough(false);
@@ -54,8 +56,8 @@ public:
 
         m_isContainer = true;
 
-        m_attr.SetBackgroundColour(wxColour(250, 250, 250));
-        m_attr.SetColour(wxColour(20, 20, 20));
+        m_attr.SetBackgroundColour(wxColour(40, 40, 40));
+        m_attr.SetColour(wxColour(250, 250, 250));
         m_attr.SetBold(false);
         m_attr.SetItalic(false);
         m_attr.SetStrikethrough(false);
@@ -67,6 +69,23 @@ public:
 
             if (child)
                 delete child;
+        }
+    }
+
+    static void InitAllIcons() {
+        if (m_icons.empty()) {
+            wxIcon research(wxICON(researchIcon));
+            research.SetSize(14, 14);
+
+            wxIcon folder(wxICON(folderIcon));
+            folder.SetSize(14, 14);
+
+            wxIcon file(wxICON(fileIcon));
+            file.SetSize(14, 14);
+
+            m_icons.push_back(research);
+            m_icons.push_back(folder);
+            m_icons.push_back(file);
         }
     }
 
@@ -281,6 +300,8 @@ public:
     amOutlineFilesPanel(wxWindow* parent);
     void Init();
 
+    wxObjectDataPtr<OutlineTreeModel> GetOutlineTreeModel() { return m_outlineTreeModel; }
+
     void GenerateCharacterBuffer(Character& character, wxRichTextBuffer& buffer);
     void GenerateLocationBuffer(Location& location, wxRichTextBuffer& buffer);
     void GenerateItemBuffer(Item& item, wxRichTextBuffer& buffer);
@@ -305,6 +326,9 @@ public:
     void OnEditingStart(wxDataViewEvent& event);
     void OnEditingEnd(wxDataViewEvent& event);
     
+    void OnItemExpanded(wxDataViewEvent& event);
+    void OnItemCollapsed(wxDataViewEvent& event);
+
     void OnBeginDrag(wxDataViewEvent& event);
     void OnDropPossible(wxDataViewEvent& event);
     void OnDrop(wxDataViewEvent& event);
