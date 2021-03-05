@@ -1,5 +1,6 @@
-#include "ChapterWriter.h"
+#include "StoryWriter.h"
 #include "ElementsNotebook.h"
+#include "Outline.h"
 #include "UtilityClasses.h"
 
 #include <wx\popupwin.h>
@@ -16,32 +17,32 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////// amChapterWriter ///////////////////////////////////
+/////////////////////////////// amStoryWriter ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-BEGIN_EVENT_TABLE(amChapterWriter, wxFrame)
+BEGIN_EVENT_TABLE(amStoryWriter, wxFrame)
 
-EVT_BUTTON(BUTTON_NoteClear, amChapterWriter::ClearNote)
-EVT_BUTTON(BUTTON_NoteAdd, amChapterWriter::AddNote)
+EVT_BUTTON(BUTTON_NoteClear, amStoryWriter::ClearNote)
+EVT_BUTTON(BUTTON_NoteAdd, amStoryWriter::AddNote)
 
-EVT_BUTTON(BUTTON_AddChar, amChapterWriter::OnAddCharacter)
-EVT_BUTTON(BUTTON_AddLoc, amChapterWriter::OnAddLocation)
-EVT_BUTTON(BUTTON_AddItem, amChapterWriter::OnAddItem)
-EVT_BUTTON(BUTTON_RemChar, amChapterWriter::OnRemoveCharacter)
-EVT_BUTTON(BUTTON_RemLoc, amChapterWriter::OnRemoveLocation)
-EVT_BUTTON(BUTTON_RemItem, amChapterWriter::OnRemoveItem)
+EVT_BUTTON(BUTTON_AddChar, amStoryWriter::OnAddCharacter)
+EVT_BUTTON(BUTTON_AddLoc, amStoryWriter::OnAddLocation)
+EVT_BUTTON(BUTTON_AddItem, amStoryWriter::OnAddItem)
+EVT_BUTTON(BUTTON_RemChar, amStoryWriter::OnRemoveCharacter)
+EVT_BUTTON(BUTTON_RemLoc, amStoryWriter::OnRemoveLocation)
+EVT_BUTTON(BUTTON_RemItem, amStoryWriter::OnRemoveItem)
 
-EVT_BUTTON(BUTTON_NextChap, amChapterWriter::OnNextChapter)
-EVT_BUTTON(BUTTON_PreviousChap, amChapterWriter::OnPreviousChapter)
+EVT_BUTTON(BUTTON_NextChap, amStoryWriter::OnNextChapter)
+EVT_BUTTON(BUTTON_PreviousChap, amStoryWriter::OnPreviousChapter)
 
-EVT_TIMER(TIMER_Save, amChapterWriter::OnTimerEvent)
+EVT_TIMER(TIMER_Save, amStoryWriter::OnTimerEvent)
 
-EVT_CLOSE(amChapterWriter::OnClose)
+EVT_CLOSE(amStoryWriter::OnClose)
 
 END_EVENT_TABLE()
 
-amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, int numb) :
+amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int numb) :
     m_saveTimer(this, TIMER_Save),
     wxFrame(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
     wxFRAME_FLOAT_ON_PARENT | wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN) {
@@ -55,8 +56,7 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
         1024L | wxSP_LIVE_UPDATE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
     amSplitterWindow* leftSplitter = new amSplitterWindow(rightSplitter, -1, wxDefaultPosition, wxDefaultSize,
         1024L | wxSP_LIVE_UPDATE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
-    leftSplitter->Bind(wxEVT_SPLITTER_SASH_POS_CHANGING, &amChapterWriter::OnLeftSplitterChanging, this);
-    leftSplitter->Bind(wxEVT_SPLITTER_SASH_POS_CHANGED, &amChapterWriter::OnLeftSplitterChanged, this);
+    leftSplitter->Bind(wxEVT_SPLITTER_SASH_POS_CHANGED, &amStoryWriter::OnLeftSplitterChanged, this);
 
     leftSplitter->SetBackgroundColour(wxColour(20, 20, 20));
     rightSplitter->SetBackgroundColour(wxColour(20, 20, 20));
@@ -64,12 +64,11 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     leftSplitter->SetMinimumPaneSize(30);
     rightSplitter->SetMinimumPaneSize(30);
 
-    m_cwNotebook = new amChapterWriterNotebook(leftSplitter, this);
+    m_cwNotebook = new amStoryWriterNotebook(leftSplitter, this);
 
     wxNotebook* leftNotebook = new wxNotebook(leftSplitter, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-
     m_leftPanel = new wxPanel(leftNotebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_leftPanel->SetBackgroundColour(wxColour(60, 60, 60));
+    m_leftPanel->SetBackgroundColour(wxColour(50, 50, 50));
 
     m_characterPanel = new wxPanel(m_leftPanel);
     m_characterPanel->SetBackgroundColour(wxColour(80, 80, 80));
@@ -86,14 +85,16 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     m_charInChap->SetMinSize(FromDIP(wxSize(150, 150)));
 
     m_charInChap->SetBackgroundColour(wxColour(35, 35, 35));
-    m_charInChap->SetForegroundColour(wxColour(245, 245, 245));
+    m_charInChap->SetForegroundColour(wxColour(230, 230, 230));
     m_charInChap->InsertColumn(0, "Characters present in chapter", wxLIST_ALIGN_LEFT, FromDIP(10));
     m_charInChap->SetMinSize(wxSize(15, 15));
 
-    wxButton* addCharButton = new wxButton(m_characterPanel, BUTTON_AddChar, "Add");
-    addCharButton->SetBackgroundColour(wxColour(240, 240, 240));
-    wxButton* remCharButton = new wxButton(m_characterPanel, BUTTON_RemChar, "Remove");
-    remCharButton->SetBackgroundColour(wxColour(240, 240, 240));
+    wxButton* addCharButton = new wxButton(m_characterPanel, BUTTON_AddChar, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    addCharButton->SetBackgroundColour(wxColour(60, 60, 60));
+    addCharButton->SetForegroundColour(wxColour(255, 255, 255));
+    wxButton* remCharButton = new wxButton(m_characterPanel, BUTTON_RemChar, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    remCharButton->SetBackgroundColour(wxColour(60, 60, 60));
+    remCharButton->SetForegroundColour(wxColour(255, 255, 255));
 
     wxBoxSizer* charBSizer = new wxBoxSizer(wxHORIZONTAL);
     charBSizer->Add(addCharButton);
@@ -121,13 +122,15 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
 
     m_locInChap->SetMinSize(FromDIP(wxSize(150, 150)));
     m_locInChap->SetBackgroundColour(wxColour(35, 35, 35));
-    m_locInChap->SetForegroundColour(wxColour(245, 245, 245));
+    m_locInChap->SetForegroundColour(wxColour(230, 230, 230));
     m_locInChap->InsertColumn(0, "Locations present in chapter", wxLIST_ALIGN_LEFT, FromDIP(155));
 
-    wxButton* addLocButton = new wxButton(m_locationPanel, BUTTON_AddLoc, "Add");
-    addLocButton->SetBackgroundColour(wxColour(240, 240, 240));
-    wxButton* remLocButton = new wxButton(m_locationPanel, BUTTON_RemLoc, "Remove");
-    remLocButton->SetBackgroundColour(wxColour(240, 240, 240));
+    wxButton* addLocButton = new wxButton(m_locationPanel, BUTTON_AddLoc, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    addLocButton->SetBackgroundColour(wxColour(60, 60, 60));
+    addLocButton->SetForegroundColour(wxColour(255, 255, 255));
+    wxButton* remLocButton = new wxButton(m_locationPanel, BUTTON_RemLoc, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    remLocButton->SetBackgroundColour(wxColour(60, 60, 60));
+    remLocButton->SetForegroundColour(wxColour(255, 255, 255));
 
     wxBoxSizer* locBSizer = new wxBoxSizer(wxHORIZONTAL);
     locBSizer->Add(addLocButton);
@@ -155,13 +158,15 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     m_itemsInChap->SetMinSize(FromDIP(wxSize(150, 150)));
 
     m_itemsInChap->SetBackgroundColour(wxColour(35, 35, 35));
-    m_itemsInChap->SetForegroundColour(wxColour(245, 245, 245));
+    m_itemsInChap->SetForegroundColour(wxColour(230, 230, 230));
     m_itemsInChap->InsertColumn(0, "Items present in chapter", wxLIST_ALIGN_LEFT, FromDIP(155));
 
-    wxButton* addItemButton = new wxButton(m_itemPanel, BUTTON_AddItem, "Add");
-    addLocButton->SetBackgroundColour(wxColour(240, 240, 240));
-    wxButton* remItemButton = new wxButton(m_itemPanel, BUTTON_RemItem, "Remove");
-    remLocButton->SetBackgroundColour(wxColour(240, 240, 240));
+    wxButton* addItemButton = new wxButton(m_itemPanel, BUTTON_AddItem, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    addItemButton->SetBackgroundColour(wxColour(60, 60, 60));
+    addItemButton->SetForegroundColour(wxColour(255, 255, 255));
+    wxButton* remItemButton = new wxButton(m_itemPanel, BUTTON_RemItem, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    remItemButton->SetBackgroundColour(wxColour(60, 60, 60));
+    remItemButton->SetForegroundColour(wxColour(255, 255, 255));
 
     wxBoxSizer* itemBSizer = new wxBoxSizer(wxHORIZONTAL);
     itemBSizer->Add(addItemButton);
@@ -184,7 +189,23 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     m_leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxRIGHT | wxBOTTOM, 8));
 
     m_leftPanel->SetSizer(m_leftSizer);
+
+    m_outlineView = new wxDataViewCtrl(leftNotebook, -1,wxDefaultPosition, wxDefaultSize,
+		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
+    
+    wxDataViewColumn* column0 = new wxDataViewColumn(_("Files"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
+        wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
+    m_outlineView->AppendColumn(column0);
+
+    m_outlineTreeModel = m_manager->GetOutline()->GetOutlineFiles()->GetOutlineTreeModel();
+    m_outlineView->AssociateModel(m_outlineTreeModel.get());
+
+    //m_outlineView->GetMainWindow()->SetBackgroundColour(wxColour(255, 255, 255));
+    //m_outlineView->GetMainWindow()->SetForegroundColour(wxColour(255, 255, 255));
+    m_outlineView->SetBackgroundColour(wxColour(255, 255, 255));
+
     leftNotebook->AddPage(m_leftPanel,"Elements");
+    leftNotebook->AddPage(m_outlineView, "Outline");
 
     wxPanel* rightPanel = new wxPanel(rightSplitter, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
@@ -258,7 +279,9 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     Maximize();
 
     leftSplitter->SplitVertically(leftNotebook, m_cwNotebook, FromDIP(230));
-    rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1110));
+    rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1140));
+    leftSplitter->SetSashGravity(0.0);
+    rightSplitter->SetSashGravity(1.0);
 
     wxMenuBar* menu = new wxMenuBar();
     wxMenu* menu1 = new wxMenu();
@@ -272,7 +295,7 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     m_statusBar->SetStatusText("Zoom: 100%", 2);
     m_statusBar->SetBackgroundColour(wxColour(120, 120, 120));
 
-    wxSize noteSize((m_cwNotebook->GetCorkboard()->GetSize()));
+    wxSize noteSize((m_cwNotebook->GetTextCtrl()->GetSize()));
     m_cwNotebook->SetNoteSize(FromDIP(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10)));
 
     SetIcon(wxICON(amadeus));
@@ -286,14 +309,14 @@ amChapterWriter::amChapterWriter(wxWindow* parent, amProjectManager* manager, in
     OnLeftSplitterChanged(wxSplitterEvent());
 }
 
-void amChapterWriter::ClearNote(wxCommandEvent& event) {
+void amStoryWriter::ClearNote(wxCommandEvent& event) {
     m_note->Clear();
     //m_noteLabel->SetValue("New note");
 
     event.Skip();
 }
 
-void amChapterWriter::AddNote(wxCommandEvent& event) {
+void amStoryWriter::AddNote(wxCommandEvent& event) {
     if (!m_note->IsEmpty()) {
         m_cwNotebook->AddNote(m_note->GetValue(), m_noteLabel->GetValue(), m_doGreenNote);
         m_note->Clear();
@@ -306,7 +329,7 @@ void amChapterWriter::AddNote(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::CheckNotes() {
+void amStoryWriter::CheckNotes() {
     if (m_cwNotebook->GetNotes().size()) {
         if (m_cwNotebook->HasRedNote()) {
             m_noteChecker->SetBackgroundColour(wxColour(120, 0, 0));
@@ -323,7 +346,7 @@ void amChapterWriter::CheckNotes() {
     m_rightSizer->Layout();
 }
 
-void amChapterWriter::OnAddCharacter(wxCommandEvent& event) {
+void amStoryWriter::OnAddCharacter(wxCommandEvent& event) {
     wxPoint point(m_characterPanel->GetScreenPosition());
 
     int x = point.x;
@@ -333,7 +356,7 @@ void amChapterWriter::OnAddCharacter(wxCommandEvent& event) {
 
     wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize,
         m_manager->GetCharacterNames(), wxBORDER_SIMPLE | wxLB_NEEDED_SB | wxLB_SINGLE);
-    list->Bind(wxEVT_LISTBOX_DCLICK, &amChapterWriter::AddCharacter, this);
+    list->Bind(wxEVT_LISTBOX_DCLICK, &amStoryWriter::AddCharacter, this);
     list->SetBackgroundColour(wxColour(55, 55, 55));
     list->SetForegroundColour(wxColour(255, 255, 255));
 
@@ -348,7 +371,7 @@ void amChapterWriter::OnAddCharacter(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::OnAddLocation(wxCommandEvent& event) {
+void amStoryWriter::OnAddLocation(wxCommandEvent& event) {
     wxPoint point(m_locationPanel->GetScreenPosition());
 
     int x = point.x;
@@ -358,7 +381,7 @@ void amChapterWriter::OnAddLocation(wxCommandEvent& event) {
 
     wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize,
         m_manager->GetLocationNames(), wxBORDER_SIMPLE | wxLB_NEEDED_SB | wxLB_SINGLE);
-    list->Bind(wxEVT_LISTBOX_DCLICK, &amChapterWriter::AddLocation, this);
+    list->Bind(wxEVT_LISTBOX_DCLICK, &amStoryWriter::AddLocation, this);
     list->SetBackgroundColour(wxColour(55, 55, 55));
     list->SetForegroundColour(wxColour(255, 255, 255));
 
@@ -373,7 +396,7 @@ void amChapterWriter::OnAddLocation(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::OnAddItem(wxCommandEvent& event) {
+void amStoryWriter::OnAddItem(wxCommandEvent& event) {
     wxPoint point(m_itemPanel->GetScreenPosition());
 
     int x = point.x;
@@ -383,7 +406,7 @@ void amChapterWriter::OnAddItem(wxCommandEvent& event) {
 
     wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize,
         m_manager->GetItemNames(), wxBORDER_SIMPLE | wxLB_NEEDED_SB | wxLB_SINGLE);
-    list->Bind(wxEVT_LISTBOX_DCLICK, &amChapterWriter::AddItem, this);
+    list->Bind(wxEVT_LISTBOX_DCLICK, &amStoryWriter::AddItem, this);
     list->SetBackgroundColour(wxColour(55, 55, 55));
     list->SetForegroundColour(wxColour(255, 255, 255));
 
@@ -398,7 +421,7 @@ void amChapterWriter::OnAddItem(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::AddCharacter(wxCommandEvent& event) {
+void amStoryWriter::AddCharacter(wxCommandEvent& event) {
     wxString name = event.GetString();
     if (m_charInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
@@ -408,7 +431,7 @@ void amChapterWriter::AddCharacter(wxCommandEvent& event) {
     }
 }
 
-void amChapterWriter::AddLocation(wxCommandEvent& event) {
+void amStoryWriter::AddLocation(wxCommandEvent& event) {
     wxString name = event.GetString();
    
     if (m_locInChap->FindItem(-1, name) == -1) {
@@ -419,7 +442,7 @@ void amChapterWriter::AddLocation(wxCommandEvent& event) {
     }
 }
 
-void amChapterWriter::AddItem(wxCommandEvent& event) {
+void amStoryWriter::AddItem(wxCommandEvent& event) {
     wxString name = event.GetString();
 
     if (m_itemsInChap->FindItem(-1, name) == -1) {
@@ -430,34 +453,40 @@ void amChapterWriter::AddItem(wxCommandEvent& event) {
     }
 }
 
-void amChapterWriter::UpdateCharacterList() {
+void amStoryWriter::UpdateCharacterList() {
+    m_charInChap->Freeze();
     m_charInChap->DeleteAllItems();
     
     int i = 0;
-    for (auto& it : m_manager->GetChapters(1, 1)[m_chapterPos - 1].characters) {
-        m_charInChap->InsertItem(i++, it);
-    }
+    for (wxString& character : m_manager->GetChapters(1, 1)[m_chapterPos - 1].characters)
+        m_charInChap->InsertItem(i++, character);
+  
+    m_charInChap->Thaw();
 }
 
-void amChapterWriter::UpdateLocationList() {
+void amStoryWriter::UpdateLocationList() {
+    m_locInChap->Freeze();
     m_locInChap->DeleteAllItems();
 
     int i = 0;
-    for (auto& it : m_manager->GetChapters(1, 1)[m_chapterPos - 1].locations) {
-        m_locInChap->InsertItem(i++, it);
-    }
+    for (wxString& location : m_manager->GetChapters(1, 1)[m_chapterPos - 1].locations)
+        m_locInChap->InsertItem(i++, location);
+  
+    m_locInChap->Thaw();
 }
 
-void amChapterWriter::UpdateItemList() {
+void amStoryWriter::UpdateItemList() {
+    m_itemsInChap->Freeze();
     m_itemsInChap->DeleteAllItems();
 
     int i = 0;
-    for (auto& it : m_manager->GetChapters(1, 1)[m_chapterPos - 1].items) {
-        m_itemsInChap->InsertItem(i++, it);
-    }
+    for (wxString& item : m_manager->GetChapters(1, 1)[m_chapterPos - 1].items)
+        m_itemsInChap->InsertItem(i++, item);
+    
+    m_itemsInChap->Thaw();
 }
 
-void amChapterWriter::OnRemoveCharacter(wxCommandEvent& event) {
+void amStoryWriter::OnRemoveCharacter(wxCommandEvent& event) {
     int sel = m_charInChap->GetFirstSelected();
     int nos = m_charInChap->GetSelectedItemCount();
 
@@ -472,12 +501,11 @@ void amChapterWriter::OnRemoveCharacter(wxCommandEvent& event) {
         sel = m_charInChap->GetNextSelected(sel - 1);
     }
 
-    UpdateCharacterList();
     m_manager->GetElementsNotebook()->UpdateCharacterList();
     event.Skip();
 }
 
-void amChapterWriter::OnRemoveLocation(wxCommandEvent& event) {
+void amStoryWriter::OnRemoveLocation(wxCommandEvent& event) {
     int sel = m_locInChap->GetFirstSelected();
     int nos = m_locInChap->GetSelectedItemCount();
 
@@ -496,7 +524,7 @@ void amChapterWriter::OnRemoveLocation(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::OnRemoveItem(wxCommandEvent& event) {
+void amStoryWriter::OnRemoveItem(wxCommandEvent& event) {
     int sel = m_itemsInChap->GetFirstSelected();
     int nos = m_itemsInChap->GetSelectedItemCount();
 
@@ -515,7 +543,7 @@ void amChapterWriter::OnRemoveItem(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::OnNextChapter(wxCommandEvent& event) {
+void amStoryWriter::OnNextChapter(wxCommandEvent& event) {
     if (m_chapterPos < m_manager->GetChapterCount(1)) {
         SaveChapter();
         m_chapterPos++;
@@ -532,7 +560,7 @@ void amChapterWriter::OnNextChapter(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::OnPreviousChapter(wxCommandEvent& event) {
+void amStoryWriter::OnPreviousChapter(wxCommandEvent& event) {
     if (m_chapterPos > 1) {
         SaveChapter();
         m_chapterPos--;
@@ -549,15 +577,15 @@ void amChapterWriter::OnPreviousChapter(wxCommandEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::CheckChapterValidity() {
-    // For now, if the store chapter position is bigger than the chapter count,
+void amStoryWriter::CheckChapterValidity() {
+    // For now, if the stored chapter position is bigger than the chapter count,
     // it simply makes it so the current chapter is the last one. I'll make it something
     // else later.
     while (m_chapterPos > m_manager->GetChapterCount(1))
         m_chapterPos--;
 }
 
-void amChapterWriter::LoadChapter() {
+void amStoryWriter::LoadChapter() {
     wxBusyCursor busy;
 
     Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
@@ -575,10 +603,10 @@ void amChapterWriter::LoadChapter() {
 
     m_summary->SetValue(chapter.synopsys);
 
-    for (auto& noteIt : chapter.notes) {
-        m_note->SetValue(noteIt.content);
-        m_noteLabel->SetValue(noteIt.name);
-        m_doGreenNote = noteIt.isDone;
+    for (Note& note : chapter.notes) {
+        m_note->SetValue(note.content);
+        m_noteLabel->SetValue(note.name);
+        m_doGreenNote = note.isDone;
 
         AddNote(wxCommandEvent());
     }
@@ -595,7 +623,7 @@ void amChapterWriter::LoadChapter() {
     m_statusBar->SetStatusText("Chapter up-to-date", 0);
 }
 
-void amChapterWriter::SaveChapter() {
+void amStoryWriter::SaveChapter() {
     CheckChapterValidity();
     Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
 
@@ -612,7 +640,7 @@ void amChapterWriter::SaveChapter() {
     UpdateItemList();
 }
 
-void amChapterWriter::CountWords() {
+void amStoryWriter::CountWords() {
     int result = 0;
 
     if (!m_cwNotebook->GetTextCtrl()->IsEmpty()) {
@@ -624,7 +652,7 @@ void amChapterWriter::CountWords() {
     m_statusBar->SetStatusText("Number of words: " + std::to_string(result), 1);
 }
 
-void amChapterWriter::OnTimerEvent(wxTimerEvent& event) {
+void amStoryWriter::OnTimerEvent(wxTimerEvent& event) {
     m_statusBar->SetStatusText("Autosaving chapter...", 0);
 
     SaveChapter();
@@ -638,27 +666,11 @@ void amChapterWriter::OnTimerEvent(wxTimerEvent& event) {
     event.Skip();
 }
 
-void amChapterWriter::OnListResize(wxSizeEvent& event) {
+void amStoryWriter::OnListResize(wxSizeEvent& event) {
     ((wxListView*)event.GetEventObject())->SetColumnWidth(0, event.GetSize().x - 2);
 }
 
-void amChapterWriter::OnLeftSplitterChanging(wxSplitterEvent& event) {
-    m_charInChap->Freeze();
-    m_locInChap->Freeze();
-    m_itemsInChap->Freeze();
-
-    int x = m_charInChap->GetSize().x - 25;
-
-    m_charInChap->SetColumnWidth(0, x);
-    m_locInChap->SetColumnWidth(0, x);
-    m_itemsInChap->SetColumnWidth(0, x);
-
-    m_charInChap->Thaw();
-    m_locInChap->Thaw();
-    m_itemsInChap->Thaw();
-}
-
-void amChapterWriter::OnLeftSplitterChanged(wxSplitterEvent& event) {
+void amStoryWriter::OnLeftSplitterChanged(wxSplitterEvent& event) {
     int x = m_charInChap->GetSize().x - 1;
 
     m_charInChap->SetColumnWidth(0, x);
@@ -666,7 +678,7 @@ void amChapterWriter::OnLeftSplitterChanged(wxSplitterEvent& event) {
     m_itemsInChap->SetColumnWidth(0, x);
 }
 
-void amChapterWriter::OnClose(wxCloseEvent& event) {
+void amStoryWriter::OnClose(wxCloseEvent& event) {
     SaveChapter();
 
     Destroy();
@@ -674,40 +686,42 @@ void amChapterWriter::OnClose(wxCloseEvent& event) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/////////////////////////// amChapterWriterNotebook //////////////////////////////
+/////////////////////////// amStoryWriterNotebook //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE(amChapterWriterNotebook, wxPanel)
+BEGIN_EVENT_TABLE(amStoryWriterNotebook, wxPanel)
 
-EVT_TOOL(TOOL_Bold, amChapterWriterNotebook::OnBold)
-EVT_TOOL(TOOL_Italic, amChapterWriterNotebook::OnItalic)
-EVT_TOOL(TOOL_Underline, amChapterWriterNotebook::OnUnderline)
-EVT_TOOL(TOOL_AlignLeft, amChapterWriterNotebook::OnAlignLeft)
-EVT_TOOL(TOOL_AlignCenter, amChapterWriterNotebook::OnAlignCenter)
-EVT_TOOL(TOOL_AlignCenterJust, amChapterWriterNotebook::OnAlignCenterJust)
-EVT_TOOL(TOOL_AlignRight, amChapterWriterNotebook::OnAlignRight)
-EVT_TOOL(TOOL_TestCircle, amChapterWriterNotebook::OnTestCircle)
+EVT_TOOL(TOOL_Bold, amStoryWriterNotebook::OnBold)
+EVT_TOOL(TOOL_Italic, amStoryWriterNotebook::OnItalic)
+EVT_TOOL(TOOL_Underline, amStoryWriterNotebook::OnUnderline)
+EVT_TOOL(TOOL_AlignLeft, amStoryWriterNotebook::OnAlignLeft)
+EVT_TOOL(TOOL_AlignCenter, amStoryWriterNotebook::OnAlignCenter)
+EVT_TOOL(TOOL_AlignCenterJust, amStoryWriterNotebook::OnAlignCenterJust)
+EVT_TOOL(TOOL_AlignRight, amStoryWriterNotebook::OnAlignRight)
+EVT_TOOL(TOOL_TestCircle, amStoryWriterNotebook::OnTestCircle)
+EVT_TOOL(TOOL_PageView, amStoryWriterNotebook::OnPageView)
+EVT_TOOL(TOOL_NoteView, amStoryWriterNotebook::OnNoteView)
 
-EVT_SLIDER(TOOL_ContentScale, amChapterWriterNotebook::OnZoom)
-EVT_TOOL(TOOL_ChapterFullScreen, amChapterWriterNotebook::OnFullScreen)
-EVT_TOOL(TOOL_PageView, amChapterWriterNotebook::OnPageView)
+EVT_SLIDER(TOOL_ContentScale, amStoryWriterNotebook::OnZoom)
+EVT_TOOL(TOOL_ChapterFullScreen, amStoryWriterNotebook::OnFullScreen)
 
-EVT_UPDATE_UI(TOOL_Bold, amChapterWriterNotebook::OnUpdateBold)
-EVT_UPDATE_UI(TOOL_Italic, amChapterWriterNotebook::OnUpdateItalic)
-EVT_UPDATE_UI(TOOL_Underline, amChapterWriterNotebook::OnUpdateUnderline)
-EVT_UPDATE_UI(TOOL_AlignLeft, amChapterWriterNotebook::OnUpdateAlignLeft)
-EVT_UPDATE_UI(TOOL_AlignCenter, amChapterWriterNotebook::OnUpdateAlignCenter)
-EVT_UPDATE_UI(TOOL_AlignCenterJust, amChapterWriterNotebook::OnUpdateAlignCenterJust)
-EVT_UPDATE_UI(TOOL_AlignRight, amChapterWriterNotebook::OnUpdateAlignRight)
-EVT_UPDATE_UI(TOOL_FontSize, amChapterWriterNotebook::OnUpdateFontSize)
+EVT_UPDATE_UI(TOOL_Bold, amStoryWriterNotebook::OnUpdateBold)
+EVT_UPDATE_UI(TOOL_Italic, amStoryWriterNotebook::OnUpdateItalic)
+EVT_UPDATE_UI(TOOL_Underline, amStoryWriterNotebook::OnUpdateUnderline)
+EVT_UPDATE_UI(TOOL_AlignLeft, amStoryWriterNotebook::OnUpdateAlignLeft)
+EVT_UPDATE_UI(TOOL_AlignCenter, amStoryWriterNotebook::OnUpdateAlignCenter)
+EVT_UPDATE_UI(TOOL_AlignCenterJust, amStoryWriterNotebook::OnUpdateAlignCenterJust)
+EVT_UPDATE_UI(TOOL_AlignRight, amStoryWriterNotebook::OnUpdateAlignRight)
+EVT_UPDATE_UI(TOOL_FontSize, amStoryWriterNotebook::OnUpdateFontSize)
+EVT_UPDATE_UI(TOOL_NoteView, amStoryWriterNotebook::OnUpdateNoteView)
 
-EVT_COMBOBOX(TOOL_FontSize, amChapterWriterNotebook::OnFontSize)
+EVT_COMBOBOX(TOOL_FontSize, amStoryWriterNotebook::OnFontSize)
 
-EVT_TEXT(TEXT_Content, amChapterWriterNotebook::OnText)
+EVT_TEXT(TEXT_Content, amStoryWriterNotebook::OnText)
 
 END_EVENT_TABLE()
 
-amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWriter* chapterWriter) :
+amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* chapterWriter) :
     wxPanel(parent) {
     m_parent = chapterWriter;
 
@@ -735,6 +749,8 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWrit
 
     m_fontSize = new wxComboBox(m_contentToolbar, TOOL_FontSize, "10", wxDefaultPosition, wxDefaultSize,
         sizes, wxCB_READONLY | wxCB_SIMPLE);
+    m_fontSize->SetBackgroundColour(wxColour(30, 30, 30));
+    m_fontSize->SetForegroundColour(wxColour(230, 230, 230));
 
     m_contentScale = new wxSlider(m_contentToolbar, TOOL_ContentScale, 100, 50, 300,
         wxDefaultPosition, wxDefaultSize, wxSL_MIN_MAX_LABELS);
@@ -742,17 +758,20 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWrit
 
     m_contentToolbar->AddControl(m_fontSize);
     m_contentToolbar->AddStretchableSpace();
+    m_contentToolbar->AddCheckTool(TOOL_NoteView, "", wxBITMAP_PNG(noteView), wxNullBitmap, "Toggle note view");
+    m_contentToolbar->AddSeparator();
     m_contentToolbar->AddControl(m_contentScale);
     m_contentToolbar->AddSeparator();
     m_contentToolbar->AddCheckTool(TOOL_ChapterFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
     //m_contentToolbar->AddCheckTool()
 
     m_contentToolbar->Realize();
+    m_contentToolbar->SetDoubleBuffered(true);
 
     m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT |
         wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_BOTTOM | wxBORDER_NONE);
 
-    m_textCtrl = new wxRichTextCtrl(m_notebook, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
+    m_curTextCtrl = new wxRichTextCtrl(m_notebook, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
         wxRE_MULTILINE | wxBORDER_NONE);
     wxRichTextBuffer::AddHandler(new wxRichTextPlainTextHandler);
     //wxRichTextBuffer::AddFieldType(new amWPCommentTag("commentTag"));
@@ -762,20 +781,23 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWrit
     attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
     attr.SetLeftIndent(63, -63);
     attr.SetTextColour(wxColour(250, 250, 250));
-    m_textCtrl->SetBasicStyle(attr);
-    m_textCtrl->SetBackgroundColour(wxColour(35, 35, 35));
+    m_curTextCtrl->SetBasicStyle(attr);
+    m_curTextCtrl->SetBackgroundColour(wxColour(35, 35, 35));
 
-    m_corkboard = new wxScrolledWindow(m_notebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_corkboard->SetBackgroundColour(wxColour(45, 45, 45));
-    m_corkboard->EnableScrolling(false, true);
-    m_corkboard->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
+    m_curCorkboard = new wxScrolledWindow(m_notebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    m_curCorkboard->SetBackgroundColour(wxColour(45, 45, 45));
+    m_curCorkboard->EnableScrolling(false, true);
+    m_curCorkboard->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
+    m_curCorkboard->Hide();
 
     m_notesSizer = new wxWrapSizer();
-    m_corkboard->SetSizer(m_notesSizer);
-    m_corkboard->SetScrollRate(15, 15);
+    m_curCorkboard->SetSizer(m_notesSizer);
+    m_curCorkboard->SetScrollRate(15, 15);
 
-    m_notebook->AddPage(m_textCtrl, "Main");
-    m_notebook->AddPage(m_corkboard, "Notes");
+    m_notebook->AddPage(m_curTextCtrl, "Main");
+    //m_notebook->AddPage(m_curCorkboard, "Notes");
+
+    m_writerPages.push_back(pair<wxRichTextCtrl*, wxScrolledWindow*>(m_curTextCtrl, m_curCorkboard));
 
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(m_contentToolbar, wxSizerFlags(0).Expand());
@@ -787,140 +809,192 @@ amChapterWriterNotebook::amChapterWriterNotebook(wxWindow* parent, amChapterWrit
     m_timer.Start(10000);
 }
 
-void amChapterWriterNotebook::OnText(wxCommandEvent& WXUNUSED(event)) {
+void amStoryWriterNotebook::OnText(wxCommandEvent& WXUNUSED(event)) {
     m_parent->m_statusBar->SetStatusText("Chapter modified. Autosaving soon...", 0);
 }
 
-void amChapterWriterNotebook::OnBold(wxCommandEvent& event) {
-    m_textCtrl->ApplyBoldToSelection();
+void amStoryWriterNotebook::OnBold(wxCommandEvent& event) {
+    m_curTextCtrl->ApplyBoldToSelection();
     OnText(event);
 }
 
-void amChapterWriterNotebook::OnItalic(wxCommandEvent& event) {
-    m_textCtrl->ApplyItalicToSelection();
+void amStoryWriterNotebook::OnItalic(wxCommandEvent& event) {
+    m_curTextCtrl->ApplyItalicToSelection();
     OnText(event);
 }
 
-void amChapterWriterNotebook::OnUnderline(wxCommandEvent& event) {
-    m_textCtrl->ApplyUnderlineToSelection();
+void amStoryWriterNotebook::OnUnderline(wxCommandEvent& event) {
+    m_curTextCtrl->ApplyUnderlineToSelection();
     OnText(event);
 }
 
-void amChapterWriterNotebook::OnAlignLeft(wxCommandEvent& event) {
-    m_textCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));
+void amStoryWriterNotebook::OnAlignLeft(wxCommandEvent& event) {
+    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));
     OnText(event);
 }
 
-void amChapterWriterNotebook::OnAlignCenter(wxCommandEvent& event) {
-    m_textCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
+void amStoryWriterNotebook::OnAlignCenter(wxCommandEvent& event) {
+    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
     OnText(event);
 }
 
-void amChapterWriterNotebook::OnAlignCenterJust(wxCommandEvent& event) {
-    m_textCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
+void amStoryWriterNotebook::OnAlignCenterJust(wxCommandEvent& event) {
+    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
     OnText(event);
 }
 
-void amChapterWriterNotebook::OnAlignRight(wxCommandEvent& event) {
-    m_textCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
+void amStoryWriterNotebook::OnAlignRight(wxCommandEvent& event) {
+    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
     OnText(event);
 }
 
-void amChapterWriterNotebook::OnTestCircle(wxCommandEvent& event) {
-    wxRichTextRange sel = m_textCtrl->GetSelectionRange();
-    wxRichTextBuffer& buf = m_textCtrl->GetBuffer();
+void amStoryWriterNotebook::OnNoteView(wxCommandEvent& event) {
+    if (m_contentToolbar->GetToolState(TOOL_NoteView)) {
+        wxRichTextCtrl* current = dynamic_cast<wxRichTextCtrl*>(m_notebook->GetCurrentPage());
+        Freeze();
+
+        if (current) {
+            for (pair<wxRichTextCtrl*, wxScrolledWindow*>& it : m_writerPages) {
+                if (current == it.first) {
+                    int index = m_notebook->GetSelection();
+                    wxString title = m_notebook->GetPageText(index);
+                    
+                    m_notebook->RemovePage(index);
+                    m_notebook->InsertPage(index, it.second, title, true);
+
+                    it.first->Hide();
+                    it.second->Show();
+                    it.second->GetSizer()->FitInside(it.second);
+                    break;
+                }
+            }
+        }
+        Thaw();
+    } else {
+        wxScrolledWindow* current = dynamic_cast<wxScrolledWindow*>(m_notebook->GetCurrentPage());
+        Freeze();
+
+        if (current) {
+            for (pair<wxRichTextCtrl*, wxScrolledWindow*>& it : m_writerPages) {
+                if (current == it.second) {
+                    int index = m_notebook->GetSelection();
+                    wxString title = m_notebook->GetPageText(index);
+
+                    m_notebook->RemovePage(index);
+                    m_notebook->InsertPage(index, it.first, title, true);
+                    
+                    it.second->Hide();
+                    it.first->Show();
+                    it.first->Layout();
+                    break;
+                }
+            }
+        }
+        Layout();
+        Thaw();
+    }
+}
+
+void amStoryWriterNotebook::OnTestCircle(wxCommandEvent& event) {
+    wxRichTextRange sel = m_curTextCtrl->GetSelectionRange();
+    wxRichTextBuffer& buf = m_curTextCtrl->GetBuffer();
 
     
     wxRichTextProperties prop;
     prop.SetProperty("commentStart", true);
 
-    buf.InsertFieldWithUndo(&buf, sel.GetStart(), "commentTag", prop, m_textCtrl, 0, m_textCtrl->GetBasicStyle());
+    buf.InsertFieldWithUndo(&buf, sel.GetStart(), "commentTag", prop, m_curTextCtrl, 0, m_curTextCtrl->GetBasicStyle());
 
     prop.SetProperty("commentStart", false);
-    buf.InsertFieldWithUndo(&buf, sel.GetEnd() + 1, "commentTag", prop, m_textCtrl, 0, m_textCtrl->GetBasicStyle());
+    buf.InsertFieldWithUndo(&buf, sel.GetEnd() + 1, "commentTag", prop, m_curTextCtrl, 0, m_curTextCtrl->GetBasicStyle());
 
-    for (auto& it : buf.GetChildren()) {
+    for (wxRichTextObject* it : buf.GetChildren()) {
         //it.spli
     }
 
     wxFFileOutputStream fileStream("F:\\RTCdump.txt");
     wxTextOutputStream textStream(fileStream);
 
-    m_textCtrl->GetBuffer().Dump(textStream);
+    m_curTextCtrl->GetBuffer().Dump(textStream);
 
     fileStream.Close();
 }
 
-void amChapterWriterNotebook::OnZoom(wxCommandEvent& event) {
+void amStoryWriterNotebook::OnZoom(wxCommandEvent& event) {
     int zoom = event.GetInt();
 
-    m_textCtrl->SetScale((double)zoom / 100.0, true);
+    m_curTextCtrl->SetScale((double)zoom / 100.0, true);
     m_parent->m_statusBar->PushStatusText("Zoom: "+ std::to_string(zoom) + "%", 2);
     m_contentScale->SetToolTip(std::to_string(zoom));
 }
 
-void amChapterWriterNotebook::OnFullScreen(wxCommandEvent& WXUNUSED(event)) {
+void amStoryWriterNotebook::OnFullScreen(wxCommandEvent& WXUNUSED(event)) {
     m_parent->ToggleFullScreen();
 }
 
-void amChapterWriterNotebook::OnPageView(wxCommandEvent& WXUNUSED(event)) {}
+void amStoryWriterNotebook::OnPageView(wxCommandEvent& WXUNUSED(event)) {}
 
-void amChapterWriterNotebook::OnUpdateBold(wxUpdateUIEvent& event) {
-    event.Check(m_textCtrl->IsSelectionBold());
+void amStoryWriterNotebook::OnUpdateBold(wxUpdateUIEvent& event) {
+    event.Check(m_curTextCtrl->IsSelectionBold());
 }
 
-void amChapterWriterNotebook::OnUpdateItalic(wxUpdateUIEvent& event) {
-    event.Check(m_textCtrl->IsSelectionItalics());
+void amStoryWriterNotebook::OnUpdateItalic(wxUpdateUIEvent& event) {
+    event.Check(m_curTextCtrl->IsSelectionItalics());
 }
 
-void amChapterWriterNotebook::OnUpdateUnderline(wxUpdateUIEvent& event) {
-    event.Check(m_textCtrl->IsSelectionUnderlined());
+void amStoryWriterNotebook::OnUpdateUnderline(wxUpdateUIEvent& event) {
+    event.Check(m_curTextCtrl->IsSelectionUnderlined());
 }
 
-void amChapterWriterNotebook::OnUpdateAlignLeft(wxUpdateUIEvent& event) {
-    event.Check(m_textCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
+void amStoryWriterNotebook::OnUpdateAlignLeft(wxUpdateUIEvent& event) {
+    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
 }
 
-void amChapterWriterNotebook::OnUpdateAlignCenter(wxUpdateUIEvent& event) {
-    event.Check(m_textCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
+void amStoryWriterNotebook::OnUpdateAlignCenter(wxUpdateUIEvent& event) {
+    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
 }
 
-void amChapterWriterNotebook::OnUpdateAlignCenterJust(wxUpdateUIEvent& event) {
-    event.Check(m_textCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
+void amStoryWriterNotebook::OnUpdateAlignCenterJust(wxUpdateUIEvent& event) {
+    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
 }
 
-void amChapterWriterNotebook::OnUpdateAlignRight(wxUpdateUIEvent& event) {
-    event.Check(m_textCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
+void amStoryWriterNotebook::OnUpdateAlignRight(wxUpdateUIEvent& event) {
+    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
 }
 
-void amChapterWriterNotebook::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event)) {
+void amStoryWriterNotebook::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event)) {
     wxRichTextAttr attr;
-    m_textCtrl->GetStyle(m_textCtrl->GetInsertionPoint() - 1, attr);
+    m_curTextCtrl->GetStyle(m_curTextCtrl->GetInsertionPoint() - 1, attr);
     wxString size(std::to_string(attr.GetFontSize()));
 
     if (m_fontSize->GetValue() != size)
         m_fontSize->SetValue(size);
 }
 
-void amChapterWriterNotebook::OnFontSize(wxCommandEvent& event) {
-    m_textCtrl->SetFocus();
+void amStoryWriterNotebook::OnUpdateNoteView(wxUpdateUIEvent& event) {
+    wxScrolledWindow* currentCorkboard = dynamic_cast<wxScrolledWindow*>(m_notebook->GetCurrentPage());
+    event.Check(currentCorkboard);
+}
+
+void amStoryWriterNotebook::OnFontSize(wxCommandEvent& event) {
+    m_curTextCtrl->SetFocus();
     wxRichTextAttr attr;
     attr.SetFlags(wxTEXT_ATTR_FONT_SIZE);
     long size;
     event.GetString().ToLong(&size);
     attr.SetFontSize(size);
 
-    if (m_textCtrl->HasSelection()) {
-        m_textCtrl->SetStyleEx(m_textCtrl->GetSelectionRange(), attr,
+    if (m_curTextCtrl->HasSelection()) {
+        m_curTextCtrl->SetStyleEx(m_curTextCtrl->GetSelectionRange(), attr,
             wxRICHTEXT_SETSTYLE_WITH_UNDO | wxRICHTEXT_SETSTYLE_OPTIMIZE | wxRICHTEXT_SETSTYLE_CHARACTERS_ONLY);
     } else {
-        wxRichTextAttr current = m_textCtrl->GetDefaultStyle();
+        wxRichTextAttr current = m_curTextCtrl->GetDefaultStyle();
         current.Apply(attr);
-        m_textCtrl->SetDefaultStyle(current);
+        m_curTextCtrl->SetDefaultStyle(current);
     }
 }
 
-bool amChapterWriterNotebook::HasRedNote() {
+bool amStoryWriterNotebook::HasRedNote() {
     for (unsigned int i = 0; i < m_notes.size(); i++) {
         if (m_notes[i].isDone == false)
             return true;
@@ -929,9 +1003,9 @@ bool amChapterWriterNotebook::HasRedNote() {
     return false;
 }
 
-void amChapterWriterNotebook::AddNote(wxString& noteContent, wxString& noteName, bool isDone) {
+void amStoryWriterNotebook::AddNote(wxString& noteContent, wxString& noteName, bool isDone) {
 
-    wxPanel* notePanel = new wxPanel(m_corkboard);
+    wxPanel* notePanel = new wxPanel(m_curCorkboard);
 
     wxTextCtrl* noteLabel = new wxTextCtrl(notePanel, -1, noteName);
     noteLabel->SetValue(noteName);
@@ -941,18 +1015,18 @@ void amChapterWriterNotebook::AddNote(wxString& noteContent, wxString& noteName,
     wxTextCtrl* note = new wxTextCtrl(notePanel, -1, noteContent, wxDefaultPosition, wxDefaultSize, wxRE_MULTILINE);
     note->SetBackgroundColour(wxColour(255, 250, 205));
 
-    noteLabel->Bind(wxEVT_TEXT, &amChapterWriterNotebook::UpdateNoteLabel, this);
-    note->Bind(wxEVT_TEXT, &amChapterWriterNotebook::UpdateNote, this);
+    noteLabel->Bind(wxEVT_TEXT, &amStoryWriterNotebook::UpdateNoteLabel, this);
+    note->Bind(wxEVT_TEXT, &amStoryWriterNotebook::UpdateNote, this);
 
-    options->Bind(wxEVT_RIGHT_DOWN, &amChapterWriterNotebook::OnNoteClick, this);
-    options->Bind(wxEVT_LEFT_DOWN, &amChapterWriterNotebook::OnNoteClick, this);
-    options->Bind(wxEVT_PAINT, &amChapterWriterNotebook::PaintDots, this);
+    options->Bind(wxEVT_RIGHT_DOWN, &amStoryWriterNotebook::OnNoteClick, this);
+    options->Bind(wxEVT_LEFT_DOWN, &amStoryWriterNotebook::OnNoteClick, this);
+    options->Bind(wxEVT_PAINT, &amStoryWriterNotebook::PaintDots, this);
 
     wxRadioButton* b1 = new wxRadioButton(notePanel, -1, "", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
     wxRadioButton* b2 = new wxRadioButton(notePanel, -1, "", wxDefaultPosition, wxDefaultSize);
 
-    b1->Bind(wxEVT_RADIOBUTTON, &amChapterWriterNotebook::SetRed, this);
-    b2->Bind(wxEVT_RADIOBUTTON, &amChapterWriterNotebook::SetGreen, this);
+    b1->Bind(wxEVT_RADIOBUTTON, &amStoryWriterNotebook::SetRed, this);
+    b2->Bind(wxEVT_RADIOBUTTON, &amStoryWriterNotebook::SetGreen, this);
 
     b1->SetBackgroundColour(wxColour(120, 0, 0));
     b2->SetBackgroundColour(wxColour(0, 140, 0));
@@ -984,7 +1058,7 @@ void amChapterWriterNotebook::AddNote(wxString& noteContent, wxString& noteName,
     m_notesSizer->SetItemMinSize(m_notesSizer->GetItemCount() - 1, m_noteSize);
     m_notesSizer->Layout();
 
-    m_corkboard->FitInside();
+    m_curCorkboard->GetSizer()->FitInside(m_curCorkboard);
 
     Note thisNote(noteContent, noteName);
     thisNote.isDone = isDone;
@@ -992,7 +1066,7 @@ void amChapterWriterNotebook::AddNote(wxString& noteContent, wxString& noteName,
     m_notes.push_back(thisNote);
 }
 
-void amChapterWriterNotebook::PaintDots(wxPaintEvent& event) {
+void amStoryWriterNotebook::PaintDots(wxPaintEvent& event) {
     wxPanel* pan = (wxPanel*)event.GetEventObject();
 
     wxPaintDC dc(pan);
@@ -1007,20 +1081,20 @@ void amChapterWriterNotebook::PaintDots(wxPaintEvent& event) {
 
     gc.DrawCircle(wxPoint((opSize.x / 4) - 1, opSize.y / 2), 2);
     gc.DrawCircle(wxPoint((opSize.x / 2) - 1, opSize.y / 2), 2);
-    gc.DrawCircle(wxPoint((((opSize.x / 4) * 3)) - 1, opSize.y / 2), 2);
+    gc.DrawCircle(wxPoint((((opSize.x / 4) * 3)), opSize.y / 2), 2);
 }
 
-void amChapterWriterNotebook::SetRed(wxCommandEvent& event) {
+void amStoryWriterNotebook::SetRed(wxCommandEvent& event) {
     wxRadioButton* rb = (wxRadioButton*)event.GetEventObject();
     wxPanel* np = (wxPanel*)rb->GetParent();
 
     wxPanel* sp;
     int i = 0;
-    for (auto it = m_notes.begin(); it != m_notes.end(); it++) {
+    for (Note& note : m_notes) {
         sp = (wxPanel*)m_notesSizer->GetItem(i)->GetWindow();
 
         if (sp == np) {
-            it->isDone = false;
+            note.isDone = false;
             np->SetBackgroundColour(wxColour(120, 0, 0));
             np->Refresh();
             break;
@@ -1032,17 +1106,17 @@ void amChapterWriterNotebook::SetRed(wxCommandEvent& event) {
     m_parent->CheckNotes();
 }
 
-void amChapterWriterNotebook::SetGreen(wxCommandEvent& event) {
+void amStoryWriterNotebook::SetGreen(wxCommandEvent& event) {
     wxRadioButton* gb = (wxRadioButton*)event.GetEventObject();
     wxPanel* np = (wxPanel*)gb->GetParent();
 
     wxPanel* sp;
     int i = 0;
-    for (auto it = m_notes.begin(); it != m_notes.end(); it++) {
+    for (Note& note : m_notes) {
         sp = (wxPanel*)m_notesSizer->GetItem(i)->GetWindow();
 
         if (sp == np) {
-            it->isDone = true;
+            note.isDone = true;
             np->SetBackgroundColour(wxColour(0, 140, 0));
             np->Refresh();
             break;
@@ -1054,19 +1128,19 @@ void amChapterWriterNotebook::SetGreen(wxCommandEvent& event) {
     m_parent->CheckNotes();
 }
 
-void amChapterWriterNotebook::OnDeleteNote(wxCommandEvent& WXUNUSED(event)) {
+void amStoryWriterNotebook::OnDeleteNote(wxCommandEvent& WXUNUSED(event)) {
     if (m_selNote) {
         wxPanel* sp;
 
         int i = 0;
-        for (auto it = m_notes.begin(); it != m_notes.end(); it++) {
+        for (Note& note : m_notes) {
             sp = (wxPanel*)m_notesSizer->GetItem(i)->GetWindow();
 
             if (sp == m_selNote) {
-                m_notes.erase(it);
+                m_notes.erase(&note);
                 m_selNote->Destroy();
                 m_notesSizer->Layout();
-                m_corkboard->FitInside();
+                m_curCorkboard->FitInside();
                 m_notes.shrink_to_fit();
                 break;
             }
@@ -1081,43 +1155,43 @@ void amChapterWriterNotebook::OnDeleteNote(wxCommandEvent& WXUNUSED(event)) {
     m_parent->CheckNotes();
 }
 
-void amChapterWriterNotebook::OnNoteClick(wxMouseEvent& event) {
+void amStoryWriterNotebook::OnNoteClick(wxMouseEvent& event) {
     wxPanel* pan = (wxPanel*)event.GetEventObject();
 
     m_selNote = (wxPanel*)pan->GetParent();
 
     wxMenu menu;
     menu.Append(MENU_Delete, "Delete");
-    menu.Bind(wxEVT_MENU, &amChapterWriterNotebook::OnDeleteNote, this, MENU_Delete);
+    menu.Bind(wxEVT_MENU, &amStoryWriterNotebook::OnDeleteNote, this, MENU_Delete);
     pan->PopupMenu(&menu, wxPoint(-1, pan->GetSize().y));
 }
 
-void amChapterWriterNotebook::UpdateNoteLabel(wxCommandEvent& event) {
+void amStoryWriterNotebook::UpdateNoteLabel(wxCommandEvent& event) {
     wxTextCtrl* ttc = (wxTextCtrl*)event.GetEventObject();
     wxPanel* pan = (wxPanel*)ttc->GetParent();
 
     wxPanel* sp;
     int i = 0;
-    for (auto it = m_notes.begin(); it != m_notes.end(); it++) {
+    for (Note& note : m_notes) {
         sp = (wxPanel*)m_notesSizer->GetItem(i)->GetWindow();
         if (sp == pan) {
-            it->name = ttc->GetValue();
+            note.name = ttc->GetValue();
         }
 
         i++;
     }
 }
 
-void amChapterWriterNotebook::UpdateNote(wxCommandEvent& event) {
+void amStoryWriterNotebook::UpdateNote(wxCommandEvent& event) {
     wxTextCtrl* trtc = (wxTextCtrl*)event.GetEventObject();
     wxPanel* pan = (wxPanel*)trtc->GetParent();
 
     wxPanel* sp;
     int i = 0;
-    for (auto it = m_notes.begin(); it != m_notes.end(); it++) {
+    for (Note& note : m_notes) {
         sp = (wxPanel*)m_notesSizer->GetItem(i)->GetWindow();
         if (sp == pan) {
-            it->content = trtc->GetValue();
+            note.content = trtc->GetValue();
         }
 
         i++;

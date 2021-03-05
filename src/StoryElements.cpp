@@ -36,14 +36,14 @@ bool Element::operator<(const Element& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (auto& it : chapters) {
-			if (it->position < i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position < i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position < j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position < j)
+				j = chapter->position;
 		}
 
 		if (i != j)
@@ -54,14 +54,14 @@ bool Element::operator<(const Element& other) const {
 		i = -1;
 		j = -1;
 
-		for (auto& it : chapters) {
-			if (it->position > i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position > i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position > j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position > j)
+				j = chapter->position;
 		}
 
 		if (i != j)
@@ -133,7 +133,7 @@ void Character::Save(wxSQLite3Database* db) {
 		statement.ExecuteUpdate();
 		SetId(storage->GetDocumentId(GenerateDocumentForId()));
 
-		for (auto& it : custom) {
+		for (pair<wxString, wxString>& it : custom) {
 			insert = "INSERT INTO characters_custom (name, content, character_id) VALUES ('%q', '%q', ";
 			insert << id << ");";
 
@@ -270,7 +270,7 @@ amDocument Character::GenerateDocumentSimple() {
 amDocument Character::GenerateDocument() {
 	amDocument document = GenerateDocumentSimple();
 
-	for (auto& it : custom) {
+	for (pair<wxString, wxString>& it : custom) {
 		amDocument customDoc;
 		customDoc.tableName = "characters_custom";
 
@@ -322,14 +322,14 @@ bool Character::operator<(const Character& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (auto& it : chapters) {
-			if (it->position < i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position < i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position < j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position < j)
+				j = chapter->position;
 		}
 
 		if (i != j)
@@ -340,14 +340,14 @@ bool Character::operator<(const Character& other) const {
 		i = -1;
 		j = -1;
 
-		for (auto& it : chapters) {
-			if (it->position > i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position > i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position > j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position > j)
+				j = chapter->position;
 		}
 
 		if (i != j)
@@ -410,7 +410,7 @@ void Location::Save(wxSQLite3Database* db) {
 		if (doImage) {
 			wxMemoryOutputStream stream;
 
-			image.SaveFile(stream, wxBITMAP_TYPE_BMP);
+			image.SaveFile(stream, wxBITMAP_TYPE_PNG);
 
 			wxMemoryBuffer membuffer;
 			membuffer.SetBufSize(stream.GetSize());
@@ -423,7 +423,7 @@ void Location::Save(wxSQLite3Database* db) {
 		statement.ExecuteUpdate();
 		SetId(storage->GetDocumentId(GenerateDocumentForId()));
 
-		for (auto& it : custom) {
+		for (pair<wxString, wxString>& it : custom) {
 			insert = "INSERT INTO locations_custom (name, content, location_id) VALUES ('%q', '%q', ";
 			insert << id << ");";
 
@@ -464,7 +464,7 @@ bool Location::Update(wxSQLite3Database* db) {
 	if (doImage) {
 		wxMemoryOutputStream stream;
 
-		image.SaveFile(stream, wxBITMAP_TYPE_BMP);
+		image.SaveFile(stream, wxBITMAP_TYPE_PNG);
 
 		wxMemoryBuffer membuffer;
 		membuffer.SetBufSize(stream.GetSize());
@@ -560,7 +560,7 @@ amDocument Location::GenerateDocument() {
 
 	document.documents.reserve(custom.size());
 
-	for (auto& it : custom) {
+	for (pair<wxString, wxString>& it : custom) {
 		amDocument customDoc;
 		customDoc.tableName = "locations_custom";
 
@@ -612,14 +612,14 @@ bool Location::operator<(const Location& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (auto& it : chapters) {
-			if (it->position < i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position < i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position < j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position < j)
+				j = chapter->position;
 		}
 
 		if (i != j)
@@ -630,14 +630,14 @@ bool Location::operator<(const Location& other) const {
 		i = -1;
 		j = -1;
 
-		for (auto& it : chapters) {
-			if (it->position > i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position > i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position > j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position > j)
+				j = chapter->position;
 		}
 
 		if (i != j)
@@ -700,7 +700,7 @@ void Item::Save(wxSQLite3Database* db) {
 		if (doImage) {
 			wxMemoryOutputStream stream;
 
-			image.SaveFile(stream, wxBITMAP_TYPE_BMP);
+			image.SaveFile(stream, wxBITMAP_TYPE_PNG);
 
 			wxMemoryBuffer membuffer;
 			membuffer.SetBufSize(stream.GetSize());
@@ -713,7 +713,7 @@ void Item::Save(wxSQLite3Database* db) {
 		statement.ExecuteUpdate();
 		SetId(storage->GetDocumentId(GenerateDocumentForId()));
 
-		for (auto& it : custom) {
+		for (pair<wxString, wxString>& it : custom) {
 			insert = "INSERT INTO items_custom (name, content, item_id) VALUES ('%q', '%q', ";
 			insert << id << ");";
 
@@ -754,7 +754,7 @@ bool Item::Update(wxSQLite3Database* db) {
 	if (doImage) {
 		wxMemoryOutputStream stream;
 
-		image.SaveFile(stream, wxBITMAP_TYPE_BMP);
+		image.SaveFile(stream, wxBITMAP_TYPE_PNG);
 
 		wxMemoryBuffer membuffer;
 		membuffer.SetBufSize(stream.GetSize());
@@ -854,7 +854,7 @@ amDocument Item::GenerateDocument() {
 	amDocument document = GenerateDocumentSimple();
 
 	document.documents.reserve(custom.size());
-	for (auto& it : custom) {
+	for (pair<wxString, wxString>& it : custom) {
 		amDocument customDoc;
 		customDoc.tableName = "items_custom";
 
@@ -906,14 +906,14 @@ bool Item::operator<(const Item& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (auto& it : chapters) {
-			if (it->position < i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position < i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position < j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position < j)
+				j = chapter->position;
 		}
 
 		if (i != j)
@@ -924,14 +924,14 @@ bool Item::operator<(const Item& other) const {
 		i = -1;
 		j = -1;
 
-		for (auto& it : chapters) {
-			if (it->position > i)
-				i = it->position;
+		for (Chapter* chapter : chapters) {
+			if (chapter->position > i)
+				i = chapter->position;
 		}
 
-		for (auto& it : other.chapters) {
-			if (it->position > j)
-				j = it->position;
+		for (Chapter* chapter : other.chapters) {
+			if (chapter->position > j)
+				j = chapter->position;
 		}
 
 		if (i != j)

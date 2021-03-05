@@ -284,7 +284,7 @@ bool Chapter::operator<(const Chapter& other) const {
 }
 
 bool Chapter::operator==(const Chapter& other) const {
-	return name == other.name && position == other.position;
+	return sectionID == other.sectionID && position == other.position;
 }
 
 Note::Note(wxString content, wxString name) {

@@ -9,11 +9,10 @@
 
 #include <wx\sstream.h>
 
-#include "Timeline.h"
-
 class amOutline;
-class amOutlineFilesPanel;
 class amCorkboard;
+class amTimeline;
+class amOutlineFilesPanel;
 
 class amOutline : public wxNotebook {
 private:

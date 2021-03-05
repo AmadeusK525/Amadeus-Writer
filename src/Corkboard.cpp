@@ -205,8 +205,6 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 	// Canvas background can be printed/ommited during the canvas printing job.
 	AddStyle(sfsPRINT_BACKGROUND);
 
-	SetScrollRate(25, 25);
-
 	// Process mousewheel for zoom scrolling and set min and max scale.
 	AddStyle(sfsPROCESS_MOUSEWHEEL);
 	SetMinScale(0.1);
@@ -436,10 +434,11 @@ void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
 	}
 
 	if (m_isDraggingRight) {
-		wxPoint toMove = wxGetMousePosition();
-		toMove = m_downPos - toMove;
+		wxPoint toMove = m_downPos - wxGetMousePosition();
 
-		Scroll((m_scrollbarPos.x + toMove.x) / 25, (m_scrollbarPos.y + toMove.y) / 25);
+		int px, py;
+		GetScrollPixelsPerUnit(&px, &py);
+		Scroll((m_scrollbarPos.x + toMove.x) / px, (m_scrollbarPos.y + toMove.y) / py);
 	}
 
 	// Call default behaviour.

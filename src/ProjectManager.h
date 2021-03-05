@@ -31,18 +31,24 @@ public:
 
 	bool InsertDocument(amDocument& document);
 	bool UpdateDocument(amDocument& original, amDocument& edit);
-	bool InsertManyToMany(wxString& tableName,
-		amDocument& doc1,
-		wxString& arg1,
-		amDocument& doc2,
-		wxString& arg2);
+	
+	bool InsertManyToMany(const wxString& tableName,
+		int docID1, const wxString& arg1,
+		int docID2, const wxString& arg2);
+
+	bool InsertManyToMany(const wxString& tableName,
+		amDocument& doc1, const wxString& arg1,
+		amDocument& doc2, const wxString& arg2);
 
 	bool DeleteDocument(amDocument& document);
-	bool DeleteManyToMany(wxString& tableName,
-		amDocument& doc1,
-		wxString& arg1,
-		amDocument& doc2,
-		wxString& arg2);
+	
+	bool DeleteManyToMany(const wxString& tableName,
+		int docID1, const wxString& arg1,
+		int docID2,	const wxString& arg2);
+
+	bool DeleteManyToMany(const wxString& tableName,
+		amDocument& doc1, const wxString& arg1,
+		amDocument& doc2, const wxString& arg2);
 
 	wxSQLite3Statement ConstructInsertStatement(amDocument& document);
 	wxSQLite3Statement ConstructUpdateStatement(amDocument& document, int id);
@@ -58,7 +64,7 @@ public:
 
 class amMainFrame;
 class amElementsNotebook;
-class amChaptersNotebook;
+class amStoryNotebook;
 class amOutline;
 class amRelease;
 
@@ -69,7 +75,7 @@ private:
 
 	amMainFrame* m_mainFrame = nullptr;
 	amElementsNotebook* m_elements = nullptr;
-	amChaptersNotebook* m_chaptersNote = nullptr;
+	amStoryNotebook* m_storyNotebook = nullptr;
 	amOutline* m_outline = nullptr;
 	amRelease* m_release = nullptr;
 
@@ -106,7 +112,7 @@ public:
 
 	amMainFrame* GetMainFrame();
 	amElementsNotebook* GetElementsNotebook();
-	amChaptersNotebook* GetChaptersNotebook();
+	amStoryNotebook* GetStoryNotebook();
 	amOutline* GetOutline();
 	amRelease* GetRelease();
 

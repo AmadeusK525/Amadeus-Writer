@@ -1,7 +1,7 @@
 #include "MainFrame.h"
 
 #include "ElementsNotebook.h"
-#include "ChaptersGrid.h"
+#include "StoryNotebook.h"
 #include "Outline.h"
 #include "Corkboard.h"
 #include "Release.h"
@@ -86,34 +86,34 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 		m_mainButtons.push_back(nullptr);
 
 	// These are the buttons located on the left pane.
-	m_mainButtons[0] = new wxButton(m_selPanel, BUTTON_Overview, "Overview");
+	m_mainButtons[0] = new wxButton(m_selPanel, BUTTON_Overview, "Overview", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[0]->SetFont(font);
 	m_mainButtons[0]->SetBackgroundColour(wxColour(130, 0, 0));
 	m_mainButtons[0]->SetForegroundColour(wxColour(245, 245, 245));
 
-	m_mainButtons[1] = new wxButton(m_selPanel, BUTTON_Elem, "Elements");
+	m_mainButtons[1] = new wxButton(m_selPanel, BUTTON_Elem, "Elements", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[1]->SetFont(font);
 	m_mainButtons[1]->SetBackgroundColour(wxColour(20, 20, 20));
 	m_mainButtons[1]->SetForegroundColour(wxColour(245, 245, 245));
 
-	m_mainButtons[2] = new wxButton(m_selPanel, BUTTON_Chapters, "Chapters");
+	m_mainButtons[2] = new wxButton(m_selPanel, BUTTON_Chapters, "Story", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[2]->SetFont(font);
 	m_mainButtons[2]->SetBackgroundColour(wxColour(20, 20, 20));
 	m_mainButtons[2]->SetForegroundColour(wxColour(245, 245, 245));
 
-	m_mainButtons[3] = new wxButton(m_selPanel, BUTTON_Outline, "Outline");
+	m_mainButtons[3] = new wxButton(m_selPanel, BUTTON_Outline, "Outline", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[3]->SetFont(font);
 	m_mainButtons[3]->SetBackgroundColour(wxColour(20, 20, 20));
 	m_mainButtons[3]->SetForegroundColour(wxColour(245, 245, 245));
 
-	m_mainButtons[4] = new wxButton(m_selPanel, BUTTON_Release, "Release");
+	m_mainButtons[4] = new wxButton(m_selPanel, BUTTON_Release, "Release", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[4]->SetFont(font);
 	m_mainButtons[4]->SetBackgroundColour(wxColour(20, 20, 20));
 	m_mainButtons[4]->SetForegroundColour(wxColour(245, 245, 245));
 
-	for (auto& it : m_mainButtons) {
-		it->Bind(wxEVT_ENTER_WINDOW, &amMainFrame::OnMainButtonEnter, this);
-		it->Bind(wxEVT_LEAVE_WINDOW, &amMainFrame::OnMainButtonLeave, this);
+	for (wxButton* button : m_mainButtons) {
+		button->Bind(wxEVT_ENTER_WINDOW, &amMainFrame::OnMainButtonEnter, this);
+		button->Bind(wxEVT_LEAVE_WINDOW, &amMainFrame::OnMainButtonLeave, this);
 	}
 
 	m_buttonSizer = new wxBoxSizer(wxVERTICAL);
@@ -137,8 +137,8 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_elements = new amElementsNotebook(m_mainBook);
 	m_elements->Hide();
 
-	m_chaptersNote = new amChaptersNotebook(m_mainBook, m_manager);
-	m_chaptersNote->Hide();
+	m_storyNotebook = new amStoryNotebook(m_mainBook, m_manager);
+	m_storyNotebook->Hide();
 
 	m_outline = new amOutline(m_mainBook);
 	m_outline->Hide();
@@ -148,7 +148,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_mainBook->ShowNewPage(m_overview);
 	m_mainBook->ShowNewPage(m_elements);
-	m_mainBook->ShowNewPage(m_chaptersNote);
+	m_mainBook->ShowNewPage(m_storyNotebook);
 	m_mainBook->ShowNewPage(m_outline);
 	m_mainBook->ShowNewPage(m_release);
 
@@ -223,7 +223,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_toolBar->Realize();
 
-	splitter->SplitVertically(m_selPanel, m_mainBook, 250);
+	splitter->SplitVertically(m_selPanel, m_mainBook, FromDIP(230));
 	splitter->SetSashGravity(0.0);
 
 	m_verticalSizer = new wxBoxSizer(wxVERTICAL);
@@ -247,7 +247,7 @@ void amMainFrame::OnNewFile(wxCommandEvent& event) {
 	// Updating everything that needs to be reset.
 	m_elements->ClearAll();
 	m_outline->ClearAll();
-	m_chaptersNote->ClearAll();
+	m_storyNotebook->ClearAll();
 
 	// Clearing all paths and setting window title as generic.
 	SetTitle("New Amadeus project");
@@ -388,7 +388,7 @@ void amMainFrame::OnAbout(wxCommandEvent& event) {
 }
 
 void amMainFrame::OnMainButtonEnter(wxMouseEvent& event) {
-	((wxButton*)event.GetEventObject())->SetForegroundColour(wxColour(20, 20, 20));
+	((wxButton*)event.GetEventObject())->SetForegroundColour(wxColour(145, 145, 145));
 }
 
 void amMainFrame::OnMainButtonLeave(wxMouseEvent& event) {
@@ -483,8 +483,8 @@ void amMainFrame::OnNewItem(wxCommandEvent& event) {
 }
 
 void amMainFrame::OnSashChanged(wxSplitterEvent& event) {
-	if (m_chaptersNote->IsShown())
-		m_chaptersNote->LayoutGrid();
+	if (m_storyNotebook->IsShown())
+		m_storyNotebook->LayoutGrid();
 }
 
 void amMainFrame::Search(wxCommandEvent& event) {
@@ -598,8 +598,8 @@ amElementsNotebook* amMainFrame::GetElementsNotebook() {
 	return m_elements;
 }
 
-amChaptersNotebook* amMainFrame::GetChaptersNotebook() {
-	return m_chaptersNote;
+amStoryNotebook* amMainFrame::GetStoryNotebook() {
+	return m_storyNotebook;
 }
 
 amOutline* amMainFrame::GetOutline() {

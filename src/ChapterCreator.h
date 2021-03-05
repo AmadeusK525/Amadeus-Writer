@@ -6,7 +6,7 @@
 #include "wx/editlbox.h"
 
 #include "DragList.h"
-#include "ChaptersGrid.h"
+#include "StoryNotebook.h"
 
 class ChapterCreator: public wxFrame {
 private:
