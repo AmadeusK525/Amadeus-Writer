@@ -16,8 +16,315 @@
 #include "wxmemdbg.h"
 
 
+StoryTreeModel::StoryTreeModel() {
+    StoryTreeModelNode::InitAllIcons();
+}
+
+bool StoryTreeModel::Load() {
+    return false;
+}
+
+bool StoryTreeModel::Save() {
+    return false;
+}
+
+void StoryTreeModel::CreateFromScratch(Book& book) {}
+
+wxString StoryTreeModel::GetTitle(const wxDataViewItem& item) const {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    if (!node)
+        return wxEmptyString;
+
+    return node->GetTitle();
+}
+
+wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int pos) {
+    StoryTreeModelNode* node = new StoryTreeModelNode(m_book, name, pos, id, STMN_Section);
+    wxDataViewItem item(node);
+
+    ItemAdded(wxDataViewItem(m_book), item);
+
+    return item;
+}
+
+wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxString& name, int id, int pos) {
+    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)section.GetID(), name, pos, id, STMN_Chapter);
+    wxDataViewItem item(node);
+
+    ItemAdded(section, item);
+
+    return item;
+}
+
+wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString& name, int id, int pos) {
+    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)chapter.GetID(), name, pos, id, STMN_Scene);
+    wxDataViewItem item(node);
+
+    ItemAdded(chapter, item);
+
+    return item;
+}
+
+bool StoryTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
+    wxDataViewItem& parent = GetParent(descendant);
+
+    bool is = false;
+
+    while (parent.IsOk()) {
+        if (parent.GetID() == item.GetID())
+            is = true;
+
+        parent = GetParent(parent);
+    }
+
+    return is;
+}
+
+void StoryTreeModel::MoveToTrash(const wxDataViewItem& item) {
+}
+
+void StoryTreeModel::DeleteItem(const wxDataViewItem& item) {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    if (!node)      // happens if item.IsOk()==false
+        return;
+
+    if (node == m_book || node == m_trash) {
+        wxMessageBox(_("Cannot remove special folders!"));
+        return;
+    }
+    // first remove the node from the parent's array of children;
+    // NOTE: StoryTreeModelNode is only an array of _pointers_
+    //       thus removing the node from it doesn't result in freeing it
+
+    wxDataViewItemArray children;
+    GetChildren(item, children);
+
+    for (unsigned int i = 0; i < children.GetCount(); i++)
+        DeleteItem(children[i]);
+
+    StoryTreeModelNode* parentNode = node->GetParent();
+    if (parentNode)
+        parentNode->GetChildren().Remove(node);
+    else
+        m_otherRoots.Remove(node);
+
+    wxDataViewItem parent(parentNode);
+
+    // free the node
+    delete node;
+
+    ItemDeleted(parent, item);
+}
+
+void StoryTreeModel::SetItemBackgroundColour(wxDataViewItem& item, wxColour& colour) {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    wxDataViewItemAttr& attr = node->GetAttr();
+
+    attr.SetBackgroundColour(colour);
+}
+
+void StoryTreeModel::SetItemForegroundColour(wxDataViewItem& item, wxColour& colour) {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    wxDataViewItemAttr& attr = node->GetAttr();
+
+    attr.SetColour(colour);
+}
+
+void StoryTreeModel::SetItemFont(wxDataViewItem& item, wxFont& font) {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    wxDataViewItemAttr attr = node->GetAttr();
+
+    attr.SetBold(font.GetWeight() >= 400);
+    attr.SetItalic(font.GetStyle() == wxFONTSTYLE_ITALIC);
+    attr.SetStrikethrough(font.GetStrikethrough());
+}
+
+bool StoryTreeModel::Reparent(StoryTreeModelNode* itemNode, StoryTreeModelNode* newParentNode) {
+    StoryTreeModelNode* oldParentNode(itemNode->GetParent());
+
+    wxDataViewItem item((void*)itemNode);
+    wxDataViewItem newParent((void*)newParentNode);
+    wxDataViewItem oldParent((void*)oldParentNode);
+
+
+    if (!itemNode)
+        return false;
+
+    itemNode->Reparent(newParentNode);
+
+    if (!oldParentNode)
+        m_otherRoots.Remove(itemNode);
+
+    if (!newParentNode)
+        m_otherRoots.Add(itemNode);
+
+    ItemAdded(newParent, item);
+    ItemDeleted(oldParent, item);
+    return true;
+}
+
+bool StoryTreeModel::Reparent(StoryTreeModelNode* itemNode, StoryTreeModelNode* newParentNode, int n) {
+    StoryTreeModelNode* oldParentNode(itemNode->GetParent());
+
+    wxDataViewItem item((void*)itemNode);
+    wxDataViewItem newParent((void*)newParentNode);
+    wxDataViewItem oldParent((void*)oldParentNode);
+
+
+    if (!itemNode)
+        return false;
+
+    itemNode->Reparent(newParentNode, n);
+
+    if (!oldParentNode)
+        m_otherRoots.Remove(itemNode);
+
+    if (!newParentNode)
+        m_otherRoots.Insert(itemNode, n);
+
+    ItemAdded(newParent, item);
+    ItemDeleted(oldParent, item);
+    return true;
+}
+
+bool StoryTreeModel::Reposition(wxDataViewItem& item, int n) {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+
+    if (node) {
+        node->Reposition(n);
+        ItemChanged(wxDataViewItem(node->GetParent()));
+    } else
+        return false;
+
+    return true;
+}
+
+void StoryTreeModel::Clear() {
+    StoryTreeModelNodePtrArray array;
+
+    array = m_book->GetChildren();
+    for (unsigned int i = 0; i < array.GetCount(); i++) {
+        DeleteItem(wxDataViewItem(array[i]));
+    }
+
+    array = m_trash->GetChildren();
+    for (unsigned int i = 0; i < array.GetCount(); i++) {
+        DeleteItem(wxDataViewItem(array[i]));
+    }
+}
+
+void StoryTreeModel::GetValue(wxVariant& variant,
+    const wxDataViewItem& item, unsigned int col) const {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+
+    wxDataViewIconText it;
+    it.SetText(node->GetTitle());
+
+    /*if (node->IsBook())
+        it.SetIcon(node->m_icons[0]);
+    else if (node->IsSection())
+        it.SetIcon(node->m_icons[1]);
+    else if (node->IsChapter())
+        it.SetIcon(node->m_icons[2]);*/
+
+    switch (col) {
+    case 0:
+        variant << it;
+        break;
+    default:
+        break;
+    }
+}
+
+bool StoryTreeModel::SetValue(const wxVariant& variant,
+    const wxDataViewItem& item, unsigned int col) {
+
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    wxDataViewIconText it;
+    it << variant;
+
+    switch (col) {
+    case 0:
+        node->SetTitle(it.GetText());
+        return true;
+
+    default:
+        break;
+    }
+    return false;
+}
+
+wxDataViewItem StoryTreeModel::GetParent(const wxDataViewItem& item) const {
+    // the invisible root node has no parent
+    if (!item.IsOk())
+        return wxDataViewItem(0);
+
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    return wxDataViewItem(node->GetParent());
+}
+
+bool StoryTreeModel::IsContainer(const wxDataViewItem& item) const {
+    // the invisible root node can have children
+    if (!item.IsOk())
+        return true;
+
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+
+    if (node)
+        return node->IsContainer();
+    else
+        return false;
+}
+
+bool StoryTreeModel::GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+
+    if (node)
+        attr = node->GetAttr();
+
+    return true;
+}
+
+unsigned int StoryTreeModel::GetChildren(const wxDataViewItem& parent,
+    wxDataViewItemArray& array) const {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)parent.GetID();
+    if (!node) {
+        int n = 0;
+
+        if (m_book) {
+            array.Add(wxDataViewItem(m_book));
+            n++;
+        }
+
+        if (m_trash) {
+            array.Add(wxDataViewItem(m_trash));
+            n++;
+        }
+
+        for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
+            array.Add(wxDataViewItem(m_otherRoots.at(i)));
+        }
+
+        return n + m_otherRoots.GetCount();
+    }
+
+    int count = node->GetChildCount();
+
+    if (count == 0) {
+        return 0;
+    }
+
+    for (int pos = 0; pos < count; pos++) {
+        StoryTreeModelNode* child = node->GetChildren().Item(pos);
+        array.Add(wxDataViewItem(child));
+    }
+
+    return count;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////// amStoryWriter ///////////////////////////////////
+//////////////////////////////// amStoryWriter ////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
 
@@ -193,12 +500,26 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
     m_outlineView = new wxDataViewCtrl(leftNotebook, -1,wxDefaultPosition, wxDefaultSize,
 		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
     
-    wxDataViewColumn* column0 = new wxDataViewColumn(_("Files"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
+    wxDataViewColumn* columnF = new wxDataViewColumn(_("Files"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
         wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
-    m_outlineView->AppendColumn(column0);
+    m_outlineView->AppendColumn(columnF);
 
     m_outlineTreeModel = m_manager->GetOutline()->GetOutlineFiles()->GetOutlineTreeModel();
     m_outlineView->AssociateModel(m_outlineTreeModel.get());
+    m_outlineView->SetBackgroundColour(wxColour(255, 255, 255));
+
+    m_storyView = new wxDataViewCtrl(leftNotebook, -1, wxDefaultPosition, wxDefaultSize,
+        wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
+
+    wxDataViewColumn* columnS = new wxDataViewColumn(_("Story"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
+        wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
+    m_storyView->AppendColumn(columnS);
+
+    m_storyTreeModel = new StoryTreeModel();
+    m_storyView->AssociateModel(m_storyTreeModel.get());
+
+    if (!m_storyTreeModel->Load())
+        m_storyTreeModel->CreateFromScratch(Book());
 
     //m_outlineView->GetMainWindow()->SetBackgroundColour(wxColour(255, 255, 255));
     //m_outlineView->GetMainWindow()->SetForegroundColour(wxColour(255, 255, 255));
@@ -206,6 +527,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
 
     leftNotebook->AddPage(m_leftPanel,"Elements");
     leftNotebook->AddPage(m_outlineView, "Outline");
+    leftNotebook->AddPage(m_storyView, "Story");
 
     wxPanel* rightPanel = new wxPanel(rightSplitter, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
@@ -685,56 +1007,65 @@ void amStoryWriter::OnClose(wxCloseEvent& event) {
     event.Skip();
 }
 
+void amStoryWriter::CreateDVCTree() {
+
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
-/////////////////////////// amStoryWriterNotebook //////////////////////////////
+//////////////////////////// amStoryWriterToolbar //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE(amStoryWriterNotebook, wxPanel)
 
-EVT_TOOL(TOOL_Bold, amStoryWriterNotebook::OnBold)
-EVT_TOOL(TOOL_Italic, amStoryWriterNotebook::OnItalic)
-EVT_TOOL(TOOL_Underline, amStoryWriterNotebook::OnUnderline)
-EVT_TOOL(TOOL_AlignLeft, amStoryWriterNotebook::OnAlignLeft)
-EVT_TOOL(TOOL_AlignCenter, amStoryWriterNotebook::OnAlignCenter)
-EVT_TOOL(TOOL_AlignCenterJust, amStoryWriterNotebook::OnAlignCenterJust)
-EVT_TOOL(TOOL_AlignRight, amStoryWriterNotebook::OnAlignRight)
-EVT_TOOL(TOOL_TestCircle, amStoryWriterNotebook::OnTestCircle)
-EVT_TOOL(TOOL_PageView, amStoryWriterNotebook::OnPageView)
-EVT_TOOL(TOOL_NoteView, amStoryWriterNotebook::OnNoteView)
+BEGIN_EVENT_TABLE(amStoryWriterToolbar, wxToolBar)
 
-EVT_SLIDER(TOOL_ContentScale, amStoryWriterNotebook::OnZoom)
-EVT_TOOL(TOOL_ChapterFullScreen, amStoryWriterNotebook::OnFullScreen)
+EVT_TOOL(TOOL_Bold, amStoryWriterToolbar::OnBold)
+EVT_TOOL(TOOL_Italic, amStoryWriterToolbar::OnItalic)
+EVT_TOOL(TOOL_Underline, amStoryWriterToolbar::OnUnderline)
+EVT_TOOL(TOOL_AlignLeft, amStoryWriterToolbar::OnAlignLeft)
+EVT_TOOL(TOOL_AlignCenter, amStoryWriterToolbar::OnAlignCenter)
+EVT_TOOL(TOOL_AlignCenterJust, amStoryWriterToolbar::OnAlignCenterJust)
+EVT_TOOL(TOOL_AlignRight, amStoryWriterToolbar::OnAlignRight)
+EVT_TOOL(TOOL_TestCircle, amStoryWriterToolbar::OnTestCircle)
+EVT_TOOL(TOOL_PageView, amStoryWriterToolbar::OnPageView)
+EVT_TOOL(TOOL_NoteView, amStoryWriterToolbar::OnNoteView)
 
-EVT_UPDATE_UI(TOOL_Bold, amStoryWriterNotebook::OnUpdateBold)
-EVT_UPDATE_UI(TOOL_Italic, amStoryWriterNotebook::OnUpdateItalic)
-EVT_UPDATE_UI(TOOL_Underline, amStoryWriterNotebook::OnUpdateUnderline)
-EVT_UPDATE_UI(TOOL_AlignLeft, amStoryWriterNotebook::OnUpdateAlignLeft)
-EVT_UPDATE_UI(TOOL_AlignCenter, amStoryWriterNotebook::OnUpdateAlignCenter)
-EVT_UPDATE_UI(TOOL_AlignCenterJust, amStoryWriterNotebook::OnUpdateAlignCenterJust)
-EVT_UPDATE_UI(TOOL_AlignRight, amStoryWriterNotebook::OnUpdateAlignRight)
-EVT_UPDATE_UI(TOOL_FontSize, amStoryWriterNotebook::OnUpdateFontSize)
-EVT_UPDATE_UI(TOOL_NoteView, amStoryWriterNotebook::OnUpdateNoteView)
+EVT_SLIDER(TOOL_ContentScale, amStoryWriterToolbar::OnZoom)
+EVT_TOOL(TOOL_ChapterFullScreen, amStoryWriterToolbar::OnFullScreen)
 
-EVT_COMBOBOX(TOOL_FontSize, amStoryWriterNotebook::OnFontSize)
+EVT_UPDATE_UI(TOOL_Bold, amStoryWriterToolbar::OnUpdateBold)
+EVT_UPDATE_UI(TOOL_Italic, amStoryWriterToolbar::OnUpdateItalic)
+EVT_UPDATE_UI(TOOL_Underline, amStoryWriterToolbar::OnUpdateUnderline)
+EVT_UPDATE_UI(TOOL_AlignLeft, amStoryWriterToolbar::OnUpdateAlignLeft)
+EVT_UPDATE_UI(TOOL_AlignCenter, amStoryWriterToolbar::OnUpdateAlignCenter)
+EVT_UPDATE_UI(TOOL_AlignCenterJust, amStoryWriterToolbar::OnUpdateAlignCenterJust)
+EVT_UPDATE_UI(TOOL_AlignRight, amStoryWriterToolbar::OnUpdateAlignRight)
+EVT_UPDATE_UI(TOOL_FontSize, amStoryWriterToolbar::OnUpdateFontSize)
+EVT_UPDATE_UI(TOOL_NoteView, amStoryWriterToolbar::OnUpdateNoteView)
 
-EVT_TEXT(TEXT_Content, amStoryWriterNotebook::OnText)
+EVT_COMBOBOX(TOOL_FontSize, amStoryWriterToolbar::OnFontSize)
 
 END_EVENT_TABLE()
 
-amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* chapterWriter) :
-    wxPanel(parent) {
-    m_parent = chapterWriter;
+amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
+    amStoryWriterNotebookPage& currentPage,
+    long amStyle,
+    wxWindowID id,
+    const wxPoint& pos,
+    const wxSize& size,
+    long style) : wxToolBar(parent, id, pos, size, style) {
 
-    m_contentToolbar = new wxToolBar(this, -1, wxDefaultPosition, wxSize(-1, -1));
-    m_contentToolbar->AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(bold), wxBITMAP_PNG(bold), "Bold");
-    m_contentToolbar->AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italic), wxBITMAP_PNG(italic), "italic");
-    m_contentToolbar->AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underline), wxBITMAP_PNG(underline), "Underline");
-    m_contentToolbar->AddSeparator();
-    m_contentToolbar->AddRadioTool(TOOL_AlignLeft, "", wxBITMAP_PNG(leftAlign), wxBITMAP_PNG(leftAlign), "Align left");
-    m_contentToolbar->AddRadioTool(TOOL_AlignCenter, "", wxBITMAP_PNG(centerAlign), wxBITMAP_PNG(centerAlign), "Align center");
-    m_contentToolbar->AddRadioTool(TOOL_AlignCenterJust, "", wxBITMAP_PNG(centerJustAlign), wxBITMAP_PNG(centerJustAlign), "Align center and fit");
-    m_contentToolbar->AddRadioTool(TOOL_AlignRight, "", wxBITMAP_PNG(rightAlign), wxBITMAP_PNG(rightAlign), "Align right");
-    m_contentToolbar->AddSeparator();
+    m_currentPage = currentPage;
+
+    AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(bold), wxBITMAP_PNG(bold), "Bold");
+    AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italic), wxBITMAP_PNG(italic), "italic");
+    AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underline), wxBITMAP_PNG(underline), "Underline");
+    AddSeparator();
+    AddRadioTool(TOOL_AlignLeft, "", wxBITMAP_PNG(leftAlign), wxBITMAP_PNG(leftAlign), "Align left");
+    AddRadioTool(TOOL_AlignCenter, "", wxBITMAP_PNG(centerAlign), wxBITMAP_PNG(centerAlign), "Align center");
+    AddRadioTool(TOOL_AlignCenterJust, "", wxBITMAP_PNG(centerJustAlign), wxBITMAP_PNG(centerJustAlign), "Align center and fit");
+    AddRadioTool(TOOL_AlignRight, "", wxBITMAP_PNG(rightAlign), wxBITMAP_PNG(rightAlign), "Align right");
+    AddSeparator();
 
     wxArrayString sizes;
     for (int i = 8; i < 28; i++) {
@@ -747,27 +1078,250 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* ch
     sizes.Add("48");
     sizes.Add("72");
 
-    m_fontSize = new wxComboBox(m_contentToolbar, TOOL_FontSize, "10", wxDefaultPosition, wxDefaultSize,
+    m_fontSize = new wxComboBox(this, TOOL_FontSize, "10", wxDefaultPosition, wxDefaultSize,
         sizes, wxCB_READONLY | wxCB_SIMPLE);
     m_fontSize->SetBackgroundColour(wxColour(30, 30, 30));
     m_fontSize->SetForegroundColour(wxColour(230, 230, 230));
 
-    m_contentScale = new wxSlider(m_contentToolbar, TOOL_ContentScale, 100, 50, 300,
+    m_contentScale = new wxSlider(this, TOOL_ContentScale, 100, 50, 300,
         wxDefaultPosition, wxDefaultSize, wxSL_MIN_MAX_LABELS);
     m_contentScale->SetToolTip("100");
 
-    m_contentToolbar->AddControl(m_fontSize);
-    m_contentToolbar->AddStretchableSpace();
-    m_contentToolbar->AddCheckTool(TOOL_NoteView, "", wxBITMAP_PNG(noteView), wxNullBitmap, "Toggle note view");
-    m_contentToolbar->AddSeparator();
-    m_contentToolbar->AddControl(m_contentScale);
-    m_contentToolbar->AddSeparator();
-    m_contentToolbar->AddCheckTool(TOOL_ChapterFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
-    //m_contentToolbar->AddCheckTool()
+    AddControl(m_fontSize);
+    AddStretchableSpace();
 
-    m_contentToolbar->Realize();
-    m_contentToolbar->SetDoubleBuffered(true);
+    amStoryWriterNotebook* pSWN = dynamic_cast<amStoryWriterNotebook*>(parent);
+    if (amStyle |= amTB_NOTE_VIEW && pSWN) {
+        m_parent = pSWN;
 
+        AddCheckTool(TOOL_NoteView, "", wxBITMAP_PNG(noteView), wxNullBitmap, "Toggle note view");
+        AddSeparator();
+    }
+
+    if (amStyle |= amTB_ZOOM) 
+        AddControl(m_contentScale);
+
+    if (amStyle |= amTB_FULLSCREEN && pSWN) {
+        AddSeparator();
+        AddCheckTool(TOOL_ChapterFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
+    }
+
+    Realize();
+}
+
+void amStoryWriterToolbar::OnBold(wxCommandEvent& event) {
+    m_currentPage.rtc->ApplyBoldToSelection();
+
+    if (m_parent)
+        m_parent->OnText(event);
+}
+
+void amStoryWriterToolbar::OnItalic(wxCommandEvent& event) {
+    m_currentPage.rtc->ApplyItalicToSelection();
+
+    if (m_parent)
+        m_parent->OnText(event);
+}
+
+void amStoryWriterToolbar::OnUnderline(wxCommandEvent& event) {
+    m_currentPage.rtc->ApplyUnderlineToSelection();
+
+    if (m_parent)
+        m_parent->OnText(event);
+}
+
+void amStoryWriterToolbar::OnAlignLeft(wxCommandEvent& event) {
+    m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));
+
+    if (m_parent)
+        m_parent->OnText(event);
+}
+
+void amStoryWriterToolbar::OnAlignCenter(wxCommandEvent& event) {
+    m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
+
+    if (m_parent)
+        m_parent->OnText(event);
+}
+
+void amStoryWriterToolbar::OnAlignCenterJust(wxCommandEvent& event) {
+    m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
+
+    if (m_parent)
+        m_parent->OnText(event);
+}
+
+void amStoryWriterToolbar::OnAlignRight(wxCommandEvent& event) {
+    m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
+
+    if (m_parent)
+        m_parent->OnText(event);
+}
+
+void amStoryWriterToolbar::OnNoteView(wxCommandEvent& event) {
+    if (GetToolState(TOOL_NoteView)) {
+        wxRichTextCtrl* current = dynamic_cast<wxRichTextCtrl*>(m_parent->GetCurrentPage());
+        Freeze();
+
+        if (current) {
+            for (amStoryWriterNotebookPage& it : m_parent->GetAllWriterPages()) {
+                if (current == it.rtc) {
+                    wxAuiNotebook* notebook = m_parent->GetNotebook();
+
+                    int index = notebook->GetSelection();
+                    wxString title = notebook->GetPageText(index);
+
+                    notebook->RemovePage(index);
+                    notebook->InsertPage(index, it.notePanel, title, true);
+
+                    it.rtc->Hide();
+                    it.notePanel->Show();
+                    it.notePanel->GetSizer()->FitInside(it.notePanel);
+                    break;
+                }
+            }
+        }
+        Thaw();
+    } else {
+        wxScrolledWindow* current = dynamic_cast<wxScrolledWindow*>(m_parent->GetCurrentPage());
+        Freeze();
+
+        if (current) {
+            for (amStoryWriterNotebookPage& it : m_parent->GetAllWriterPages()) {
+                if (current == it.notePanel) {
+                    wxAuiNotebook* notebook = m_parent->GetNotebook();
+
+                    int index = notebook->GetSelection();
+                    wxString title = notebook->GetPageText(index);
+
+                    notebook->RemovePage(index);
+                    notebook->InsertPage(index, it.rtc, title, true);
+
+                    it.notePanel->Hide();
+                    it.rtc->Show();
+                    it.rtc->Layout();
+                    break;
+                }
+            }
+        }
+        Layout();
+        Thaw();
+    }
+}
+
+void amStoryWriterToolbar::OnTestCircle(wxCommandEvent& event) {
+    wxRichTextRange sel = m_currentPage.rtc->GetSelectionRange();
+    wxRichTextBuffer& buf = m_currentPage.rtc->GetBuffer();
+
+
+    wxRichTextProperties prop;
+    prop.SetProperty("commentStart", true);
+
+    buf.InsertFieldWithUndo(&buf, sel.GetStart(), "commentTag", prop, m_currentPage.rtc, 0, m_currentPage.rtc->GetBasicStyle());
+
+    prop.SetProperty("commentStart", false);
+    buf.InsertFieldWithUndo(&buf, sel.GetEnd() + 1, "commentTag", prop, m_currentPage.rtc, 0, m_currentPage.rtc->GetBasicStyle());
+
+    for (wxRichTextObject* it : buf.GetChildren()) {
+        //it.spli
+    }
+
+    wxFFileOutputStream fileStream("F:\\RTCdump.txt");
+    wxTextOutputStream textStream(fileStream);
+
+    m_currentPage.rtc->GetBuffer().Dump(textStream);
+
+    fileStream.Close();
+}
+
+void amStoryWriterToolbar::OnZoom(wxCommandEvent& event) {
+    int zoom = event.GetInt();
+
+    m_currentPage.rtc->SetScale((double)zoom / 100.0, true);
+    m_parent->OnZoomChange(zoom);
+    m_contentScale->SetToolTip(std::to_string(zoom));
+}
+
+void amStoryWriterToolbar::OnFullScreen(wxCommandEvent& WXUNUSED(event)) {
+    m_parent->ToggleFullScreen();
+}
+
+void amStoryWriterToolbar::OnPageView(wxCommandEvent& WXUNUSED(event)) {}
+
+void amStoryWriterToolbar::OnUpdateBold(wxUpdateUIEvent& event) {
+    event.Check(m_currentPage.rtc->IsSelectionBold());
+}
+
+void amStoryWriterToolbar::OnUpdateItalic(wxUpdateUIEvent& event) {
+    event.Check(m_currentPage.rtc->IsSelectionItalics());
+}
+
+void amStoryWriterToolbar::OnUpdateUnderline(wxUpdateUIEvent& event) {
+    event.Check(m_currentPage.rtc->IsSelectionUnderlined());
+}
+
+void amStoryWriterToolbar::OnUpdateAlignLeft(wxUpdateUIEvent& event) {
+    event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
+}
+
+void amStoryWriterToolbar::OnUpdateAlignCenter(wxUpdateUIEvent& event) {
+    event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
+}
+
+void amStoryWriterToolbar::OnUpdateAlignCenterJust(wxUpdateUIEvent& event) {
+    event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
+}
+
+void amStoryWriterToolbar::OnUpdateAlignRight(wxUpdateUIEvent& event) {
+    event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
+}
+
+void amStoryWriterToolbar::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event)) {
+    wxRichTextAttr attr;
+    m_currentPage.rtc->GetStyle(m_currentPage.rtc->GetInsertionPoint() - 1, attr);
+    wxString size(std::to_string(attr.GetFontSize()));
+
+    if (m_fontSize->GetValue() != size)
+        m_fontSize->SetValue(size);
+}
+
+void amStoryWriterToolbar::OnUpdateNoteView(wxUpdateUIEvent& event) {
+    wxScrolledWindow* currentCorkboard = dynamic_cast<wxScrolledWindow*>(m_parent->GetCurrentPage());
+    event.Check(currentCorkboard);
+}
+
+void amStoryWriterToolbar::OnFontSize(wxCommandEvent& event) {
+    m_currentPage.rtc->SetFocus();
+    wxRichTextAttr attr;
+    attr.SetFlags(wxTEXT_ATTR_FONT_SIZE);
+    long size;
+    event.GetString().ToLong(&size);
+    attr.SetFontSize(size);
+
+    if (m_currentPage.rtc->HasSelection()) {
+        m_currentPage.rtc->SetStyleEx(m_currentPage.rtc->GetSelectionRange(), attr,
+            wxRICHTEXT_SETSTYLE_WITH_UNDO | wxRICHTEXT_SETSTYLE_OPTIMIZE | wxRICHTEXT_SETSTYLE_CHARACTERS_ONLY);
+    } else {
+        wxRichTextAttr current = m_currentPage.rtc->GetDefaultStyle();
+        current.Apply(attr);
+        m_currentPage.rtc->SetDefaultStyle(current);
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////// amStoryWriterNotebook //////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+BEGIN_EVENT_TABLE(amStoryWriterNotebook, wxPanel)
+EVT_TEXT(TEXT_Content, amStoryWriterNotebook::OnText)
+END_EVENT_TABLE()
+
+amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* chapterWriter) :
+    wxPanel(parent) {
+    m_parent = chapterWriter;
+    
     m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT |
         wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_BOTTOM | wxBORDER_NONE);
 
@@ -797,7 +1351,8 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* ch
     m_notebook->AddPage(m_curTextCtrl, "Main");
     //m_notebook->AddPage(m_curCorkboard, "Notes");
 
-    m_writerPages.push_back(pair<wxRichTextCtrl*, wxScrolledWindow*>(m_curTextCtrl, m_curCorkboard));
+    m_writerPages.push_back(amStoryWriterNotebookPage(m_curTextCtrl, m_curCorkboard));
+    m_contentToolbar = new amStoryWriterToolbar(this, m_writerPages.front());
 
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(m_contentToolbar, wxSizerFlags(0).Expand());
@@ -813,185 +1368,8 @@ void amStoryWriterNotebook::OnText(wxCommandEvent& WXUNUSED(event)) {
     m_parent->m_statusBar->SetStatusText("Chapter modified. Autosaving soon...", 0);
 }
 
-void amStoryWriterNotebook::OnBold(wxCommandEvent& event) {
-    m_curTextCtrl->ApplyBoldToSelection();
-    OnText(event);
-}
-
-void amStoryWriterNotebook::OnItalic(wxCommandEvent& event) {
-    m_curTextCtrl->ApplyItalicToSelection();
-    OnText(event);
-}
-
-void amStoryWriterNotebook::OnUnderline(wxCommandEvent& event) {
-    m_curTextCtrl->ApplyUnderlineToSelection();
-    OnText(event);
-}
-
-void amStoryWriterNotebook::OnAlignLeft(wxCommandEvent& event) {
-    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));
-    OnText(event);
-}
-
-void amStoryWriterNotebook::OnAlignCenter(wxCommandEvent& event) {
-    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
-    OnText(event);
-}
-
-void amStoryWriterNotebook::OnAlignCenterJust(wxCommandEvent& event) {
-    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
-    OnText(event);
-}
-
-void amStoryWriterNotebook::OnAlignRight(wxCommandEvent& event) {
-    m_curTextCtrl->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
-    OnText(event);
-}
-
-void amStoryWriterNotebook::OnNoteView(wxCommandEvent& event) {
-    if (m_contentToolbar->GetToolState(TOOL_NoteView)) {
-        wxRichTextCtrl* current = dynamic_cast<wxRichTextCtrl*>(m_notebook->GetCurrentPage());
-        Freeze();
-
-        if (current) {
-            for (pair<wxRichTextCtrl*, wxScrolledWindow*>& it : m_writerPages) {
-                if (current == it.first) {
-                    int index = m_notebook->GetSelection();
-                    wxString title = m_notebook->GetPageText(index);
-                    
-                    m_notebook->RemovePage(index);
-                    m_notebook->InsertPage(index, it.second, title, true);
-
-                    it.first->Hide();
-                    it.second->Show();
-                    it.second->GetSizer()->FitInside(it.second);
-                    break;
-                }
-            }
-        }
-        Thaw();
-    } else {
-        wxScrolledWindow* current = dynamic_cast<wxScrolledWindow*>(m_notebook->GetCurrentPage());
-        Freeze();
-
-        if (current) {
-            for (pair<wxRichTextCtrl*, wxScrolledWindow*>& it : m_writerPages) {
-                if (current == it.second) {
-                    int index = m_notebook->GetSelection();
-                    wxString title = m_notebook->GetPageText(index);
-
-                    m_notebook->RemovePage(index);
-                    m_notebook->InsertPage(index, it.first, title, true);
-                    
-                    it.second->Hide();
-                    it.first->Show();
-                    it.first->Layout();
-                    break;
-                }
-            }
-        }
-        Layout();
-        Thaw();
-    }
-}
-
-void amStoryWriterNotebook::OnTestCircle(wxCommandEvent& event) {
-    wxRichTextRange sel = m_curTextCtrl->GetSelectionRange();
-    wxRichTextBuffer& buf = m_curTextCtrl->GetBuffer();
-
-    
-    wxRichTextProperties prop;
-    prop.SetProperty("commentStart", true);
-
-    buf.InsertFieldWithUndo(&buf, sel.GetStart(), "commentTag", prop, m_curTextCtrl, 0, m_curTextCtrl->GetBasicStyle());
-
-    prop.SetProperty("commentStart", false);
-    buf.InsertFieldWithUndo(&buf, sel.GetEnd() + 1, "commentTag", prop, m_curTextCtrl, 0, m_curTextCtrl->GetBasicStyle());
-
-    for (wxRichTextObject* it : buf.GetChildren()) {
-        //it.spli
-    }
-
-    wxFFileOutputStream fileStream("F:\\RTCdump.txt");
-    wxTextOutputStream textStream(fileStream);
-
-    m_curTextCtrl->GetBuffer().Dump(textStream);
-
-    fileStream.Close();
-}
-
-void amStoryWriterNotebook::OnZoom(wxCommandEvent& event) {
-    int zoom = event.GetInt();
-
-    m_curTextCtrl->SetScale((double)zoom / 100.0, true);
-    m_parent->m_statusBar->PushStatusText("Zoom: "+ std::to_string(zoom) + "%", 2);
-    m_contentScale->SetToolTip(std::to_string(zoom));
-}
-
-void amStoryWriterNotebook::OnFullScreen(wxCommandEvent& WXUNUSED(event)) {
-    m_parent->ToggleFullScreen();
-}
-
-void amStoryWriterNotebook::OnPageView(wxCommandEvent& WXUNUSED(event)) {}
-
-void amStoryWriterNotebook::OnUpdateBold(wxUpdateUIEvent& event) {
-    event.Check(m_curTextCtrl->IsSelectionBold());
-}
-
-void amStoryWriterNotebook::OnUpdateItalic(wxUpdateUIEvent& event) {
-    event.Check(m_curTextCtrl->IsSelectionItalics());
-}
-
-void amStoryWriterNotebook::OnUpdateUnderline(wxUpdateUIEvent& event) {
-    event.Check(m_curTextCtrl->IsSelectionUnderlined());
-}
-
-void amStoryWriterNotebook::OnUpdateAlignLeft(wxUpdateUIEvent& event) {
-    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
-}
-
-void amStoryWriterNotebook::OnUpdateAlignCenter(wxUpdateUIEvent& event) {
-    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
-}
-
-void amStoryWriterNotebook::OnUpdateAlignCenterJust(wxUpdateUIEvent& event) {
-    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
-}
-
-void amStoryWriterNotebook::OnUpdateAlignRight(wxUpdateUIEvent& event) {
-    event.Check(m_curTextCtrl->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
-}
-
-void amStoryWriterNotebook::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event)) {
-    wxRichTextAttr attr;
-    m_curTextCtrl->GetStyle(m_curTextCtrl->GetInsertionPoint() - 1, attr);
-    wxString size(std::to_string(attr.GetFontSize()));
-
-    if (m_fontSize->GetValue() != size)
-        m_fontSize->SetValue(size);
-}
-
-void amStoryWriterNotebook::OnUpdateNoteView(wxUpdateUIEvent& event) {
-    wxScrolledWindow* currentCorkboard = dynamic_cast<wxScrolledWindow*>(m_notebook->GetCurrentPage());
-    event.Check(currentCorkboard);
-}
-
-void amStoryWriterNotebook::OnFontSize(wxCommandEvent& event) {
-    m_curTextCtrl->SetFocus();
-    wxRichTextAttr attr;
-    attr.SetFlags(wxTEXT_ATTR_FONT_SIZE);
-    long size;
-    event.GetString().ToLong(&size);
-    attr.SetFontSize(size);
-
-    if (m_curTextCtrl->HasSelection()) {
-        m_curTextCtrl->SetStyleEx(m_curTextCtrl->GetSelectionRange(), attr,
-            wxRICHTEXT_SETSTYLE_WITH_UNDO | wxRICHTEXT_SETSTYLE_OPTIMIZE | wxRICHTEXT_SETSTYLE_CHARACTERS_ONLY);
-    } else {
-        wxRichTextAttr current = m_curTextCtrl->GetDefaultStyle();
-        current.Apply(attr);
-        m_curTextCtrl->SetDefaultStyle(current);
-    }
+void amStoryWriterNotebook::OnZoomChange(int zoom) {
+    m_parent->PushStatusText("Zoom: " + std::to_string(zoom) + "%", 2);
 }
 
 bool amStoryWriterNotebook::HasRedNote() {

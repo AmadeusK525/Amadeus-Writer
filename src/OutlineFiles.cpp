@@ -28,12 +28,12 @@ wxString OutlineTreeModel::GetTitle(const wxDataViewItem& item) const {
 	if (!node)
 		return wxEmptyString;
 
-	return node->m_title;
+	return node->GetTitle();
 }
 
 wxRichTextBuffer& OutlineTreeModel::GetBuffer(const wxDataViewItem& item) const {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	return node->m_buffer;
+	return node->GetBuffer();
 }
 
 wxDataViewItem OutlineTreeModel::AddToResearch(const wxString& title) {
@@ -117,6 +117,12 @@ bool OutlineTreeModel::IsLocations(wxDataViewItem& item) {
 bool OutlineTreeModel::IsItems(wxDataViewItem& item) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	return node == m_items;
+}
+
+bool OutlineTreeModel::IsSpecial(wxDataViewItem& item) {
+	wxDataViewItem parent = GetParent(item);
+	return IsResearch(item) || IsCharacters(item) || IsLocations(item) || IsItems(item) ||
+		IsCharacters(parent) || IsLocations(parent) || IsItems(parent);
 }
 
 bool OutlineTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
@@ -277,11 +283,11 @@ void OutlineTreeModel::GetValue(wxVariant& variant,
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 
 	wxDataViewIconText it;
-	it.SetText(node->m_title);
+	it.SetText(node->GetTitle());
 
 	if (node == m_research)
 		it.SetIcon(node->m_icons[0]);
-	else if (node->m_isContainer)
+	else if (node->IsContainer())
 		it.SetIcon(node->m_icons[1]);
 	else
 		it.SetIcon(node->m_icons[2]);
@@ -304,7 +310,7 @@ bool OutlineTreeModel::SetValue(const wxVariant& variant,
 
 	switch (col) {
 	case 0:
-		node->m_title = it.GetText();
+		node->SetTitle(it.GetText());
 		return true;
 
 	default:
@@ -737,29 +743,23 @@ void amOutlineFilesPanel::GenerateItemBuffer(Item& item, wxRichTextBuffer& buffe
 
 void amOutlineFilesPanel::AppendCharacter(Character& character) {
 	wxDataViewItem item = m_outlineTreeModel->AddToCharacters(character.name.ToStdString());
-	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
-
-	GenerateCharacterBuffer(character, buffer);
+	GenerateCharacterBuffer(character, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
 }
 
 void amOutlineFilesPanel::AppendLocation(Location& location) {
 	wxDataViewItem item = m_outlineTreeModel->AddToLocations(location.name.ToStdString());
-	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)item.GetID())->m_buffer;
-	
-	GenerateLocationBuffer(location, buffer);
+	GenerateLocationBuffer(location, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
 }
 
 void amOutlineFilesPanel::AppendItem(Item& item) {
 	wxDataViewItem dvitem = m_outlineTreeModel->AddToItems(item.name.ToStdString());
-	wxRichTextBuffer& buffer = ((OutlineTreeModelNode*)dvitem.GetID())->m_buffer;
-
-	GenerateItemBuffer(item, buffer);
+	GenerateItemBuffer(item, ((OutlineTreeModelNode*)dvitem.GetID())->GetBuffer());
 }
 
 void amOutlineFilesPanel::DeleteCharacter(Character& character) {
 	OulineTreeModelNodePtrArray& characters = m_outlineTreeModel->GetCharacters();
 	for (unsigned int i = 0; i < characters.Count(); i++) {
-		if (characters[i]->m_title == character.name) {
+		if (characters[i]->GetTitle() == character.name) {
 			if (m_currentNode == characters[i]) {
 				m_currentNode = nullptr;
 				m_textCtrl->Clear();
@@ -775,7 +775,7 @@ void amOutlineFilesPanel::DeleteCharacter(Character& character) {
 void amOutlineFilesPanel::DeleteLocation(Location& location) {
 	OulineTreeModelNodePtrArray& locations = m_outlineTreeModel->GetLocations();
 	for (unsigned int i = 0; i < locations.Count(); i++) {
-		if (locations[i]->m_title == location.name) {
+		if (locations[i]->GetTitle() == location.name) {
 			if (m_currentNode == locations[i]) {
 				m_currentNode = nullptr;
 				m_textCtrl->Clear();
@@ -791,7 +791,7 @@ void amOutlineFilesPanel::DeleteLocation(Location& location) {
 void amOutlineFilesPanel::DeleteItem(Item& item) {
 	OulineTreeModelNodePtrArray& items = m_outlineTreeModel->GetItems();
 	for (unsigned int i = 0; i < items.Count(); i++) {
-		if (items[i]->m_title == item.name) {
+		if (items[i]->GetTitle() == item.name) {
 			if (m_currentNode == items[i]) {
 				m_currentNode = nullptr;
 				m_textCtrl->Clear();
@@ -812,7 +812,7 @@ void amOutlineFilesPanel::NewFile(wxCommandEvent& event) {
 			sel = m_outlineTreeModel->GetParent(sel);
 	}
 
-	if (m_outlineTreeModel->IsCharacters(sel) || m_outlineTreeModel->IsLocations(sel))
+	if (m_outlineTreeModel->IsCharacters(sel) || m_outlineTreeModel->IsLocations(sel) || m_outlineTreeModel->IsItems(sel))
 		return;
 
 	wxDataViewItem item = m_outlineTreeModel->AppendFile(sel, "New file", wxRichTextBuffer());
@@ -829,7 +829,7 @@ void amOutlineFilesPanel::NewFolder(wxCommandEvent& event) {
 			sel = m_outlineTreeModel->GetParent(sel);
 	}
 
-	if (m_outlineTreeModel->IsCharacters(sel) || m_outlineTreeModel->IsLocations(sel))
+	if (m_outlineTreeModel->IsCharacters(sel) || m_outlineTreeModel->IsLocations(sel) || m_outlineTreeModel->IsItems(sel))
 		return;
 
 	wxDataViewItem item = m_outlineTreeModel->AppendFolder(sel, "New folder");
@@ -839,11 +839,7 @@ void amOutlineFilesPanel::NewFolder(wxCommandEvent& event) {
 }
 
 void amOutlineFilesPanel::DeleteItem(wxDataViewItem& item) {
-	wxDataViewItem parent = m_outlineTreeModel->GetParent(item);
-
-	if (m_outlineTreeModel->IsResearch(item) || m_outlineTreeModel->IsCharacters(item) ||
-		m_outlineTreeModel->IsLocations(item) || m_outlineTreeModel->IsCharacters(parent) ||
-		m_outlineTreeModel->IsLocations(parent)) {
+	if (m_outlineTreeModel->IsSpecial(item)) {
 		wxMessageBox("Cannot delete special items!");
 		return;
 	}
@@ -959,8 +955,8 @@ void amOutlineFilesPanel::OnSelectionChanged(wxDataViewEvent& event) {
 
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)(item.GetID());
 
-	node->m_buffer.SetBasicStyle(m_basicAttr);
-	m_textCtrl->GetBuffer() = node->m_buffer;
+	node->GetBuffer().SetBasicStyle(m_basicAttr);
+	m_textCtrl->GetBuffer() = node->GetBuffer();
 
 	wxDataViewItem parentItem(node->GetParent());
 
@@ -978,11 +974,8 @@ void amOutlineFilesPanel::OnSelectionChanged(wxDataViewEvent& event) {
 
 void amOutlineFilesPanel::OnEditingStart(wxDataViewEvent& event) {
 	wxDataViewItem item = event.GetItem();
-	wxDataViewItem parent = m_outlineTreeModel->GetParent(item);
 
-	if (m_outlineTreeModel->IsResearch(item) || m_outlineTreeModel->IsCharacters(item) ||
-		m_outlineTreeModel->IsLocations(item) || m_outlineTreeModel->IsCharacters(parent) ||
-		m_outlineTreeModel->IsLocations(parent)) {
+	if (m_outlineTreeModel->IsSpecial(item)) {
 		event.Veto();
 		return;
 	}
@@ -1000,17 +993,14 @@ void amOutlineFilesPanel::OnItemCollapsed(wxDataViewEvent& event) {}
 
 void amOutlineFilesPanel::OnBeginDrag(wxDataViewEvent& event) {
 	wxDataViewItem item(event.GetItem());
-	wxDataViewItem parent = m_outlineTreeModel->GetParent(item);
 
-	if (m_outlineTreeModel->IsResearch(item) || m_outlineTreeModel->IsCharacters(item) ||
-		m_outlineTreeModel->IsLocations(item) || m_outlineTreeModel->IsCharacters(parent) ||
-		m_outlineTreeModel->IsLocations(parent)) {
+	if (m_outlineTreeModel->IsSpecial(item)) {
 		event.Veto();
 		return; 
 	}
 
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxRichTextBufferDataObject* obj = new wxRichTextBufferDataObject(new wxRichTextBuffer(node->m_buffer));
+	wxRichTextBufferDataObject* obj = new wxRichTextBufferDataObject(new wxRichTextBuffer(node->GetBuffer()));
 	event.SetDataObject(obj);
 	event.SetDragFlags(wxDrag_AllowMove); // allows both copy and move
 
@@ -1040,7 +1030,8 @@ void amOutlineFilesPanel::OnDrop(wxDataViewEvent& event) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 
 	if (m_nodeForDnD == node || m_outlineTreeModel->IsCharacters(item) ||
-		m_outlineTreeModel->IsLocations(item) || m_outlineTreeModel->IsDescendant(m_itemForDnD, item))
+		m_outlineTreeModel->IsLocations(item) || m_outlineTreeModel->IsItems(item) ||
+		m_outlineTreeModel->IsDescendant(m_itemForDnD, item))
 		return;
 
 	if (event.GetDataFormat() != wxRichTextBufferDataObject::GetRichTextBufferFormatId()) {
@@ -1093,8 +1084,8 @@ void amOutlineFilesPanel::OnTimerEvent(wxTimerEvent& event) {
 
 void amOutlineFilesPanel::SaveCurrentBuffer() {
 	if (m_currentNode && IsShownOnScreen()) {
-		if (m_currentNode->m_buffer.GetText() != m_textCtrl->GetBuffer().GetText())
-			m_currentNode->m_buffer = m_textCtrl->GetBuffer();
+		if (m_currentNode->GetBuffer().GetText() != m_textCtrl->GetBuffer().GetText())
+			m_currentNode->GetBuffer() = m_textCtrl->GetBuffer();
 	}
 }
 

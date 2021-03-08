@@ -14,12 +14,20 @@
 #include "OutlineFiles.h"
 #include "Note.h"
 
-enum STMD_Type {
-    STMD_Section,
-    STMD_Chapter,
-    STMD_Scene,
 
-    STMD_Null
+///////////////////////////////////////////////////////////////////
+//////////////////////// StoryTreeModelNode ///////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+enum STMN_Type {
+    STMN_Book,
+    STMN_Section,
+    STMN_Chapter,
+    STMN_Scene,
+
+    STMN_Trash,
+    STMN_Null
 };
 
 class StoryTreeModelNode;
@@ -32,53 +40,35 @@ private:
 
     wxDataViewItemAttr m_attr{};
 
-    STMD_Type m_type = STMD_Null;
+    STMN_Type m_type = STMN_Null;
     int m_pos = -1;
+    int m_dbID = -1;
 
     wxString m_title{};
     bool m_isContainer = true;
 
 public:
-    StoryTreeModelNode(StoryTreeModelNode* parent,
-        const wxString& title, int pos, STMD_Type type) {
+    inline StoryTreeModelNode(StoryTreeModelNode* parent,
+        const wxString& title, int pos, int id, STMN_Type type) {
         m_parent = parent;
         m_title = title;
         m_pos = pos;
+        m_dbID = id;
         m_type = type;
 
         if (m_parent)
-            m_parent->Append(this);
+            m_parent->Insert(this, pos);
 
         void* pp = this;
         StoryTreeModelNode* pp2 = static_cast<StoryTreeModelNode*>(pp);
 
         m_isContainer = false;
 
-        m_attr.SetBackgroundColour(wxColour(250, 250, 250));
-        m_attr.SetColour(wxColour(20, 20, 20));
-        m_attr.SetBold(false);
-        m_attr.SetItalic(false);
-        m_attr.SetStrikethrough(false);
+        m_attr.SetBackgroundColour(wxColour(45, 45, 45));
+        m_attr.SetColour(wxColour(255, 255, 255));
     }
 
-    StoryTreeModelNode(StoryTreeModelNode* parent,
-        const wxString& branch) {
-        m_parent = parent;
-        m_title = branch;
-
-        if (m_parent)
-            m_parent->Append(this);
-
-        m_isContainer = true;
-
-        m_attr.SetBackgroundColour(wxColour(250, 250, 250));
-        m_attr.SetColour(wxColour(20, 20, 20));
-        m_attr.SetBold(false);
-        m_attr.SetItalic(false);
-        m_attr.SetStrikethrough(false);
-    }
-
-    ~StoryTreeModelNode() {
+    inline ~StoryTreeModelNode() {
         for (size_t i = 0; i < m_children.GetCount(); i++) {
             StoryTreeModelNode* child = m_children[i];
 
@@ -87,11 +77,23 @@ public:
         }
     }
 
-    bool IsContainer() const {
+    inline static void InitAllIcons() {}
+
+    inline wxString& GetTitle() { return m_title; }
+    inline int GetID() { return m_dbID; }
+
+    inline void SetTitle(wxString& title) { m_title = title; }
+
+    inline bool IsBook() { return m_type == STMN_Book; }
+    inline bool IsSection() { return m_type == STMN_Section; }
+    inline bool IsChapter() { return m_type == STMN_Chapter; }
+    inline bool IsScene() { return m_type == STMN_Scene; }
+
+    inline bool IsContainer() const {
         return m_isContainer;
     }
 
-    void Reparent(StoryTreeModelNode* newParent) {
+    inline void Reparent(StoryTreeModelNode* newParent) {
         if (m_parent)
             m_parent->GetChildren().Remove(this);
 
@@ -101,7 +103,7 @@ public:
             m_parent->Append(this);
     }
 
-    void Reparent(StoryTreeModelNode* newParent, int n) {
+    inline void Reparent(StoryTreeModelNode* newParent, int n) {
         if (m_parent)
             m_parent->GetChildren().Remove(this);
 
@@ -111,7 +113,7 @@ public:
             m_parent->Insert(this, n);
     }
 
-    void Reposition(int n) {
+    inline void Reposition(int n) {
         /*if (m_parent)
             m_parent->getChildren().Remove(this);
         else
@@ -120,34 +122,104 @@ public:
         m_parent->getChildren().Insert(this, n);*/
     }
 
-    StoryTreeModelNode* GetParent() {
+    inline StoryTreeModelNode* GetParent() {
         return m_parent;
     }
 
-    StoryTreeModelNodePtrArray& GetChildren() {
+    inline StoryTreeModelNodePtrArray& GetChildren() {
         return m_children;
     }
 
-    StoryTreeModelNode* GetChild(unsigned int n) {
+    inline StoryTreeModelNode* GetChild(unsigned int n) {
         return m_children.Item(n);
     }
 
-    wxDataViewItemAttr& GetAttr() {
+    inline wxDataViewItemAttr& GetAttr() {
         return m_attr;
     }
 
-    void Insert(StoryTreeModelNode* child, unsigned int n) {
+    inline void Insert(StoryTreeModelNode* child, unsigned int n) {
         m_children.Insert(child, n);
     }
 
-    void Append(StoryTreeModelNode* child) {
+    inline void Append(StoryTreeModelNode* child) {
         m_children.push_back(child);
     }
 
-    int GetChildCount() const {
+    inline int GetChildCount() const {
         return m_children.GetCount();
     }
 };
+
+
+class StoryTreeModel : public wxDataViewModel {
+private:
+    // pointers to some "special" nodes of the tree:
+    StoryTreeModelNode* m_book = nullptr;
+    StoryTreeModelNode* m_trash = nullptr;
+
+    StoryTreeModelNodePtrArray m_otherRoots{};
+
+public:
+    StoryTreeModel();
+    ~StoryTreeModel() {
+        for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
+            if (m_otherRoots.at(i))
+                delete m_otherRoots.at(i);
+        }
+    }
+
+    bool Load();
+    bool Save();
+    void CreateFromScratch(Book& book);
+
+    wxString GetTitle(const wxDataViewItem& item) const;
+
+    wxDataViewItem AddSection(const wxString& name, int id, int pos);
+    wxDataViewItem AddChapter(wxDataViewItem& section, const wxString& name, int id, int pos);
+    wxDataViewItem AddScene(wxDataViewItem& chapter, const wxString& name, int id, int pos);
+
+    bool IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
+
+    void MoveToTrash(const wxDataViewItem& item);
+    void DeleteItem(const wxDataViewItem& item);
+
+    void SetItemBackgroundColour(wxDataViewItem& item, wxColour& colour);
+    void SetItemForegroundColour(wxDataViewItem& item, wxColour& colour);
+    void SetItemFont(wxDataViewItem& item, wxFont& font);
+
+    bool Reparent(StoryTreeModelNode* item, StoryTreeModelNode* newParent);
+    bool Reparent(StoryTreeModelNode* item, StoryTreeModelNode* newParent, int n);
+
+    bool Reposition(wxDataViewItem& item, int n);
+
+    void Clear();
+
+    // implementation of base class virtuals to define model
+    virtual unsigned int GetColumnCount() const {
+        return 1;
+    }
+
+    virtual wxString GetColumnType(unsigned int col) const {
+        return "wxString";
+    }
+
+    virtual void GetValue(wxVariant& variant,
+        const wxDataViewItem& item, unsigned int col) const;
+    virtual bool SetValue(const wxVariant& variant,
+        const wxDataViewItem& item, unsigned int col);
+
+    virtual wxDataViewItem GetParent(const wxDataViewItem& item) const;
+    virtual unsigned int GetChildren(const wxDataViewItem& parent,
+        wxDataViewItemArray& array) const;
+    virtual bool IsContainer(const wxDataViewItem& item) const;
+    virtual bool GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const;
+};
+
+///////////////////////////////////////////////////////////////////
+//////////////////////////// StoryWriter //////////////////////////
+///////////////////////////////////////////////////////////////////
+
 
 class amStoryWriterNotebook;
 
@@ -176,6 +248,9 @@ private:
 
     wxDataViewCtrl* m_outlineView = nullptr;
     wxObjectDataPtr<OutlineTreeModel> m_outlineTreeModel;
+
+    wxDataViewCtrl* m_storyView = nullptr;
+    wxObjectDataPtr<StoryTreeModel> m_storyTreeModel;
 
     wxBoxSizer* m_pageSizer = nullptr;
 
@@ -231,6 +306,8 @@ public:
     void ToggleFullScreen() { ShowFullScreen(!IsFullScreen()); }
     void OnClose(wxCloseEvent& event);
 
+    void CreateDVCTree();
+
     DECLARE_EVENT_TABLE()
 };
 
@@ -257,38 +334,69 @@ enum {
 };
 
 
-class amStoryWriterNotebook : public wxPanel {
+///////////////////////////////////////////////////////////////////////
+//////////////////////// StoryWriterNotebookPage //////////////////////
+///////////////////////////////////////////////////////////////////////
+
+
+struct amStoryWriterNotebookPage {
+    wxRichTextCtrl* rtc = nullptr;
+    wxScrolledWindow* notePanel = nullptr;
+
+    amStoryWriterNotebookPage() = default;
+    amStoryWriterNotebookPage(wxRichTextCtrl* rtc, wxScrolledWindow* notePanel) :
+        rtc(rtc), notePanel(notePanel) {}
+};
+
+
+//////////////////////////////////////////////////////////////////
+//////////////////////// StoryWriterToolbar //////////////////////
+//////////////////////////////////////////////////////////////////
+
+
+enum {
+    amTB_FULLSCREEN = 1,
+    amTB_NOTE_VIEW = 2,
+    amTB_ZOOM = 4,
+
+    amTB_DEFAULT_STYLE = amTB_FULLSCREEN | amTB_NOTE_VIEW | amTB_ZOOM
+};
+
+class amStoryWriterToolbar : public wxToolBar {
 private:
-    amStoryWriter* m_parent = nullptr;
-    wxAuiNotebook* m_notebook = nullptr;
-    
-    wxToolBar* m_contentToolbar = nullptr;
+    enum {
+        TOOL_Bold,
+        TOOL_Italic,
+        TOOL_Underline,
+        TOOL_AlignLeft,
+        TOOL_AlignRight,
+        TOOL_AlignCenter,
+        TOOL_AlignCenterJust,
+        TOOL_FontSize,
+        TOOL_NoteView,
+        TOOL_PageView,
+        TOOL_ContentScale,
+        TOOL_ChapterFullScreen,
+        TOOL_TestCircle,
+    };
+
+    amStoryWriterNotebook* m_parent = nullptr;
+
     wxComboBox* m_fontSize = nullptr;
     wxSlider* m_contentScale = nullptr;
 
-    wxRichTextCtrl* m_curTextCtrl = nullptr;
-    wxRichTextStyleSheet* m_styleSheet = nullptr;
-    wxVector<Note> m_notes;
-    wxScrolledWindow* m_curCorkboard = nullptr;
-
-    wxWrapSizer* m_notesSizer = nullptr;
-    wxPanel* m_selNote = nullptr;
-    wxSize m_noteSize{};
-
-    wxVector<pair<wxRichTextCtrl*, wxScrolledWindow*>> m_writerPages{};
+    amStoryWriterNotebookPage m_currentPage;
 
 public:
-    amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* chapterWriter);
+    amStoryWriterToolbar(wxWindow* parent,
+        amStoryWriterNotebookPage& currentPage,
+        long amStyle = amTB_DEFAULT_STYLE,
+        wxWindowID id = -1,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxTB_DEFAULT_STYLE);
 
-    wxRichTextCtrl* GetTextCtrl() { return m_curTextCtrl; }
-    wxPanel* GetCorkboard() { return m_curCorkboard; }
-    
-    wxVector<Note>& GetNotes() { return m_notes; }
-    wxWrapSizer* GetNotesSizer() { return m_notesSizer; }
-
-    void SetNoteSize(wxSize& size) { m_noteSize = size; }
-
-    void OnText(wxCommandEvent& event);
+    inline void SetCurrentPage(amStoryWriterNotebookPage& currentPage) { m_currentPage = currentPage; }
 
     void OnBold(wxCommandEvent& event);
     void OnItalic(wxCommandEvent& event);
@@ -316,6 +424,54 @@ public:
     void OnUpdateNoteView(wxUpdateUIEvent& event);
 
     void OnFontSize(wxCommandEvent& event);
+
+    DECLARE_EVENT_TABLE()
+};
+
+
+////////////////////////////////////////////////////////////////////
+//////////////////////// StoryWriterNotebook ///////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+class amStoryWriterNotebook : public wxPanel {
+private:
+    amStoryWriter* m_parent = nullptr;
+    wxAuiNotebook* m_notebook = nullptr;
+    
+    amStoryWriterToolbar* m_contentToolbar = nullptr;
+
+    wxRichTextCtrl* m_curTextCtrl = nullptr;
+    wxRichTextStyleSheet* m_styleSheet = nullptr;
+    wxVector<Note> m_notes;
+    wxScrolledWindow* m_curCorkboard = nullptr;
+
+    wxWrapSizer* m_notesSizer = nullptr;
+    wxPanel* m_selNote = nullptr;
+    wxSize m_noteSize{};
+
+    wxVector<amStoryWriterNotebookPage> m_writerPages{};
+
+public:
+    amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* chapterWriter);
+
+    inline wxRichTextCtrl* GetTextCtrl() { return m_curTextCtrl; }
+    inline wxPanel* GetCorkboard() { return m_curCorkboard; }
+    
+    inline wxVector<Note>& GetNotes() { return m_notes; }
+    inline wxWrapSizer* GetNotesSizer() { return m_notesSizer; }
+
+    inline wxWindow* GetCurrentPage() { return m_notebook->GetCurrentPage(); }
+    inline int GetSelection() { return m_notebook->GetSelection(); }
+    inline wxVector<amStoryWriterNotebookPage>& GetAllWriterPages() { return m_writerPages; }
+    inline wxAuiNotebook* GetNotebook() { return m_notebook; }
+
+    inline void SetNoteSize(wxSize& size) { m_noteSize = size; }
+
+    void OnText(wxCommandEvent& event);
+    void OnZoomChange(int zoom);
+
+    inline void ToggleFullScreen() { m_parent->ToggleFullScreen(); }
 
     bool HasRedNote();
 
@@ -351,6 +507,5 @@ enum {
     MENU_Delete,
     TEXT_Content
 };
-
 
 #endif
