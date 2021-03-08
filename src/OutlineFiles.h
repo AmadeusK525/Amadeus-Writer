@@ -20,33 +20,30 @@ private:
 
     wxDataViewItemAttr m_attr{};
 
-public:     // public to avoid getters/setters
-    wxRichTextBuffer m_buffer{};
+    wxRichTextBuffer* m_buffer = nullptr;
     wxString m_title{};
     bool m_isContainer = true;
 
+public:
     static wxVector<wxIcon> m_icons;
 
 public:
-    OutlineTreeModelNode(OutlineTreeModelNode* parent,
+    inline OutlineTreeModelNode(OutlineTreeModelNode* parent,
         const wxString& title, const wxRichTextBuffer& buffer) {
         m_parent = parent;
         m_title = title;
-        m_buffer = buffer;
+        m_buffer = new wxRichTextBuffer(buffer);
 
         if (m_parent)
             m_parent->Append(this);
 
         m_isContainer = false;
 
-        m_attr.SetBackgroundColour(wxColour(40, 40, 40));
-        m_attr.SetColour(wxColour(250, 250, 250));
-        m_attr.SetBold(false);
-        m_attr.SetItalic(false);
-        m_attr.SetStrikethrough(false);
+        m_attr.SetBackgroundColour(wxColour(45, 45, 45));
+        m_attr.SetColour(wxColour(255, 255, 255));
     }
 
-    OutlineTreeModelNode(OutlineTreeModelNode* parent,
+    inline OutlineTreeModelNode(OutlineTreeModelNode* parent,
         const wxString& branch) {
         m_parent = parent;
         m_title = branch;
@@ -56,23 +53,23 @@ public:
 
         m_isContainer = true;
 
-        m_attr.SetBackgroundColour(wxColour(40, 40, 40));
-        m_attr.SetColour(wxColour(250, 250, 250));
-        m_attr.SetBold(false);
-        m_attr.SetItalic(false);
-        m_attr.SetStrikethrough(false);
+        m_attr.SetBackgroundColour(wxColour(45, 45, 45));
+        m_attr.SetColour(wxColour(255, 255, 255));
     }
 
-    ~OutlineTreeModelNode() {
+    inline ~OutlineTreeModelNode() {
         for (size_t i = 0; i < m_children.GetCount(); i++) {
             OutlineTreeModelNode* child = m_children[i];
 
             if (child)
                 delete child;
         }
+
+        if (m_buffer)
+            delete m_buffer;
     }
 
-    static void InitAllIcons() {
+    inline static void InitAllIcons() {
         if (m_icons.empty()) {
             wxIcon research(wxICON(researchIcon));
             research.SetSize(14, 14);
@@ -89,11 +86,16 @@ public:
         }
     }
 
-    bool IsContainer() const {
+    inline wxString& GetTitle() { return m_title; }
+    inline wxRichTextBuffer& GetBuffer() { return *m_buffer; }
+
+    inline void SetTitle(wxString& title) { m_title = title; }
+
+    inline bool IsContainer() const {
         return m_isContainer;
     }
 
-    void Reparent(OutlineTreeModelNode* newParent) {
+    inline void Reparent(OutlineTreeModelNode* newParent) {
         if (m_parent)
             m_parent->GetChildren().Remove(this);
         
@@ -103,7 +105,7 @@ public:
             m_parent->Append(this);
     }
 
-    void Reparent(OutlineTreeModelNode* newParent, int n) {
+    inline void Reparent(OutlineTreeModelNode* newParent, int n) {
         if (m_parent)
             m_parent->GetChildren().Remove(this);
 
@@ -113,7 +115,7 @@ public:
             m_parent->Insert(this, n);
     }
 
-    void Reposition(int n) {
+    inline void Reposition(int n) {
         /*if (m_parent)
             m_parent->getChildren().Remove(this);
         else
@@ -122,31 +124,31 @@ public:
         m_parent->getChildren().Insert(this, n);*/
     }
 
-    OutlineTreeModelNode* GetParent() {
+    inline OutlineTreeModelNode* GetParent() {
         return m_parent;
     }
 
-    OulineTreeModelNodePtrArray& GetChildren() {
+    inline OulineTreeModelNodePtrArray& GetChildren() {
         return m_children;
     }
 
-    OutlineTreeModelNode* GetChild(unsigned int n) {
+    inline OutlineTreeModelNode* GetChild(unsigned int n) {
         return m_children.Item(n);
     }
 
-    wxDataViewItemAttr& GetAttr() {
+    inline wxDataViewItemAttr& GetAttr() {
         return m_attr;
     }
 
-    void Insert(OutlineTreeModelNode* child, unsigned int n) {
+    inline void Insert(OutlineTreeModelNode* child, unsigned int n) {
         m_children.Insert(child, n);
     }
     
-    void Append(OutlineTreeModelNode* child) {
+    inline void Append(OutlineTreeModelNode* child) {
         m_children.push_back(child);
     }
     
-    int GetChildCount() const {
+    inline int GetChildCount() const {
         return m_children.GetCount();
     }
 };
@@ -227,6 +229,8 @@ public:
     bool IsCharacters(wxDataViewItem& item);
     bool IsLocations(wxDataViewItem& item);
     bool IsItems(wxDataViewItem& item);
+
+    bool IsSpecial(wxDataViewItem& item);
 
     bool IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
 
