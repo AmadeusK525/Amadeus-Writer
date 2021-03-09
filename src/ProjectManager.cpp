@@ -543,7 +543,7 @@ bool amProjectSQLDatabase::RowExists(amDocument& document) {
 
 
 amProjectManager::amProjectManager() {
-
+	
 }
 
 bool amProjectManager::Init() {

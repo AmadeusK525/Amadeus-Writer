@@ -39,7 +39,7 @@ public:
 
         m_isContainer = false;
 
-        m_attr.SetBackgroundColour(wxColour(45, 45, 45));
+        m_attr.SetBackgroundColour(wxColour(55, 55, 55));
         m_attr.SetColour(wxColour(255, 255, 255));
     }
 
@@ -53,7 +53,7 @@ public:
 
         m_isContainer = true;
 
-        m_attr.SetBackgroundColour(wxColour(45, 45, 45));
+        m_attr.SetBackgroundColour(wxColour(65,65,65));
         m_attr.SetColour(wxColour(255, 255, 255));
     }
 
@@ -71,14 +71,19 @@ public:
 
     inline static void InitAllIcons() {
         if (m_icons.empty()) {
+            int x = 14, y = 14;
+
             wxIcon research(wxICON(researchIcon));
-            research.SetSize(14, 14);
+            research.SetWidth(x);
+            research.SetHeight(y);
 
             wxIcon folder(wxICON(folderIcon));
-            folder.SetSize(14, 14);
+            folder.SetWidth(x);
+            folder.SetHeight(y);
 
             wxIcon file(wxICON(fileIcon));
-            file.SetSize(14, 14);
+            file.SetWidth(x);
+            file.SetHeight(y);
 
             m_icons.push_back(research);
             m_icons.push_back(folder);
@@ -87,7 +92,7 @@ public:
     }
 
     inline wxString& GetTitle() { return m_title; }
-    inline wxRichTextBuffer& GetBuffer() { return *m_buffer; }
+    inline wxRichTextBuffer* GetBuffer() { return m_buffer; }
 
     inline void SetTitle(wxString& title) { m_title = title; }
 
@@ -185,7 +190,7 @@ public:
     }
 
     wxString GetTitle(const wxDataViewItem& item) const;
-    wxRichTextBuffer& GetBuffer(const wxDataViewItem& item) const;
+    wxRichTextBuffer* GetBuffer(const wxDataViewItem& item) const;
 
     OulineTreeModelNodePtrArray& GetCharacters() {
         return m_characters->GetChildren();
