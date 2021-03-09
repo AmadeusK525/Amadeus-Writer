@@ -31,7 +31,7 @@ wxString OutlineTreeModel::GetTitle(const wxDataViewItem& item) const {
 	return node->GetTitle();
 }
 
-wxRichTextBuffer& OutlineTreeModel::GetBuffer(const wxDataViewItem& item) const {
+wxRichTextBuffer* OutlineTreeModel::GetBuffer(const wxDataViewItem& item) const {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	return node->GetBuffer();
 }
@@ -451,7 +451,7 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(pa
 	m_files->EnableDropTarget(wxDataFormat(wxRichTextBufferDataObject::GetRichTextBufferFormatId()));
 	m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
 	m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
-	m_files->SetBackgroundColour(wxColour(250, 250, 250));
+	m_files->SetBackgroundColour(wxColour(100, 100, 100));
 	m_files->GetMainWindow()->SetBackgroundColour(wxColour(20, 20, 20));
 
 	m_outlineTreeModel = new OutlineTreeModel();
@@ -743,17 +743,17 @@ void amOutlineFilesPanel::GenerateItemBuffer(Item& item, wxRichTextBuffer& buffe
 
 void amOutlineFilesPanel::AppendCharacter(Character& character) {
 	wxDataViewItem item = m_outlineTreeModel->AddToCharacters(character.name.ToStdString());
-	GenerateCharacterBuffer(character, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
+	GenerateCharacterBuffer(character, *((OutlineTreeModelNode*)item.GetID())->GetBuffer());
 }
 
 void amOutlineFilesPanel::AppendLocation(Location& location) {
 	wxDataViewItem item = m_outlineTreeModel->AddToLocations(location.name.ToStdString());
-	GenerateLocationBuffer(location, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
+	GenerateLocationBuffer(location, *((OutlineTreeModelNode*)item.GetID())->GetBuffer());
 }
 
 void amOutlineFilesPanel::AppendItem(Item& item) {
 	wxDataViewItem dvitem = m_outlineTreeModel->AddToItems(item.name.ToStdString());
-	GenerateItemBuffer(item, ((OutlineTreeModelNode*)dvitem.GetID())->GetBuffer());
+	GenerateItemBuffer(item, *((OutlineTreeModelNode*)dvitem.GetID())->GetBuffer());
 }
 
 void amOutlineFilesPanel::DeleteCharacter(Character& character) {
@@ -955,8 +955,8 @@ void amOutlineFilesPanel::OnSelectionChanged(wxDataViewEvent& event) {
 
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)(item.GetID());
 
-	node->GetBuffer().SetBasicStyle(m_basicAttr);
-	m_textCtrl->GetBuffer() = node->GetBuffer();
+	node->GetBuffer()->SetBasicStyle(m_basicAttr);
+	m_textCtrl->GetBuffer() = *node->GetBuffer();
 
 	wxDataViewItem parentItem(node->GetParent());
 
@@ -1000,10 +1000,14 @@ void amOutlineFilesPanel::OnBeginDrag(wxDataViewEvent& event) {
 	}
 
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxRichTextBufferDataObject* obj = new wxRichTextBufferDataObject(new wxRichTextBuffer(node->GetBuffer()));
-	event.SetDataObject(obj);
-	event.SetDragFlags(wxDrag_AllowMove); // allows both copy and move
 
+	if (!m_outlineTreeModel->IsContainer(item)) {
+		wxRichTextBufferDataObject* obj = new wxRichTextBufferDataObject(new wxRichTextBuffer(*node->GetBuffer()));
+		event.SetDataObject(obj);
+	} else
+		event.SetDataObject(new wxRichTextBufferDataObject(new wxRichTextBuffer));
+	
+	event.SetDragFlags(wxDrag_AllowMove); // allows both copy and move
 	m_nodeForDnD = node;
 	m_itemForDnD = item;
 }
@@ -1084,8 +1088,8 @@ void amOutlineFilesPanel::OnTimerEvent(wxTimerEvent& event) {
 
 void amOutlineFilesPanel::SaveCurrentBuffer() {
 	if (m_currentNode && IsShownOnScreen()) {
-		if (m_currentNode->GetBuffer().GetText() != m_textCtrl->GetBuffer().GetText())
-			m_currentNode->GetBuffer() = m_textCtrl->GetBuffer();
+		if (m_currentNode->GetBuffer() && m_currentNode->GetBuffer()->GetText() != m_textCtrl->GetBuffer().GetText())
+			*m_currentNode->GetBuffer() = m_textCtrl->GetBuffer();
 	}
 }
 
@@ -1136,7 +1140,7 @@ wxXmlNode* amOutlineFilesPanel::SerializeFile(wxDataViewItem& item) {
 
 	wxString buffers;
 	wxStringOutputStream stream(&buffers);
-	m_outlineTreeModel->GetBuffer(item).SaveFile(stream, wxRICHTEXT_TYPE_XML);
+	m_outlineTreeModel->GetBuffer(item)->SaveFile(stream, wxRICHTEXT_TYPE_XML);
 
 	node->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", buffers));
 

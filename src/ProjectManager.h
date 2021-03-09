@@ -83,12 +83,14 @@ private:
 
 	bool m_isInitialized = false;
 
+	int m_currentBook = 0;
+
 public:
 	amProjectManager();
 
 	bool Init();
 
-	amProjectSQLDatabase* GetStorage() { return &m_storage; }
+	inline amProjectSQLDatabase* GetStorage() { return &m_storage; }
 
 	bool SaveProject();
 	bool LoadProject();
@@ -117,9 +119,9 @@ public:
 	amRelease* GetRelease();
 
 	wxString GetPath(bool withSeparator);
-	wxString GetFullPath() { return m_project.amFile.GetFullPath(); }
-	wxString GetExecutablePath(bool withSeparator) { return m_executablePath.GetPath(withSeparator); }
-	wxString GetTitle() { return m_project.amFile.GetName(); }
+	inline wxString GetFullPath() { return m_project.amFile.GetFullPath(); }
+	inline wxString GetExecutablePath(bool withSeparator) { return m_executablePath.GetPath(withSeparator); }
+	inline wxString GetTitle() { return m_project.amFile.GetName(); }
 
 	void ClearPath();
 
@@ -131,7 +133,7 @@ public:
 	bool GetLastSave();
 	
 	int GetDocumentId(amDocument& document);
-	void InsertDocument(amDocument& document) { m_storage.InsertDocument(document); }
+	inline void InsertDocument(amDocument& document) { m_storage.InsertDocument(document); }
 
 	void AddCharacter(Character& character, bool refreshElements);
 	void AddLocation(Location& location, bool refreshElements);
@@ -157,7 +159,10 @@ public:
 	void DeleteItem(Item& item);
 	void DeleteChapter(Chapter& chapter, Section& section);
 
-	wxVector<Book>& GetBooks() { return m_project.books; }
+	inline int GetCurrentBookPos() { return m_currentBook; }
+	inline Book& GetCurrentBook() { return m_project.books[m_currentBook]; }
+
+	inline wxVector<Book>& GetBooks() { return m_project.books; }
 	wxVector<Character>& GetCharacters();
 	wxVector<Location>& GetLocations();
 	wxVector<Item>& GetItems();
@@ -171,11 +176,11 @@ public:
 
 	wxArrayString GetBookTitles();
 
-	unsigned int GetBookCount() { return m_project.books.size(); }
-	unsigned int GetChapterCount(int book) { return m_project.GetChapters(book).size(); }
-	unsigned int GetCharacterCount() { return m_project.characters.size(); }
-	unsigned int GetLocationCount() { return m_project.locations.size(); }
-	unsigned int GetItemCount() { return m_project.items.size(); }
+	inline unsigned int GetBookCount() { return m_project.books.size(); }
+	inline unsigned int GetChapterCount(int book) { return m_project.GetChapters(book).size(); }
+	inline unsigned int GetCharacterCount() { return m_project.characters.size(); }
+	inline unsigned int GetLocationCount() { return m_project.locations.size(); }
+	inline unsigned int GetItemCount() { return m_project.items.size(); }
 };
 
 #endif

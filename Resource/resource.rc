@@ -17,6 +17,10 @@ researchIcon ICON "Assets\\Research.ico"
 folderIcon ICON "Assets\\Folder.ico"
 fileIcon ICON "Assets\\File.ico"
 
+bookIcon ICON "Assets\\Book.ico"
+sectionIcon ICON "Assets\\Section.ico"
+trashIcon ICON "Assets\\Trash.ico"
+
 chapterPng RCDATA "Assets\\AddChapter.png"
 scenePng RCDATA "Assets\\AddScene.png"
 characterPng RCDATA "Assets\\AddCharacter.png"
