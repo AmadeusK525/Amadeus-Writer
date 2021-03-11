@@ -73,11 +73,10 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_charList = new wxListView(charFrame, LIST_CharList, wxDefaultPosition, wxDefaultSize,
         wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
     m_charList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, 190);
-    m_charList->InsertColumn(1, "Sex", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    m_charList->InsertColumn(2, "Role", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-    m_charList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-    m_charList->InsertColumn(4, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-    m_charList->InsertColumn(5, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_charList->InsertColumn(1, "Role", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+    m_charList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_charList->InsertColumn(3, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+    m_charList->InsertColumn(4, "Chapters", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
     m_charList->SetBackgroundColour(wxColour(45, 45, 45));
     m_charList->SetForegroundColour(wxColour(245, 245, 245));
@@ -415,7 +414,6 @@ void amElementsNotebook::ClearAll() {
 
 void amElementsNotebook::UpdateCharacter(int n, Character& character) {
     m_charList->SetItem(n, 0, character.name);
-    m_charList->SetItem(n, 1, character.sex);
 
     wxString role;
     switch (character.role) {
@@ -439,7 +437,7 @@ void amElementsNotebook::UpdateCharacter(int n, Character& character) {
         role = "-";
     }
 
-    m_charList->SetItem(n, 2, role);
+    m_charList->SetItem(n, 1, role);
 
     if (!character.chapters.empty()) {
         int first = 99999;
@@ -452,14 +450,14 @@ void amElementsNotebook::UpdateCharacter(int n, Character& character) {
                 last = chapter->position;
         }
 
-        m_charList->SetItem(n, 3, wxString("Chapter ") << first);
-        m_charList->SetItem(n, 4, wxString("Chapter ") << last);
+        m_charList->SetItem(n, 2, wxString("Chapter ") << first);
+        m_charList->SetItem(n, 3, wxString("Chapter ") << last);
     } else {
         m_charList->SetItem(n, 3, "-");
         m_charList->SetItem(n, 4, "-");
     }
 
-    m_charList->SetItem(n, 5, std::to_string(character.chapters.size()));
+    m_charList->SetItem(n, 4, std::to_string(character.chapters.size()));
 
     if (character.image.IsOk())
         m_charList->SetItemColumnImage(n, 0, m_charImageList->Add(wxBitmap(amGetScaledImage(24, 24, character.image))));

@@ -756,14 +756,14 @@ void amProjectManager::LoadChapters(wxVector<Chapter>& chapters, int sectionId) 
 			chapter.items.Add(item.GetAsString("name"));
 		}
 
-		LoadScenes(chapter.scenes, chapterId);
+		LoadScenes(chapter.scenes, chapterId, false);
 
 		chapters.push_back(chapter);
 		m_storyNotebook->AddChapter(chapter);
 	}
 }
 
-void amProjectManager::LoadScenes(wxVector<Scene>& scenes, int chapterId) {
+void amProjectManager::LoadScenes(wxVector<Scene>& scenes, int chapterId, bool loadBuffers) {
 	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM scenes WHERE chapter_id = " +
 		std::to_string(chapterId) + " ORDER BY position ASC;");
 
@@ -772,8 +772,10 @@ void amProjectManager::LoadScenes(wxVector<Scene>& scenes, int chapterId) {
 
 		scene.name = result.GetAsString("name");
 
-		wxStringInputStream sstream(result.GetAsString("content"));
-		scene.content.LoadFile(sstream, wxRICHTEXT_TYPE_XML);
+		if (loadBuffers) {
+			wxStringInputStream sstream(result.GetAsString("content"));
+			scene.content.LoadFile(sstream, wxRICHTEXT_TYPE_XML);
+		}
 
 		scene.chapterID = chapterId;
 		scene.pos = result.GetInt("position");

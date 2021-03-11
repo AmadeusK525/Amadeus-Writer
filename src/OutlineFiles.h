@@ -9,6 +9,7 @@
 #include <wx\sstream.h>
 
 #include "StoryElements.h"
+#include "UtilityClasses.h"
 
 class OutlineTreeModelNode;
 WX_DEFINE_ARRAY_PTR(OutlineTreeModelNode*, OulineTreeModelNodePtrArray);
@@ -286,7 +287,7 @@ enum {
     TIMER_OutlineFiles
 };
 
-class amOutlineFilesPanel : public wxSplitterWindow {
+class amOutlineFilesPanel : public amSplitterWindow {
 private:
     wxPanel* m_leftPanel = nullptr;
     wxDataViewCtrl* m_files = nullptr;
@@ -341,9 +342,6 @@ public:
     void OnBeginDrag(wxDataViewEvent& event);
     void OnDropPossible(wxDataViewEvent& event);
     void OnDrop(wxDataViewEvent& event);
-
-    // Prevent wxWidgets from unsplitting sidebar
-    virtual void OnDoubleClickSash(int x, int y) {}
 
     void OnTimerEvent(wxTimerEvent& event);
     void SaveCurrentBuffer();

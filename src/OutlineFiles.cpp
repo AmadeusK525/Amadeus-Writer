@@ -423,8 +423,10 @@ EVT_TIMER(TIMER_OutlineFiles, amOutlineFilesPanel::OnTimerEvent)
 
 END_EVENT_TABLE()
 
-amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(parent, -1, wxDefaultPosition,
-	wxDefaultSize, wxSP_LIVE_UPDATE | wxSP_NOBORDER | wxSP_THIN_SASH | wxBORDER_NONE) {
+amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(parent, -1, wxDefaultPosition,
+	wxDefaultSize, wxSP_LIVE_UPDATE | wxSP_NOBORDER | wxSP_THIN_SASH | wxSP_NO_XP_THEME) {
+	SetBackgroundColour(wxColour(20, 20, 20));
+
 	m_textCtrl = new wxRichTextCtrl(this,-1, "", wxDefaultPosition, wxDefaultSize, 32L | wxBORDER_NONE);
 	m_textCtrl->SetBackgroundColour(wxColour(40, 40, 40));
 	m_textCtrl->Refresh();
@@ -472,6 +474,7 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : wxSplitterWindow(pa
 	m_textCtrl->SetMinSize(wxSize(20, -1));
 	m_leftPanel->SetMinSize(wxSize(20, -1));
 
+	SetMinimumPaneSize(FromDIP(60));
 	SplitVertically(m_leftPanel, m_textCtrl, 200);
 
 	m_timer.Start(10000);

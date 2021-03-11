@@ -41,7 +41,7 @@ private:
     wxDataViewItemAttr m_attr{};
 
     STMN_Type m_type = STMN_Null;
-    int m_pos = -1;
+    int m_index = -1;
     int m_dbID = -1;
 
     wxString m_title{};
@@ -52,15 +52,15 @@ public:
 
 public:
     inline StoryTreeModelNode(StoryTreeModelNode* parent,
-        const wxString& title, int pos, int id, STMN_Type type) {
+        const wxString& title, int index, int id, STMN_Type type) {
         m_parent = parent;
         m_title = title;
-        m_pos = pos;
+        m_index = index;
         m_dbID = id;
         m_type = type;
 
         if (m_parent)
-            m_parent->Insert(this, pos);
+            m_parent->Insert(this, index);
 
         if (m_type == STMN_Chapter) {
             m_attr.SetBackgroundColour(wxColour(45, 45, 45));
@@ -109,6 +109,8 @@ public:
 
     inline wxString& GetTitle() { return m_title; }
     inline int GetID() { return m_dbID; }
+
+    inline int GetIndex() { return m_index; }
 
     inline void SetTitle(wxString& title) { m_title = title; }
 
@@ -208,9 +210,11 @@ public:
 
     wxString GetTitle(const wxDataViewItem& item) const;
 
-    wxDataViewItem AddSection(const wxString& name, int id, int pos);
-    wxDataViewItem AddChapter(wxDataViewItem& section, const wxString& name, int id, int pos);
-    wxDataViewItem AddScene(wxDataViewItem& chapter, const wxString& name, int id, int pos);
+    wxDataViewItem AddSection(const wxString& name, int id, int index);
+    wxDataViewItem AddChapter(wxDataViewItem& section, const wxString& name, int id, int index);
+    wxDataViewItem AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index);
+
+    wxDataViewItem GetChapterItem(int chapterIndex, int sectionIndex);
 
     bool IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
 
@@ -259,7 +263,7 @@ class amStoryWriterNotebook;
 class amStoryWriter : public wxFrame {
 private:
     amProjectManager* m_manager = nullptr;
-    amStoryWriterNotebook* m_cwNotebook = nullptr;
+    amStoryWriterNotebook* m_swNotebook = nullptr;
 
     wxTextCtrl* m_summary = nullptr,
         * m_note = nullptr,
@@ -290,7 +294,13 @@ private:
     wxButton* m_noteClear = nullptr,
         * m_noteAdd = nullptr;
 
-    int m_chapterPos = -1;
+    int m_bookPos = -1;
+
+    int m_prevChapterIndex = -1;
+    int m_chapterIndex = -1;
+
+    int m_prevSectionIndex = -1;
+    int m_sectionIndex = -1;
 
     wxTimer m_saveTimer;
 
@@ -300,7 +310,7 @@ public:
     wxStatusBar* m_statusBar = nullptr;
 
 public:
-    amStoryWriter(wxWindow* parent, amProjectManager* manager, int numb);
+    amStoryWriter(wxWindow* parent, amProjectManager* manager, int chapterPos, int sectionPos);
 
     void ClearNote(wxCommandEvent& event);
     void AddNote(wxCommandEvent& event);
@@ -322,15 +332,17 @@ public:
     void UpdateLocationList();
     void UpdateItemList();
 
+    void OnStoryItemActivated(wxDataViewEvent& event);
     void OnStoryItemSelected(wxDataViewEvent& event);
 
-    void SetCurrentChapter(int pos, bool load);
+    void SetCurrentChapter(int chapterIndex, int sectionIndex, bool load);
     void OnNextChapter(wxCommandEvent& event);
     void OnPreviousChapter(wxCommandEvent& event);
     void CheckChapterValidity();
 
     void LoadChapter();
-    void SaveChapter();
+    void SaveChapter(int chapterIndex, int sectionIndex);
+    void UnloadChapter(int chapterIndex, int sectionIndex);
 
     void CountWords();
 
@@ -378,12 +390,15 @@ struct amStoryWriterNotebookPage {
     wxRichTextCtrl* rtc = nullptr;
     wxScrolledWindow* notePanel = nullptr;
 
-    int pos = -1;
+    int chapterIndex = -1;
+    int sectionIndex = -1;
     int dbID = -1;
 
     amStoryWriterNotebookPage() = default;
-    amStoryWriterNotebookPage(wxRichTextCtrl* rtc, wxScrolledWindow* notePanel, int pos, int dbID):
-        rtc(rtc), notePanel(notePanel), pos(pos), dbID(dbID) {}
+    amStoryWriterNotebookPage(wxRichTextCtrl* rtc, wxScrolledWindow* notePanel,
+        int chapterIndex, int sectionIndex, int dbID) :
+        rtc(rtc), notePanel(notePanel),
+        chapterIndex(chapterIndex), sectionIndex(sectionIndex), dbID(dbID) {}
 };
 
 
@@ -459,6 +474,7 @@ public:
     void OnUpdateAlignRight(wxUpdateUIEvent& event);
     void OnUpdateFontSize(wxUpdateUIEvent& event);
     void OnUpdateNoteView(wxUpdateUIEvent& event);
+    void OnUpdateZoom(wxUpdateUIEvent& event);
 
     void OnFontSize(wxCommandEvent& event);
 
@@ -505,10 +521,12 @@ public:
     inline wxAuiNotebook* GetNotebook() { return m_notebook; }
 
     void AddPage(amStoryWriterNotebookPage& page, const wxString& title);
+    void SetCurrentPage(amStoryWriterNotebookPage& page, bool load);
 
     inline void SetNoteSize(wxSize& size) { m_noteSize = size; }
 
     void OnSelectionChanged(wxAuiNotebookEvent& event);
+    void OnPageClosing(wxAuiNotebookEvent& event);
 
     void OnText(wxCommandEvent& event);
     void OnZoomChange(int zoom);

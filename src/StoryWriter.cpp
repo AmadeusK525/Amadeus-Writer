@@ -82,8 +82,8 @@ wxString StoryTreeModel::GetTitle(const wxDataViewItem& item) const {
     return node->GetTitle();
 }
 
-wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int pos) {
-    StoryTreeModelNode* node = new StoryTreeModelNode(m_book, name, pos, id, STMN_Section);
+wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int index) {
+    StoryTreeModelNode* node = new StoryTreeModelNode(m_book, name, index, id, STMN_Section);
     node->SetContainer(true);
 
     wxDataViewItem item(node);
@@ -93,8 +93,8 @@ wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int pos)
     return item;
 }
 
-wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxString& name, int id, int pos) {
-    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)section.GetID(), name, pos, id, STMN_Chapter);
+wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxString& name, int id, int index) {
+    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)section.GetID(), name, index, id, STMN_Chapter);
     wxDataViewItem item(node);
 
     ItemAdded(section, item);
@@ -102,13 +102,17 @@ wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxStrin
     return item;
 }
 
-wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString& name, int id, int pos) {
-    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)chapter.GetID(), name, pos, id, STMN_Scene);
+wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index) {
+    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)chapter.GetID(), name, index, id, STMN_Scene);
     wxDataViewItem item(node);
 
     ItemAdded(chapter, item);
 
     return item;
+}
+
+wxDataViewItem StoryTreeModel::GetChapterItem(int chapterIndex, int sectionIndex) {
+    return wxDataViewItem(m_book->GetChild(sectionIndex)->GetChild(chapterIndex));
 }
 
 bool StoryTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
@@ -384,6 +388,7 @@ EVT_BUTTON(BUTTON_RemChar, amStoryWriter::OnRemoveCharacter)
 EVT_BUTTON(BUTTON_RemLoc, amStoryWriter::OnRemoveLocation)
 EVT_BUTTON(BUTTON_RemItem, amStoryWriter::OnRemoveItem)
 
+EVT_DATAVIEW_ITEM_ACTIVATED(TREE_Story, amStoryWriter::OnStoryItemActivated)
 EVT_DATAVIEW_SELECTION_CHANGED(TREE_Story, amStoryWriter::OnStoryItemSelected)
 
 EVT_BUTTON(BUTTON_NextChap, amStoryWriter::OnNextChapter)
@@ -395,19 +400,21 @@ EVT_CLOSE(amStoryWriter::OnClose)
 
 END_EVENT_TABLE()
 
-amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int numb) :
+amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int chapterPos, int sectionPos) :
     m_saveTimer(this, TIMER_Save),
     wxFrame(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
     wxFRAME_FLOAT_ON_PARENT | wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN) {
 
     m_manager = manager;
-    m_chapterPos = numb;
+    m_chapterIndex = chapterPos;
+    m_sectionIndex = sectionPos;
+    m_bookPos = m_manager->GetCurrentBookPos();
 
     Hide();
     SetBackgroundColour({ 20, 20, 20 });
 
     amSplitterWindow* rightSplitter = new amSplitterWindow(this, -1, wxDefaultPosition, wxDefaultSize,
-        1024L | wxSP_LIVE_UPDATE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
+        1024L | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN);
     amSplitterWindow* leftSplitter = new amSplitterWindow(rightSplitter, -1, wxDefaultPosition, wxDefaultSize,
         1024L | wxSP_LIVE_UPDATE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
     leftSplitter->Bind(wxEVT_SPLITTER_SASH_POS_CHANGED, &amStoryWriter::OnLeftSplitterChanged, this);
@@ -418,18 +425,18 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
     leftSplitter->SetMinimumPaneSize(30);
     rightSplitter->SetMinimumPaneSize(30);
 
-    m_cwNotebook = new amStoryWriterNotebook(leftSplitter, this);
+    m_swNotebook = new amStoryWriterNotebook(leftSplitter, this);
 
     wxNotebook* leftNotebook = new wxNotebook(leftSplitter, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     m_leftPanel = new wxPanel(leftNotebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    m_leftPanel->SetBackgroundColour(wxColour(50, 50, 50));
+    m_leftPanel->SetBackgroundColour(wxColour(45, 45, 45));
 
     m_characterPanel = new wxPanel(m_leftPanel);
     m_characterPanel->SetBackgroundColour(wxColour(80, 80, 80));
     
     wxStaticText* charInChapLabel = new wxStaticText(m_characterPanel, -1, "Characters present in chapter",
         wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE | wxBORDER_SIMPLE);
-    charInChapLabel->SetBackgroundColour(wxColour(25, 25, 25));
+    charInChapLabel->SetBackgroundColour(wxColour(10, 10, 10));
     charInChapLabel->SetForegroundColour(wxColour(255, 255, 255));
     charInChapLabel->SetFont(wxFontInfo(10).Bold());
     charInChapLabel->SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -466,7 +473,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
 
     wxStaticText* locInChapLabel = new wxStaticText(m_locationPanel, -1, "Locations present in chapter",
         wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE | wxBORDER_SIMPLE);
-    locInChapLabel->SetBackgroundColour(wxColour(25, 25, 25));
+    locInChapLabel->SetBackgroundColour(wxColour(10, 10, 10));
     locInChapLabel->SetForegroundColour(wxColour(255, 255, 255));
     locInChapLabel->SetFont(wxFontInfo(10).Bold());
     locInChapLabel->SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -502,7 +509,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
 
     wxStaticText* itemsInChapLabel = new wxStaticText(m_itemPanel, -1, "Items present in chapter",
         wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE | wxBORDER_SIMPLE);
-    itemsInChapLabel->SetBackgroundColour(wxColour(25, 25, 25));
+    itemsInChapLabel->SetBackgroundColour(wxColour(10, 10, 10));
     itemsInChapLabel->SetForegroundColour(wxColour(255, 255, 255));
     itemsInChapLabel->SetFont(wxFontInfo(10).Bold());
     itemsInChapLabel->SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -537,14 +544,19 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
     leftButton->SetBitmap(wxBITMAP_PNG(arrowLeft));
 
     m_leftSizer = new wxBoxSizer(wxVERTICAL);
-    m_leftSizer->Add(m_characterPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
-    m_leftSizer->Add(m_locationPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
-    m_leftSizer->Add(m_itemPanel, wxSizerFlags(1).Expand().Border(wxALL, 7));
+    m_leftSizer->Add(m_characterPanel, wxSizerFlags(1).Expand());
+    m_leftSizer->AddSpacer(FromDIP(15));
+    m_leftSizer->Add(m_locationPanel, wxSizerFlags(1).Expand());
+    m_leftSizer->AddSpacer(FromDIP(15));
+    m_leftSizer->Add(m_itemPanel, wxSizerFlags(1).Expand());
+    m_leftSizer->AddSpacer(FromDIP(8));
     m_leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxRIGHT | wxBOTTOM, 8));
 
     m_leftPanel->SetSizer(m_leftSizer);
 
-    m_outlineView = new wxDataViewCtrl(leftNotebook, TREE_Outline, wxDefaultPosition, wxDefaultSize,
+    wxPanel* leftPanel2 = new wxPanel(leftNotebook);
+    leftPanel2->SetBackgroundColour(wxColour(90, 90, 90));
+    m_outlineView = new wxDataViewCtrl(leftPanel2, TREE_Outline, wxDefaultPosition, wxDefaultSize,
 		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
     
     wxDataViewColumn* columnF = new wxDataViewColumn(_("Files"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
@@ -553,11 +565,25 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
 
     m_outlineTreeModel = m_manager->GetOutline()->GetOutlineFiles()->GetOutlineTreeModel();
     m_outlineView->AssociateModel(m_outlineTreeModel.get());
-    m_outlineView->SetBackgroundColour(wxColour(100, 100, 100));
+    m_outlineView->SetBackgroundColour(wxColour(90, 90, 90));
 
-    m_storyView = new wxDataViewCtrl(leftNotebook, TREE_Story, wxDefaultPosition, wxDefaultSize,
+    wxButton* leftButton2 = new wxButton(leftPanel2, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
+    leftButton2->SetBitmap(wxBITMAP_PNG(arrowLeft));
+
+    wxBoxSizer* outlineSizer = new wxBoxSizer(wxVERTICAL);
+    outlineSizer->Add(m_outlineView, wxSizerFlags(1).Expand());
+    outlineSizer->AddSpacer(8);
+    outlineSizer->Add(leftButton2, wxSizerFlags(0).Right().Border(wxALL | 8));
+    outlineSizer->AddSpacer(8);
+
+    leftPanel2->SetSizer(outlineSizer);
+
+    wxPanel* leftPanel3 = new wxPanel(leftNotebook);
+    leftPanel3->SetBackgroundColour(wxColour(90, 90, 90));
+
+    m_storyView = new wxDataViewCtrl(leftPanel3, TREE_Story, wxDefaultPosition, wxDefaultSize,
         wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
-    m_storyView->SetBackgroundColour(wxColour(100, 100, 100));
+    m_storyView->SetBackgroundColour(wxColour(90, 90, 90));
 
     wxDataViewColumn* columnS = new wxDataViewColumn(_("Story"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
         wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
@@ -571,9 +597,20 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
 
     m_storyView->Refresh();
 
+    wxButton* leftButton3 = new wxButton(leftPanel3, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
+    leftButton3->SetBitmap(wxBITMAP_PNG(arrowLeft));
+
+    wxBoxSizer* storySizer = new wxBoxSizer(wxVERTICAL);
+    storySizer->Add(m_storyView, wxSizerFlags(1).Expand());
+    storySizer->AddSpacer(8);
+    storySizer->Add(leftButton3, wxSizerFlags(0).Right().Border(wxRIGHT | 8));
+    storySizer->AddSpacer(8);
+
+    leftPanel3->SetSizer(storySizer);
+
+    leftNotebook->AddPage(leftPanel3, "Story");
+    leftNotebook->AddPage(leftPanel2, "Outline");
     leftNotebook->AddPage(m_leftPanel,"Elements");
-    leftNotebook->AddPage(m_outlineView, "Outline");
-    leftNotebook->AddPage(m_storyView, "Story");
 
     wxPanel* rightPanel = new wxPanel(rightSplitter, -1);
     rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
@@ -625,29 +662,23 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
     rightButton->SetBitmap(wxBITMAP_PNG(arrowRight));
 
     m_rightSizer = new wxBoxSizer(wxVERTICAL);
-    m_rightSizer->Add(sumLabel, wxSizerFlags(0).Expand().Border(wxLEFT | wxTOP | wxRIGHT, 8));
-    m_rightSizer->Add(m_summary, wxSizerFlags(2).Expand().Border(wxLEFT | wxRIGHT, 8));
+    m_rightSizer->Add(sumLabel, wxSizerFlags(0).Expand());
+    m_rightSizer->Add(m_summary, wxSizerFlags(2).Expand());
     m_rightSizer->AddStretchSpacer(1);
-    m_rightSizer->Add(m_noteChecker, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 8));
-    m_rightSizer->Add(m_noteLabel, wxSizerFlags(0).Expand().Border(wxTOP | wxRIGHT | wxLEFT, 8));
-    m_rightSizer->Add(m_note, wxSizerFlags(2).Expand().Border(wxRIGHT | wxLEFT, 8));
-    m_rightSizer->Add(nbHolder, wxSizerFlags(0).Expand().Border(wxBOTTOM | wxRIGHT | wxLEFT, 8));
-    m_rightSizer->Add(rightButton, wxSizerFlags(0).Left().Border(wxLEFT | wxBOTTOM, 8));
+    m_rightSizer->Add(m_noteChecker, wxSizerFlags(0).Expand());
+    m_rightSizer->Add(m_noteLabel, wxSizerFlags(0).Expand());
+    m_rightSizer->Add(m_note, wxSizerFlags(2).Expand());
+    m_rightSizer->Add(nbHolder, wxSizerFlags(0).Expand());
+    m_rightSizer->Add(rightButton, wxSizerFlags(0).Left().Border(wxLEFT, 8));
+    m_rightSizer->AddSpacer(FromDIP(8));
 
     rightPanel->SetSizer(m_rightSizer);
-
-    //wxBoxSizer* mainSizer = new wxBoxSizer(wxHORIZONTAL);
-    //mainSizer->Add(leftNotebook, wxSizerFlags(1).Expand());
-    //mainSizer->Add(m_cwNotebook, wxSizerFlags(4).Expand());
-    //mainSizer->Add(rightPanel, wxSizerFlags(1).Expand());
-
-    //SetSizer(mainSizer);
 
     SetSize(FromDIP(wxSize(1100, 700)));
     Maximize();
 
-    leftSplitter->SplitVertically(leftNotebook, m_cwNotebook, FromDIP(230));
-    rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1140));
+    leftSplitter->SplitVertically(leftNotebook, m_swNotebook, FromDIP(230));
+    rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1135));
     leftSplitter->SetSashGravity(0.0);
     rightSplitter->SetSashGravity(1.0);
 
@@ -663,8 +694,8 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int nu
     m_statusBar->SetStatusText("Zoom: 100%", 2);
     m_statusBar->SetBackgroundColour(wxColour(120, 120, 120));
 
-    wxSize noteSize((m_cwNotebook->GetClientSize()));
-    m_cwNotebook->SetNoteSize(FromDIP(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10)));
+    wxSize noteSize((m_swNotebook->GetClientSize()));
+    m_swNotebook->SetNoteSize(FromDIP(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10)));
 
     SetIcon(wxICON(amadeus));
 
@@ -686,7 +717,7 @@ void amStoryWriter::ClearNote(wxCommandEvent& event) {
 
 void amStoryWriter::AddNote(wxCommandEvent& event) {
     if (!m_note->IsEmpty()) {
-        m_cwNotebook->AddNote(m_note->GetValue(), m_noteLabel->GetValue(), m_doGreenNote);
+        m_swNotebook->AddNote(m_note->GetValue(), m_noteLabel->GetValue(), m_doGreenNote);
         m_note->Clear();
         m_noteLabel->SetValue("New note");
         m_doGreenNote = false;
@@ -698,8 +729,8 @@ void amStoryWriter::AddNote(wxCommandEvent& event) {
 }
 
 void amStoryWriter::CheckNotes() {
-    if (m_cwNotebook->GetNotes().size()) {
-        if (m_cwNotebook->HasRedNote()) {
+    if (m_swNotebook->GetNotes().size()) {
+        if (m_swNotebook->HasRedNote()) {
             m_noteChecker->SetBackgroundColour(wxColour(120, 0, 0));
             m_noteChecker->SetLabel("Unresolved notes!");
         } else {
@@ -735,7 +766,7 @@ void amStoryWriter::OnAddCharacter(wxCommandEvent& event) {
     win->SetPosition(wxPoint(x, y));
     win->SetSize(m_characterPanel->GetSize());
 
-    win->Popup(list);
+    win->Popup();
     event.Skip();
 }
 
@@ -785,7 +816,7 @@ void amStoryWriter::OnAddItem(wxCommandEvent& event) {
     win->SetPosition(wxPoint(x, y));
     win->SetSize(m_itemPanel->GetSize());
 
-    win->Popup(list);
+    win->Popup();
     event.Skip();
 }
 
@@ -793,7 +824,7 @@ void amStoryWriter::AddCharacter(wxCommandEvent& event) {
     wxString name = event.GetString();
     if (m_charInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToCharacter(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
+        m_manager->AddChapterToCharacter(name, m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex]);
         UpdateCharacterList();
         m_manager->GetElementsNotebook()->UpdateCharacterList();
     }
@@ -804,7 +835,7 @@ void amStoryWriter::AddLocation(wxCommandEvent& event) {
    
     if (m_locInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToLocation(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
+        m_manager->AddChapterToLocation(name, m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex]);
         UpdateLocationList();
         m_manager->GetElementsNotebook()->UpdateLocationList();
     }
@@ -815,7 +846,7 @@ void amStoryWriter::AddItem(wxCommandEvent& event) {
 
     if (m_itemsInChap->FindItem(-1, name) == -1) {
         CheckChapterValidity();
-        m_manager->AddChapterToItem(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
+        m_manager->AddChapterToItem(name, m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex]);
         UpdateItemList();
         m_manager->GetElementsNotebook()->UpdateItemList();
     }
@@ -826,7 +857,7 @@ void amStoryWriter::UpdateCharacterList() {
     m_charInChap->DeleteAllItems();
     
     int i = 0;
-    for (wxString& character : m_manager->GetChapters(1, 1)[m_chapterPos - 1].characters)
+    for (wxString& character : m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex].characters)
         m_charInChap->InsertItem(i++, character);
   
     m_charInChap->Thaw();
@@ -837,7 +868,7 @@ void amStoryWriter::UpdateLocationList() {
     m_locInChap->DeleteAllItems();
 
     int i = 0;
-    for (wxString& location : m_manager->GetChapters(1, 1)[m_chapterPos - 1].locations)
+    for (wxString& location : m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex].locations)
         m_locInChap->InsertItem(i++, location);
   
     m_locInChap->Thaw();
@@ -848,7 +879,7 @@ void amStoryWriter::UpdateItemList() {
     m_itemsInChap->DeleteAllItems();
 
     int i = 0;
-    for (wxString& item : m_manager->GetChapters(1, 1)[m_chapterPos - 1].items)
+    for (wxString& item : m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex].items)
         m_itemsInChap->InsertItem(i++, item);
     
     m_itemsInChap->Thaw();
@@ -864,7 +895,7 @@ void amStoryWriter::OnRemoveCharacter(wxCommandEvent& event) {
         wxString name = m_charInChap->GetItemText(sel);
         m_charInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromCharacter(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromCharacter(name, m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex]);
 
         sel = m_charInChap->GetNextSelected(sel - 1);
     }
@@ -883,7 +914,7 @@ void amStoryWriter::OnRemoveLocation(wxCommandEvent& event) {
         wxString name = m_locInChap->GetItemText(sel);
         m_locInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromLocation(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromLocation(name, m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex]);
 
         sel = m_locInChap->GetNextSelected(sel + 1);
     }
@@ -902,13 +933,42 @@ void amStoryWriter::OnRemoveItem(wxCommandEvent& event) {
         wxString name = m_itemsInChap->GetItemText(sel);
         m_itemsInChap->DeleteItem(sel);
 
-        m_manager->RemoveChapterFromItem(name, m_manager->GetChapters(1, 1)[m_chapterPos - 1]);
+        m_manager->RemoveChapterFromItem(name, m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex]);
 
         sel = m_itemsInChap->GetNextSelected(sel + 1);
     }
 
     m_manager->GetElementsNotebook()->UpdateItemList();
     event.Skip();
+}
+
+void amStoryWriter::OnStoryItemActivated(wxDataViewEvent& event) {
+    wxDataViewItem item(event.GetItem());
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+
+    int selSection, selChapter;
+
+    switch (node->GetType()) {
+    case STMN_Book:
+        break;
+
+    case STMN_Section:
+        break;
+
+    case STMN_Chapter:
+        selSection = node->GetParent()->GetIndex();
+        selChapter = node->GetIndex();
+
+        if (selSection != m_sectionIndex || selChapter != m_chapterIndex)
+            SetCurrentChapter(selChapter, selSection, true);
+        break;
+
+    case STMN_Scene:
+        break;
+
+    case STMN_Trash:
+        break;
+    }
 }
 
 void amStoryWriter::OnStoryItemSelected(wxDataViewEvent& event) {
@@ -933,26 +993,39 @@ void amStoryWriter::OnStoryItemSelected(wxDataViewEvent& event) {
     }
 }
 
-void amStoryWriter::SetCurrentChapter(int pos, bool load) {
-    m_chapterPos = pos;
+void amStoryWriter::SetCurrentChapter(int chapterIndex, int sectionIndex, bool load) {
+    m_chapterIndex = chapterIndex;
 
     if (load)
         LoadChapter();
 }
 
 void amStoryWriter::OnNextChapter(wxCommandEvent& event) {
-    if (m_chapterPos < m_manager->GetChapterCount(1)) {
-        SaveChapter();
-        SetCurrentChapter(++m_chapterPos, true);
+    if (m_chapterIndex < m_manager->GetChapters(m_bookPos, m_sectionIndex + 1).size() - 1)
+        SetCurrentChapter(++m_chapterIndex, m_sectionIndex, true);
+    else {
+        if (m_sectionIndex < m_manager->GetCurrentBook().sections.size() - 1) {
+            m_sectionIndex++;
+            m_chapterIndex = 0;
+            SetCurrentChapter(m_chapterIndex, m_sectionIndex, true);
+        }
     }
+
     event.Skip();
 }
 
 void amStoryWriter::OnPreviousChapter(wxCommandEvent& event) {
-    if (m_chapterPos > 1) {
-        SaveChapter();
-        SetCurrentChapter(--m_chapterPos, true);
+    if (m_chapterIndex > 0)
+        SetCurrentChapter(--m_chapterIndex, m_sectionIndex, true);
+    else {
+        if (m_sectionIndex > 0) {
+            m_sectionIndex--;
+            m_chapterIndex = m_manager->GetChapters(m_bookPos, m_sectionIndex + 1).size() - 1;
+           
+            SetCurrentChapter(m_chapterIndex, m_sectionIndex, true);
+        }
     }
+
     event.Skip();
 }
 
@@ -960,28 +1033,38 @@ void amStoryWriter::CheckChapterValidity() {
     // For now, if the stored chapter position is bigger than the chapter count,
     // it simply makes it so the current chapter is the last one. I'll make it something
     // else later.
-    while (m_chapterPos > m_manager->GetChapterCount(1))
-        m_chapterPos--;
+    while (m_chapterIndex >= m_manager->GetChapters(m_bookPos, m_sectionIndex + 1).size())
+        m_chapterIndex--;
 }
 
 void amStoryWriter::LoadChapter() {
-    Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
+    if (m_prevChapterIndex == m_chapterIndex && m_prevSectionIndex == m_sectionIndex)
+        return;
+
+    if (m_prevChapterIndex > 0)
+        SaveChapter(m_prevChapterIndex, m_prevSectionIndex);
+
+    m_prevChapterIndex = m_chapterIndex;
+    m_prevSectionIndex = m_sectionIndex;
+
+    Chapter& chapter = m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_chapterIndex];
     SetTitle(chapter.name);
 
-    m_cwNotebook->Freeze();
+    m_swNotebook->Freeze();
 
     bool isOpen = false;
 
-    wxAuiNotebook* notebook = m_cwNotebook->GetNotebook();
-    wxVector<amStoryWriterNotebookPage>& pages = m_cwNotebook->GetPages();
+    wxAuiNotebook* notebook = m_swNotebook->GetNotebook();
+    wxVector<amStoryWriterNotebookPage>& pages = m_swNotebook->GetPages();
 
     for (amStoryWriterNotebookPage& page : pages) {
         if (page.dbID == chapter.id) {
             for (int i = 0; i < notebook->GetPageCount(); i++) {
                 wxWindow* window = notebook->GetPage(i);
                 if (window == page.notePanel || window == page.rtc) {
-                    m_cwNotebook->SetNotes(chapter.notes);
-                    notebook->SetSelection(i);
+                    m_swNotebook->SetNotes(chapter.notes);
+                    m_swNotebook->SetCurrentPage(page, false);
+                    m_statusBar->SetStatusText("Zoom: " + std::to_string((int)(page.rtc->GetFontScale() * 100)) + "%", 2);
                     isOpen = true;
                     break;
                 }
@@ -992,15 +1075,19 @@ void amStoryWriter::LoadChapter() {
 
     if (!isOpen) {
         wxBusyCursor busy;
-        m_cwNotebook->GetNotes().clear();
+        chapter.LoadSceneBuffers(m_manager->GetStorage());
+
+        m_swNotebook->GetNotes().clear();
 
         wxRichTextCtrl* rtc = new wxRichTextCtrl(notebook, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
             wxRE_MULTILINE | wxBORDER_NONE);
 
         wxRichTextAttr attr;
         attr.SetFont(wxFontInfo(10));
-        attr.SetAlignment(wxTEXT_ALIGNMENT_LEFT);
-        attr.SetLeftIndent(63, -63);
+        attr.SetAlignment(wxTEXT_ALIGNMENT_JUSTIFIED);
+        attr.SetLeftIndent(64, -64);
+        attr.SetLineSpacing(15);
+        attr.SetParagraphSpacingBefore(FromDIP(15));
         attr.SetTextColour(wxColour(250, 250, 250));
         
         rtc->SetBasicStyle(attr);
@@ -1008,6 +1095,7 @@ void amStoryWriter::LoadChapter() {
     
         chapter.scenes[0].content.SetBasicStyle(attr);
         rtc->GetBuffer() = chapter.scenes[0].content;
+        rtc->GetBuffer().SetMargins(FromDIP(72), FromDIP(72), 0, 0);
         rtc->GetBuffer().Invalidate(wxRICHTEXT_ALL);
 
         wxScrolledWindow* notePage = new wxScrolledWindow(notebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
@@ -1020,7 +1108,11 @@ void amStoryWriter::LoadChapter() {
         notePage->SetSizer(notesSizer);
         notePage->SetScrollRate(15, 15);
 
-        m_cwNotebook->AddPage(amStoryWriterNotebookPage(rtc, notePage, chapter.position, chapter.id), chapter.name);
+        m_swNotebook->AddPage(amStoryWriterNotebookPage(rtc, notePage, m_chapterIndex, m_sectionIndex, chapter.id), chapter.name);
+
+        m_note->Freeze();
+        m_noteLabel->Freeze();
+        notePage->Freeze();
 
         for (Note& note : chapter.notes) {
             m_note->SetValue(note.content);
@@ -1029,12 +1121,18 @@ void amStoryWriter::LoadChapter() {
 
             AddNote(wxCommandEvent());
         }
+
+        m_note->Thaw();
+        m_noteLabel->Thaw();
+        notePage->Thaw();
     }
 
     m_summary->SetValue(chapter.synopsys);
+    m_storyView->Select(m_storyTreeModel->GetChapterItem(m_chapterIndex, m_sectionIndex));
 
-    m_cwNotebook->GetCorkboard()->Layout();
-    m_cwNotebook->Thaw();
+    m_swNotebook->GetCorkboard()->Layout();
+    m_swNotebook->GetTextCtrl()->SetFocus();
+    m_swNotebook->Thaw();
 
     UpdateCharacterList();
     UpdateLocationList();
@@ -1045,28 +1143,24 @@ void amStoryWriter::LoadChapter() {
     m_statusBar->SetStatusText("Chapter up-to-date", 0);
 }
 
-void amStoryWriter::SaveChapter() {
+void amStoryWriter::SaveChapter(int chapterIndex, int sectionIndex) {
     CheckChapterValidity();
-    Chapter& chapter = m_manager->GetChapters(1, 1)[m_chapterPos - 1];
+    Chapter& chapter = m_manager->GetChapters(m_bookPos, sectionIndex + 1)[chapterIndex];
 
-    chapter.scenes[0].content = m_cwNotebook->GetTextCtrl()->GetBuffer();
-    chapter.scenes[0].content.SetBasicStyle(m_cwNotebook->GetTextCtrl()->GetBasicStyle());
-    chapter.synopsys = (wxString)m_summary->GetValue();
+    chapter.scenes[0].content = m_swNotebook->GetTextCtrl()->GetBuffer();
+    chapter.scenes[0].content.SetBasicStyle(m_swNotebook->GetTextCtrl()->GetBasicStyle());
 
-    chapter.notes = m_cwNotebook->GetNotes();
+    chapter.synopsys = m_summary->GetValue();
+    chapter.notes = m_swNotebook->GetNotes();
 
     chapter.Update(m_manager->GetStorage(), true, true);
-
-    UpdateCharacterList();
-    UpdateLocationList();
-    UpdateItemList();
 }
 
 void amStoryWriter::CountWords() {
     int result = 0;
 
-    if (!m_cwNotebook->GetTextCtrl()->IsEmpty()) {
-        std::stringstream stream(m_cwNotebook->GetTextCtrl()->GetValue().ToStdString());
+    if (!m_swNotebook->GetTextCtrl()->IsEmpty()) {
+        std::stringstream stream(m_swNotebook->GetTextCtrl()->GetValue().ToStdString());
         result = std::distance(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>());
     }
     
@@ -1077,7 +1171,7 @@ void amStoryWriter::CountWords() {
 void amStoryWriter::OnTimerEvent(wxTimerEvent& event) {
     m_statusBar->SetStatusText("Autosaving chapter...", 0);
 
-    SaveChapter();
+    SaveChapter(m_chapterIndex, m_sectionIndex);
     CountWords();
 
     if (IsShown())
@@ -1096,8 +1190,14 @@ void amStoryWriter::OnLeftSplitterChanged(wxSplitterEvent& event) {
     m_itemsInChap->SetColumnWidth(0, x);
 }
 
+void amStoryWriter::UnloadChapter(int chapterIndex, int sectionIndex) {
+    Chapter& chapter = m_manager->GetChapters(m_bookPos, sectionIndex + 1)[chapterIndex];
+
+    chapter.ClearSceneBuffers();
+}
+
 void amStoryWriter::OnClose(wxCloseEvent& event) {
-    SaveChapter();
+    SaveChapter(m_chapterIndex, m_sectionIndex);
 
     Destroy();
     event.Skip();
@@ -1134,6 +1234,7 @@ EVT_UPDATE_UI(TOOL_AlignCenterJust, amStoryWriterToolbar::OnUpdateAlignCenterJus
 EVT_UPDATE_UI(TOOL_AlignRight, amStoryWriterToolbar::OnUpdateAlignRight)
 EVT_UPDATE_UI(TOOL_FontSize, amStoryWriterToolbar::OnUpdateFontSize)
 EVT_UPDATE_UI(TOOL_NoteView, amStoryWriterToolbar::OnUpdateNoteView)
+EVT_UPDATE_UI(TOOL_ContentScale, amStoryWriterToolbar::OnUpdateZoom)
 
 EVT_COMBOBOX(TOOL_FontSize, amStoryWriterToolbar::OnFontSize)
 
@@ -1327,7 +1428,7 @@ void amStoryWriterToolbar::OnTestCircle(wxCommandEvent& event) {
 void amStoryWriterToolbar::OnZoom(wxCommandEvent& event) {
     int zoom = event.GetInt();
 
-    m_currentPage.rtc->SetScale((double)zoom / 100.0, true);
+    m_currentPage.rtc->SetFontScale((double)zoom / 100.0, true);
     m_parent->OnZoomChange(zoom);
     m_contentScale->SetToolTip(std::to_string(zoom));
 }
@@ -1368,7 +1469,7 @@ void amStoryWriterToolbar::OnUpdateAlignRight(wxUpdateUIEvent& event) {
 
 void amStoryWriterToolbar::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event)) {
     wxRichTextAttr attr;
-    m_currentPage.rtc->GetStyle(m_currentPage.rtc->GetInsertionPoint() - 1, attr);
+    m_currentPage.rtc->GetStyle(m_currentPage.rtc->GetInsertionPoint(), attr);
     wxString size(std::to_string(attr.GetFontSize()));
 
     if (m_fontSize->GetValue() != size)
@@ -1398,6 +1499,10 @@ void amStoryWriterToolbar::OnFontSize(wxCommandEvent& event) {
     }
 }
 
+void amStoryWriterToolbar::OnUpdateZoom(wxUpdateUIEvent& event) {
+    ((wxSlider*)FindControl(TOOL_ContentScale))->SetValue(m_currentPage.rtc->GetFontScale() * 100);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// amStoryWriterNotebook //////////////////////////////
@@ -1412,9 +1517,10 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* ch
     wxPanel(parent) {
     m_parent = chapterWriter;
     
-    m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT |
+    m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT | wxAUI_NB_CLOSE_ON_ALL_TABS|
         wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_BOTTOM | wxBORDER_NONE);
     m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CHANGED, &amStoryWriterNotebook::OnSelectionChanged, this);
+    m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSE, &amStoryWriterNotebook::OnPageClosing, this);
 
     m_contentToolbar = new amStoryWriterToolbar(this);
     m_contentToolbar->SetDoubleBuffered(true);
@@ -1430,12 +1536,27 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* ch
 }
 
 void amStoryWriterNotebook::AddPage(amStoryWriterNotebookPage& page, const wxString& title) {
-    m_notebook->AddPage(page.rtc, title, true);
-    m_curTextCtrl = page.rtc;
-    m_curCorkboard = page.notePanel;
-    m_contentToolbar->SetCurrentPage(page);
-
     m_writerPages.push_back(page);
+    m_notebook->AddPage(page.rtc, title, false);
+
+    SetCurrentPage(page, false);
+}
+
+void amStoryWriterNotebook::SetCurrentPage(amStoryWriterNotebookPage& page, bool load) {
+    int i = 0;
+    for (amStoryWriterNotebookPage& pageIt : m_writerPages) {
+        if (pageIt.dbID == page.dbID) {
+            m_contentToolbar->SetCurrentPage(page);
+
+            m_curTextCtrl = page.rtc;
+            m_curCorkboard = page.notePanel;
+
+            m_notebook->ChangeSelection(i);
+            m_parent->SetCurrentChapter(page.chapterIndex, page.sectionIndex, load);
+            return;
+        } 
+        i++;
+    }
 }
 
 void amStoryWriterNotebook::OnText(wxCommandEvent& WXUNUSED(event)) {
@@ -1449,11 +1570,7 @@ void amStoryWriterNotebook::OnSelectionChanged(wxAuiNotebookEvent& event) {
     for (amStoryWriterNotebookPage& page : m_writerPages) {
         if (page.rtc == window || page.notePanel == window) {
             m_contentToolbar->SetCurrentPage(page);
-
-            m_curTextCtrl = page.rtc;
-            m_curCorkboard = page.notePanel;
-
-            m_parent->SetCurrentChapter(page.pos, true);
+            m_parent->SetCurrentChapter(page.chapterIndex, page.sectionIndex, true);
             return;
         }
     }
@@ -1463,6 +1580,23 @@ void amStoryWriterNotebook::OnSelectionChanged(wxAuiNotebookEvent& event) {
 
 void amStoryWriterNotebook::OnZoomChange(int zoom) {
     m_parent->PushStatusText("Zoom: " + std::to_string(zoom) + "%", 2);
+}
+
+void amStoryWriterNotebook::OnPageClosing(wxAuiNotebookEvent& event) {
+    if (m_notebook->GetPageCount() == 1)
+        event.Veto();
+    else {
+        wxWindow* window = m_notebook->GetPage(event.GetSelection());
+        for (amStoryWriterNotebookPage& page : m_writerPages) {
+            if (page.rtc == window || page.notePanel == window) {
+                m_writerPages.erase(&page);
+                m_parent->UnloadChapter(page.chapterIndex, page.sectionIndex);
+                break;
+            }
+        }
+
+        event.Skip();
+    }
 }
 
 bool amStoryWriterNotebook::HasRedNote() {

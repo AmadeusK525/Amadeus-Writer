@@ -18,10 +18,10 @@ amDocument Scene::GenerateDocument() {
 	document.integers.push_back(pair<wxString, int>("position", pos));
 	document.integers.push_back(pair<wxString, int>("chapter_id", chapterID));
 
-	wxStringOutputStream stream;
-	content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
+	document.strings.push_back(pair<wxString, wxString>("content", wxString()));
 
-	document.strings.push_back(pair<wxString, wxString>("content", stream.GetString()));
+	wxStringOutputStream stream(&document.strings.front().second);
+	content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
 
 	return document;
 }
@@ -79,14 +79,14 @@ void Chapter::Save(wxSQLite3Database* db) {
 		SetId(storage->GetDocumentId(GenerateDocumentForId()));
 
 		Init();
-		for (auto& it : scenes) {
+		for (Scene& scene : scenes) {
 			insert = "INSERT INTO scenes (name, content, position, chapter_id) VALUES ('%q', '%q', ";
-			insert << it.pos << ", " << id << ");";
+			insert << scene.pos << ", " << id << ");";
 
 			wxStringOutputStream stream;
-			it.content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
+			scene.content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
 
-			buffer.Format((const char*)insert, (const char*)it.name.ToUTF8(), (const char*)stream.GetString());
+			buffer.Format((const char*)insert, (const char*)scene.name.ToUTF8(), (const char*)stream.GetString());
 			storage->ExecuteUpdate(buffer);
 		}
 	} catch (wxSQLite3Exception& e) {
@@ -223,6 +223,28 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 	}
 
 	return true;
+}
+
+void Chapter::LoadSceneBuffers(wxSQLite3Database* db) {
+	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT content FROM scenes WHERE chapter_id = " +
+		std::to_string(id) + " ORDER BY position ASC;");
+
+	int i = 0;
+	int size = scenes.size();
+
+	while (result.NextRow()) {
+		if (i >= size)
+			break;
+
+		wxStringInputStream sstream(result.GetAsString("content"));
+		scenes[i].content.LoadFile(sstream, wxRICHTEXT_TYPE_XML);
+		i++;
+	}
+}
+
+void Chapter::ClearSceneBuffers() {
+	for (Scene& scene : scenes)
+		scene.content.Clear();
 }
 
 amDocument Chapter::GenerateDocumentSimple() {
