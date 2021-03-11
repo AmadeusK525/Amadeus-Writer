@@ -84,16 +84,16 @@ void StoryGrid::AddButton() {
     FitInside();
 }
 
-void StoryGrid::OpenChapter(unsigned int chapterNumber) {
-    amStoryWriter* writer = new amStoryWriter(m_manager->GetMainFrame(), m_manager, chapterNumber);
+void StoryGrid::OpenChapter(unsigned int chapterIndex) {
+    amStoryWriter* writer = new amStoryWriter(m_manager->GetMainFrame(), m_manager, chapterIndex, 0);
     writer->Show();
 }
 
 void StoryGrid::OnButtonPressed(wxCommandEvent& event) {
     wxBusyCursor wait;
 
-    int chapNumber = event.GetId() - 10000;
-    OpenChapter(chapNumber);
+    int chapterIndex = event.GetId() - 10001;
+    OpenChapter(chapterIndex);
 }
 
 void StoryGrid::ClearAll() {

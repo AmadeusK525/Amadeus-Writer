@@ -29,6 +29,8 @@ struct Scene {
 
     amDocument GenerateDocument();
     amDocument GenerateDocumentForId();
+
+    void operator=(const Scene& other);
 };
 
 
@@ -82,6 +84,9 @@ struct Chapter {
 
     void Save(wxSQLite3Database* db);
     bool Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes);
+
+    void LoadSceneBuffers(wxSQLite3Database* db);
+    void ClearSceneBuffers();
 
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument();

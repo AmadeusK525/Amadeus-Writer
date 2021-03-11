@@ -83,7 +83,7 @@ private:
 
 	bool m_isInitialized = false;
 
-	int m_currentBook = 0;
+	int m_currentBook = 1;
 
 public:
 	amProjectManager();
@@ -103,7 +103,7 @@ public:
 	void LoadBooks();
 	void LoadSections(wxVector<Section>& sections, int bookId);
 	void LoadChapters(wxVector<Chapter>& chapters, int sectionId);
-	void LoadScenes(wxVector<Scene>& scenes, int chapterId);
+	void LoadScenes(wxVector<Scene>& scenes, int chapterId, bool loadBuffers);
 
 	void LoadCharacters();
 	void LoadLocations();
@@ -160,7 +160,7 @@ public:
 	void DeleteChapter(Chapter& chapter, Section& section);
 
 	inline int GetCurrentBookPos() { return m_currentBook; }
-	inline Book& GetCurrentBook() { return m_project.books[m_currentBook]; }
+	inline Book& GetCurrentBook() { return m_project.books[m_currentBook - 1]; }
 
 	inline wxVector<Book>& GetBooks() { return m_project.books; }
 	wxVector<Character>& GetCharacters();
