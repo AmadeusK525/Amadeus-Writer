@@ -1,7 +1,7 @@
 #include "StoryWriter.h"
 #include "ElementsNotebook.h"
 #include "Outline.h"
-#include "UtilityClasses.h"
+#include "amUtility.h"
 
 #include <wx\popupwin.h>
 #include <wx\listbox.h>
@@ -400,21 +400,21 @@ EVT_CLOSE(amStoryWriter::OnClose)
 
 END_EVENT_TABLE()
 
-amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int chapterPos, int sectionPos) :
+amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int chapterPos, int sectionIndex) :
     m_saveTimer(this, TIMER_Save),
     wxFrame(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
     wxFRAME_FLOAT_ON_PARENT | wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN) {
 
     m_manager = manager;
     m_chapterIndex = chapterPos;
-    m_sectionIndex = sectionPos;
+    m_sectionIndex = sectionIndex;
     m_bookPos = m_manager->GetCurrentBookPos();
 
     Hide();
     SetBackgroundColour({ 20, 20, 20 });
 
     amSplitterWindow* rightSplitter = new amSplitterWindow(this, -1, wxDefaultPosition, wxDefaultSize,
-        1024L | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN);
+        1024L | wxSP_LIVE_UPDATE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
     amSplitterWindow* leftSplitter = new amSplitterWindow(rightSplitter, -1, wxDefaultPosition, wxDefaultSize,
         1024L | wxSP_LIVE_UPDATE | wxNO_FULL_REPAINT_ON_RESIZE | wxCLIP_CHILDREN);
     leftSplitter->Bind(wxEVT_SPLITTER_SASH_POS_CHANGED, &amStoryWriter::OnLeftSplitterChanged, this);
@@ -424,6 +424,8 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
 
     leftSplitter->SetMinimumPaneSize(30);
     rightSplitter->SetMinimumPaneSize(30);
+
+    rightSplitter->SetDoubleBuffered(true);
 
     m_swNotebook = new amStoryWriterNotebook(leftSplitter, this);
 
@@ -549,8 +551,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
     m_leftSizer->Add(m_locationPanel, wxSizerFlags(1).Expand());
     m_leftSizer->AddSpacer(FromDIP(15));
     m_leftSizer->Add(m_itemPanel, wxSizerFlags(1).Expand());
-    m_leftSizer->AddSpacer(FromDIP(8));
-    m_leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxRIGHT | wxBOTTOM, 8));
+    m_leftSizer->Add(leftButton, wxSizerFlags(0).Right());
 
     m_leftPanel->SetSizer(m_leftSizer);
 
@@ -572,9 +573,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
 
     wxBoxSizer* outlineSizer = new wxBoxSizer(wxVERTICAL);
     outlineSizer->Add(m_outlineView, wxSizerFlags(1).Expand());
-    outlineSizer->AddSpacer(8);
     outlineSizer->Add(leftButton2, wxSizerFlags(0).Right().Border(wxALL | 8));
-    outlineSizer->AddSpacer(8);
 
     leftPanel2->SetSizer(outlineSizer);
 
@@ -602,9 +601,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
 
     wxBoxSizer* storySizer = new wxBoxSizer(wxVERTICAL);
     storySizer->Add(m_storyView, wxSizerFlags(1).Expand());
-    storySizer->AddSpacer(8);
     storySizer->Add(leftButton3, wxSizerFlags(0).Right().Border(wxRIGHT | 8));
-    storySizer->AddSpacer(8);
 
     leftPanel3->SetSizer(storySizer);
 
@@ -617,6 +614,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
 
     m_summary = new wxTextCtrl(rightPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_NONE);
     m_summary->SetBackgroundColour(wxColour(35, 35, 35));
+    m_summary->SetFont(wxFontInfo(10));
     m_summary->SetForegroundColour(wxColour(245, 245, 245));
     m_summary->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -634,12 +632,12 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
 
     m_noteLabel = new wxTextCtrl(rightPanel, -1, "New note", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
     m_noteLabel->SetBackgroundColour(wxColour(245, 245, 245));
-    m_noteLabel->SetFont(wxFont(wxFontInfo(9)));
+    m_noteLabel->SetFont(wxFont(wxFontInfo(10)));
     m_noteLabel->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
     m_note = new wxTextCtrl(rightPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_NONE);
     m_note->SetBackgroundColour(wxColour(255, 250, 205));
-    m_note->SetFont(wxFont(wxFontInfo(9)));
+    m_note->SetFont(wxFont(wxFontInfo(10)));
     m_note->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
     wxPanel* nbHolder = new wxPanel(rightPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
@@ -663,14 +661,13 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
 
     m_rightSizer = new wxBoxSizer(wxVERTICAL);
     m_rightSizer->Add(sumLabel, wxSizerFlags(0).Expand());
-    m_rightSizer->Add(m_summary, wxSizerFlags(2).Expand());
-    m_rightSizer->AddStretchSpacer(1);
+    m_rightSizer->Add(m_summary, wxSizerFlags(1).Expand());
+    m_rightSizer->AddSpacer(FromDIP(15));
     m_rightSizer->Add(m_noteChecker, wxSizerFlags(0).Expand());
     m_rightSizer->Add(m_noteLabel, wxSizerFlags(0).Expand());
-    m_rightSizer->Add(m_note, wxSizerFlags(2).Expand());
+    m_rightSizer->Add(m_note, wxSizerFlags(1).Expand());
     m_rightSizer->Add(nbHolder, wxSizerFlags(0).Expand());
-    m_rightSizer->Add(rightButton, wxSizerFlags(0).Left().Border(wxLEFT, 8));
-    m_rightSizer->AddSpacer(FromDIP(8));
+    m_rightSizer->Add(rightButton, wxSizerFlags(0).Left());
 
     rightPanel->SetSizer(m_rightSizer);
 
@@ -1196,8 +1193,14 @@ void amStoryWriter::UnloadChapter(int chapterIndex, int sectionIndex) {
     chapter.ClearSceneBuffers();
 }
 
+void amStoryWriter::ToggleFullScreen(bool fs) {
+    ShowFullScreen(fs);
+    m_swNotebook->GetToolbar()->ToggleTool(TOOL_StoryFullScreen, fs);
+}
+
 void amStoryWriter::OnClose(wxCloseEvent& event) {
     SaveChapter(m_chapterIndex, m_sectionIndex);
+    m_manager->NullifyStoryWriter();
 
     Destroy();
     event.Skip();
@@ -1223,7 +1226,7 @@ EVT_TOOL(TOOL_PageView, amStoryWriterToolbar::OnPageView)
 EVT_TOOL(TOOL_NoteView, amStoryWriterToolbar::OnNoteView)
 
 EVT_SLIDER(TOOL_ContentScale, amStoryWriterToolbar::OnZoom)
-EVT_TOOL(TOOL_ChapterFullScreen, amStoryWriterToolbar::OnFullScreen)
+EVT_TOOL(TOOL_StoryFullScreen, amStoryWriterToolbar::OnFullScreen)
 
 EVT_UPDATE_UI(TOOL_Bold, amStoryWriterToolbar::OnUpdateBold)
 EVT_UPDATE_UI(TOOL_Italic, amStoryWriterToolbar::OnUpdateItalic)
@@ -1292,7 +1295,7 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
 
     if (amStyle |= amTB_FULLSCREEN && pSWN) {
         AddSeparator();
-        AddCheckTool(TOOL_ChapterFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
+        AddCheckTool(TOOL_StoryFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
     }
 
     Realize();
@@ -1434,7 +1437,7 @@ void amStoryWriterToolbar::OnZoom(wxCommandEvent& event) {
 }
 
 void amStoryWriterToolbar::OnFullScreen(wxCommandEvent& WXUNUSED(event)) {
-    m_parent->ToggleFullScreen();
+    m_parent->ToggleFullScreen(GetToolState(TOOL_StoryFullScreen));
 }
 
 void amStoryWriterToolbar::OnPageView(wxCommandEvent& WXUNUSED(event)) {}

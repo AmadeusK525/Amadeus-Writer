@@ -85,8 +85,7 @@ void StoryGrid::AddButton() {
 }
 
 void StoryGrid::OpenChapter(unsigned int chapterIndex) {
-    amStoryWriter* writer = new amStoryWriter(m_manager->GetMainFrame(), m_manager, chapterIndex, 0);
-    writer->Show();
+    m_manager->OpenChapter(chapterIndex, 0);
 }
 
 void StoryGrid::OnButtonPressed(wxCommandEvent& event) {

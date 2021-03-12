@@ -8,6 +8,7 @@
 
 #include "StoryElements.h"
 
+
 /////////////////////////////////////////////////////////////////
 ///////////////////////////// Scene /////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -139,6 +140,9 @@ struct Section {
 
 
 struct Book {
+    static wxSize coverSize;
+    wxImage cover;
+
 	wxString title{ "" };
     wxString publisher{ "" };
 
@@ -147,16 +151,19 @@ struct Book {
         description{ "" },
         synopsys{ "" };
 
-    int pos = 0;
+    int pos = -1;
     int id = -1;
 
     wxVector<Section> sections{};
 
-    Book() = default;
-
-    Book(int pos) : pos(pos) {}
+    Book() : cover(coverSize.x, coverSize.y) {}
+    Book(const wxString& title, int pos) :
+        title(title), pos(pos), cover(coverSize.x, coverSize.y) {
+        InitCover();
+    }
 
     bool Init();
+    void InitCover();
 
     void SetId(int id) { this->id = id; }
 
@@ -166,6 +173,8 @@ struct Book {
     amDocument GenerateDocumentSimple();
     amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
     amDocument GenerateDocumentForId();
+
+    inline static wxSize GetCoverSize() { return coverSize; }
 };
 
 
@@ -183,9 +192,9 @@ struct amProject {
 
     wxFileName amFile{};
 
-    wxVector<Character>& GetCharacters() { return characters; }
-    wxVector<Location>& GetLocations() { return locations; }
-    wxVector<Item>& GetItems() { return items; }
+    inline wxVector<Character>& GetCharacters() { return characters; }
+    inline wxVector<Location>& GetLocations() { return locations; }
+    inline wxVector<Item>& GetItems() { return items; }
     wxVector<Chapter>& GetChapters(int bookPos, int sectionPos);
 
     wxVector<Chapter> GetChapters(int bookPos);

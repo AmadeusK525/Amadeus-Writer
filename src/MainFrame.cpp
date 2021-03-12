@@ -1,5 +1,6 @@
 #include "MainFrame.h"
 
+#include "Overview.h"
 #include "ElementsNotebook.h"
 #include "StoryNotebook.h"
 #include "Outline.h"
@@ -9,7 +10,7 @@
 #include "ChapterCreator.h"
 #include "ElementCreators.h"
 
-#include "UtilityClasses.h"
+#include "amUtility.h"
 
 #include <wx\richtext\richtextxml.h>
 #include <wx\richtext\richtexthtml.h>
@@ -129,10 +130,9 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_mainBook = new wxSimplebook(splitter);
 	m_mainBook->SetBackgroundColour(wxColour(40, 40, 40));
 
-	m_overview = new wxPanel(m_mainBook);
-	m_overview->SetBackgroundColour(wxColour(20, 20, 20));
+	m_overview = new amOverview(m_mainBook, m_manager);
 	m_overview->Show();
-
+	
 	//Setting up notebook Elements page
 	m_elements = new amElementsNotebook(m_mainBook);
 	m_elements->Hide();
@@ -552,47 +552,9 @@ void amMainFrame::DoSubWindowFullScreen(bool doFullScreen, wxWindow* window) {
 	Layout();
 }
 
-//void amMainFrame::setLast() {
-//    // This function is called at every Save and it writes a file named 88165468
-//    // next to the executable. In the file, there are paths to the project.
-//    // These paths are used when loading so that the user doesn't need to manually
-//    // load a project at startup, it automatically loads the last project that was worked on.
-//
-//    std::ofstream last(m_manager->GetExecutablePath().ToStdString() + "\\88165468", std::ios::binary | std::ios::out);
-//
-//    char size = m_manager->GetFullPath().size() + 1;
-//
-//    last.write((char*)&size, sizeof(int));
-//    last.write(m_manager->GetFullPath().c_str(), size);
-//
-//    last.close();
-//}
-
-//void amMainFrame::getLast() {
-//    // Nothing special here, just reads the 88165468 file and, if succesful, calls the load function.
-//    // Else, just clear the paths and load a standard new project.
-//    std::ifstream last(m_manager->GetExecutablePath().ToStdString() + "\\88165468", std::ios::binary | std::ios::in);
-//
-//    if (last.is_open()) {
-//
-//        char size;
-//        char* data;
-//
-//        last.read((char*)&size, sizeof(int));
-//        data = new char[size];
-//        last.read(data, size);
-//        m_manager->SetCurrentDocPath(data);
-//        delete data;
-//       
-//        last.close();
-//    }
-//
-//    if (wxFileName::Exists(m_manager->GetFullPath().ToStdString()))
-//        m_manager->LoadProject(m_manager->GetFullPath());
-//    else
-//        m_manager->ClearPath();
-//    
-//}
+amOverview* amMainFrame::GetOverview() {
+	return m_overview;
+}
 
 amElementsNotebook* amMainFrame::GetElementsNotebook() {
 	return m_elements;

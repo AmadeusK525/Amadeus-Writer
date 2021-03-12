@@ -16,7 +16,7 @@ private:
     wxPanel* m_mainPanel = nullptr,
         * m_panel = nullptr;
 
-    wxPanel* m_overview = nullptr;
+    amOverview* m_overview = nullptr;
     amElementsNotebook* m_elements = nullptr;
     amStoryNotebook* m_storyNotebook = nullptr;
     amOutline* m_outline = nullptr;
@@ -44,6 +44,7 @@ public:
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize);
 
+    amOverview* GetOverview();
     amElementsNotebook* GetElementsNotebook();
     amStoryNotebook* GetStoryNotebook();
     amOutline* GetOutline();

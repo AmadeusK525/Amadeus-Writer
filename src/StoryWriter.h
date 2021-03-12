@@ -310,7 +310,7 @@ public:
     wxStatusBar* m_statusBar = nullptr;
 
 public:
-    amStoryWriter(wxWindow* parent, amProjectManager* manager, int chapterPos, int sectionPos);
+    amStoryWriter(wxWindow* parent, amProjectManager* manager, int chapterPos, int sectionIndex);
 
     void ClearNote(wxCommandEvent& event);
     void AddNote(wxCommandEvent& event);
@@ -349,7 +349,7 @@ public:
     void OnTimerEvent(wxTimerEvent& event);
     void OnLeftSplitterChanged(wxSplitterEvent& event);
 
-    void ToggleFullScreen() { ShowFullScreen(!IsFullScreen()); }
+    void ToggleFullScreen(bool fs);
     void OnClose(wxCloseEvent& event);
 
     DECLARE_EVENT_TABLE()
@@ -429,7 +429,7 @@ private:
         TOOL_NoteView,
         TOOL_PageView,
         TOOL_ContentScale,
-        TOOL_ChapterFullScreen,
+        TOOL_StoryFullScreen,
         TOOL_TestCircle,
     };
 
@@ -510,6 +510,7 @@ public:
     inline wxRichTextCtrl* GetTextCtrl() { return m_curTextCtrl; }
     inline wxPanel* GetCorkboard() { return m_curCorkboard; }
     inline wxVector<amStoryWriterNotebookPage>& GetPages() { return m_writerPages; }
+    inline amStoryWriterToolbar* GetToolbar() { return m_contentToolbar; }
 
     inline wxVector<Note>& GetNotes() { return m_notes; }
     inline wxWrapSizer* GetNotesSizer() { return (wxWrapSizer*)m_curCorkboard->GetSizer(); }
@@ -531,7 +532,7 @@ public:
     void OnText(wxCommandEvent& event);
     void OnZoomChange(int zoom);
 
-    inline void ToggleFullScreen() { m_parent->ToggleFullScreen(); }
+    inline void ToggleFullScreen(bool fs) { m_parent->ToggleFullScreen(fs); }
 
     bool HasRedNote();
 
@@ -561,7 +562,7 @@ enum {
     TOOL_NoteView,
     TOOL_PageView,
     TOOL_ContentScale,
-    TOOL_ChapterFullScreen,
+    TOOL_StoryFullScreen,
     TOOL_TestCircle,
 
     MENU_Delete,
