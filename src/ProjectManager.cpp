@@ -2,12 +2,14 @@
 
 #include "ProjectWizard.h"
 #include "MainFrame.h"
+#include "Overview.h"
 #include "ElementsNotebook.h"
 #include "StoryNotebook.h"
 #include "Outline.h"
 #include "Release.h"
 #include "OutlineFiles.h"
 #include "ElementShowcases.h"
+#include "StoryWriter.h"
 
 #include <wx\progdlg.h>
 #include <wx\mstream.h>
@@ -110,6 +112,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tBooks.Add("genre TEXT");
 	tBooks.Add("description TEXT");
 	tBooks.Add("synopsys TEXT");
+	tBooks.Add("cover BLOB");
 
 	wxArrayString tSections;
 	tSections.Add("id INTEGER PRIMARY KEY");
@@ -555,18 +558,18 @@ bool amProjectManager::Init() {
 			m_mainFrame = new amMainFrame("Amadeus Writer - " + m_project.amFile.GetFullName(),
 				this, wxDefaultPosition, wxDefaultSize);
 
-			m_elements = (m_mainFrame->GetElementsNotebook());
-			m_storyNotebook = (m_mainFrame->GetStoryNotebook());
-			m_outline = (m_mainFrame->GetOutline());
-			m_release = (m_mainFrame->GetRelease());
+			m_overview = m_mainFrame->GetOverview();
+			m_elements = m_mainFrame->GetElementsNotebook();
+			m_storyNotebook = m_mainFrame->GetStoryNotebook();
+			m_outline = m_mainFrame->GetOutline();
+			m_release = m_mainFrame->GetRelease();
 		}
 
 		wxSQLite3Database::InitializeSQLite();
 		m_storage.Open(m_project.amFile.GetFullPath());
 
 		if (!m_storage.Init()) {
-			Book book;
-			book.title = m_project.amFile.GetName();
+			Book book(m_project.amFile.GetName(), 1);
 
 			book.Save(&m_storage);
 			m_project.books.push_back(book);
@@ -640,6 +643,7 @@ bool amProjectManager::DoLoadProject(const wxString& path) {
 
 		m_storage.Commit();
 
+		m_overview->LoadOverview();
 		m_elements->UpdateAll();
 		m_outline->LoadOutline(corkboard, timeline, files);
 
@@ -661,10 +665,8 @@ void amProjectManager::LoadBooks() {
 		table.SetRow(i);
 		int id = table.GetInt("id");
 
-		Book book;
+		Book book(table.GetAsString("name"), i + 1);
 
-		book.title = table.GetAsString("name");
-		book.pos = table.GetInt("position");
 		book.author = table.GetAsString("author");
 		book.genre = table.GetAsString("genre");
 		book.description = table.GetAsString("description");
@@ -678,6 +680,12 @@ void amProjectManager::LoadBooks() {
 	}
 
 	RedeclareChapsInElements(m_project.books[0]);
+}
+
+void amProjectManager::LoadBookContent(Book& book) {
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM books WHERE book_id = " +
+		std::to_string(book.id) + " ORDER BY position ASC;");
+	int i = 0;
 }
 
 void amProjectManager::LoadSections(wxVector<Section>& sections, int bookId) {
@@ -1016,6 +1024,18 @@ int amProjectManager::GetDocumentId(amDocument& document) {
 	}
 
 	return id;
+}
+
+void amProjectManager::OpenChapter(int chapterIndex, int sectionIndex) {
+	if (m_storyWriter) {
+		m_storyWriter->SetCurrentChapter(chapterIndex, sectionIndex, true);
+		m_storyWriter->Maximize();
+	} else {
+		m_storyWriter = new amStoryWriter(m_mainFrame, this, chapterIndex, sectionIndex);
+
+		if (m_mainFrame->IsFullScreen())
+			m_storyWriter->ToggleFullScreen(true);
+	}
 }
 
 void amProjectManager::AddCharacter(Character& character, bool refreshElements) {

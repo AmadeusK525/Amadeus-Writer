@@ -2,7 +2,6 @@
 #include "BookElements.h"
 
 #include <wx\mstream.h>
-#include <wx\memory.h>
 
 #include "ProjectManager.h"
 

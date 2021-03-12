@@ -1,8 +1,9 @@
-#ifndef UTILITYCLASSES_AM_H_
-#define UTILITYCLASSES_AM_H_
+#ifndef UTILITY_AM_H_
+#define UTILITY_AM_H_
 #pragma once
 
 #include <wx\splitter.h>
+#include <wx\image.h>
 
 class amSplitterWindow : public wxSplitterWindow {
 public:
@@ -15,4 +16,6 @@ public:
 
     virtual void OnDoubleClickSash(int x, int y) {}
 };
+
+wxImage amGetScaledImage(int maxWidth, int maxHeight, wxImage& image);
 #endif;

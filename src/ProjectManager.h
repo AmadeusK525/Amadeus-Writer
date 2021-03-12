@@ -63,10 +63,13 @@ public:
 
 
 class amMainFrame;
+class amOverview;
 class amElementsNotebook;
 class amStoryNotebook;
 class amOutline;
 class amRelease;
+
+class amStoryWriter;
 
 class amProjectManager {
 private:
@@ -74,10 +77,13 @@ private:
 	amProjectSQLDatabase m_storage;
 
 	amMainFrame* m_mainFrame = nullptr;
+	amOverview* m_overview = nullptr;
 	amElementsNotebook* m_elements = nullptr;
 	amStoryNotebook* m_storyNotebook = nullptr;
 	amOutline* m_outline = nullptr;
 	amRelease* m_release = nullptr;
+
+	amStoryWriter* m_storyWriter = nullptr;
 
 	wxFileName m_executablePath{};
 
@@ -101,6 +107,7 @@ public:
 	bool DoLoadProject(const wxString& path);
 
 	void LoadBooks();
+	void LoadBookContent(Book& book);
 	void LoadSections(wxVector<Section>& sections, int bookId);
 	void LoadChapters(wxVector<Chapter>& chapters, int sectionId);
 	void LoadScenes(wxVector<Scene>& scenes, int chapterId, bool loadBuffers);
@@ -134,6 +141,9 @@ public:
 	
 	int GetDocumentId(amDocument& document);
 	inline void InsertDocument(amDocument& document) { m_storage.InsertDocument(document); }
+
+	void OpenChapter(int chapterIndex, int sectionIndex);
+	void NullifyStoryWriter() { m_storyWriter = nullptr; }
 
 	void AddCharacter(Character& character, bool refreshElements);
 	void AddLocation(Location& location, bool refreshElements);

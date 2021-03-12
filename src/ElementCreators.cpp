@@ -281,12 +281,12 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 
 	wxFont font10(wxFontInfo(10));
 
-	ncFullName = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(70, 10), wxSize(420, 25),
+	ncFullName = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
 	ncFullName->SetBackgroundColour(dark);
 	ncFullName->SetForegroundColour(wxColour(250, 250, 250));
 	ncFullName->SetFont(font10);
-	wxStaticText* label1 = new wxStaticText(m_panel1, wxID_ANY, "Name:", wxPoint(10, 10), wxSize(50, 25),
+	wxStaticText* label1 = new wxStaticText(m_panel1, wxID_ANY, "Name:", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
 	label1->SetFont(wxFont(wxFontInfo(12)));
 	label1->SetBackgroundColour(darker);
@@ -296,70 +296,72 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 	firstLine->Add(label1, wxSizerFlags(0).Border(wxRIGHT, 10));
 	firstLine->Add(ncFullName, wxSizerFlags(1));
 
-	ncMale = new wxRadioButton(m_panel1, wxID_ANY, "Male", wxPoint(60, 40), wxSize(60, 20), wxRB_GROUP);
-	ncMale->SetFont(font10);
-	ncMale->SetForegroundColour(wxColour(245, 245, 245));
-	ncFemale = new wxRadioButton(m_panel1, wxID_ANY, "Female", wxPoint(60, 60), wxSize(60, 20));
-	ncFemale->SetFont(font10);
-	ncFemale->SetForegroundColour(wxColour(245, 245, 245));
-
-	wxBoxSizer* btnHolderSizer1 = new wxBoxSizer(wxVERTICAL);
-	btnHolderSizer1->Add(ncMale, wxSizerFlags(0).Left());
-	btnHolderSizer1->Add(ncFemale, wxSizerFlags(0).Left());
-
-	wxStaticText* label2 = new wxStaticText(m_panel1, wxID_ANY, "Sex:", wxPoint(10, 50), wxSize(40, 25),
+	ncSex = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+		wxBORDER_SIMPLE);
+	ncSex->SetBackgroundColour(dark);
+	ncSex->SetForegroundColour(wxColour(250, 250, 250));
+	ncSex->SetFont(font10);
+	ncSex->SetMinSize(FromDIP(wxSize(55, -1)));
+	wxStaticText* label2 = new wxStaticText(m_panel1, wxID_ANY, "Sex:", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
 	label2->SetBackgroundColour(darker);
 	label2->SetForegroundColour(txtCol);
 	label2->SetFont(wxFont(wxFontInfo(13)));
 
-	ncHeight = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(75, 90), wxSize(80, 25),
+	ncHeight = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
 	ncHeight->SetBackgroundColour(dark);
 	ncHeight->SetForegroundColour(wxColour(250, 250, 250));
 	ncHeight->SetFont(font10);
-	wxStaticText* label3 = new wxStaticText(m_panel1, wxID_ANY, "Height: ", wxPoint(10, 90), wxSize(55, 25),
+	ncHeight->SetMinSize(FromDIP(wxSize(45, -1)));
+	wxStaticText* label3 = new wxStaticText(m_panel1, wxID_ANY, "Height: ", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
 	label3->SetBackgroundColour(darker);
 	label3->SetForegroundColour(txtCol);
 	label3->SetFont(wxFont(wxFontInfo(12)));
 
-	ncNationality = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(335, 50), wxSize(-1, 25),
+	ncNationality = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
 	ncNationality->SetBackgroundColour(dark);
 	ncNationality->SetForegroundColour(wxColour(250, 250, 250));
 	ncNationality->SetFont(font10);
-	wxStaticText* label4 = new wxStaticText(m_panel1, wxID_ANY, "Nationality: ", wxPoint(240, 50), wxDefaultSize,
+	wxStaticText* label4 = new wxStaticText(m_panel1, wxID_ANY, "Nationality: ", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
 	label4->SetBackgroundColour(darker);
 	label4->SetForegroundColour(txtCol);
 	label4->SetFont(wxFont(wxFontInfo(12)));
 
 	wxBoxSizer* secondLine = new wxBoxSizer(wxHORIZONTAL);
-	secondLine->Add(label2, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 7));
-	secondLine->Add(btnHolderSizer1, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 8));
-	secondLine->Add(label3, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 5));
-	secondLine->Add(ncHeight, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 15));
-	secondLine->Add(label4, wxSizerFlags(0).CenterVertical().Border(wxLEFT, 7));
-	secondLine->Add(ncNationality, wxSizerFlags(1).CenterVertical().Border(wxRIGHT, 8));
+	secondLine->Add(label2, wxSizerFlags(0).CenterVertical());
+	secondLine->AddSpacer(6);
+	secondLine->Add(ncSex, wxSizerFlags(1).CenterVertical());
+	secondLine->AddSpacer(10);
+	secondLine->Add(label3, wxSizerFlags(0).CenterVertical());
+	secondLine->AddSpacer(6);
+	secondLine->Add(ncHeight, wxSizerFlags(1).CenterVertical());
+	secondLine->AddSpacer(10);
+	secondLine->Add(label4, wxSizerFlags(0).CenterVertical());
+	secondLine->AddSpacer(6);
+	secondLine->Add(ncNationality, wxSizerFlags(3).CenterVertical());
 
-	ncAge = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(180, 50), wxSize(50, 25),
+	ncAge = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
 	ncAge->SetBackgroundColour(dark);
 	ncAge->SetForegroundColour(wxColour(250, 250, 250));
 	ncAge->SetFont(font10);
-	wxStaticText* label5 = new wxStaticText(m_panel1, wxID_ANY, "Age:", wxPoint(130, 50), wxSize(40, 25),
+	ncAge->SetMinSize(FromDIP(wxSize(45, -1)));
+	wxStaticText* label5 = new wxStaticText(m_panel1, wxID_ANY, "Age:", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
 	label5->SetBackgroundColour(darker);
 	label5->SetForegroundColour(txtCol);
 	label5->SetFont(wxFont(wxFontInfo(12)));
 
-	ncNickname = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(235, 90), wxSize(-1, 25),
+	ncNickname = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
 	ncNickname->SetBackgroundColour(dark);
 	ncNickname->SetForegroundColour(wxColour(250, 250, 250));
 	ncNickname->SetFont(font10);
-	wxStaticText* label6 = new wxStaticText(m_panel1, wxID_ANY, "Nickname: ", wxPoint(145, 90), wxDefaultSize,
+	wxStaticText* label6 = new wxStaticText(m_panel1, wxID_ANY, "Nickname: ", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
 	label6->SetBackgroundColour(darker);
 	label6->SetForegroundColour(txtCol);
@@ -378,7 +380,7 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 	ncSecon->SetFont(font10);
 	ncSecon->SetForegroundColour(wxColour(245, 245, 245));
 
-	wxStaticText* label7 = new wxStaticText(m_panel1, wxID_ANY, "Role: ", wxPoint(345, 90), wxSize(50, 25),
+	wxStaticText* label7 = new wxStaticText(m_panel1, wxID_ANY, "Role: ", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
 	label7->SetBackgroundColour(darker);
 	label7->SetForegroundColour(txtCol);
@@ -392,26 +394,26 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 
 	wxBoxSizer* thirdLine = new wxBoxSizer(wxHORIZONTAL);
 	thirdLine->Add(label5, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 8));
-	thirdLine->Add(ncAge, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 16));
+	thirdLine->Add(ncAge, wxSizerFlags(1).CenterVertical().Border(wxRIGHT, 16));
 	thirdLine->Add(label6, wxSizerFlags(0).CenterVertical());
-	thirdLine->Add(ncNickname, wxSizerFlags(1).CenterVertical().Border(wxRIGHT, 16));
+	thirdLine->Add(ncNickname, wxSizerFlags(3).CenterVertical().Border(wxRIGHT, 16));
 	thirdLine->Add(label7, wxSizerFlags(0).CenterVertical());
 	thirdLine->Add(btnHolderSizer2, wxSizerFlags(0).CenterVertical());
 
-	label8 = new wxStaticText(m_panel1, wxID_ANY, "Appearance", wxPoint(15, 145), wxSize(475, -1),
+	label8 = new wxStaticText(m_panel1, wxID_ANY, "Appearance", wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
 	label8->SetBackgroundColour(wxColour(230, 0, 20));
 	label8->SetFont(wxFont(wxFontInfo(13).Bold()));
-	ncAppearance = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(15, 170), wxSize(475, 85),
+	ncAppearance = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxBORDER_SIMPLE);
 	ncAppearance->SetBackgroundColour(dark);
 	ncAppearance->SetForegroundColour(wxColour(250, 250, 250));
 
-	wxStaticText* label9 = new wxStaticText(m_panel1, wxID_ANY, "Personality", wxPoint(15, 265), wxSize(475, -1),
+	wxStaticText* label9 = new wxStaticText(m_panel1, wxID_ANY, "Personality", wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
 	label9->SetBackgroundColour(wxColour(230, 0, 20));
 	label9->SetFont(wxFont(wxFontInfo(13).Bold()));
-	ncPersonality = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(15, 290), wxSize(475, 85),
+	ncPersonality = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxBORDER_SIMPLE);
 	ncPersonality->SetBackgroundColour(dark);
 	ncPersonality->SetForegroundColour(wxColour(250, 250, 250));
@@ -420,15 +422,18 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
 	label10->SetBackgroundColour(wxColour(230, 0, 20));
 	label10->SetFont(wxFont(wxFontInfo(13).Bold()));
-	ncBackstory = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(15, 410), wxSize(475, 85),
+	ncBackstory = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxBORDER_SIMPLE);
 	ncBackstory->SetBackgroundColour(dark);
 	ncBackstory->SetForegroundColour(wxColour(250, 250, 250));
 
 	wxBoxSizer* verSizer1 = new wxBoxSizer(wxVERTICAL);
-	verSizer1->Add(firstLine, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT | wxTOP, 10));
-	verSizer1->Add(secondLine, wxSizerFlags(0).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-	verSizer1->Add(thirdLine, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 10));
+	verSizer1->AddSpacer(15);
+	verSizer1->Add(firstLine, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
+	verSizer1->AddSpacer(10);
+	verSizer1->Add(secondLine, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
+	verSizer1->AddSpacer(10);
+	verSizer1->Add(thirdLine, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
 	verSizer1->AddSpacer(22);
 	verSizer1->Add(label8, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
 	verSizer1->Add(ncAppearance, wxSizerFlags(1).Expand().Border(wxLEFT | wxRIGHT, 15));
@@ -443,23 +448,19 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 
 	SetIcon(wxICON(characterIcon));
 	Layout();
+	Show();
 }
 
 wxVector<wxString> amCharacterCreator::GetValues() {
 	wxVector<wxString> vec;
 
-	vec.push_back(ncFullName->GetValue().ToStdString());
+	vec.push_back(ncFullName->GetValue());
 
-	if (ncMale->GetValue()) {
-		vec.push_back(ncMale->GetLabel().ToStdString());
-	} else {
-		vec.push_back(ncFemale->GetLabel().ToStdString());
-	}
-
-	vec.push_back(ncAge->GetValue().ToStdString());
-	vec.push_back(ncNationality->GetValue().ToStdString());
-	vec.push_back(ncHeight->GetValue().ToStdString());
-	vec.push_back(ncNickname->GetValue().ToStdString());
+	vec.push_back(ncSex->GetValue());
+	vec.push_back(ncAge->GetValue());
+	vec.push_back(ncNationality->GetValue());
+	vec.push_back(ncHeight->GetValue());
+	vec.push_back(ncNickname->GetValue());
 
 	if (ncMain->GetValue())
 		vec.push_back("Protagonist");
@@ -470,9 +471,9 @@ wxVector<wxString> amCharacterCreator::GetValues() {
 	else if (ncSecon->GetValue())
 		vec.push_back("Secondary");
 
-	vec.push_back(ncAppearance->GetValue().ToStdString());
-	vec.push_back(ncPersonality->GetValue().ToStdString());
-	vec.push_back(ncBackstory->GetValue().ToStdString());
+	vec.push_back(ncAppearance->GetValue());
+	vec.push_back(ncPersonality->GetValue());
+	vec.push_back(ncBackstory->GetValue());
 
 	return vec;
 }
@@ -489,10 +490,7 @@ void amCharacterCreator::SetEdit(Element* editChar) {
 	m_back->SetId(BUTTON_BackEdit1);
 
 	ncFullName->SetValue(character->name);
-
-	if (character->sex == "Female") {
-		ncFemale->SetValue(true);
-	}
+	ncSex->SetValue(character->sex);
 	ncAge->SetValue(character->age);
 	ncNationality->SetValue(character->nat);
 	ncHeight->SetValue(character->height);
@@ -601,6 +599,9 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
 	topSizer->Add(label, wxSizerFlags(1));
 	topSizer->Add(minus, 0);
+
+	label->Show();
+	content->Show();
 
 	m_customSizer->Add(topSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxTOP | wxRIGHT, 15));
 	m_customSizer->Add(content, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));

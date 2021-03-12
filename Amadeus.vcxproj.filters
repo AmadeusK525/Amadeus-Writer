@@ -80,13 +80,16 @@
     <ClCompile Include="src\WordProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\UtilityClasses.cpp">
+    <ClCompile Include="src\amUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\StoryWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\StoryNotebook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Overview.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -160,13 +163,16 @@
     <ClInclude Include="src\WordProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\UtilityClasses.h">
+    <ClInclude Include="src\amUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\StoryWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\StoryNotebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Overview.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

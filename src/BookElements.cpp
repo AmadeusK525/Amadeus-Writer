@@ -1,6 +1,7 @@
 #include "BookElements.h"
 
 #include <wx\sstream.h>
+#include <wx\mstream.h>
 
 #include "MyApp.h"
 
@@ -403,6 +404,8 @@ amDocument Section::GenerateDocumentForId() {
 /////////////////////////////////////////////////////////////////
 
 
+wxSize Book::coverSize{ 660, 900 };
+
 bool Book::Init() {
 	if (id == -1)
 		return false;
@@ -413,20 +416,96 @@ bool Book::Init() {
 	return true;
 }
 
+void Book::InitCover() {
+	wxBitmap bitmapCover(cover);
+	wxMemoryDC dc(bitmapCover);
+	dc.SetFont(wxFontInfo(64).Bold());
+	dc.SetTextForeground(wxColour(255, 255, 255));
+
+	wxString textToDraw = title;
+	wxSize textSize;
+
+	int begin = 0;
+	int end = 0;
+	int strLen = title.Length();
+
+	bool first = true;
+	int maxChar = 0;
+
+	while (end < strLen) {
+		if (end >= begin + maxChar || first) {
+			end += 2;
+		} else
+			end += maxChar;
+
+		if (end > strLen)
+			end = strLen;
+
+		dc.GetMultiLineTextExtent(textToDraw.SubString(begin, end), &textSize.x, &textSize.y);
+
+		if (textSize.x >= coverSize.x - 20) {
+			if (first) {
+				maxChar = end - 1;
+				first = false;
+			}
+
+			size_t found = textToDraw.rfind(" ", end);
+
+			if (found != std::string::npos) {
+				textToDraw.replace(found, 1, "\n");
+				begin = found;
+			} else {
+				textToDraw.replace(begin + maxChar, 2, "-\n");
+				begin += maxChar + 1;
+			}
+
+			end = begin;
+		} else if (end >= strLen) {
+			textToDraw.Remove(end);
+			dc.GetMultiLineTextExtent(textToDraw, &textSize.x, &textSize.y);
+			break;
+		}
+	}
+
+	dc.DrawText(textToDraw, 10, (coverSize.y / 2) - (textSize.y / 2));
+	cover = bitmapCover.ConvertToImage();
+}
+
 void Book::Save(wxSQLite3Database* db) {
 	try {
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 
 		wxSQLite3StatementBuffer buffer;
+		bool doCover = cover.IsOk();
 
-		wxString insert("INSERT INTO books (name, author, genre, description, synopsys, position) VALUES ("
+		wxString insert("INSERT INTO books (name, author, genre, description, synopsys, position, cover) VALUES ("
 			"'%q', '%q',  '%q', '%q', '%q', ");
-		insert << pos << ");";
+		insert << pos;
+
+		if (doCover)
+			insert << ", ?);";
+		else
+			insert << ", NULL);";
 
 		buffer.Format((const char*)insert, (const char*)title.ToUTF8(), (const char*)author.ToUTF8(),
 			(const char*)genre.ToUTF8(), (const char*)description.ToUTF8(), (const char*)synopsys.ToUTF8());
 
-		storage->ExecuteUpdate(buffer);
+		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
+
+		if (doCover) {
+			wxMemoryOutputStream stream;
+
+			cover.SaveFile(stream, wxBITMAP_TYPE_PNG);
+
+			wxMemoryBuffer membuffer;
+			membuffer.SetBufSize(stream.GetSize());
+			membuffer.SetDataLen(stream.GetSize());
+			stream.CopyTo(membuffer.GetData(), membuffer.GetDataLen());
+
+			statement.Bind(1, membuffer);
+		}
+
+		statement.ExecuteUpdate();
 		SetId(storage->GetDocumentId(GenerateDocumentForId()));
 
 		Init();
@@ -446,13 +525,38 @@ bool Book::Update(wxSQLite3Database* db, bool updateSections, bool updateChapter
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 
 		wxSQLite3StatementBuffer buffer;
+		bool doCover = cover.IsOk();
 
 		wxString update("UPDATE books SET name = '%q', author = '%q', genre = '%q', description = '&q', synopsys = '%q', position = ");
-		update << pos << " WHERE id = " << id << ";";
+		update << pos << ", cover = ";
+
+		if (doCover)
+			update << "?";
+		else
+			update << "NULL";
+
+		update <<	"WHERE id = " << id;
 
 		buffer.Format((const char*)update, (const char*)title.ToUTF8(), (const char*)author.ToUTF8(),
 			(const char*)genre.ToUTF8(), (const char*)description.ToUTF8(), (const char*)synopsys.ToUTF8());
-		storage->ExecuteUpdate(buffer);
+
+		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
+
+
+		if (doCover) {
+			wxMemoryOutputStream stream;
+
+			cover.SaveFile(stream, wxBITMAP_TYPE_PNG);
+
+			wxMemoryBuffer membuffer;
+			membuffer.SetBufSize(stream.GetSize());
+			membuffer.SetDataLen(stream.GetSize());
+			stream.CopyTo(membuffer.GetData(), membuffer.GetDataLen());
+
+			statement.Bind(1, membuffer);
+		}
+
+		statement.ExecuteUpdate();
 
 		if (updateSections) {
 			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM sections WHERE book_id = " + std::to_string(id));

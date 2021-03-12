@@ -426,6 +426,7 @@ END_EVENT_TABLE()
 amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(parent, -1, wxDefaultPosition,
 	wxDefaultSize, wxSP_LIVE_UPDATE | wxSP_NOBORDER | wxSP_THIN_SASH | wxSP_NO_XP_THEME) {
 	SetBackgroundColour(wxColour(20, 20, 20));
+	SetDoubleBuffered(true);
 
 	m_textCtrl = new wxRichTextCtrl(this,-1, "", wxDefaultPosition, wxDefaultSize, 32L | wxBORDER_NONE);
 	m_textCtrl->SetBackgroundColour(wxColour(40, 40, 40));

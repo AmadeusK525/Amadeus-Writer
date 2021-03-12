@@ -9,7 +9,7 @@
 #include <wx\sstream.h>
 
 #include "StoryElements.h"
-#include "UtilityClasses.h"
+#include "amUtility.h"
 
 class OutlineTreeModelNode;
 WX_DEFINE_ARRAY_PTR(OutlineTreeModelNode*, OulineTreeModelNodePtrArray);

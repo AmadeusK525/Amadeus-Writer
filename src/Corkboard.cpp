@@ -422,8 +422,8 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 }
 
 void CorkboardCanvas::OnUpdateVirtualSize(wxRect& vrtrect) {
-	vrtrect.width += 500;
-	vrtrect.height += 500;
+	vrtrect.width += 1500;
+	vrtrect.height += 1500;
 }
 
 void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {

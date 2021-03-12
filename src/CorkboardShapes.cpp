@@ -84,7 +84,7 @@ void AutoWrapTextShape::OnLeftDoubleClick(const wxPoint& pos) {
 }
 
 void AutoWrapTextShape::CalcWrappedText() {
-	if (m_nRectSize.x > 30)
+	if (m_nRectSize.x > 30 && m_nRectSize.y > 15)
 		DoCalcWrappedText(m_nRectSize.x, m_nRectSize.y);
 }
 
@@ -100,17 +100,22 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 	int end = 0;
 	int strLen = m_sText.Length();
 
+	int maxLength = length - 8;
+
 	int numberOfLines = 1;
 	if (m_nLineHeight > 0)
 		numberOfLines = height / m_nLineHeight;
+
+	if (height > 25)
+		height -= 15;
 
 	bool first = true;
 	int maxChar = 0;
 
 	while (numberOfLines >= 0) {
-		if (end >= begin + maxChar || first)
+		if (end >= begin + maxChar || first) {
 			end += 2;
-		else
+		} else
 			end += maxChar;
 
 		if (end > strLen)
@@ -118,27 +123,30 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 
 		textSize = GetTextExtent(m_textToDraw.SubString(begin, end));
 
-		// This is done due to a bug that cause m_nLineHeight to be 0 before getting the text extent
+		// This is done due to a bug that causes m_nLineHeight to be 0 before getting the text extent
 		if (numberOfLines == 1)
-			numberOfLines = height / m_nLineHeight;
+			numberOfLines = (height + 15) / m_nLineHeight;
 
-		if (textSize.x >= length - 2 && numberOfLines != 0) {
-			maxChar = end - 1;
+		if (textSize.x >= maxLength && numberOfLines != 0) {
+			if (first) {
+				maxChar = end - 5;
+				first = false;
+			}
+
 			size_t found = m_textToDraw.rfind(" ", end);
 
 			if (found != std::string::npos) {
 				m_textToDraw.replace(found, 1, "\n");
 				begin = found;
 			} else {
-				m_textToDraw.replace(maxChar, 2, "-\n");
-				begin = maxChar + 1;
+				m_textToDraw.replace(begin + maxChar, 2, "-\n");
+				begin += maxChar + 1;
 			}
 
 			end = begin;
 			numberOfLines--;
 		} else if (numberOfLines == 0 || end >= strLen ||
 			GetTextExtent(m_textToDraw.Left(end)).y > height) {
-
 			if (end < strLen) {
 				m_textToDraw.Remove(end - 3);
 				m_textToDraw << "...";
@@ -147,7 +155,6 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 
 			break;
 		}
-
 	}
 }
 
@@ -294,7 +301,6 @@ void NoteShape::ChangeColour(wxWindowID id) {
 
 void NoteShape::OnBeginHandle(wxSFShapeHandle& handle) {
 	EmtpyDrawText();
-	//m_content->ShouldIndividualCount(true);
 	wxSFRoundRectShape::OnBeginHandle(handle);
 }
 

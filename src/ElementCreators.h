@@ -104,6 +104,7 @@ private:
     wxTextCtrl* ncFullName = nullptr,
         * ncNickname = nullptr,
         * ncAge = nullptr,
+        * ncSex = nullptr,
         * ncNationality = nullptr,
         * ncHeight = nullptr,
         * ncBackstory = nullptr,
@@ -111,9 +112,6 @@ private:
         * ncPersonality = nullptr;
 
     wxStaticText* label8 = nullptr;
-
-    wxRadioButton* ncMale = nullptr,
-        * ncFemale = nullptr;
 
     wxRadioButton* ncMain = nullptr,
         * ncSupp = nullptr,
