@@ -112,7 +112,7 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 		storage->ExecuteUpdate(buffer);
 
 		if (updateScenes) {
-			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM scenes WHERE chapter_id = " + std::to_string(id));
+			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM scenes WHERE chapter_id = " + std::to_string(id) + ";");
 
 			int prevSize = customTable.GetRowCount();
 			int newSize = scenes.size();
@@ -123,7 +123,7 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 					customTable.SetRow(i);
 
 					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
-					update << scenes[i].pos << ", chapter_id = " << scenes[i].id << " WHERE id = " <<
+					update << scenes[i].pos << ", chapter_id = " << id << " WHERE id = " <<
 						customTable.GetInt("id") << ";";
 
 					wxStringOutputStream stream;
@@ -149,7 +149,7 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 					customTable.SetRow(i);
 
 					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
-					update << scenes[i].pos << ", chapter_id = " << scenes[i].id << " WHERE id = " <<
+					update << scenes[i].pos << ", chapter_id = " << id << " WHERE id = " <<
 						customTable.GetInt("id") << ";";
 
 					wxStringOutputStream stream;
@@ -172,7 +172,7 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 		}
 
 		if (updateNotes) {
-			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM chapter_notes WHERE chapter_id = " + std::to_string(id));
+			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM chapter_notes WHERE chapter_id = " + std::to_string(id) + ";");
 
 			int prevSize = customTable.GetRowCount();
 			int newSize = notes.size();
@@ -355,6 +355,11 @@ bool Section::Update(wxSQLite3Database* db, bool updateChapters) {
 
 	buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)description.ToUTF8());
 	storage->ExecuteUpdate(buffer); 
+
+	if (updateChapters) {
+		for (Chapter& chapter : chapters)
+			chapter.Update(db, false, false);
+	}
 
 	return false;
 }

@@ -36,6 +36,7 @@ WX_DEFINE_ARRAY_PTR(StoryTreeModelNode*, StoryTreeModelNodePtrArray);
 class StoryTreeModelNode {
 private:
     StoryTreeModelNode* m_parent = nullptr;
+    StoryTreeModelNode* m_trash = nullptr;
     StoryTreeModelNodePtrArray m_children{};
 
     wxDataViewItemAttr m_attr{};
@@ -47,11 +48,13 @@ private:
     wxString m_title{};
     bool m_isContainer = false;
 
+    bool m_isInTrash = false;
+
 public:
     static wxVector<wxIcon> m_icons;
 
 public:
-    inline StoryTreeModelNode(StoryTreeModelNode* parent,
+    inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash,
         const wxString& title, int index, int id, STMN_Type type) {
         m_parent = parent;
         m_title = title;
@@ -59,8 +62,16 @@ public:
         m_dbID = id;
         m_type = type;
 
-        if (m_parent)
-            m_parent->Insert(this, index);
+        if (m_parent) {
+            if (trash)
+                trash->Append(this);
+            else {
+                if (index >= m_parent->GetChildCount())
+                    m_parent->Append(this);
+                else
+                    m_parent->Insert(this, index);
+            }
+        }
 
         if (m_type == STMN_Chapter) {
             m_attr.SetBackgroundColour(wxColour(45, 45, 45));
@@ -111,6 +122,7 @@ public:
     inline int GetID() { return m_dbID; }
 
     inline int GetIndex() { return m_index; }
+    inline void SetIndex(int index) { m_index = index; }
 
     inline void SetTitle(wxString& title) { m_title = title; }
 
@@ -121,6 +133,9 @@ public:
 
     inline bool IsTrash() { return m_type == STMN_Trash; }
 
+    inline bool IsInTrash() { return m_isInTrash; }
+    inline void SetIsInTrash() { m_isInTrash = true; }
+
     inline STMN_Type GetType() { return m_type; }
 
     inline bool IsContainer() const { 
@@ -129,7 +144,7 @@ public:
     inline void SetContainer(bool is) { m_isContainer = is; }
 
     inline void Reparent(StoryTreeModelNode* newParent) {
-        if (m_parent)
+        if (m_parent && !m_isInTrash)
             m_parent->GetChildren().Remove(this);
 
         m_parent = newParent;
@@ -139,7 +154,7 @@ public:
     }
 
     inline void Reparent(StoryTreeModelNode* newParent, int n) {
-        if (m_parent)
+        if (m_parent && !m_isInTrash)
             m_parent->GetChildren().Remove(this);
 
         m_parent = newParent;
@@ -174,7 +189,10 @@ public:
     }
 
     inline void Insert(StoryTreeModelNode* child, unsigned int n) {
-        m_children.Insert(child, n);
+        if (n >= m_children.size())
+            m_children.push_back(child);
+        else
+            m_children.Insert(child, n);
     }
 
     inline void Append(StoryTreeModelNode* child) {
@@ -210,11 +228,13 @@ public:
 
     wxString GetTitle(const wxDataViewItem& item) const;
 
-    wxDataViewItem AddSection(const wxString& name, int id, int index);
-    wxDataViewItem AddChapter(wxDataViewItem& section, const wxString& name, int id, int index);
-    wxDataViewItem AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index);
+    wxDataViewItem AddSection(const wxString& name, int id, int index, bool isInTrash);
+    wxDataViewItem AddChapter(wxDataViewItem& section, const wxString& name, int id, int index, bool isInTrash);
+    wxDataViewItem AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index, bool isInTrash);
 
     wxDataViewItem GetChapterItem(int chapterIndex, int sectionIndex);
+
+    void RedeclareChapterIndexes(Section& section);
 
     bool IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
 
@@ -252,6 +272,7 @@ public:
     virtual bool IsContainer(const wxDataViewItem& item) const;
     virtual bool GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const;
 };
+
 
 ///////////////////////////////////////////////////////////////////
 //////////////////////////// StoryWriter //////////////////////////
@@ -334,6 +355,7 @@ public:
 
     void OnStoryItemActivated(wxDataViewEvent& event);
     void OnStoryItemSelected(wxDataViewEvent& event);
+    void OnStoryViewRightClick(wxDataViewEvent& event);
 
     void SetCurrentChapter(int chapterIndex, int sectionIndex, bool load);
     void OnNextChapter(wxCommandEvent& event);
@@ -377,7 +399,9 @@ enum {
     BUTTON_NextChap,
 
     TIMER_Save,
-    TIMER_Words
+    TIMER_Words,
+    
+    MENU_MoveToTrash
 };
 
 
