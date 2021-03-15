@@ -24,6 +24,8 @@ struct Scene {
     int id = -1;
     int chapterID = -1;
 
+    bool isInTrash = false;
+
     Scene(int chapterID, int pos) : chapterID(chapterID), pos(pos) {}
 
     void SetId(int id) { this->id = id; }
@@ -66,6 +68,8 @@ struct Chapter {
     int position = -1;
     int id = -1;
     int sectionID = -1;
+
+    bool isInTrash = false;
 
     Chapter() : characters(true),
         locations(true),
@@ -117,6 +121,8 @@ struct Section {
     int pos = -1;
     int id = -1;
     int bookID = -1;
+
+    bool isInTrash = false;
 
     wxVector<Chapter> chapters{};
     SectionType type{ Section_Part };

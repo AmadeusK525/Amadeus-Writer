@@ -32,8 +32,13 @@ bool StoryTreeModel::Save() {
 void StoryTreeModel::CreateFromScratch(Book& book) {
     wxString name;
 
-    m_book = new StoryTreeModelNode(nullptr, book.title, -1, book.id, STMN_Book);
+    m_book = new StoryTreeModelNode(nullptr, nullptr, book.title, -1, book.id, STMN_Book);
     m_book->SetContainer(true);
+    m_trash = new StoryTreeModelNode(nullptr, nullptr, _("Trash"), -1, -1, STMN_Trash);
+    m_trash->SetContainer(true);
+
+    ItemAdded(wxDataViewItem(nullptr), wxDataViewItem(m_book));
+    ItemAdded(wxDataViewItem(nullptr), wxDataViewItem(m_trash));
 
     for (int i = 0; i < book.sections.size(); i++) {
         Section& section = book.sections[i];
@@ -43,7 +48,7 @@ void StoryTreeModel::CreateFromScratch(Book& book) {
         else
             name = section.name;
 
-        wxDataViewItem sectionItem = AddSection(name, section.id, i);
+        wxDataViewItem sectionItem = AddSection(name, section.id, i, section.isInTrash);
 
         for (int j = 0; j < section.chapters.size(); j++) {
             Chapter& chapter = section.chapters[j];
@@ -53,7 +58,7 @@ void StoryTreeModel::CreateFromScratch(Book& book) {
             else
                 name = chapter.name;
 
-            wxDataViewItem chapterItem = AddChapter(sectionItem, name, chapter.id, j);
+            wxDataViewItem chapterItem = AddChapter(sectionItem, name, chapter.id, j, chapter.isInTrash);
 
             /*for (int k = 0; k < chapter.scenes.size(); k++) {
                 Scene& scene = chapter.scenes[k];
@@ -67,11 +72,6 @@ void StoryTreeModel::CreateFromScratch(Book& book) {
             }*/
         }
     }
-
-
-    m_trash = new StoryTreeModelNode(nullptr, _("Trash"), -1, -1, STMN_Trash);
-    m_trash->SetContainer(true);
-    ItemAdded(wxDataViewItem(nullptr), wxDataViewItem(m_trash));
 }
 
 wxString StoryTreeModel::GetTitle(const wxDataViewItem& item) const {
@@ -82,8 +82,13 @@ wxString StoryTreeModel::GetTitle(const wxDataViewItem& item) const {
     return node->GetTitle();
 }
 
-wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int index) {
-    StoryTreeModelNode* node = new StoryTreeModelNode(m_book, name, index, id, STMN_Section);
+wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int index, bool isInTrash) {
+    StoryTreeModelNode* node;
+    if (isInTrash)
+        node = new StoryTreeModelNode(m_book, m_trash, name, index, id, STMN_Section);
+    else
+        node = new StoryTreeModelNode(m_book, nullptr, name, index, id, STMN_Section);
+
     node->SetContainer(true);
 
     wxDataViewItem item(node);
@@ -93,8 +98,13 @@ wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int inde
     return item;
 }
 
-wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxString& name, int id, int index) {
-    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)section.GetID(), name, index, id, STMN_Chapter);
+wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxString& name, int id, int index, bool isInTrash) {
+    StoryTreeModelNode* node;
+    if (isInTrash)
+        node = new StoryTreeModelNode((StoryTreeModelNode*)section.GetID(), m_trash, name, index, id, STMN_Chapter);
+    else
+        node = new StoryTreeModelNode((StoryTreeModelNode*)section.GetID(), nullptr, name, index, id, STMN_Chapter);
+
     wxDataViewItem item(node);
 
     ItemAdded(section, item);
@@ -102,8 +112,13 @@ wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxStrin
     return item;
 }
 
-wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index) {
-    StoryTreeModelNode* node = new StoryTreeModelNode((StoryTreeModelNode*)chapter.GetID(), name, index, id, STMN_Scene);
+wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index, bool isInTrash) {
+    StoryTreeModelNode* node;
+    if (isInTrash)
+        node = new StoryTreeModelNode((StoryTreeModelNode*)chapter.GetID(), m_trash, name, index, id, STMN_Scene);
+    else
+        node = new StoryTreeModelNode((StoryTreeModelNode*)chapter.GetID(), nullptr, name, index, id, STMN_Scene);
+    
     wxDataViewItem item(node);
 
     ItemAdded(chapter, item);
@@ -113,6 +128,34 @@ wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString&
 
 wxDataViewItem StoryTreeModel::GetChapterItem(int chapterIndex, int sectionIndex) {
     return wxDataViewItem(m_book->GetChild(sectionIndex)->GetChild(chapterIndex));
+}
+
+void StoryTreeModel::RedeclareChapterIndexes(Section& section) {
+    int i = 0;
+    int j = 0;
+
+    StoryTreeModelNode* sectionNode = m_book->GetChild(section.pos - 1);
+
+    for (Chapter& chapter : section.chapters) {
+        if (chapter.isInTrash) {
+            StoryTreeModelNodePtrArray& children = m_trash->GetChildren();
+            for (StoryTreeModelNode* node : m_trash->GetChildren()) {
+                if (node->IsChapter() && node->GetID() == chapter.id) {
+                    node->SetIndex(i);
+                    break;
+                }
+            }
+        } else {
+            for (StoryTreeModelNode* node : sectionNode->GetChildren()) {
+                if (node->GetID() == chapter.id) {
+                    node->SetIndex(i);
+                    break;
+                }
+            }
+        }
+
+        i++;
+    }
 }
 
 bool StoryTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
@@ -131,6 +174,13 @@ bool StoryTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descenda
 }
 
 void StoryTreeModel::MoveToTrash(const wxDataViewItem& item) {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    if (node->IsInTrash() || node->IsTrash() || node->IsBook())
+        return;
+
+    node->GetParent()->GetChildren().Remove(node);
+    m_trash->Append(node);
+    node->SetIsInTrash();
 }
 
 void StoryTreeModel::DeleteItem(const wxDataViewItem& item) {
@@ -990,6 +1040,18 @@ void amStoryWriter::OnStoryItemSelected(wxDataViewEvent& event) {
     }
 }
 
+void amStoryWriter::OnStoryViewRightClick(wxDataViewEvent& event) {
+    wxDataViewItem item = event.GetItem();
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+
+    if (node->IsChapter()) {
+        wxMenu* menu = new wxMenu();
+        menu->Append(MENU_MoveToTrash, "Move to trash");
+
+        PopupMenu(menu);
+    }
+}
+
 void amStoryWriter::SetCurrentChapter(int chapterIndex, int sectionIndex, bool load) {
     m_chapterIndex = chapterIndex;
 
@@ -1141,6 +1203,9 @@ void amStoryWriter::LoadChapter() {
 }
 
 void amStoryWriter::SaveChapter(int chapterIndex, int sectionIndex) {
+    if (chapterIndex == -1 || sectionIndex == -1)
+        return;
+
     CheckChapterValidity();
     Chapter& chapter = m_manager->GetChapters(m_bookPos, sectionIndex + 1)[chapterIndex];
 

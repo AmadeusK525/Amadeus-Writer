@@ -38,6 +38,15 @@ void amStoryNotebook::AddToList(Chapter& chapter, int pos) {
     //m_list->SetItem(pos, 3, chapter.pointOfView);
 }
 
+void amStoryNotebook::DeleteChapter(Chapter& chapter) {
+    m_grid->DeleteButton();
+    RemoveFromList(chapter);
+}
+
+void amStoryNotebook::RemoveFromList(Chapter& chapter) {
+    m_list->DeleteItem(chapter.position - 1);
+}
+
 void amStoryNotebook::LayoutGrid() {
     m_grid->SetVirtualSize(m_grid->GetClientSize());
     m_grid->Layout();
@@ -82,6 +91,11 @@ void StoryGrid::AddButton() {
     m_btnSizer->Layout();
 
     FitInside();
+}
+
+void StoryGrid::DeleteButton() {
+    m_buttons.back()->Destroy();
+    m_buttons.pop_back();
 }
 
 void StoryGrid::OpenChapter(unsigned int chapterIndex) {

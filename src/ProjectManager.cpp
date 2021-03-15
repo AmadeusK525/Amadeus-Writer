@@ -121,6 +121,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tSections.Add("position INTEGER");
 	tSections.Add("type INTEGER");
 	tSections.Add("book_id INTEGER");
+	tSections.Add("isInTrash INTEGER");
 	tSections.Add("FOREIGN KEY(book_id) REFERENCES books(id)");
 
 	wxArrayString tChapters;
@@ -129,6 +130,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tChapters.Add("synopsys TEXT");
 	tChapters.Add("position INTEGER");
 	tChapters.Add("section_id INTEGER");
+	tChapters.Add("isInTrash INTEGER");
 	tChapters.Add("FOREIGN KEY(section_id) REFERENCES sections(id)");
 
 	wxArrayString tChapterNotes;
@@ -144,6 +146,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tScenes.Add("name TEXT");
 	tScenes.Add("content TEXT");
 	tScenes.Add("position INTEGER");
+	tScenes.Add("isInTrash INTEGER");
 	tScenes.Add("chapter_id INTEGER NOT NULL");
 	tScenes.Add("character_id INTEGER");
 	tScenes.Add("FOREIGN KEY(chapter_id) REFERENCES chapters(id)");
@@ -701,6 +704,7 @@ void amProjectManager::LoadSections(wxVector<Section>& sections, int bookId) {
 		section.name = result.GetAsString("name");
 		section.description = result.GetAsString("description");
 		section.type = (SectionType)result.GetInt("type");
+		section.isInTrash = result.GetInt("isInTrash");
 		section.SetId(id);
 
 		LoadChapters(section.chapters, id);
@@ -721,6 +725,7 @@ void amProjectManager::LoadChapters(wxVector<Chapter>& chapters, int sectionId) 
 		chapter.name = result.GetAsString("name");
 		chapter.synopsys = result.GetAsString("synopsys");
 		chapter.position = result.GetInt("position");
+		chapter.isInTrash = result.GetInt("isInTrash");
 
 		chapter.SetId(chapterId);
 
@@ -787,6 +792,7 @@ void amProjectManager::LoadScenes(wxVector<Scene>& scenes, int chapterId, bool l
 
 		scene.chapterID = chapterId;
 		scene.pos = result.GetInt("position");
+		scene.isInTrash = result.GetInt("isInTrash");
 		scene.SetId(result.GetInt("id"));
 
 		scenes.push_back(scene);
@@ -1096,7 +1102,7 @@ void amProjectManager::AddItem(Item& item, bool refreshElements) {
 void amProjectManager::AddChapter(Chapter& chapter, Book& book, int sectionPos, int pos) {
 	Section& section = book.sections[sectionPos - 1];
 
-	chapter.sectionID =section.id;
+	chapter.sectionID = section.id;
 	size_t capacityBefore = section.chapters.capacity();
 
 	m_storyNotebook->AddChapter(chapter, pos);
@@ -1446,13 +1452,10 @@ void amProjectManager::DeleteItem(Item& item) {
 void amProjectManager::DeleteChapter(Chapter& chapter, Section& section) {
 	for (wxString& characterName : chapter.characters) {
 		for (Character& character : m_project.characters) {
-
 			if (characterName == character.name) {
-
 				for (Chapter* chapterIt : character.chapters) {
 					if (chapterIt == &chapter)
 						character.chapters.erase(&chapterIt);
-
 				}
 			}
 		}
@@ -1460,13 +1463,10 @@ void amProjectManager::DeleteChapter(Chapter& chapter, Section& section) {
 
 	for (wxString& locationName : chapter.locations) {
 		for (Location& location : m_project.locations) {
-
 			if (locationName == location.name) {
-
 				for (Chapter* chapterIt : location.chapters) {
 					if (chapterIt == &chapter)
 						location.chapters.erase(&chapterIt);
-
 				}
 			}
 		}
@@ -1474,21 +1474,18 @@ void amProjectManager::DeleteChapter(Chapter& chapter, Section& section) {
 
 	for (wxString& itemName : chapter.items) {
 		for (Item& item : m_project.items) {
-
 			if (itemName == item.name) {
-
 				for (Chapter* chapterIt : item.chapters) {
 					if (chapterIt == &chapter)
 						item.chapters.erase(&chapterIt);
-
 				}
 			}
 		}
 	}
 
 	section.chapters.erase(&chapter);
+	m_storyNotebook->DeleteChapter(chapter);
 	m_storage.DeleteDocument(chapter.GenerateDocumentForId());
-
 }
 
 wxVector<Character>& amProjectManager::GetCharacters() {

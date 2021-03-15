@@ -27,6 +27,9 @@ public:
     void AddChapter(Chapter& chapter, int pos = -1);
     void AddToList(Chapter& chapter, int pos = -1);
 
+    void DeleteChapter(Chapter& chapter);
+    void RemoveFromList(Chapter& chapter);
+
     void LayoutGrid();
 
     StoryGrid* GetGrid() { return m_grid; }
@@ -52,6 +55,8 @@ public:
     StoryGrid(wxWindow* parent, amProjectManager* manager);
 
     void AddButton();
+    void DeleteButton();
+
     void OpenChapter(unsigned int chapterNumber);
 
     void OnButtonPressed(wxCommandEvent& event);
