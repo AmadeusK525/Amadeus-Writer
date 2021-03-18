@@ -27,6 +27,7 @@ characterPng RCDATA "Assets\\AddCharacter.png"
 locationPng RCDATA "Assets\\AddLocation.png"
 itemPng RCDATA "Assets\\AddItem.png"
 fullScreenPng RCDATA "Assets\\FullScreen.png"
+fullScreenPngLight RCDATA "Assets\\FullScreen-light.png"
 
 cursor RCDATA "Assets\\Cursor.png"
 newNote RCDATA "Assets\\AddNote.png"
@@ -48,6 +49,15 @@ bold RCDATA "Assets\\Bold.png"
 italic RCDATA "Assets\\Italic.png"
 underline RCDATA "Assets\\Underline.png"
 noteView RCDATA "Assets\\NoteView.png"
+
+leftAlignLight RCDATA "Assets\\AlignLeft-light.png"
+centerAlignLight RCDATA "Assets\\AlignCenter-light.png"
+centerJustAlignLight RCDATA "Assets\\AlignCenterJust-light.png"
+rightAlignLight RCDATA "Assets\\AlignRight-light.png"
+boldLight RCDATA "Assets\\Bold-light.png"
+italicLight RCDATA "Assets\\Italic-light.png"
+underlineLight RCDATA "Assets\\Underline-light.png"
+noteViewLight RCDATA "Assets\\NoteView-light.png"
 
 savePng RCDATA "Assets\\Save.png"
 

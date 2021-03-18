@@ -10,9 +10,7 @@
 
 #include <thread>
 
-
 wxVector<wxIcon> OutlineTreeModelNode::m_icons{};
-
 
 OutlineTreeModel::OutlineTreeModel() {
 	OutlineTreeModelNode::InitAllIcons();
@@ -21,14 +19,6 @@ OutlineTreeModel::OutlineTreeModel() {
 	m_characters = new OutlineTreeModelNode(nullptr, _("Characters"));
 	m_locations = new OutlineTreeModelNode(nullptr, _("Locations"));
 	m_items = new OutlineTreeModelNode(nullptr, _("Items"));
-}
-
-wxString OutlineTreeModel::GetTitle(const wxDataViewItem& item) const {
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	if (!node)
-		return wxEmptyString;
-
-	return node->GetTitle();
 }
 
 wxRichTextBuffer* OutlineTreeModel::GetBuffer(const wxDataViewItem& item) const {
@@ -73,7 +63,7 @@ wxDataViewItem OutlineTreeModel::AddToItems(const wxString& title) {
 	return child;
 }
 
-wxDataViewItem OutlineTreeModel::AppendFile(wxDataViewItem& parent, const wxString& name, const wxRichTextBuffer& buffer) {
+wxDataViewItem OutlineTreeModel::AppendFile(const wxDataViewItem& parent, const wxString& name, const wxRichTextBuffer& buffer) {
 	OutlineTreeModelNode* parentNode = (OutlineTreeModelNode*)parent.GetID();
 	OutlineTreeModelNode* node = new OutlineTreeModelNode(parentNode, name, buffer);
 	wxDataViewItem item(node);
@@ -86,7 +76,7 @@ wxDataViewItem OutlineTreeModel::AppendFile(wxDataViewItem& parent, const wxStri
 	return item;
 }
 
-wxDataViewItem OutlineTreeModel::AppendFolder(wxDataViewItem& parent, const wxString& name) {
+wxDataViewItem OutlineTreeModel::AppendFolder(const wxDataViewItem& parent, const wxString& name) {
 	OutlineTreeModelNode* parentNode = (OutlineTreeModelNode*)parent.GetID();
 	OutlineTreeModelNode* node = new OutlineTreeModelNode(parentNode, name);
 	wxDataViewItem item(node);
@@ -99,45 +89,30 @@ wxDataViewItem OutlineTreeModel::AppendFolder(wxDataViewItem& parent, const wxSt
 	return item;
 }
 
-bool OutlineTreeModel::IsResearch(wxDataViewItem& item) {
+bool OutlineTreeModel::IsResearch(const wxDataViewItem& item) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	return node == m_research;
 }
 
-bool OutlineTreeModel::IsCharacters(wxDataViewItem& item) {
+bool OutlineTreeModel::IsCharacters(const wxDataViewItem& item) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	return node == m_characters;
 }
 
-bool OutlineTreeModel::IsLocations(wxDataViewItem& item) {
+bool OutlineTreeModel::IsLocations(const wxDataViewItem& item) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	return node == m_locations;
 }
 
-bool OutlineTreeModel::IsItems(wxDataViewItem& item) {
+bool OutlineTreeModel::IsItems(const wxDataViewItem& item) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 	return node == m_items;
 }
 
-bool OutlineTreeModel::IsSpecial(wxDataViewItem& item) {
+bool OutlineTreeModel::IsSpecial(const wxDataViewItem& item) {
 	wxDataViewItem parent = GetParent(item);
 	return IsResearch(item) || IsCharacters(item) || IsLocations(item) || IsItems(item) ||
 		IsCharacters(parent) || IsLocations(parent) || IsItems(parent);
-}
-
-bool OutlineTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
-	wxDataViewItem& parent = GetParent(descendant);
-
-	bool is = false;
-
-	while (parent.IsOk()) {
-		if (parent.GetID() == item.GetID())
-			is = true;
-
-		parent = GetParent(parent);
-	}
-
-	return is;
 }
 
 void OutlineTreeModel::DeleteItem(const wxDataViewItem& item) {
@@ -159,7 +134,7 @@ void OutlineTreeModel::DeleteItem(const wxDataViewItem& item) {
 	for (unsigned int i = 0; i < children.GetCount(); i++)
 		DeleteItem(children[i]);
 
-	OutlineTreeModelNode* parentNode = node->GetParent();
+	amTreeModelNode* parentNode = node->GetParent();
 	if (parentNode)
 		parentNode->GetChildren().Remove(node);
 	else
@@ -173,78 +148,7 @@ void OutlineTreeModel::DeleteItem(const wxDataViewItem& item) {
 	ItemDeleted(parent, item);
 }
 
-void OutlineTreeModel::SetItemBackgroundColour(wxDataViewItem& item, wxColour& colour) {
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxDataViewItemAttr& attr = node->GetAttr();
-
-	attr.SetBackgroundColour(colour);
-}
-
-void OutlineTreeModel::SetItemForegroundColour(wxDataViewItem& item, wxColour& colour) {
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxDataViewItemAttr& attr = node->GetAttr();
-
-	attr.SetColour(colour);
-}
-
-void OutlineTreeModel::SetItemFont(wxDataViewItem& item, wxFont& font) {
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxDataViewItemAttr attr = node->GetAttr();
-
-	attr.SetBold(font.GetWeight() >= 400);
-	attr.SetItalic(font.GetStyle() == wxFONTSTYLE_ITALIC);
-	attr.SetStrikethrough(font.GetStrikethrough());
-}
-
-bool OutlineTreeModel::Reparent(OutlineTreeModelNode* itemNode, OutlineTreeModelNode* newParentNode) {
-	OutlineTreeModelNode* oldParentNode(itemNode->GetParent());
-
-	wxDataViewItem item((void*)itemNode);
-	wxDataViewItem newParent((void*)newParentNode);
-	wxDataViewItem oldParent((void*)oldParentNode);
-
-
-	if (!itemNode)
-		return false;
-
-	itemNode->Reparent(newParentNode);
-
-	if (!oldParentNode)
-		m_otherRoots.Remove(itemNode);
-
-	if (!newParentNode)
-		m_otherRoots.Add(itemNode);
-
-	ItemAdded(newParent, item);
-	ItemDeleted(oldParent, item);
-	return true;
-}
-
-bool OutlineTreeModel::Reparent(OutlineTreeModelNode* itemNode, OutlineTreeModelNode* newParentNode, int n) {
-	OutlineTreeModelNode* oldParentNode(itemNode->GetParent());
-
-	wxDataViewItem item((void*)itemNode);
-	wxDataViewItem newParent((void*)newParentNode);
-	wxDataViewItem oldParent((void*)oldParentNode);
-
-
-	if (!itemNode)
-		return false;
-
-	itemNode->Reparent(newParentNode, n);
-
-	if (!oldParentNode)
-		m_otherRoots.Remove(itemNode);
-
-	if (!newParentNode)
-		m_otherRoots.Insert(itemNode, n);
-
-	ItemAdded(newParent, item);
-	ItemDeleted(oldParent, item);
-	return true;
-}
-
-bool OutlineTreeModel::Reposition(wxDataViewItem& item, int n) {
+bool OutlineTreeModel::Reposition(const wxDataViewItem& item, int n) {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
 
 	if (node) {
@@ -257,7 +161,7 @@ bool OutlineTreeModel::Reposition(wxDataViewItem& item, int n) {
 }
 
 void OutlineTreeModel::Clear() {
-	OulineTreeModelNodePtrArray array;
+	amTreeModelNodePtrArray array;
 
 	array = m_research->GetChildren();
 	for (unsigned int i = 0; i < array.GetCount(); i++) {
@@ -301,59 +205,6 @@ void OutlineTreeModel::GetValue(wxVariant& variant,
 	}
 }
 
-bool OutlineTreeModel::SetValue(const wxVariant& variant,
-	const wxDataViewItem& item, unsigned int col) {
-
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	wxDataViewIconText it;
-	it << variant;
-
-	switch (col) {
-	case 0:
-		node->SetTitle(it.GetText());
-		return true;
-
-	default:
-		break;
-	}
-	return false;
-}
-
-wxDataViewItem OutlineTreeModel::GetParent(const wxDataViewItem& item) const {
-	// the invisible root node has no parent
-	if (!item.IsOk())
-		return wxDataViewItem(0);
-
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-
-	if (node == m_research || node == m_characters || node == m_locations)
-		return wxDataViewItem(0);
-
-	return wxDataViewItem(node->GetParent());
-}
-
-bool OutlineTreeModel::IsContainer(const wxDataViewItem& item) const {
-	// the invisible root node can have children
-	if (!item.IsOk())
-		return true;
-
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-
-	if (node)
-		return node->IsContainer();
-	else
-		return false;
-}
-
-bool OutlineTreeModel::GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const {
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-	
-	if (node)
-		attr = node->GetAttr();
-
-	return true;
-}
-
 unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 	wxDataViewItemArray& array) const {
 	OutlineTreeModelNode* node = (OutlineTreeModelNode*)parent.GetID();
@@ -394,11 +245,97 @@ unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 	}
 
 	for (int pos = 0; pos < count; pos++) {
-		OutlineTreeModelNode* child = node->GetChildren().Item(pos);
+		amTreeModelNode* child = node->GetChild(pos);
 		array.Add(wxDataViewItem(child));
 	}
 
 	return count;
+}
+
+void OutlineTreeModel::OnBeginDrag(wxDataViewEvent& event, wxDataViewCtrl* dvc) {
+	wxDataViewItem item(event.GetItem());
+
+	if (IsSpecial(item)) {
+		event.Veto();
+		return;
+	}
+
+	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
+
+	wxTextDataObject* obj = new wxTextDataObject;
+	obj->SetText(node->GetTitle());
+
+	event.SetDataObject(obj);
+	event.SetDataFormat(wxDF_UNICODETEXT);
+	event.SetDragFlags(wxDrag_AllowMove); // allows both copy and move
+
+	m_itemForDnD = item;
+}
+
+void OutlineTreeModel::OnDropPossible(wxDataViewEvent& event, wxDataViewCtrl* dvc) {
+	if (event.GetDataFormat() != wxDF_UNICODETEXT) {
+		m_itemForDnD = wxDataViewItem(nullptr);
+		event.Veto();
+	} else {
+		wxDataViewItem ht;
+		wxDataViewColumn* cht = dvc->GetColumn(0);
+
+		dvc->HitTest(dvc->ScreenToClient(wxGetMousePosition()), ht, cht);
+		wxDataViewItem htParent = GetParent(ht);
+
+		if (!IsDescendant(m_itemForDnD, ht) &&
+			!((IsSpecial(ht) || IsSpecial(htParent)) && (!IsResearch(ht) && !IsResearch(htParent))))
+			event.SetDropEffect(wxDragMove);
+		else
+			event.SetDropEffect(wxDragNone);
+	}
+}
+
+void OutlineTreeModel::OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc) {
+	wxDataViewItem item(event.GetItem());
+
+	if (IsCharacters(item) || IsLocations(item) || IsItems(item) || IsDescendant(m_itemForDnD, item) || m_itemForDnD == item) {
+		m_itemForDnD.Unset();
+		return;
+	}
+
+	if (event.GetDataFormat() != wxDF_UNICODETEXT) {
+		event.Veto();
+		m_itemForDnD.Unset();
+		return;
+	}
+
+	int index = event.GetProposedDropIndex();
+
+	if (item.IsOk()) {
+		if (IsContainer(item)) {
+			if (m_itemForDnD.IsOk()) {
+				if (GetParent(m_itemForDnD) != item) {
+					if (index == -1)
+						Reparent(m_itemForDnD, item);
+					else
+						Reparent(m_itemForDnD, item, index);
+				} else {
+					if (index == -1)
+						Reposition(m_itemForDnD, 0);
+					else
+						Reposition(m_itemForDnD, index);
+				}
+			}
+		} else
+			wxLogMessage(_("Dropped on item. Nothing happened."));
+
+	} else {
+		if (GetParent(m_itemForDnD) != item) {
+			if (index > 3)
+				Reparent(m_itemForDnD, wxDataViewItem(nullptr), index - 3);
+			else
+				Reparent(m_itemForDnD, wxDataViewItem(nullptr));
+		}
+	}
+
+	dvc->Select(m_itemForDnD);
+	m_itemForDnD.Unset();
 }
 
 
@@ -412,8 +349,6 @@ EVT_DATAVIEW_ITEM_EDITING_DONE(TREE_Files, amOutlineFilesPanel::OnEditingEnd)
 EVT_DATAVIEW_ITEM_EXPANDED(TREE_Files, amOutlineFilesPanel::OnItemExpanded)
 EVT_DATAVIEW_ITEM_COLLAPSED(TREE_Files, amOutlineFilesPanel::OnItemCollapsed)
 
-EVT_DATAVIEW_ITEM_BEGIN_DRAG(TREE_Files, amOutlineFilesPanel::OnBeginDrag)
-EVT_DATAVIEW_ITEM_DROP_POSSIBLE(TREE_Files, amOutlineFilesPanel::OnDropPossible)
 EVT_DATAVIEW_ITEM_DROP(TREE_Files, amOutlineFilesPanel::OnDrop)
 
 EVT_TOOL(TOOL_NewFile, amOutlineFilesPanel::NewFile)
@@ -438,8 +373,10 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 	m_textCtrl->SetBasicStyle(m_basicAttr);
 
 	m_leftPanel = new wxPanel(this);
-	m_files = new wxDataViewCtrl(m_leftPanel, TREE_Files, wxDefaultPosition, wxDefaultSize,
-		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
+
+	m_outlineTreeModel = new OutlineTreeModel;
+	m_files = m_filesHTHandler.Create(m_leftPanel, TREE_Files, m_outlineTreeModel.get());
+
 	m_files->GetMainWindow()->Bind(wxEVT_KEY_DOWN, &amOutlineFilesPanel::OnKeyDownDataView, this);
 	m_files->GetMainWindow()->Bind(wxEVT_RIGHT_DOWN, &amOutlineFilesPanel::OnRightDownDataView, this);
 
@@ -450,15 +387,12 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 
 	m_filesTB->Realize();
 
-	m_files->EnableDragSource(wxDataFormat(wxRichTextBufferDataObject::GetRichTextBufferFormatId()));
-	m_files->EnableDropTarget(wxDataFormat(wxRichTextBufferDataObject::GetRichTextBufferFormatId()));
-	m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
-	m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
+	m_files->EnableDragSource(wxDF_UNICODETEXT);
+	m_files->EnableDropTarget(wxDF_UNICODETEXT);
+	//m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
+	//m_files->EnableDragSource(wxDataFormat(wxDF_FILENAME));
 	m_files->SetBackgroundColour(wxColour(100, 100, 100));
 	m_files->GetMainWindow()->SetBackgroundColour(wxColour(20, 20, 20));
-
-	m_outlineTreeModel = new OutlineTreeModel();
-	m_files->AssociateModel(m_outlineTreeModel.get());
 
 	wxDataViewIconTextRenderer* itr = new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
 		wxDATAVIEW_CELL_EDITABLE);
@@ -761,7 +695,7 @@ void amOutlineFilesPanel::AppendItem(Item& item) {
 }
 
 void amOutlineFilesPanel::DeleteCharacter(Character& character) {
-	OulineTreeModelNodePtrArray& characters = m_outlineTreeModel->GetCharacters();
+	amTreeModelNodePtrArray& characters = m_outlineTreeModel->GetCharacters();
 	for (unsigned int i = 0; i < characters.Count(); i++) {
 		if (characters[i]->GetTitle() == character.name) {
 			if (m_currentNode == characters[i]) {
@@ -777,7 +711,7 @@ void amOutlineFilesPanel::DeleteCharacter(Character& character) {
 }
 
 void amOutlineFilesPanel::DeleteLocation(Location& location) {
-	OulineTreeModelNodePtrArray& locations = m_outlineTreeModel->GetLocations();
+	amTreeModelNodePtrArray& locations = m_outlineTreeModel->GetLocations();
 	for (unsigned int i = 0; i < locations.Count(); i++) {
 		if (locations[i]->GetTitle() == location.name) {
 			if (m_currentNode == locations[i]) {
@@ -793,7 +727,7 @@ void amOutlineFilesPanel::DeleteLocation(Location& location) {
 }
 
 void amOutlineFilesPanel::DeleteItem(Item& item) {
-	OulineTreeModelNodePtrArray& items = m_outlineTreeModel->GetItems();
+	amTreeModelNodePtrArray& items = m_outlineTreeModel->GetItems();
 	for (unsigned int i = 0; i < items.Count(); i++) {
 		if (items[i]->GetTitle() == item.name) {
 			if (m_currentNode == items[i]) {
@@ -901,6 +835,8 @@ void amOutlineFilesPanel::OnRightDownDataView(wxMouseEvent& event) {
 
 	menu.Bind(wxEVT_MENU, &amOutlineFilesPanel::OnMenuDataView, this);
 	PopupMenu(&menu);
+
+	event.Skip();
 }
 
 void amOutlineFilesPanel::OnMenuDataView(wxCommandEvent& event) {
@@ -965,7 +901,8 @@ void amOutlineFilesPanel::OnSelectionChanged(wxDataViewEvent& event) {
 	wxDataViewItem parentItem(node->GetParent());
 
 	if (m_outlineTreeModel->IsCharacters(parentItem) ||
-		m_outlineTreeModel->IsLocations(parentItem))
+		m_outlineTreeModel->IsLocations(parentItem) || 
+		m_outlineTreeModel->IsItems(parentItem))
 		m_textCtrl->SetEditable(false);
 	else
 		m_textCtrl->SetEditable(true);
@@ -995,95 +932,9 @@ void amOutlineFilesPanel::OnItemExpanded(wxDataViewEvent& event) {}
 
 void amOutlineFilesPanel::OnItemCollapsed(wxDataViewEvent& event) {}
 
-void amOutlineFilesPanel::OnBeginDrag(wxDataViewEvent& event) {
-	wxDataViewItem item(event.GetItem());
-
-	if (m_outlineTreeModel->IsSpecial(item)) {
-		event.Veto();
-		return; 
-	}
-
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-
-	if (!m_outlineTreeModel->IsContainer(item)) {
-		wxRichTextBufferDataObject* obj = new wxRichTextBufferDataObject(new wxRichTextBuffer(*node->GetBuffer()));
-		event.SetDataObject(obj);
-	} else
-		event.SetDataObject(new wxRichTextBufferDataObject(new wxRichTextBuffer));
-	
-	event.SetDragFlags(wxDrag_AllowMove); // allows both copy and move
-	m_nodeForDnD = node;
-	m_itemForDnD = item;
-}
-
-void amOutlineFilesPanel::OnDropPossible(wxDataViewEvent& event) {
-	if (event.GetDataFormat() != wxRichTextBufferDataObject::GetRichTextBufferFormatId()) {
-		m_nodeForDnD = nullptr;
-		event.Veto();
-	} else {
-		wxDataViewItem ht;
-		wxDataViewColumn* cht = m_files->GetColumn(0);
-
-		m_files->HitTest(event.GetPosition(), ht, cht);
-
-		if (m_outlineTreeModel->IsContainer(ht) && ht != m_itemForDnD)
-			event.SetDropEffect(wxDragMove);
-		else
-			event.SetDropEffect(wxDragNone);
-	}
-}
-
 void amOutlineFilesPanel::OnDrop(wxDataViewEvent& event) {
-	wxDataViewItem item(event.GetItem());
-	OutlineTreeModelNode* node = (OutlineTreeModelNode*)item.GetID();
-
-	if (m_nodeForDnD == node || m_outlineTreeModel->IsCharacters(item) ||
-		m_outlineTreeModel->IsLocations(item) || m_outlineTreeModel->IsItems(item) ||
-		m_outlineTreeModel->IsDescendant(m_itemForDnD, item))
-		return;
-
-	if (event.GetDataFormat() != wxRichTextBufferDataObject::GetRichTextBufferFormatId()) {
-		event.Veto();
-		return;
-	}
-
-	wxRichTextBufferDataObject obj;
-	obj.SetData(event.GetDataFormat(), event.GetDataSize(), event.GetDataBuffer());
-
-	int index = event.GetProposedDropIndex();
-
-	if (item.IsOk()) {
-		if (m_outlineTreeModel->IsContainer(item)) {
-			if (m_nodeForDnD) {
-				if (m_nodeForDnD->GetParent() != node) {
-					if (index == -1)
-						m_outlineTreeModel->Reparent(m_nodeForDnD, node);
-					else
-						m_outlineTreeModel->Reparent(m_nodeForDnD, node, index);
-				} else {
-					if (index == -1)
-						m_outlineTreeModel->Reposition(m_itemForDnD, 0);
-					else
-						m_outlineTreeModel->Reposition(m_itemForDnD, index);
-				}
-			}
-
-			Save();
-		} else
-			wxLogMessage(_("Dropped on item. Nothing happened."));
-
-	} else {
-		if (m_nodeForDnD->GetParent() != node) {
-			if (index > 3)
-				m_outlineTreeModel->Reparent(m_nodeForDnD, nullptr, index -3);
-			else
-				m_outlineTreeModel->Reparent(m_nodeForDnD, nullptr);
-		}
-
-		Save();
-	}
-
-	m_files->Select(m_itemForDnD);
+	Save();
+	event.Skip();
 }
 
 void amOutlineFilesPanel::OnTimerEvent(wxTimerEvent& event) {

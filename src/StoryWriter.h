@@ -30,23 +30,13 @@ enum STMN_Type {
     STMN_Null
 };
 
-class StoryTreeModelNode;
-WX_DEFINE_ARRAY_PTR(StoryTreeModelNode*, StoryTreeModelNodePtrArray);
-
-class StoryTreeModelNode {
+class StoryTreeModelNode : public amTreeModelNode {
 private:
-    StoryTreeModelNode* m_parent = nullptr;
     StoryTreeModelNode* m_trash = nullptr;
-    StoryTreeModelNodePtrArray m_children{};
-
-    wxDataViewItemAttr m_attr{};
 
     STMN_Type m_type = STMN_Null;
     int m_index = -1;
     int m_dbID = -1;
-
-    wxString m_title{};
-    bool m_isContainer = false;
 
     bool m_isInTrash = false;
 
@@ -55,17 +45,17 @@ public:
 
 public:
     inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash,
-        const wxString& title, int index, int id, STMN_Type type) {
-        m_parent = parent;
-        m_title = title;
+        const wxString& title, int index, int id, STMN_Type type) :
+        amTreeModelNode(parent, title) {
         m_index = index;
         m_dbID = id;
         m_type = type;
 
         if (m_parent) {
-            if (trash)
+            if (trash) {
                 trash->Append(this);
-            else {
+                m_isInTrash = true;
+            } else {
                 if (index >= m_parent->GetChildCount())
                     m_parent->Append(this);
                 else
@@ -84,7 +74,7 @@ public:
 
     inline ~StoryTreeModelNode() {
         for (size_t i = 0; i < m_children.GetCount(); i++) {
-            StoryTreeModelNode* child = m_children[i];
+            amTreeModelNode* child = m_children[i];
 
             if (child)
                 delete child;
@@ -96,29 +86,29 @@ public:
             int x = 14, y = 14;
 
             wxIcon book(wxICON(bookIcon));
-            book.SetHeight(x);
-            book.SetWidth(y);
+            book.SetSize(x, y);
 
             wxIcon section(wxICON(sectionIcon));
-            section.SetHeight(x);
-            section.SetWidth(y);
+            section.SetSize(x, y);
 
             wxIcon chapter(wxICON(fileIcon));
-            chapter.SetHeight(x);
-            chapter.SetWidth(y);
+            chapter.SetSize(x, y);
 
             wxIcon trash(wxICON(trashIcon));
-            trash.SetHeight(x);
-            trash.SetWidth(y);
+            trash.SetSize(x, y);
 
             m_icons.push_back(book);
             m_icons.push_back(section);
             m_icons.push_back(chapter);
             m_icons.push_back(trash);
+    
+#ifdef __WXMSW__
+            m_hoverAttr.SetBackgroundColour(wxColour(110, 110, 110));
+            m_hoverAttr.SetColour(wxColour(255, 255, 255));
+#endif
         }
     }
 
-    inline wxString& GetTitle() { return m_title; }
     inline int GetID() { return m_dbID; }
 
     inline int GetIndex() { return m_index; }
@@ -130,20 +120,14 @@ public:
     inline bool IsSection() { return m_type == STMN_Section; }
     inline bool IsChapter() { return m_type == STMN_Chapter; }
     inline bool IsScene() { return m_type == STMN_Scene; }
-
     inline bool IsTrash() { return m_type == STMN_Trash; }
 
     inline bool IsInTrash() { return m_isInTrash; }
-    inline void SetIsInTrash() { m_isInTrash = true; }
+    inline void SetIsInTrash(bool is) { m_isInTrash = is; }
 
     inline STMN_Type GetType() { return m_type; }
 
-    inline bool IsContainer() const { 
-        return m_isContainer;
-    }
-    inline void SetContainer(bool is) { m_isContainer = is; }
-
-    inline void Reparent(StoryTreeModelNode* newParent) {
+    inline virtual void Reparent(StoryTreeModelNode* newParent) {
         if (m_parent && !m_isInTrash)
             m_parent->GetChildren().Remove(this);
 
@@ -153,7 +137,7 @@ public:
             m_parent->Append(this);
     }
 
-    inline void Reparent(StoryTreeModelNode* newParent, int n) {
+    inline virtual void Reparent(StoryTreeModelNode* newParent, int n) {
         if (m_parent && !m_isInTrash)
             m_parent->GetChildren().Remove(this);
 
@@ -163,7 +147,7 @@ public:
             m_parent->Insert(this, n);
     }
 
-    inline void Reposition(int n) {
+    inline virtual void Reposition(int n) {
         /*if (m_parent)
             m_parent->getChildren().Remove(this);
         else
@@ -171,47 +155,16 @@ public:
 
         m_parent->getChildren().Insert(this, n);*/
     }
-
-    inline StoryTreeModelNode* GetParent() {
-        return m_parent;
-    }
-
-    inline StoryTreeModelNodePtrArray& GetChildren() {
-        return m_children;
-    }
-
-    inline StoryTreeModelNode* GetChild(unsigned int n) {
-        return m_children.Item(n);
-    }
-
-    inline wxDataViewItemAttr& GetAttr() {
-        return m_attr;
-    }
-
-    inline void Insert(StoryTreeModelNode* child, unsigned int n) {
-        if (n >= m_children.size())
-            m_children.push_back(child);
-        else
-            m_children.Insert(child, n);
-    }
-
-    inline void Append(StoryTreeModelNode* child) {
-        m_children.push_back(child);
-    }
-
-    inline int GetChildCount() const {
-        return m_children.GetCount();
-    }
 };
 
 
-class StoryTreeModel : public wxDataViewModel {
+class StoryTreeModel : public amDataViewModel {
 private:
     // pointers to some "special" nodes of the tree:
     StoryTreeModelNode* m_book = nullptr;
     StoryTreeModelNode* m_trash = nullptr;
 
-    StoryTreeModelNodePtrArray m_otherRoots{};
+    amTreeModelNodePtrArray m_otherRoots{};
 
 public:
     StoryTreeModel();
@@ -226,29 +179,20 @@ public:
     bool Save();
     void CreateFromScratch(Book& book);
 
-    wxString GetTitle(const wxDataViewItem& item) const;
-
     wxDataViewItem AddSection(const wxString& name, int id, int index, bool isInTrash);
-    wxDataViewItem AddChapter(wxDataViewItem& section, const wxString& name, int id, int index, bool isInTrash);
-    wxDataViewItem AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index, bool isInTrash);
+    wxDataViewItem AddChapter(const wxDataViewItem& section, const wxString& name, int id, int index, bool isInTrash);
+    wxDataViewItem AddScene(const wxDataViewItem& chapter, const wxString& name, int id, int index, bool isInTrash);
 
     wxDataViewItem GetChapterItem(int chapterIndex, int sectionIndex);
 
-    void RedeclareChapterIndexes(Section& section);
+    void RedeclareChapterIndexes(const Section& section);
+    int GetIndex(const wxDataViewItem& item);
 
-    bool IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant);
-
-    void MoveToTrash(const wxDataViewItem& item);
+    STMN_Type MoveToTrash(const wxDataViewItem& item);
+    STMN_Type RestoreFromTrash(const wxDataViewItem& item);
     void DeleteItem(const wxDataViewItem& item);
 
-    void SetItemBackgroundColour(wxDataViewItem& item, wxColour& colour);
-    void SetItemForegroundColour(wxDataViewItem& item, wxColour& colour);
-    void SetItemFont(wxDataViewItem& item, wxFont& font);
-
-    bool Reparent(StoryTreeModelNode* item, StoryTreeModelNode* newParent);
-    bool Reparent(StoryTreeModelNode* item, StoryTreeModelNode* newParent, int n);
-
-    bool Reposition(wxDataViewItem& item, int n);
+    bool Reposition(const wxDataViewItem& item, int n);
 
     void Clear();
 
@@ -263,14 +207,16 @@ public:
 
     virtual void GetValue(wxVariant& variant,
         const wxDataViewItem& item, unsigned int col) const;
-    virtual bool SetValue(const wxVariant& variant,
-        const wxDataViewItem& item, unsigned int col);
 
     virtual wxDataViewItem GetParent(const wxDataViewItem& item) const;
     virtual unsigned int GetChildren(const wxDataViewItem& parent,
         wxDataViewItemArray& array) const;
-    virtual bool IsContainer(const wxDataViewItem& item) const;
-    virtual bool GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const;
+
+    ////////////////////////////// DragEventHandlers ////////////////////////////
+
+    virtual void OnBeginDrag(wxDataViewEvent& event, wxDataViewCtrl* dvc) {}
+    virtual void OnDropPossible(wxDataViewEvent& event, wxDataViewCtrl* dvc) {}
+    virtual void OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc) {}
 };
 
 
@@ -304,11 +250,16 @@ private:
         * m_locInChap = nullptr,
         * m_itemsInChap = nullptr;
 
+    wxDataViewCtrl* m_storyView = nullptr;
+    wxObjectDataPtr<StoryTreeModel> m_storyTreeModel;
+
     wxDataViewCtrl* m_outlineView = nullptr;
     wxObjectDataPtr<OutlineTreeModel> m_outlineTreeModel;
 
-    wxDataViewCtrl* m_storyView = nullptr;
-    wxObjectDataPtr<StoryTreeModel> m_storyTreeModel;
+#ifdef __WXMSW__
+    amHotTrackingDVCHandler m_storyViewHTHandler;
+    amHotTrackingDVCHandler m_outlineViewHTHandler;
+#endif
 
     wxBoxSizer* m_pageSizer = nullptr;
 
@@ -326,6 +277,9 @@ private:
     wxTimer m_saveTimer;
 
     bool m_doGreenNote = false;
+
+    wxDataViewItem m_itemForTrash{ nullptr };
+    wxDataViewItem m_itemForRestore{ nullptr };
 
 public:
     wxStatusBar* m_statusBar = nullptr;
@@ -355,7 +309,10 @@ public:
 
     void OnStoryItemActivated(wxDataViewEvent& event);
     void OnStoryItemSelected(wxDataViewEvent& event);
-    void OnStoryViewRightClick(wxDataViewEvent& event);
+    void OnStoryViewRightClick(wxMouseEvent& event);
+
+    void OnMoveToTrash(wxCommandEvent& event);
+    void OnRestoreFromTrash(wxCommandEvent& event);
 
     void SetCurrentChapter(int chapterIndex, int sectionIndex, bool load);
     void OnNextChapter(wxCommandEvent& event);
@@ -401,7 +358,8 @@ enum {
     TIMER_Save,
     TIMER_Words,
     
-    MENU_MoveToTrash
+    MENU_MoveToTrash,
+    MENU_RestoreFromTrash
 };
 
 
@@ -470,7 +428,7 @@ public:
         wxWindowID id = -1,
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize,
-        long style = wxTB_DEFAULT_STYLE);
+        long style = wxTB_DEFAULT_STYLE | wxTB_FLAT);
 
     inline void SetCurrentPage(amStoryWriterNotebookPage& currentPage) { m_currentPage = currentPage; }
 

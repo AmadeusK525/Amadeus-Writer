@@ -106,7 +106,7 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 
 		wxString update("UPDATE chapters SET name = '%q', synopsys = '%q', position = ");
 
-		update << position << ", section_id = " << sectionID << " WHERE id = " << id << ";";
+		update << position << ", isInTrash = " << isInTrash << ", section_id = " << sectionID << " WHERE id = " << id << ";";
 
 		buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8());
 		storage->ExecuteUpdate(buffer);
@@ -123,7 +123,7 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 					customTable.SetRow(i);
 
 					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
-					update << scenes[i].pos << ", chapter_id = " << id << " WHERE id = " <<
+					update << scenes[i].pos << ", isInTrash = " << scenes[i].isInTrash << ", chapter_id = " << id << " WHERE id = " <<
 						customTable.GetInt("id") << ";";
 
 					wxStringOutputStream stream;
@@ -134,8 +134,8 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 				}
 
 				for (i; i < newSize; i++) {
-					update = "INSERT INTO scenes (name, content, position, chapter_id) VALUES ('%q', '%q', ";
-					update << scenes[i].pos << ", " << id << ");";
+					update = "INSERT INTO scenes (name, content, position, isInTrash chapter_id) VALUES ('%q', '%q', ";
+					update << scenes[i].pos << ", " << isInTrash << ", " << id << ");";
 
 					wxStringOutputStream stream;
 					scenes[i].content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
@@ -149,7 +149,7 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 					customTable.SetRow(i);
 
 					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
-					update << scenes[i].pos << ", chapter_id = " << id << " WHERE id = " <<
+					update << scenes[i].pos << ", isInTrash = " << scenes[i].isInTrash << ", chapter_id = " << id << " WHERE id = " <<
 						customTable.GetInt("id") << ";";
 
 					wxStringOutputStream stream;
@@ -351,7 +351,8 @@ bool Section::Update(wxSQLite3Database* db, bool updateChapters) {
 	wxSQLite3StatementBuffer buffer;
 
 	wxString update("UPDATE sections SET name = '%q', description = '%q', position = ");
-	update << pos << ", type = " << type << ", book_id = " << bookID << " WHERE id = " << id << ";";
+	update << pos << ", type = " << type << ", isInTrash = " << isInTrash <<
+		", book_id = " << bookID << " WHERE id = " << id << ";";
 
 	buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)description.ToUTF8());
 	storage->ExecuteUpdate(buffer); 

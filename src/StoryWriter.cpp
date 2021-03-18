@@ -74,14 +74,6 @@ void StoryTreeModel::CreateFromScratch(Book& book) {
     }
 }
 
-wxString StoryTreeModel::GetTitle(const wxDataViewItem& item) const {
-    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-    if (!node)
-        return wxEmptyString;
-
-    return node->GetTitle();
-}
-
 wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int index, bool isInTrash) {
     StoryTreeModelNode* node;
     if (isInTrash)
@@ -98,7 +90,7 @@ wxDataViewItem StoryTreeModel::AddSection(const wxString& name, int id, int inde
     return item;
 }
 
-wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxString& name, int id, int index, bool isInTrash) {
+wxDataViewItem StoryTreeModel::AddChapter(const wxDataViewItem& section, const wxString& name, int id, int index, bool isInTrash) {
     StoryTreeModelNode* node;
     if (isInTrash)
         node = new StoryTreeModelNode((StoryTreeModelNode*)section.GetID(), m_trash, name, index, id, STMN_Chapter);
@@ -112,7 +104,7 @@ wxDataViewItem StoryTreeModel::AddChapter(wxDataViewItem& section, const wxStrin
     return item;
 }
 
-wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString& name, int id, int index, bool isInTrash) {
+wxDataViewItem StoryTreeModel::AddScene(const wxDataViewItem& chapter, const wxString& name, int id, int index, bool isInTrash) {
     StoryTreeModelNode* node;
     if (isInTrash)
         node = new StoryTreeModelNode((StoryTreeModelNode*)chapter.GetID(), m_trash, name, index, id, STMN_Scene);
@@ -127,28 +119,34 @@ wxDataViewItem StoryTreeModel::AddScene(wxDataViewItem& chapter, const wxString&
 }
 
 wxDataViewItem StoryTreeModel::GetChapterItem(int chapterIndex, int sectionIndex) {
-    return wxDataViewItem(m_book->GetChild(sectionIndex)->GetChild(chapterIndex));
+    for (amTreeModelNode* node : m_book->GetChild(sectionIndex)->GetChildren()) {
+        if (((StoryTreeModelNode*)node)->GetIndex() == chapterIndex)
+            return wxDataViewItem(node);
+    }
+
+    return wxDataViewItem(nullptr);
 }
 
-void StoryTreeModel::RedeclareChapterIndexes(Section& section) {
+void StoryTreeModel::RedeclareChapterIndexes(const Section& section) {
     int i = 0;
-    int j = 0;
 
-    StoryTreeModelNode* sectionNode = m_book->GetChild(section.pos - 1);
+    amTreeModelNode* sectionNode = m_book->GetChild(section.pos - 1);
 
-    for (Chapter& chapter : section.chapters) {
+    for (const Chapter& chapter : section.chapters) {
         if (chapter.isInTrash) {
-            StoryTreeModelNodePtrArray& children = m_trash->GetChildren();
-            for (StoryTreeModelNode* node : m_trash->GetChildren()) {
-                if (node->IsChapter() && node->GetID() == chapter.id) {
-                    node->SetIndex(i);
+            amTreeModelNodePtrArray& children = m_trash->GetChildren();
+            for (amTreeModelNode* node : m_trash->GetChildren()) {
+                StoryTreeModelNode* thisNode = (StoryTreeModelNode*)node;
+                if (thisNode->IsChapter() && thisNode->GetID() == chapter.id) {
+                    thisNode->SetIndex(i);
                     break;
                 }
             }
         } else {
-            for (StoryTreeModelNode* node : sectionNode->GetChildren()) {
-                if (node->GetID() == chapter.id) {
-                    node->SetIndex(i);
+            for (amTreeModelNode* node : sectionNode->GetChildren()) {
+                StoryTreeModelNode* thisNode = (StoryTreeModelNode*)node;
+                if (thisNode->GetID() == chapter.id) {
+                    thisNode->SetIndex(i);
                     break;
                 }
             }
@@ -158,29 +156,48 @@ void StoryTreeModel::RedeclareChapterIndexes(Section& section) {
     }
 }
 
-bool StoryTreeModel::IsDescendant(wxDataViewItem& item, wxDataViewItem& descendant) {
-    wxDataViewItem& parent = GetParent(descendant);
-
-    bool is = false;
-
-    while (parent.IsOk()) {
-        if (parent.GetID() == item.GetID())
-            is = true;
-
-        parent = GetParent(parent);
-    }
-
-    return is;
+int StoryTreeModel::GetIndex(const wxDataViewItem& item) {
+    return ((StoryTreeModelNode*)item.GetID())->GetIndex();
 }
 
-void StoryTreeModel::MoveToTrash(const wxDataViewItem& item) {
+STMN_Type StoryTreeModel::MoveToTrash(const wxDataViewItem& item) {
     StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
     if (node->IsInTrash() || node->IsTrash() || node->IsBook())
-        return;
+        return STMN_Null;
 
     node->GetParent()->GetChildren().Remove(node);
+    ItemDeleted(GetParent(item), wxDataViewItem(node));
+
     m_trash->Append(node);
-    node->SetIsInTrash();
+    node->SetIsInTrash(true);
+    ItemAdded(wxDataViewItem((void*)m_trash), wxDataViewItem(node));
+
+    return node->GetType();
+}
+
+STMN_Type StoryTreeModel::RestoreFromTrash(const wxDataViewItem& item) {
+    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+    if (!node->IsInTrash() || node->IsTrash() || node->IsBook())
+        return STMN_Null;
+
+    amTreeModelNode* parent = node->GetParent();
+
+    m_trash->GetChildren().Remove(node);
+    amTreeModelNodePtrArray& children = parent->GetChildren();
+
+    for (int i = 0; i < children.GetCount(); i++) {
+        if (((StoryTreeModelNode*)children[i])->GetIndex() >= node->GetIndex() + 1) {
+            parent->Insert(node, i);
+            break;
+        }
+    }
+
+    node->SetIsInTrash(false);
+
+    ItemDeleted(wxDataViewItem(m_trash), item);
+    ItemAdded(wxDataViewItem(parent), item);
+
+    return node->GetType();
 }
 
 void StoryTreeModel::DeleteItem(const wxDataViewItem& item) {
@@ -202,7 +219,7 @@ void StoryTreeModel::DeleteItem(const wxDataViewItem& item) {
     for (unsigned int i = 0; i < children.GetCount(); i++)
         DeleteItem(children[i]);
 
-    StoryTreeModelNode* parentNode = node->GetParent();
+    amTreeModelNode* parentNode = node->GetParent();
     if (parentNode)
         parentNode->GetChildren().Remove(node);
     else
@@ -216,78 +233,7 @@ void StoryTreeModel::DeleteItem(const wxDataViewItem& item) {
     ItemDeleted(parent, item);
 }
 
-void StoryTreeModel::SetItemBackgroundColour(wxDataViewItem& item, wxColour& colour) {
-    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-    wxDataViewItemAttr& attr = node->GetAttr();
-
-    attr.SetBackgroundColour(colour);
-}
-
-void StoryTreeModel::SetItemForegroundColour(wxDataViewItem& item, wxColour& colour) {
-    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-    wxDataViewItemAttr& attr = node->GetAttr();
-
-    attr.SetColour(colour);
-}
-
-void StoryTreeModel::SetItemFont(wxDataViewItem& item, wxFont& font) {
-    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-    wxDataViewItemAttr attr = node->GetAttr();
-
-    attr.SetBold(font.GetWeight() >= 400);
-    attr.SetItalic(font.GetStyle() == wxFONTSTYLE_ITALIC);
-    attr.SetStrikethrough(font.GetStrikethrough());
-}
-
-bool StoryTreeModel::Reparent(StoryTreeModelNode* itemNode, StoryTreeModelNode* newParentNode) {
-    StoryTreeModelNode* oldParentNode(itemNode->GetParent());
-
-    wxDataViewItem item((void*)itemNode);
-    wxDataViewItem newParent((void*)newParentNode);
-    wxDataViewItem oldParent((void*)oldParentNode);
-
-
-    if (!itemNode)
-        return false;
-
-    itemNode->Reparent(newParentNode);
-
-    if (!oldParentNode)
-        m_otherRoots.Remove(itemNode);
-
-    if (!newParentNode)
-        m_otherRoots.Add(itemNode);
-
-    ItemAdded(newParent, item);
-    ItemDeleted(oldParent, item);
-    return true;
-}
-
-bool StoryTreeModel::Reparent(StoryTreeModelNode* itemNode, StoryTreeModelNode* newParentNode, int n) {
-    StoryTreeModelNode* oldParentNode(itemNode->GetParent());
-
-    wxDataViewItem item((void*)itemNode);
-    wxDataViewItem newParent((void*)newParentNode);
-    wxDataViewItem oldParent((void*)oldParentNode);
-
-
-    if (!itemNode)
-        return false;
-
-    itemNode->Reparent(newParentNode, n);
-
-    if (!oldParentNode)
-        m_otherRoots.Remove(itemNode);
-
-    if (!newParentNode)
-        m_otherRoots.Insert(itemNode, n);
-
-    ItemAdded(newParent, item);
-    ItemDeleted(oldParent, item);
-    return true;
-}
-
-bool StoryTreeModel::Reposition(wxDataViewItem& item, int n) {
+bool StoryTreeModel::Reposition(const wxDataViewItem& item, int n) {
     StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
 
     if (node) {
@@ -300,7 +246,7 @@ bool StoryTreeModel::Reposition(wxDataViewItem& item, int n) {
 }
 
 void StoryTreeModel::Clear() {
-    StoryTreeModelNodePtrArray array;
+    amTreeModelNodePtrArray array;
 
     array = m_book->GetChildren();
     for (unsigned int i = 0; i < array.GetCount(); i++) {
@@ -338,49 +284,17 @@ void StoryTreeModel::GetValue(wxVariant& variant,
     }
 }
 
-bool StoryTreeModel::SetValue(const wxVariant& variant,
-    const wxDataViewItem& item, unsigned int col) {
-
-    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-    wxDataViewIconText it;
-    it << variant;
-
-    switch (col) {
-    case 0:
-        node->SetTitle(it.GetText());
-        return true;
-
-    default:
-        break;
-    }
-    return false;
-}
-
 wxDataViewItem StoryTreeModel::GetParent(const wxDataViewItem& item) const {
     // the invisible root node has no parent
     if (!item.IsOk())
         return wxDataViewItem(0);
 
     StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-    return wxDataViewItem(node->GetParent());
-}
 
-bool StoryTreeModel::IsContainer(const wxDataViewItem& item) const {
-    // the invisible root node can have children
-    if (!item.IsOk())
-        return true;
-
-    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-    return node->IsContainer();
-}
-
-bool StoryTreeModel::GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const {
-    StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
-
-    if (node)
-        attr = node->GetAttr();
-
-    return true;
+    if (node->IsInTrash())
+        return wxDataViewItem(m_trash);
+    else
+        return wxDataViewItem(node->GetParent());
 }
 
 unsigned int StoryTreeModel::GetChildren(const wxDataViewItem& parent,
@@ -413,7 +327,7 @@ unsigned int StoryTreeModel::GetChildren(const wxDataViewItem& parent,
     }
 
     for (int pos = 0; pos < count; pos++) {
-        StoryTreeModelNode* child = node->GetChildren().Item(pos);
+        amTreeModelNode* child = node->GetChildren().Item(pos);
         array.Add(wxDataViewItem(child));
     }
 
@@ -440,6 +354,9 @@ EVT_BUTTON(BUTTON_RemItem, amStoryWriter::OnRemoveItem)
 
 EVT_DATAVIEW_ITEM_ACTIVATED(TREE_Story, amStoryWriter::OnStoryItemActivated)
 EVT_DATAVIEW_SELECTION_CHANGED(TREE_Story, amStoryWriter::OnStoryItemSelected)
+
+EVT_MENU(MENU_MoveToTrash, amStoryWriter::OnMoveToTrash)
+EVT_MENU(MENU_RestoreFromTrash, amStoryWriter::OnRestoreFromTrash)
 
 EVT_BUTTON(BUTTON_NextChap, amStoryWriter::OnNextChapter)
 EVT_BUTTON(BUTTON_PreviousChap, amStoryWriter::OnPreviousChapter)
@@ -607,16 +524,23 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
 
     wxPanel* leftPanel2 = new wxPanel(leftNotebook);
     leftPanel2->SetBackgroundColour(wxColour(90, 90, 90));
+
+    m_outlineTreeModel = m_manager->GetOutline()->GetOutlineFiles()->GetOutlineTreeModel();
+
+#ifdef __WXMSW__
+    m_outlineView = m_outlineViewHTHandler.Create(leftPanel2, TREE_Outline, m_outlineTreeModel.get());
+#else
     m_outlineView = new wxDataViewCtrl(leftPanel2, TREE_Outline, wxDefaultPosition, wxDefaultSize,
-		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
-    
+        wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
+    m_outlineView->AssociateModel(m_outlineTreeModel.get());
+#endif
+
     wxDataViewColumn* columnF = new wxDataViewColumn(_("Files"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
         wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
     m_outlineView->AppendColumn(columnF);
-
-    m_outlineTreeModel = m_manager->GetOutline()->GetOutlineFiles()->GetOutlineTreeModel();
-    m_outlineView->AssociateModel(m_outlineTreeModel.get());
     m_outlineView->SetBackgroundColour(wxColour(90, 90, 90));
+    m_outlineView->EnableDragSource(wxDF_UNICODETEXT);
+    m_outlineView->EnableDropTarget(wxDF_UNICODETEXT);
 
     wxButton* leftButton2 = new wxButton(leftPanel2, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
     leftButton2->SetBitmap(wxBITMAP_PNG(arrowLeft));
@@ -630,16 +554,22 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, int ch
     wxPanel* leftPanel3 = new wxPanel(leftNotebook);
     leftPanel3->SetBackgroundColour(wxColour(90, 90, 90));
 
+    m_storyTreeModel = new StoryTreeModel();
+
+#ifdef __WXMSW__
+    m_storyView = m_storyViewHTHandler.Create(leftPanel3, TREE_Story, m_storyTreeModel.get());
+#else
     m_storyView = new wxDataViewCtrl(leftPanel3, TREE_Story, wxDefaultPosition, wxDefaultSize,
         wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
+    m_storyView->AssociateModel(m_storyView.get());
+#endif
+
     m_storyView->SetBackgroundColour(wxColour(90, 90, 90));
 
     wxDataViewColumn* columnS = new wxDataViewColumn(_("Story"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
         wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
     m_storyView->AppendColumn(columnS);
-
-    m_storyTreeModel = new StoryTreeModel();
-    m_storyView->AssociateModel(m_storyTreeModel.get());
+    m_storyView->GetMainWindow()->Bind(wxEVT_RIGHT_DOWN, &amStoryWriter::OnStoryViewRightClick, this);
 
     if (!m_storyTreeModel->Load())
         m_storyTreeModel->CreateFromScratch(m_manager->GetCurrentBook());
@@ -1003,8 +933,8 @@ void amStoryWriter::OnStoryItemActivated(wxDataViewEvent& event) {
         break;
 
     case STMN_Chapter:
-        selSection = node->GetParent()->GetIndex();
-        selChapter = node->GetIndex();
+        selSection = ((StoryTreeModelNode*)node->GetParent())->GetIndex();
+        selChapter = ((StoryTreeModelNode*)node)->GetIndex();
 
         if (selSection != m_sectionIndex || selChapter != m_chapterIndex)
             SetCurrentChapter(selChapter, selSection, true);
@@ -1040,15 +970,84 @@ void amStoryWriter::OnStoryItemSelected(wxDataViewEvent& event) {
     }
 }
 
-void amStoryWriter::OnStoryViewRightClick(wxDataViewEvent& event) {
-    wxDataViewItem item = event.GetItem();
+void amStoryWriter::OnStoryViewRightClick(wxMouseEvent& event) {
+    wxDataViewItem item;
+    wxDataViewColumn* col;
+
+    m_storyView->HitTest(event.GetPosition(), item, col);
+    
+    if (!item.IsOk())
+        return;
+
     StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
 
     if (node->IsChapter()) {
-        wxMenu* menu = new wxMenu();
-        menu->Append(MENU_MoveToTrash, "Move to trash");
+        wxMenu menu;
 
-        PopupMenu(menu);
+        if (!node->IsInTrash()) {
+            m_itemForTrash = item;
+            menu.Append(MENU_MoveToTrash, "Move to trash");
+        } else {
+            m_itemForRestore = item;
+            menu.Append(MENU_RestoreFromTrash, "Restore");
+        }
+
+        m_storyView->Select(item);
+        PopupMenu(&menu);
+    }
+}
+
+void amStoryWriter::OnMoveToTrash(wxCommandEvent& event) {
+    if (m_itemForTrash.IsOk()) {
+        wxBusyCursor cursor;
+        switch (m_storyTreeModel->MoveToTrash(m_itemForTrash)) {
+        case STMN_Chapter:
+        {
+            Chapter& chapter = m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_storyTreeModel->GetIndex(m_itemForTrash)];
+            chapter.isInTrash = true;
+            chapter.Update(m_manager->GetStorage(), false, false);
+            m_storyView->Select(m_itemForTrash);
+        }
+        break;
+
+        case STMN_Section:
+        {
+            Section& section = m_manager->GetBooks()[m_bookPos - 1].sections[m_storyTreeModel->GetIndex(m_itemForTrash)];
+            section.isInTrash = true;
+            section.Update(m_manager->GetStorage(), false);
+        }
+        break;
+
+        }
+
+        m_itemForTrash = wxDataViewItem(0);
+    }
+}
+
+void amStoryWriter::OnRestoreFromTrash(wxCommandEvent& event) {
+    if (m_itemForRestore.IsOk()) {
+        wxBusyCursor cursor;
+        switch (m_storyTreeModel->RestoreFromTrash(m_itemForRestore)) {
+        case STMN_Chapter:
+        {
+            Chapter& chapter = m_manager->GetChapters(m_bookPos, m_sectionIndex + 1)[m_storyTreeModel->GetIndex(m_itemForRestore)];
+            chapter.isInTrash = false;
+            chapter.Update(m_manager->GetStorage(), false, false);
+        }
+        break;
+
+        case STMN_Section:
+        {
+            Section& section = m_manager->GetBooks()[m_bookPos - 1].sections[m_storyTreeModel->GetIndex(m_itemForRestore)];
+            section.isInTrash = false;
+            section.Update(m_manager->GetStorage(), false);
+        }
+        break;
+
+        }
+
+        m_storyView->Select(m_itemForRestore);
+        m_itemForRestore = wxDataViewItem(0);
     }
 }
 
@@ -1314,14 +1313,16 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
     const wxPoint& pos,
     const wxSize& size,
     long style) : wxToolBar(parent, id, pos, size, style) {
-    AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(bold), wxBITMAP_PNG(bold), "Bold");
-    AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italic), wxBITMAP_PNG(italic), "italic");
-    AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underline), wxBITMAP_PNG(underline), "Underline");
+    SetBackgroundColour(wxColour(30, 30, 30));
+
+    AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(boldLight), wxBITMAP_PNG(bold), "Bold");
+    AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italicLight), wxBITMAP_PNG(italic), "italic");
+    AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underlineLight), wxBITMAP_PNG(underline), "Underline");
     AddSeparator();
-    AddRadioTool(TOOL_AlignLeft, "", wxBITMAP_PNG(leftAlign), wxBITMAP_PNG(leftAlign), "Align left");
-    AddRadioTool(TOOL_AlignCenter, "", wxBITMAP_PNG(centerAlign), wxBITMAP_PNG(centerAlign), "Align center");
-    AddRadioTool(TOOL_AlignCenterJust, "", wxBITMAP_PNG(centerJustAlign), wxBITMAP_PNG(centerJustAlign), "Align center and fit");
-    AddRadioTool(TOOL_AlignRight, "", wxBITMAP_PNG(rightAlign), wxBITMAP_PNG(rightAlign), "Align right");
+    AddRadioTool(TOOL_AlignLeft, "", wxBITMAP_PNG(leftAlignLight), wxBITMAP_PNG(leftAlign), "Align left");
+    AddRadioTool(TOOL_AlignCenter, "", wxBITMAP_PNG(centerAlignLight), wxBITMAP_PNG(centerAlign), "Align center");
+    AddRadioTool(TOOL_AlignCenterJust, "", wxBITMAP_PNG(centerJustAlignLight), wxBITMAP_PNG(centerJustAlign), "Align center and fit");
+    AddRadioTool(TOOL_AlignRight, "", wxBITMAP_PNG(rightAlignLight), wxBITMAP_PNG(rightAlign), "Align right");
     AddSeparator();
 
     wxArrayString sizes;
@@ -1340,10 +1341,6 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
     m_fontSize->SetBackgroundColour(wxColour(30, 30, 30));
     m_fontSize->SetForegroundColour(wxColour(230, 230, 230));
 
-    m_contentScale = new wxSlider(this, TOOL_ContentScale, 100, 50, 300,
-        wxDefaultPosition, wxDefaultSize, wxSL_MIN_MAX_LABELS);
-    m_contentScale->SetToolTip("100");
-
     AddControl(m_fontSize);
     AddStretchableSpace();
 
@@ -1351,16 +1348,21 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
     if (amStyle |= amTB_NOTE_VIEW && pSWN) {
         m_parent = pSWN;
 
-        AddCheckTool(TOOL_NoteView, "", wxBITMAP_PNG(noteView), wxNullBitmap, "Toggle note view");
+        AddCheckTool(TOOL_NoteView, "", wxBITMAP_PNG(noteViewLight), wxBITMAP_PNG(noteViewLight), "Toggle note view");
         AddSeparator();
     }
 
-    if (amStyle |= amTB_ZOOM) 
+    if (amStyle |= amTB_ZOOM) {
+        m_contentScale = new wxSlider(this, TOOL_ContentScale, 100, 50, 300,
+            wxDefaultPosition, wxDefaultSize, wxSL_MIN_MAX_LABELS);
+        m_contentScale->SetToolTip("100");
+        m_contentScale->SetForegroundColour(wxColour(255, 255, 255));
         AddControl(m_contentScale);
+    }
 
     if (amStyle |= amTB_FULLSCREEN && pSWN) {
         AddSeparator();
-        AddCheckTool(TOOL_StoryFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
+        AddCheckTool(TOOL_StoryFullScreen, "", wxBITMAP_PNG(fullScreenPngLight), wxBITMAP_PNG(fullScreenPngLight), "Toggle Full Screen");
     }
 
     Realize();

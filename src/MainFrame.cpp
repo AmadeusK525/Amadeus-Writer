@@ -197,7 +197,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	// Creating toolbar and setting tools
 
-	m_toolBar = new wxToolBar(m_mainPanel, -1);
+	m_toolBar = new wxToolBar(m_mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT);	
 	m_toolBar->SetBackgroundColour(wxColour(100, 100, 100));
 
 	m_toolBar->AddTool(TOOL_NewChapter, wxEmptyString, wxBITMAP_PNG(chapterPng), "Add new chapter", wxITEM_NORMAL);
@@ -205,7 +205,6 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_toolBar->AddTool(TOOL_NewLocation, wxEmptyString, wxBITMAP_PNG(locationPng), "Add new location", wxITEM_NORMAL);
 	m_toolBar->AddTool(TOOL_NewItem, wxEmptyString, wxBITMAP_PNG(itemPng), "Add new item", wxITEM_NORMAL);
 
-	m_toolBar->AddSeparator();
 	m_toolBar->AddSeparator();
 	m_toolBar->AddTool(TOOL_Save, "", wxBITMAP_PNG(savePng), "Save project", wxITEM_NORMAL);
 	m_toolBar->AddSeparator();
@@ -215,7 +214,10 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	// Initializing the search bar. It's actually owned by the another class, but it's initialized in this constructor.
 
-	m_elements->m_searchBar = new wxSearchCtrl(m_toolBar, TOOL_Search, wxEmptyString, wxDefaultPosition, wxSize(250, -1), wxTE_CAPITALIZE);
+	m_elements->m_searchBar = new wxSearchCtrl(m_toolBar, TOOL_Search,
+		wxEmptyString, wxDefaultPosition, FromDIP(wxSize(250, -1)), wxTE_CAPITALIZE | wxBORDER_SIMPLE);
+	m_elements->m_searchBar->SetBackgroundColour(wxColour(30,30,30));
+	m_elements->m_searchBar->SetForegroundColour(wxColour(255, 255, 255));
 	m_elements->m_searchBar->ShowCancelButton(true);
 
 	m_toolBar->AddControl(m_elements->m_searchBar);
