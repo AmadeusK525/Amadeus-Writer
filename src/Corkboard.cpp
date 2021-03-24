@@ -183,13 +183,9 @@ void amCorkboard::Load(wxStringInputStream& stream) {
 /////////////////////////////////////////////////////////////////////////////////////////
 
 
-BEGIN_EVENT_TABLE(CorkboardCanvas, wxSFShapeCanvas)
-EVT_SCROLLWIN(CorkboardCanvas::OnScroll)
-END_EVENT_TABLE()
-
 CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* parent,
 	wxWindowID id, const wxPoint& pos, const wxSize& size, long style) :
-	wxSFShapeCanvas(canvasManager, parent, id, pos, size, style) {
+	amSFShapeCanvas(canvasManager, parent, id, pos, size, style) {
 
 	m_manager = amGetManager();
 	this->parent = (amCorkboard*)parent;
@@ -367,32 +363,16 @@ void CorkboardCanvas::OnLeftUp(wxMouseEvent& event) {
 	wxSFShapeCanvas::OnLeftUp(event);
 }
 
-void CorkboardCanvas::OnRightDown(wxMouseEvent& event) {
-	// Set begin dragging state as true and calculate current mouse position and current
-	// scrollbar position.
-	m_beginDraggingRight = true;
-	m_downPos = wxGetMousePosition();
-	CalcUnscrolledPosition(0, 0, &m_scrollbarPos.x, &m_scrollbarPos.y);
-
-	CaptureMouse();
-
-	// Call default behaviour.
-	wxSFShapeCanvas::OnRightDown(event);
-	event.Skip();
-}
-
 void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
-	// Reset everything.
-	if (m_isDraggingRight) {
-		m_isDraggingRight = false;
-		SetCursor(wxCursor(wxCURSOR_DEFAULT));
-	} else {
+	bool isDragginRightCache = m_isDraggingRight;
+	amSFShapeCanvas::OnRightUp(event);
+
+	if (!isDragginRightCache) {
 		shapeForMenu = GetShapeUnderCursor();
 
 		if (shapeForMenu) {
-			wxClassInfo* classInfo = shapeForMenu->GetClassInfo();
 			wxMenu menu;
-			if (classInfo == CLASSINFO(NoteShape)) {
+			if (shapeForMenu->IsKindOf(CLASSINFO(NoteShape))) {
 				menu.AppendRadioItem(MENU_NoteDefault, "Default");
 				menu.AppendRadioItem(MENU_NoteBlack, "Black");
 				menu.AppendRadioItem(MENU_NoteWhite, "White");
@@ -405,7 +385,9 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 				menu.Append(MENU_DeleteNote, "Delete");
 
 				menu.Check(((NoteShape*)shapeForMenu)->m_currentColour, true);
-			} else if (classInfo == CLASSINFO(ImageShape)) {
+			} else if (shapeForMenu->IsKindOf(CLASSINFO(ImageShape))
+				|| shapeForMenu->IsKindOf(CLASSINFO(wxSFLineShape))
+				|| shapeForMenu->IsKindOf(CLASSINFO(wxSFEditTextShape))) {
 				menu.Append(MENU_DeleteImage, "Delete");
 			}
 
@@ -414,52 +396,12 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 		}
 	}
 
-	if (HasCapture())
-		ReleaseCapture();
-
-	m_beginDraggingRight = false;
-
-	// Call default behaviour.
-	//wxSFShapeCanvas::OnRightUp(event);
 	event.Skip();
 }
 
 void CorkboardCanvas::OnUpdateVirtualSize(wxRect& vrtrect) {
 	vrtrect.width += 1500;
 	vrtrect.height += 1500;
-}
-
-void CorkboardCanvas::OnMouseMove(wxMouseEvent& event) {
-	// If right mouse button has been clicked, calculate drag and begin.
-
-	if (m_beginDraggingRight) {
-		m_isDraggingRight = true;
-		m_beginDraggingRight = false;
-		SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
-	}
-
-	if (m_isDraggingRight) {
-		wxPoint toMove = m_downPos - wxGetMousePosition();
-
-		int px, py;
-		GetScrollPixelsPerUnit(&px, &py);
-		Scroll((m_scrollbarPos.x + toMove.x) / px, (m_scrollbarPos.y + toMove.y) / py);
-	}
-
-	// Call default behaviour.
-	wxSFShapeCanvas::OnMouseMove(event);
-	event.Skip();
-}
-
-void CorkboardCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
-	m_isDraggingRight = false;
-}
-
-void CorkboardCanvas::OnScroll(wxScrollWinEvent& event) {
-	if (wxGetKeyState(WXK_CONTROL))
-		return;
-
-	event.Skip();
 }
 
 void CorkboardCanvas::OnKeyDown(wxKeyEvent& event) {

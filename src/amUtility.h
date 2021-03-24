@@ -7,6 +7,8 @@
 #include <wx\image.h>
 #include <wx\dataview.h>
 
+#include <wx\wxsf\wxShapeFramework.h>
+
 class amSplitterWindow : public wxSplitterWindow {
 public:
     amSplitterWindow(wxWindow* parent,
@@ -448,5 +450,82 @@ public:
     }
 };
 #endif /*__WXMSW__*/
+
+class amSFShapeCanvas : public wxSFShapeCanvas {
+protected:
+    bool m_beginDraggingRight = false;
+    bool m_isDraggingRight = false;
+    wxPoint m_rightDownPos{};
+    wxPoint m_scrollbarPos{};
+
+public:
+    inline amSFShapeCanvas(wxSFDiagramManager* manager, wxWindow* parent, wxWindowID id = -1,
+        const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+        long style = wxHSCROLL | wxVSCROLL) : wxSFShapeCanvas(manager, parent, id, pos, size, style) {
+        Bind(wxEVT_MOUSE_CAPTURE_LOST, &amSFShapeCanvas::OnMouseCaptureLost, this);
+        Bind(wxEVT_SCROLLWIN_BOTTOM, &amSFShapeCanvas::OnScroll, this);
+        Bind(wxEVT_SCROLLWIN_LINEDOWN, &amSFShapeCanvas::OnScroll, this);
+        Bind(wxEVT_SCROLLWIN_LINEUP, &amSFShapeCanvas::OnScroll, this);
+        Bind(wxEVT_SCROLLWIN_PAGEDOWN, &amSFShapeCanvas::OnScroll, this);
+        Bind(wxEVT_SCROLLWIN_PAGEUP, &amSFShapeCanvas::OnScroll, this);
+        Bind(wxEVT_SCROLLWIN_THUMBRELEASE, &amSFShapeCanvas::OnScroll, this);
+        Bind(wxEVT_SCROLLWIN_THUMBTRACK, &amSFShapeCanvas::OnScroll, this);
+        Bind(wxEVT_SCROLLWIN_TOP, &amSFShapeCanvas::OnScroll, this);
+
+    }
+
+    inline virtual void OnMouseMove(wxMouseEvent& event) {
+        if (m_beginDraggingRight) {
+            m_isDraggingRight = true;
+            m_beginDraggingRight = false;
+            SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
+        }
+
+        if (m_isDraggingRight) {
+            wxPoint toMove = m_rightDownPos - wxGetMousePosition();
+
+            int px, py;
+            GetScrollPixelsPerUnit(&px, &py);
+            Scroll((m_scrollbarPos.x + toMove.x) / px, (m_scrollbarPos.y + toMove.y) / py);
+        }
+    
+        wxSFShapeCanvas::OnMouseMove(event);
+    }
+
+    inline virtual void OnMouseCaptureLost(wxMouseCaptureLostEvent& event) {
+        m_isDraggingRight = false;
+        m_beginDraggingRight = false;
+    }
+
+    inline virtual void OnRightDown(wxMouseEvent& event) {
+        // Set begin dragging state as true and calculate current mouse position and current
+        // scrollbar position.
+        m_beginDraggingRight = true;
+        m_rightDownPos = wxGetMousePosition();
+        CalcUnscrolledPosition(0, 0, &m_scrollbarPos.x, &m_scrollbarPos.y);
+
+        CaptureMouse();
+        event.Skip();
+    }
+
+    inline virtual void OnRightUp(wxMouseEvent& event) {
+        // Reset everything.
+        if (m_isDraggingRight) {
+            m_isDraggingRight = false;
+            SetCursor(wxCursor(wxCURSOR_DEFAULT));
+        }
+
+        if (HasCapture())
+            ReleaseCapture();
+
+        m_beginDraggingRight = false;
+        event.Skip();
+    }
+
+    inline virtual void OnScroll(wxScrollWinEvent& event) {    
+    
+    }
+};
+
 
 #endif; /*UTILITY_AM_H_*/

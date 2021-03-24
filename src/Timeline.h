@@ -210,7 +210,7 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 
-class amTLTimelineCanvas : public wxSFShapeCanvas {
+class amTLTimelineCanvas : public amSFShapeCanvas {
 private:
 	amTLTimeline* m_parent = nullptr;
 
@@ -228,6 +228,11 @@ private:
 	amTLThread* m_selectedThread = nullptr;
 
 	amTLSection* m_selectedSection = nullptr;
+
+	bool m_beginDraggingRight = false;
+	bool m_isDraggingRight = false;
+	wxPoint m_rightDownPos{};
+	wxPoint m_scrollbarPos{};
 
 	wxTimer m_threadSelectionTimer{};
 
@@ -278,10 +283,6 @@ public:
 	virtual void OnTextChange(wxSFEditTextShape* shape);
 
 	wxSize GetGoodSize();
-
-	void OnScroll(wxScrollWinEvent& event);
-
-	DECLARE_EVENT_TABLE()
 
 private:
 	void RepositionThreads();

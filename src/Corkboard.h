@@ -11,6 +11,7 @@
 
 #include "MainFrame.h"
 #include "Outline.h"
+#include "amUtility.h"
 
 #include <memory>
 
@@ -84,7 +85,7 @@ public:
 /////////////////////////////////// Corkboard Canvas ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class CorkboardCanvas : public wxSFShapeCanvas {
+class CorkboardCanvas : public amSFShapeCanvas {
 private:
 	amCorkboard* parent = nullptr;
 	amProjectManager* m_manager = nullptr;
@@ -94,11 +95,6 @@ private:
 	bool m_isFullScreen = false;
 	bool m_isConnecting = false;
 	bool m_showShadows = false;
-
-	bool m_beginDraggingRight = false;
-	bool m_isDraggingRight = false;
-	wxPoint m_downPos{};
-	wxPoint m_scrollbarPos{};
 
 public:
 	CorkboardCanvas(wxSFDiagramManager* manager, wxWindow* parent, wxWindowID id = -1,
@@ -111,18 +107,11 @@ public:
 	virtual void OnLeftDown(wxMouseEvent& event);
 	virtual void OnLeftUp(wxMouseEvent& event);
 
-	virtual void OnRightDown(wxMouseEvent& event);
 	virtual void OnRightUp(wxMouseEvent& event);
 
 	virtual void OnUpdateVirtualSize(wxRect& vrtrect);
-	virtual void OnMouseMove(wxMouseEvent& event);
-	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
-	void OnScroll(wxScrollWinEvent& event);
-
 	virtual void OnKeyDown(wxKeyEvent& event);
-
 	virtual void OnTextChange(wxSFEditTextShape* shape);
-
 	virtual void OnConnectionFinished(wxSFLineShape* connection);
 
 	enum {
@@ -138,7 +127,5 @@ public:
 		MENU_NoteBlack,
 		MENU_NoteDefault
 	};
-
-	DECLARE_EVENT_TABLE()
 };
 #endif

@@ -454,6 +454,7 @@
     <ClCompile Include="src\ProjectWizard.cpp" />
     <ClCompile Include="src\Release.cpp" />
     <ClCompile Include="src\Timeline.cpp" />
+    <ClCompile Include="src\TimelineDialogs.cpp" />
     <ClCompile Include="src\TimelineShapes.cpp" />
     <ClCompile Include="src\WordProcessor.cpp" />
   </ItemGroup>
@@ -481,6 +482,7 @@
     <ClInclude Include="src\ProjectWizard.h" />
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\Timeline.h" />
+    <ClInclude Include="src\TimelineDialogs.h" />
     <ClInclude Include="src\TimelineShapes.h" />
     <ClInclude Include="src\amUtility.h" />
     <ClInclude Include="src\WordProcessor.h" />
