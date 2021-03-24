@@ -1,5 +1,7 @@
 #include "ElementShowcases.h"
 
+#include "wxmemdbg.h"
+
 amElementShowcase::amElementShowcase(wxWindow* parent) :
 	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL) {
 	wxFont font(wxFontInfo(12).Bold());

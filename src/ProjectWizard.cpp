@@ -2,6 +2,8 @@
 
 #include <wx\wx.h>
 
+#include "wxmemdbg.h"
+
 amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id) {
 	SetExtraStyle(wxWIZARD_EX_HELPBUTTON);
 	Create(parent, id, "Project Wizard", wxNullBitmap, wxDefaultPosition,

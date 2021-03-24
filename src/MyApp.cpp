@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "wxmemdbg.h"
+
 wxIMPLEMENT_APP(MyApp);
 
 /// <summary>

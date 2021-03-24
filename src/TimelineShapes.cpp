@@ -2,6 +2,8 @@
 
 #include "Timeline.h"
 
+#include "wxmemdbg.h"
+
 XS_IMPLEMENT_CLONABLE_CLASS(TimelineCard, wxSFRoundRectShape);
 
 int TimelineCard::m_verSpacing = 10;
@@ -87,19 +89,28 @@ TimelineCard::TimelineCard(const TimelineCard& other) : wxSFRoundRectShape(other
 }
 
 void TimelineCard::RecalculatePosition() {
-	int sectionMarkerWidth = TimelineSection::GetMarkerWidth();
-	int sectionHorSpacing = TimelineSection::GetHorizontalSpcaing();
+	int sectionMarkerWidth = amTLSection::GetMarkerWidth();
+	int sectionHorSpacing = amTLSection::GetHorizontalSpcaing();
 
 	int x = ((m_width + m_horSpacing) * m_col)
 		+ (sectionMarkerWidth + (m_horSpacing / 2))
 		+ (m_section * (sectionHorSpacing + (sectionMarkerWidth * 2))
-		+ TimelineThread::GetTitleOffset());
+		+ amTLThread::GetTitleOffset());
 	
 	int y = (m_verSpacing * (m_row + 1)) +
 		(m_height * m_row) +
-		TimelineSection::GetTitleOffset();
+		amTLSection::GetTitleOffset();
 
 	MoveTo(x, y);
+}
+
+void TimelineCard::DrawOnOrigin(wxDC& dc, bool children) {
+	double tempx = m_nRelativePosition.x, tempy = m_nRelativePosition.y;
+	m_nRelativePosition = { 0, 0 };
+
+	Draw(dc, children);
+
+	m_nRelativePosition = { tempx, tempy };
 }
 
 void TimelineCard::SetColour(wxColour& colour) {

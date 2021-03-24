@@ -57,8 +57,8 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_charList->SetForegroundColour(wxColour(245, 245, 245));
 
     m_charImageList = new wxImageList(24, 24);
-    m_charList->SetImageList(m_charImageList, wxIMAGE_LIST_SMALL);
-
+    m_charList->AssignImageList(m_charImageList, wxIMAGE_LIST_SMALL);
+    
     wxArrayString sortBy;
     sortBy.Add("Role");
     sortBy.Add("Name (A-Z)");
@@ -83,7 +83,6 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     amCheckListBox* cBooks = new amCheckListBox();
 
     m_cShow->SetPopupControl(cBooks);
-    cBooks->InsertItems(m_manager->GetBookTitles(), 0);
 
     wxBoxSizer* cFooterSizer = new wxBoxSizer(wxHORIZONTAL);
     cFooterSizer->Add(cSortByLabel, wxSizerFlags(0).CenterVertical());
@@ -124,7 +123,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_locList->SetMinSize(wxSize(300, 400));
 
     m_locImageList = new wxImageList(24, 24);
-    m_locList->SetImageList(m_locImageList, wxIMAGE_LIST_SMALL);
+    m_locList->AssignImageList(m_locImageList, wxIMAGE_LIST_SMALL);
 
     wxStaticText* lSortByLabel = new wxStaticText(locFrame, -1, "Sort by:");
     lSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
@@ -172,7 +171,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
     m_itemsList->SetMinSize(wxSize(300, 400));
 
     m_itemsImageList = new wxImageList(24, 24);
-    m_itemsList->SetImageList(m_itemsImageList, wxIMAGE_LIST_SMALL);
+    m_itemsList->AssignImageList(m_itemsImageList, wxIMAGE_LIST_SMALL);
 
     wxStaticText* iSortByLabel = new wxStaticText(itemsFrame, -1, "Sort by:");
     iSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
@@ -200,18 +199,6 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 
     itemsFrame->SetSizer(itemSizer);
     this->AddPage(itemsFrame, "Items");
-}
-
-amElementsNotebook::~amElementsNotebook() {
-    if (m_charImageList)
-        delete m_charImageList;
-
-    if (m_locImageList)
-        delete m_locImageList;
-
-    if (m_itemsImageList)
-        delete m_itemsImageList;
-
 }
 
 void amElementsNotebook::InitShowChoices() {

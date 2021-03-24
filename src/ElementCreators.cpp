@@ -9,6 +9,8 @@
 #include <wx\stattext.h>
 #include <wx\statline.h>
 
+#include "wxmemdbg.h"
+
 BEGIN_EVENT_TABLE(amElementCreator, wxFrame)
 
 EVT_BUTTON(BUTTON_SetImage, amElementCreator::SetImage)

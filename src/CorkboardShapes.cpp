@@ -2,6 +2,8 @@
 
 #include "Corkboard.h"
 
+#include "wxmemdbg.h"
+
 XS_IMPLEMENT_CLONABLE_CLASS(AutoWrapTextShape,
 	wxSFEditTextShape);
 
@@ -94,6 +96,7 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 	if (m_textToDraw.IsEmpty())
 		return;
 
+	wxString currentString{ "" };
 	wxSize textSize;
 
 	int begin = 0;
@@ -106,14 +109,11 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 	if (m_nLineHeight > 0)
 		numberOfLines = height / m_nLineHeight;
 
-	if (height > 25)
-		height -= 15;
-
 	bool first = true;
 	int maxChar = 0;
 
 	while (numberOfLines >= 0) {
-		if (end >= begin + maxChar || first) {
+		if (end >= begin + maxChar || first || numberOfLines == 0) {
 			end += 2;
 		} else
 			end += maxChar;
@@ -121,15 +121,25 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 		if (end > strLen)
 			end = strLen;
 
-		textSize = GetTextExtent(m_textToDraw.SubString(begin, end));
+		currentString = m_textToDraw.SubString(begin, end);
+		textSize = GetTextExtent(currentString);
 
 		// This is done due to a bug that causes m_nLineHeight to be 0 before getting the text extent
-		if (numberOfLines == 1)
-			numberOfLines = (height + 15) / m_nLineHeight;
+		if (numberOfLines == 1 && end <= 2) {
+			numberOfLines = height / m_nLineHeight;
+		
+			if (numberOfLines != 1)
+				height -= 10;
+		}
 
 		if (textSize.x >= maxLength && numberOfLines != 0) {
 			if (first) {
 				maxChar = end - 5;
+				
+				size_t found = currentString.rfind("\n");
+				if (found != std::string::npos)
+					maxChar -= found;
+
 				first = false;
 			}
 
@@ -142,9 +152,14 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height) {
 				m_textToDraw.replace(begin + maxChar, 2, "-\n");
 				begin += maxChar + 1;
 			}
+			
+			found = currentString.Index(wxChar("\n"));
+			if (found != -1)
+				numberOfLines -= currentString.Index(wxChar("\n"));
+			else
+				numberOfLines--;
 
 			end = begin;
-			numberOfLines--;
 		} else if (numberOfLines == 0 || end >= strLen ||
 			GetTextExtent(m_textToDraw.Left(end)).y > height) {
 			if (end < strLen) {

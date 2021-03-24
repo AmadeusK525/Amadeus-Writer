@@ -44,14 +44,7 @@ public:
         m_attr.SetColour(wxColour(255, 255, 255));
     }
 
-    inline ~OutlineTreeModelNode() {
-        for (size_t i = 0; i < m_children.GetCount(); i++) {
-            amTreeModelNode* child = m_children[i];
-
-            if (child)
-                delete child;
-        }
-
+    inline virtual ~OutlineTreeModelNode() {
         if (m_buffer)
             delete m_buffer;
     }
@@ -93,7 +86,7 @@ private:
 
 public:
     OutlineTreeModel();
-    inline ~OutlineTreeModel() {
+    inline virtual ~OutlineTreeModel() {
         if (m_research)
             delete m_research;
         
@@ -105,24 +98,19 @@ public:
 
         if (m_items)
             delete m_items;
-
-        for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
-            if (m_otherRoots.at(i))
-                delete m_otherRoots.at(i);
-        }
     }
 
     wxRichTextBuffer* GetBuffer(const wxDataViewItem& item) const;
 
-    inline amTreeModelNodePtrArray& GetCharacters() {
+    inline wxVector<amTreeModelNode*>& GetCharacters() {
         return m_characters->GetChildren();
     }
 
-    inline amTreeModelNodePtrArray& GetLocations() {
+    inline wxVector<amTreeModelNode*>& GetLocations() {
         return m_locations->GetChildren();
     }
 
-    inline amTreeModelNodePtrArray& GetItems() {
+    inline wxVector<amTreeModelNode*>& GetItems() {
         return m_items->GetChildren();
     }
 

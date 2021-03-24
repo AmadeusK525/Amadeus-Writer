@@ -10,6 +10,8 @@
 
 #include <thread>
 
+#include "wxmemdbg.h"
+
 wxVector<wxIcon> OutlineTreeModelNode::m_icons{};
 
 OutlineTreeModel::OutlineTreeModel() {
@@ -69,7 +71,7 @@ wxDataViewItem OutlineTreeModel::AppendFile(const wxDataViewItem& parent, const 
 	wxDataViewItem item(node);
 
 	if (!parentNode)
-		m_otherRoots.Add(node);
+		m_otherRoots.push_back(node);
 
 	ItemAdded(parent, item);
 
@@ -82,7 +84,7 @@ wxDataViewItem OutlineTreeModel::AppendFolder(const wxDataViewItem& parent, cons
 	wxDataViewItem item(node);
 
 	if (!parentNode)
-		m_otherRoots.Add(node);
+		m_otherRoots.push_back(node);
 
 	ItemAdded(parent, item);
 
@@ -136,9 +138,13 @@ void OutlineTreeModel::DeleteItem(const wxDataViewItem& item) {
 
 	amTreeModelNode* parentNode = node->GetParent();
 	if (parentNode)
-		parentNode->GetChildren().Remove(node);
-	else
-		m_otherRoots.Remove(node);
+		node->RemoveSelfFromParentList();
+	else {
+		for (amTreeModelNode*& otherRoot : m_otherRoots) {
+			if (otherRoot == node)
+				m_otherRoots.erase(&otherRoot);
+		}
+	}
 
 	wxDataViewItem parent(parentNode);
 
@@ -161,20 +167,20 @@ bool OutlineTreeModel::Reposition(const wxDataViewItem& item, int n) {
 }
 
 void OutlineTreeModel::Clear() {
-	amTreeModelNodePtrArray array;
+	wxVector<amTreeModelNode*> array;
 
 	array = m_research->GetChildren();
-	for (unsigned int i = 0; i < array.GetCount(); i++) {
+	for (unsigned int i = 0; i < array.size(); i++) {
 		DeleteItem(wxDataViewItem(array[i]));
 	}
 
 	array = m_characters->GetChildren();
-	for (unsigned int i = 0; i < array.GetCount(); i++) {
+	for (unsigned int i = 0; i < array.size(); i++) {
 		DeleteItem(wxDataViewItem(array[i]));
 	}
 
 	array = m_locations->GetChildren();
-	for (unsigned int i = 0; i < array.GetCount(); i++) {
+	for (unsigned int i = 0; i < array.size(); i++) {
 		DeleteItem(wxDataViewItem(array[i]));
 	}
 
@@ -231,11 +237,11 @@ unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 			n++;
 		}
 
-		for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
+		for (unsigned int i = 0; i < m_otherRoots.size(); i++)
 			array.Add(wxDataViewItem(m_otherRoots.at(i)));
-		}
+		
 
-		return n + m_otherRoots.GetCount();
+		return n + m_otherRoots.size();
 	}
 
 	int count = node->GetChildCount();
@@ -295,13 +301,13 @@ void OutlineTreeModel::OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc) {
 	wxDataViewItem item(event.GetItem());
 
 	if (IsCharacters(item) || IsLocations(item) || IsItems(item) || IsDescendant(m_itemForDnD, item) || m_itemForDnD == item) {
-		m_itemForDnD.Unset();
+		UnsetItemForDnD();
 		return;
 	}
 
 	if (event.GetDataFormat() != wxDF_UNICODETEXT) {
 		event.Veto();
-		m_itemForDnD.Unset();
+		UnsetItemForDnD();
 		return;
 	}
 
@@ -335,7 +341,7 @@ void OutlineTreeModel::OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc) {
 	}
 
 	dvc->Select(m_itemForDnD);
-	m_itemForDnD.Unset();
+	UnsetItemForDnD();
 }
 
 
@@ -383,7 +389,7 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 	m_filesTB = new wxToolBar(m_leftPanel, -1);
 	m_filesTB->AddTool(TOOL_NewFile, "", wxBITMAP_PNG(addFile), _("Add new file."));
 	m_filesTB->AddTool(TOOL_NewFolder, "", wxBITMAP_PNG(addFolder), _("Add new folder."));
-	m_filesTB->SetBackgroundColour(wxColour(60, 60, 60));
+	m_filesTB->SetBackgroundColour(wxColour(30, 30, 30));
 
 	m_filesTB->Realize();
 
@@ -695,8 +701,8 @@ void amOutlineFilesPanel::AppendItem(Item& item) {
 }
 
 void amOutlineFilesPanel::DeleteCharacter(Character& character) {
-	amTreeModelNodePtrArray& characters = m_outlineTreeModel->GetCharacters();
-	for (unsigned int i = 0; i < characters.Count(); i++) {
+	wxVector<amTreeModelNode*>& characters = m_outlineTreeModel->GetCharacters();
+	for (unsigned int i = 0; i < characters.size(); i++) {
 		if (characters[i]->GetTitle() == character.name) {
 			if (m_currentNode == characters[i]) {
 				m_currentNode = nullptr;
@@ -711,8 +717,8 @@ void amOutlineFilesPanel::DeleteCharacter(Character& character) {
 }
 
 void amOutlineFilesPanel::DeleteLocation(Location& location) {
-	amTreeModelNodePtrArray& locations = m_outlineTreeModel->GetLocations();
-	for (unsigned int i = 0; i < locations.Count(); i++) {
+	wxVector<amTreeModelNode*>& locations = m_outlineTreeModel->GetLocations();
+	for (unsigned int i = 0; i < locations.size(); i++) {
 		if (locations[i]->GetTitle() == location.name) {
 			if (m_currentNode == locations[i]) {
 				m_currentNode = nullptr;
@@ -727,8 +733,8 @@ void amOutlineFilesPanel::DeleteLocation(Location& location) {
 }
 
 void amOutlineFilesPanel::DeleteItem(Item& item) {
-	amTreeModelNodePtrArray& items = m_outlineTreeModel->GetItems();
-	for (unsigned int i = 0; i < items.Count(); i++) {
+	wxVector<amTreeModelNode*>& items = m_outlineTreeModel->GetItems();
+	for (unsigned int i = 0; i < items.size(); i++) {
 		if (items[i]->GetTitle() == item.name) {
 			if (m_currentNode == items[i]) {
 				m_currentNode = nullptr;
@@ -881,6 +887,7 @@ void amOutlineFilesPanel::OnMenuDataView(wxCommandEvent& event) {
 
 void amOutlineFilesPanel::OnSelectionChanged(wxDataViewEvent& event) {
 	wxDataViewItem item(event.GetItem());
+	m_outlineTreeModel->UnsetItemForDnD();
 
 	SaveCurrentBuffer();
 

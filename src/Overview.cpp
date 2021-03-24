@@ -1,6 +1,8 @@
 #include "Overview.h"
 #include "amUtility.h"
 
+#include "wxmemdbg.h"
+
 amBookPicker::amBookPicker(amOverview* parent) :
 	wxScrolledWindow(parent, -1, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxALWAYS_SHOW_SB | wxBORDER_SIMPLE) {
 	m_parent = (amOverview*)parent;

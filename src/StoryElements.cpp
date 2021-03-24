@@ -5,6 +5,8 @@
 
 #include "ProjectManager.h"
 
+#include "wxmemdbg.h"
+
 CompType Element::elCompType = CompRole;
 CompType Character::cCompType = CompRole;
 CompType Location::lCompType = CompRole;

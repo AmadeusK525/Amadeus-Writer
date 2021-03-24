@@ -1,6 +1,7 @@
 #include "Corkboard.h"
 
 #include "MyApp.h"
+
 #include "MainFrame.h"
 #include "ImagePanel.h"
 #include "Outline.h"
@@ -217,6 +218,8 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 	GetDiagramManager()->AcceptShape("All");
 
 	Bind(wxEVT_MOUSE_CAPTURE_LOST, &CorkboardCanvas::OnMouseCaptureLost, this);
+
+	EnableScrolling(true, true);
 
 	// Use wxGC for drawing everything. This looks a lot nicer, but may be
 	// slower, but imo definitely worth keeping on.

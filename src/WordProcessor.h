@@ -67,8 +67,9 @@ public:
 
 
 	void OnChar(wxKeyEvent& event);
-
 	void ApplyCommentToSelection();
+
+	virtual void SetupScrollbars(bool atTop = false, bool fromOnPaint = false);
 
 	DECLARE_EVENT_TABLE()
 };

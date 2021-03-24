@@ -24,6 +24,8 @@ public:
 
 	void RecalculatePosition();
 
+	void DrawOnOrigin(wxDC& dc, bool children = true);
+
 	inline int GetRow() { return m_row; }
 	inline int GetColumn() { return m_col; }
 	inline int GetSection() { return m_section; }

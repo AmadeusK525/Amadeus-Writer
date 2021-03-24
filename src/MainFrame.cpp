@@ -248,8 +248,8 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 void amMainFrame::OnNewFile(wxCommandEvent& event) {
 	// Updating everything that needs to be reset.
 	m_elements->ClearAll();
-	m_outline->ClearAll();
 	m_storyNotebook->ClearAll();
+	m_outline->ClearAll();
 
 	// Clearing all paths and setting window title as generic.
 	SetTitle("New Amadeus project");

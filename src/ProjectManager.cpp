@@ -18,6 +18,8 @@
 
 #include <thread>
 
+#include "wxmemdbg.h"
+
 
 ///////////////////////////////////////////////////////////////////
 //////////////////////////// SQLStorage ///////////////////////////
@@ -552,6 +554,11 @@ amProjectManager::amProjectManager() {
 	
 }
 
+amProjectManager::~amProjectManager() {
+	m_storage.Close();
+	wxSQLite3Database::ShutdownSQLite();
+}
+
 bool amProjectManager::Init() {
 	if (m_isInitialized)
 		return false;
@@ -576,9 +583,8 @@ bool amProjectManager::Init() {
 
 			book.Save(&m_storage);
 			m_project.books.push_back(book);
-		} else {
+		} else
 			LoadProject();
-		}
 
 		m_elements->InitShowChoices();
 		m_isInitialized = true;

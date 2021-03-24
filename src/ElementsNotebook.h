@@ -34,7 +34,6 @@ public:
 
 public:
 	amElementsNotebook(wxWindow* parent);
-	~amElementsNotebook();
 
 	void InitShowChoices();
 

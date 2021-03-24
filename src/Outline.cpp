@@ -5,11 +5,12 @@
 #include "Timeline.h"
 #include "OutlineFiles.h"
 
+#include "wxmemdbg.h"
 
 amOutline::amOutline(wxWindow* parent) : wxNotebook(parent, -1) {
     m_corkboardHolder = new wxPanel(this);
     m_corkboard = new amCorkboard(m_corkboardHolder);
-    m_timeline = new amTimeline(this);
+    m_timeline = new amTLTimeline(this);
     m_files = new amOutlineFilesPanel(this);
 
     // Hack for doing corkboard fullscreen

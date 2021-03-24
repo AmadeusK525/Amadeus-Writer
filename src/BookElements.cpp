@@ -5,6 +5,8 @@
 
 #include "MyApp.h"
 
+#include "wxmemdbg.h"
+
 /////////////////////////////////////////////////////////////////
 ///////////////////////////// Scene /////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -419,6 +421,8 @@ bool Book::Init() {
 	if (sections.empty())
 		sections.push_back(Section(id, 1));
 
+	InitCover();
+
 	return true;
 }
 
@@ -515,7 +519,7 @@ void Book::Save(wxSQLite3Database* db) {
 		SetId(storage->GetDocumentId(GenerateDocumentForId()));
 
 		Init();
-		for (auto& it : sections)
+		for (Section& it : sections)
 			it.Save(storage);
 
 	} catch (wxSQLite3Exception& e) {
@@ -620,14 +624,14 @@ amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
 
 	if (sectionsToGen.empty()) {
 		document.documents.reserve(sections.size());
-		for (auto& it : sections)
-			document.documents.push_back(it.GenerateDocument());
+		for (Section& section : sections)
+			document.documents.push_back(section.GenerateDocument());
 
 	} else {
 		int size = sectionsToGen.size();
 		document.documents.reserve(size);
 
-		for (auto& it : sectionsToGen) {
+		for (int& it : sectionsToGen) {
 			if (it < size)
 				document.documents.push_back(sections[it].GenerateDocument());
 
@@ -659,15 +663,15 @@ wxVector<Chapter> amProject::GetChapters(int bookPos) {
 	Book& book = books[bookPos - 1];
 	int totalSize = 0;
 
-	for (auto& it : book.sections)
-		totalSize += it.chapters.size();
+	for (Section& section : book.sections)
+		totalSize += section.chapters.size();
 
 	wxVector<Chapter> grouped;
 	grouped.reserve(totalSize);
 
-	for (auto& it : book.sections)
-		for (auto& it2 : it.chapters)
-			grouped.push_back(it2);
+	for (Section& section : book.sections)
+		for (Chapter& chapter : section.chapters)
+			grouped.push_back(chapter);
 
 	return grouped;
 }

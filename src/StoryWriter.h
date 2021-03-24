@@ -72,15 +72,6 @@ public:
         }
     }
 
-    inline ~StoryTreeModelNode() {
-        for (size_t i = 0; i < m_children.GetCount(); i++) {
-            amTreeModelNode* child = m_children[i];
-
-            if (child)
-                delete child;
-        }
-    }
-
     inline static void InitAllIcons() {
         if (m_icons.empty()) {
             int x = 14, y = 14;
@@ -129,7 +120,7 @@ public:
 
     inline virtual void Reparent(StoryTreeModelNode* newParent) {
         if (m_parent && !m_isInTrash)
-            m_parent->GetChildren().Remove(this);
+            RemoveSelfFromParentList();
 
         m_parent = newParent;
 
@@ -139,7 +130,7 @@ public:
 
     inline virtual void Reparent(StoryTreeModelNode* newParent, int n) {
         if (m_parent && !m_isInTrash)
-            m_parent->GetChildren().Remove(this);
+            RemoveSelfFromParentList();
 
         m_parent = newParent;
 
@@ -164,15 +155,14 @@ private:
     StoryTreeModelNode* m_book = nullptr;
     StoryTreeModelNode* m_trash = nullptr;
 
-    amTreeModelNodePtrArray m_otherRoots{};
-
 public:
     StoryTreeModel();
     ~StoryTreeModel() {
-        for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
-            if (m_otherRoots.at(i))
-                delete m_otherRoots.at(i);
-        }
+        if (m_book)
+            delete m_book;
+
+        if (m_trash)
+            delete m_trash;
     }
 
     bool Load();

@@ -3,6 +3,8 @@
 #include <wx\dc.h>
 #include <wx\wx.h>
 
+#include "wxmemdbg.h"
+
 IMPLEMENT_DYNAMIC_CLASS(amWPCommentTag, wxRichTextFieldType)
 
 amWPCommentTag::amWPCommentTag(const wxString& name) : wxRichTextFieldType(name) {}
@@ -95,3 +97,7 @@ void amWordProcessor::OnChar(wxKeyEvent& event) {
 }
 
 void amWordProcessor::ApplyCommentToSelection() {}
+
+void amWordProcessor::SetupScrollbars(bool atTop, bool fromOnPaint) {
+
+}

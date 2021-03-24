@@ -1,5 +1,7 @@
 #include "Release.h"
 
+#include "wxmemdbg.h"
+
 BEGIN_EVENT_TABLE(amRelease, wxPanel)
 
 EVT_BUTTON(BUTTON_NextPage, amRelease::OnNext)

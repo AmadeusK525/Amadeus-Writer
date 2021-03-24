@@ -12,11 +12,14 @@
 
 using std::pair;
 
-class TimelineThread;
-class TimelineSection;
-class TimelineCanvas;
-class amTimeline;
-class amTimelineSidebar;
+class amTLThread;
+class amTLSection;
+class amTLTimelineCanvas;
+class amTLTimeline;
+class amTLTimelineSidebar;
+class amTLThreadThumbnail;
+class amTLCardThumbnail;
+class amTLSectionThumbnail;
 
 
 /////////////////////////////////////////////////////////////////////
@@ -24,12 +27,13 @@ class amTimelineSidebar;
 /////////////////////////////////////////////////////////////////////
 
 
-class TimelineThread : public xsSerializable {
+class amTLThread : public xsSerializable {
 private:
-	TimelineCanvas* m_canvas = nullptr;
+	amTLTimelineCanvas* m_canvas = nullptr;
 	wxRect m_boundingRect{ -1,-1,-1,-1 };
 
 	int m_y = -1;
+	int m_index = -1;
 	wxColour m_colour{ 0,0,0 };
 
 	static wxPen m_hoverPen;
@@ -43,9 +47,11 @@ private:
 	bool m_isHovering = false, m_isSelected = false, m_drawSelected = false;
 
 public:
-	TimelineThread() = default;
-	TimelineThread(int y, wxColour& colour, TimelineCanvas* canvas) :
-		m_y(y), m_colour(colour), m_canvas(canvas) {}
+	amTLThread() = default;
+	amTLThread(int index, int y, wxColour& colour, amTLTimelineCanvas* canvas) :
+		m_index(index), m_y(y), m_colour(colour), m_canvas(canvas) {
+		MarkSerializableDataMembers();
+	}
 
 	void Draw(wxDC& dc);
 	void DrawNormal(wxDC& dc);
@@ -57,6 +63,9 @@ public:
 
 	inline int GetY() { return m_y; }
 	inline void SetY(int y) { m_y = y; }
+
+	inline int GetIndex() { return m_index; }
+	inline void SetIndex(int index) { m_index = index; }
 
 	inline static int GetHeight() { return m_height; }
 	inline static int GetWidth() { return m_width; }
@@ -80,6 +89,14 @@ public:
 
 	void OnMouseMove(const wxPoint& pos);
 	void OnMouseLeave();
+
+	inline void MarkSerializableDataMembers() {
+		XS_SERIALIZE_INT(m_y, "y");
+		XS_SERIALIZE_INT(m_index, "index");
+		XS_SERIALIZE_INT(m_height, "height");
+		XS_SERIALIZE_INT(m_width, "width");
+		XS_SERIALIZE_INT(m_titleOffset, "titleOffset");
+	}
 };
 
 
@@ -88,9 +105,9 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 
-class TimelineSection : public xsSerializable {
+class amTLSection : public xsSerializable {
 private:
-	TimelineCanvas* m_canvas = nullptr;
+	amTLTimelineCanvas* m_canvas = nullptr;
 
 	wxString m_title{ "Section" };
 	wxString m_titleToDraw{ "Section" };
@@ -104,7 +121,7 @@ private:
 
 	int m_titleHeight = -1;
 
-	int m_pos = -1;
+	int m_index = -1;
 	int m_first = -1, m_last = -1;
 
 	bool m_isEmpty = true;
@@ -119,8 +136,8 @@ private:
 	int m_separatorY;
 
 public:
-	TimelineSection(int pos, int first, int last, TimelineCanvas* canvas, const wxString& title = wxEmptyString) {
-		m_pos = pos;
+	inline amTLSection(int index, int first, int last, amTLTimelineCanvas* canvas, const wxString& title = wxEmptyString) {
+		m_index = index;
 
 		m_first = first;
 		m_last = last;
@@ -130,13 +147,16 @@ public:
 		m_separatorY = GetTitleOffset();
 
 		if (title == wxEmptyString)
-			m_title = "Section " + std::to_string(pos + 1);
+			m_title = "Section " + std::to_string(index + 1);
 		else
 			m_title = title;
 
 		m_titleToDraw = m_title;
 		RecalculatePosition();
+		MarkSerializableDataMembers();
 	}
+
+	inline const wxString& GetTitle() const { return m_title; }
 
 	void AppendCard();
 	void PrependCard();
@@ -148,24 +168,40 @@ public:
 
 	inline int GetFirst() { return m_first; }
 	inline int GetLast() { return m_last; }
-	inline int GetPos() { return m_pos; }
+	inline int GetIndex() { return m_index; }
+
+	inline int SetIndex(int i) { m_index = i; }
 
 	inline static int GetMarkerWidth() { return m_markerWidth; }
 	inline static int GetHorizontalSpcaing() { return m_horSpacing; }
 	inline static int GetTitleOffset() { return m_titleOffset; }
 
 	inline wxRect& GetRect() { return m_insideRect; }
+	inline int GetRight() { return m_insideRect.GetRight() + m_markerWidth; }
 	inline void SetHeight(int height) { m_insideRect.height = height; }
 
 	wxPoint GetCellInPosition(wxPoint& pos);
 
-	void DrawNormal(wxDC& dc, int virtualHeight, bool drawSeparators);
+	void DrawNormal(wxDC& dc, bool drawSeparators);
 
 	bool Contains(wxPoint& pos) { return m_insideRect.Contains(pos); }
 	bool EmptyContains(wxPoint& pos);
 
 	void CalculateTitleWrap();
 	void RecalculatePosition();
+
+	inline void MarkSerializableDataMembers() {
+		XS_SERIALIZE_STRING_EX(m_title, "title", "");
+		XS_SERIALIZE_STRING_EX(m_titleToDraw, "titleToDraw", "");
+		XS_SERIALIZE_INT_EX(m_titleHeight, "titleHeight", -1);
+		XS_SERIALIZE_INT_EX(m_index, "index", -1);
+		XS_SERIALIZE_INT_EX(m_first, "first", -1);
+		XS_SERIALIZE_INT_EX(m_last, "last", -1);
+		XS_SERIALIZE_BOOL_EX(m_isEmpty, "isEmpty", -1);
+		XS_SERIALIZE_INT_EX(m_markerWidth, "markerWidth", -1);
+		XS_SERIALIZE_INT_EX(m_horSpacing, "horSpacing", -1);
+		XS_SERIALIZE_INT_EX(m_titleOffset, "titleOffset", -1);
+	}
 };
 
 
@@ -174,12 +210,12 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 
-class TimelineCanvas : public wxSFShapeCanvas {
+class amTLTimelineCanvas : public wxSFShapeCanvas {
 private:
-	amTimeline* m_parent = nullptr;
+	amTLTimeline* m_parent = nullptr;
 
-	wxVector<TimelineThread> m_threads{};
-	wxVector<TimelineSection> m_sections{};
+	wxVector<amTLThread*> m_threads{};
+	wxVector<amTLSection*> m_sections{};
 
 	pair<wxPoint, wxRect> m_curDragCell{ wxPoint(-1, -1), wxRect(-1,-1, 300, 200) };
 	int m_curDragSection = 0;
@@ -188,20 +224,23 @@ private:
 	bool m_drawSeparators = true;
 	bool m_propagateColour = true;
 
-	TimelineThread* m_threadUnderMouse = nullptr;
-	TimelineThread* m_selectedThread = nullptr;
+	amTLThread* m_threadUnderMouse = nullptr;
+	amTLThread* m_selectedThread = nullptr;
+
+	amTLSection* m_selectedSection = nullptr;
 
 	wxTimer m_threadSelectionTimer{};
 
 public:
-	TimelineCanvas(wxSFDiagramManager* manager, wxWindow* parent, wxWindowID id = -1,
+	amTLTimelineCanvas(wxSFDiagramManager* manager, wxWindow* parent, wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
 		long style = wxHSCROLL | wxVSCROLL);
-
-	void InitSidebar();
+	virtual ~amTLTimelineCanvas();
+	void CleanUp();
 
 	void AddThread(int pos, wxColour& colour, bool refresh = true);
-	TimelineCard* AddCard(int row, int col, int section);
+	TimelineCard* AddCard(int rowIndex, int colIndex, int sectionIndex);
+	TimelineCard* AppendCard(int rowIndex);
 
 	void AppendSection();
 
@@ -214,11 +253,15 @@ public:
 	wxColour GetThreadColour(int thread);
 	int GetBottom();
 
-	void OnThreadSelected(TimelineThread* thread);
-	void OnThreadUnselected(TimelineThread* thread);
+	void OnThreadSelected(amTLThread* thread);
+	void OnThreadUnselected(amTLThread* thread);
 	void OnThreadSelectionTimer(wxTimerEvent& event);
 
-	TimelineThread* GetSelectedThread() { return m_selectedThread; }
+	void UpdateSelectedThreadSBData();
+	void UpdateSelectedSectionSBData();
+
+	amTLThread* GetSelectedThread() { return m_selectedThread; }
+	amTLSection* GetSection(int index) { return m_sections[index]; }
 
 	virtual void DrawBackground(wxDC& dc, bool fromPaint);
 	virtual void DrawForeground(wxDC& dc, bool fromPaint);
@@ -232,8 +275,9 @@ public:
 	virtual void OnLeftDoubleClick(wxMouseEvent& event);
 
 	virtual void OnKeyDown(wxKeyEvent& event);
-
 	virtual void OnTextChange(wxSFEditTextShape* shape);
+
+	wxSize GetGoodSize();
 
 	void OnScroll(wxScrollWinEvent& event);
 
@@ -245,29 +289,35 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////
-//////////////////////////// Timeline //////////////////////////////
+//////////////////////////// Timeline /////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
 
-class amTimeline : public amSplitterWindow {
+class amTLTimeline : public amSplitterWindow {
 private:
 	amProjectManager* m_manager = nullptr;
 	amOutline* m_parent = nullptr;
 
-	TimelineCanvas* m_canvas = nullptr;
+	amTLTimelineCanvas* m_canvas = nullptr;
 	wxSFDiagramManager m_canvasManager;
 
-	amTimelineSidebar* m_sidebar = nullptr;
+	amTLTimelineSidebar* m_sidebar = nullptr;
 
 	bool m_isSidebarShown = false;
 
 public:
-	amTimeline(wxWindow* parent);
+	amTLTimeline(wxWindow* parent);
+
+	void AddCardToThread(amTLThread* thread);
+	void AddCardToSection(amTLSection* section);
+
+	void AddCardBefore(TimelineCard* card);
+	void AddCardAfter(TimelineCard* card);
 
 	void ShowSidebar();
 
-	void SetThreadData(TimelineThread* thread);
-	void SetSectionData(TimelineSection* section);
+	void SetThreadData(amTLThread* thread, ShapeList& shapes);
+	void SetSectionData(amTLSection* section, ShapeList& shapes);
 	void SetCardData(TimelineCard* card);
 
 	void Save();
@@ -282,26 +332,111 @@ public:
 ///////////////////////// Timeline Sidebar /////////////////////////
 ////////////////////////////////////////////////////////////////////
 
+enum {
+	BUTTON_AddCardToThread,
 
-class amTimelineSidebar : public wxPanel {
-	amTimeline* m_parent = nullptr;
+	BUTTON_AddCardBefore,
+	BUTTON_AddCardAfter,
+
+	BUTTON_AddCardToSection
+};
+
+
+class amTLTimelineSidebar : public wxPanel {
+	amTLTimeline* m_parent = nullptr;
 
 	wxNotebook* m_content = nullptr;
+	
 	wxScrolledWindow* m_threadPanel = nullptr;
+	amTLThreadThumbnail* m_threadThumbnail = nullptr;
+	wxStaticText* m_curThreadName = nullptr;
+
+	wxScrolledWindow* m_cardPanel = nullptr;
+	amTLCardThumbnail* m_cardThumbnail = nullptr;
+
+	wxScrolledWindow* m_sectionPanel = nullptr;
+	amTLSectionThumbnail* m_sectionThumbnail = nullptr;
+	wxStaticText* m_curSectionName = nullptr;
 
 	wxRect m_pullRect{ 5, 5, 30, 30 };
 
 public:
-	amTimelineSidebar(wxWindow* parent);
+	amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* canvas);
 
 	void ShowContent(bool show = true);
 
-	void SetThreadData(TimelineThread* thread);
-	void SetSectionData(TimelineSection* section);
+	void OnAddCardToThread(wxCommandEvent& event);
+	void OnAddCardToSection(wxCommandEvent& event);
+
+	void OnAddCardBefore(wxCommandEvent& event);
+	void OnAddCardAfter(wxCommandEvent& event);
+
+	void SetThreadData(amTLThread* thread, ShapeList& shapes);
+	void SetSectionData(amTLSection* section, ShapeList& shapes);
 	void SetCardData(TimelineCard* card);
 
 	void OnPaint(wxPaintEvent& event);
 	void OnMouseMove(wxMouseEvent& event);
 	void OnLeftDown(wxMouseEvent& event);
+
+	DECLARE_EVENT_TABLE();
 };
+
+
+////////////////////////////////////////////////////////////////////
+////////////////////////// ThreadThumbnails ////////////////////////
+////////////////////////////////////////////////////////////////////
+
+
+class amTLThumbnail : public wxSFThumbnail {
+protected:
+	ShapeList m_shapes;
+
+public:
+	amTLThumbnail(wxWindow* parent);
+
+	void OnPaint(wxPaintEvent& event);
+};
+ 
+class amTLThreadThumbnail : public amTLThumbnail {
+private: 
+	amTLThread* m_thread = nullptr;
+
+public:
+	amTLThreadThumbnail(wxWindow* parent);
+	
+	virtual void DrawContent(wxDC& dc);
+
+	void SetData(amTLThread* thread, ShapeList& shapes);
+	inline amTLThread* GetThread() { return m_thread; }
+
+};
+
+class amTLCardThumbnail : public wxSFThumbnail {
+private:
+	TimelineCard* m_card = nullptr;
+
+public:
+	amTLCardThumbnail(wxWindow* parent);
+
+	inline void SetData(TimelineCard* card) { m_card = card; }
+	inline TimelineCard* GetCard() { return m_card; }
+
+	void OnPaint(wxPaintEvent& event);
+	virtual void DrawContent(wxDC& dc);
+};
+
+class amTLSectionThumbnail : public amTLThumbnail {
+private:
+	amTLSection* m_section = nullptr;
+
+public:
+	amTLSectionThumbnail(wxWindow* parent);
+
+	void SetData(amTLSection* section, ShapeList& shapes);
+	inline amTLSection* GetSection() { return m_section; }
+
+	virtual void DrawContent(wxDC& dc);
+};
+
 #endif

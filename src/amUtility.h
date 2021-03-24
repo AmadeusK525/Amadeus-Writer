@@ -52,13 +52,10 @@ inline wxImage amGetScaledImage(int maxWidth, int maxHeight, wxImage& image) {
 /////////////////////////////////////////////////////////////////////////////
 
 
-class amTreeModelNode;
-WX_DEFINE_ARRAY_PTR(amTreeModelNode*, amTreeModelNodePtrArray);
-
 class amTreeModelNode {
 protected:
     amTreeModelNode* m_parent = nullptr;
-    amTreeModelNodePtrArray m_children{};
+    wxVector<amTreeModelNode*> m_children{};
 
     wxString m_title{ "" };
 
@@ -71,6 +68,13 @@ public:
         m_title = title;
     }
 
+    inline virtual ~amTreeModelNode() {
+        for (amTreeModelNode*& child : m_children) {
+            if (child)
+                delete child;
+        }
+    }
+
     inline const wxString& GetTitle() const { return m_title; }
     inline void SetTitle(const wxString& title) { m_title = title; }
 
@@ -79,7 +83,7 @@ public:
 
     inline virtual void Reparent(amTreeModelNode* newParent) {
         if (m_parent)
-            m_parent->GetChildren().Remove(this);
+            RemoveSelfFromParentList();
 
         m_parent = newParent;
 
@@ -89,12 +93,22 @@ public:
 
     inline virtual void Reparent(amTreeModelNode* newParent, int n) {
         if (m_parent)
-            m_parent->GetChildren().Remove(this);
+            RemoveSelfFromParentList();
 
         m_parent = newParent;
 
         if (m_parent)
             m_parent->Insert(this, n);
+    }
+
+    inline virtual void RemoveSelfFromParentList() {
+        if (m_parent) {
+            for (amTreeModelNode*& node : m_parent->GetChildren()) {
+                if (node == this)
+                    m_parent->GetChildren().erase(&node);
+            }
+        }
+
     }
 
     inline virtual void Reposition(unsigned int n) {}
@@ -103,18 +117,23 @@ public:
         return m_parent;
     }
 
-    inline virtual amTreeModelNodePtrArray& GetChildren() {
+    inline virtual wxVector<amTreeModelNode*>& GetChildren() {
         return m_children;
     }
 
     inline virtual amTreeModelNode* GetChild(unsigned int n) {
-        return m_children.Item(n);
+        return m_children.at(n);
     }
 
     inline virtual wxDataViewItemAttr& GetAttr() { return m_attr; }
 
     inline virtual void Insert(amTreeModelNode* child, unsigned int n) {
-        m_children.Insert(child, n);
+        int i = 0;
+        for (amTreeModelNode*& node : m_children) {
+            if (i++ == n) {
+                m_children.insert(&node, child);
+            }
+        }
     }
 
     inline virtual void Append(amTreeModelNode* child) {
@@ -122,7 +141,7 @@ public:
     }
 
     inline virtual int GetChildCount() const {
-        return m_children.GetCount();
+        return m_children.size();
     }
 
 #ifdef __WXMSW__
@@ -141,11 +160,17 @@ public:
 
 class amDataViewModel : public wxDataViewModel {
 protected:
-    amTreeModelNodePtrArray m_otherRoots{};
+    wxVector<amTreeModelNode*> m_otherRoots{};
     wxDataViewItem m_itemForDnD{ nullptr };
 
 public:
     inline amDataViewModel() = default;
+    inline virtual ~amDataViewModel() {
+        for (amTreeModelNode*& node : m_otherRoots) {
+            if (node)
+                delete node;
+        }
+    }
 
     inline virtual const wxString& GetTitle(const wxDataViewItem& item) const {
         if (!item.IsOk())
@@ -205,11 +230,15 @@ public:
 
         itemNode->Reparent(newParentNode);
 
-        if (!oldParentNode)
-            m_otherRoots.Remove(itemNode);
+        if (!oldParentNode) {
+            for (amTreeModelNode*& node : m_otherRoots) {
+                if (node == itemNode)
+                    m_otherRoots.erase(&node);
+            }
+        }
 
         if (!newParentNode)
-            m_otherRoots.Add(itemNode);
+            m_otherRoots.push_back(itemNode);
 
         ItemAdded(newParent, item);
         ItemDeleted(oldParent, item);
@@ -229,11 +258,20 @@ public:
 
         itemNode->Reparent(newParentNode);
 
-        if (!oldParentNode)
-            m_otherRoots.Remove(itemNode);
+        if (!oldParentNode) {
+            for (amTreeModelNode*& node : m_otherRoots) {
+                if (node == itemNode)
+                    m_otherRoots.erase(&node);
+            }
+        }
 
-        if (!newParentNode)
-            m_otherRoots.Insert(itemNode, n);
+        if (!newParentNode) {
+            int i = 0;
+            for (amTreeModelNode*& node : m_otherRoots) {
+                if (i++ == n)
+                    m_otherRoots.insert(&node, itemNode);
+            }
+        }
 
         ItemAdded(newParent, item);
         ItemDeleted(oldParent, item);
@@ -300,6 +338,8 @@ public:
     inline virtual void OnBeginDrag(wxDataViewEvent& event, wxDataViewCtrl* dvc) = 0;
     inline virtual void OnDropPossible(wxDataViewEvent& event, wxDataViewCtrl* dvc) = 0;
     inline virtual void OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc) = 0;
+
+    inline void UnsetItemForDnD() { if (m_itemForDnD.IsOk()) m_itemForDnD.Unset(); }
 };
 
 

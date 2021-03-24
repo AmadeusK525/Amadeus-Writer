@@ -93,6 +93,7 @@ private:
 
 public:
 	amProjectManager();
+	virtual ~amProjectManager();
 
 	bool Init();
 

@@ -134,7 +134,7 @@ void StoryTreeModel::RedeclareChapterIndexes(const Section& section) {
 
     for (const Chapter& chapter : section.chapters) {
         if (chapter.isInTrash) {
-            amTreeModelNodePtrArray& children = m_trash->GetChildren();
+            wxVector<amTreeModelNode*>& children = m_trash->GetChildren();
             for (amTreeModelNode* node : m_trash->GetChildren()) {
                 StoryTreeModelNode* thisNode = (StoryTreeModelNode*)node;
                 if (thisNode->IsChapter() && thisNode->GetID() == chapter.id) {
@@ -165,7 +165,7 @@ STMN_Type StoryTreeModel::MoveToTrash(const wxDataViewItem& item) {
     if (node->IsInTrash() || node->IsTrash() || node->IsBook())
         return STMN_Null;
 
-    node->GetParent()->GetChildren().Remove(node);
+    node->RemoveSelfFromParentList();
     ItemDeleted(GetParent(item), wxDataViewItem(node));
 
     m_trash->Append(node);
@@ -182,10 +182,14 @@ STMN_Type StoryTreeModel::RestoreFromTrash(const wxDataViewItem& item) {
 
     amTreeModelNode* parent = node->GetParent();
 
-    m_trash->GetChildren().Remove(node);
-    amTreeModelNodePtrArray& children = parent->GetChildren();
+    for (amTreeModelNode*& trashChild : m_trash->GetChildren()) {
+        if (trashChild == node)
+            m_trash->GetChildren().erase(&trashChild);
+    }
 
-    for (int i = 0; i < children.GetCount(); i++) {
+    wxVector<amTreeModelNode*>& children = parent->GetChildren();
+
+    for (int i = 0; i < children.size(); i++) {
         if (((StoryTreeModelNode*)children[i])->GetIndex() >= node->GetIndex() + 1) {
             parent->Insert(node, i);
             break;
@@ -221,9 +225,13 @@ void StoryTreeModel::DeleteItem(const wxDataViewItem& item) {
 
     amTreeModelNode* parentNode = node->GetParent();
     if (parentNode)
-        parentNode->GetChildren().Remove(node);
-    else
-        m_otherRoots.Remove(node);
+        node->RemoveSelfFromParentList();
+    else {
+        for (amTreeModelNode*& otherRoot : m_otherRoots) {
+            if (otherRoot == node)
+                m_otherRoots.erase(&otherRoot);
+        }
+    }
 
     wxDataViewItem parent(parentNode);
 
@@ -246,17 +254,15 @@ bool StoryTreeModel::Reposition(const wxDataViewItem& item, int n) {
 }
 
 void StoryTreeModel::Clear() {
-    amTreeModelNodePtrArray array;
+    wxVector<amTreeModelNode*> array;
 
     array = m_book->GetChildren();
-    for (unsigned int i = 0; i < array.GetCount(); i++) {
+    for (unsigned int i = 0; i < array.size(); i++)
         DeleteItem(wxDataViewItem(array[i]));
-    }
 
     array = m_trash->GetChildren();
-    for (unsigned int i = 0; i < array.GetCount(); i++) {
+    for (unsigned int i = 0; i < array.size(); i++)
         DeleteItem(wxDataViewItem(array[i]));
-    }
 }
 
 void StoryTreeModel::GetValue(wxVariant& variant,
@@ -313,11 +319,10 @@ unsigned int StoryTreeModel::GetChildren(const wxDataViewItem& parent,
             n++;
         }
 
-        for (unsigned int i = 0; i < m_otherRoots.GetCount(); i++) {
+        for (unsigned int i = 0; i < m_otherRoots.size(); i++)
             array.Add(wxDataViewItem(m_otherRoots.at(i)));
-        }
 
-        return n + m_otherRoots.GetCount();
+        return n + m_otherRoots.size();
     }
 
     int count = node->GetChildCount();
@@ -327,7 +332,7 @@ unsigned int StoryTreeModel::GetChildren(const wxDataViewItem& parent,
     }
 
     for (int pos = 0; pos < count; pos++) {
-        amTreeModelNode* child = node->GetChildren().Item(pos);
+        amTreeModelNode* child = node->GetChildren().at(pos);
         array.Add(wxDataViewItem(child));
     }
 

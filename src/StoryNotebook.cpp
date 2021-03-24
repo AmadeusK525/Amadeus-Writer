@@ -4,6 +4,8 @@
 
 #include <wx\dir.h>
 
+#include "wxmemdbg.h"
+
 amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
     wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager) {
     m_grid = new StoryGrid(this, m_manager);

@@ -11,13 +11,13 @@
 
 class amOutline;
 class amCorkboard;
-class amTimeline;
+class amTLTimeline;
 class amOutlineFilesPanel;
 
 class amOutline : public wxNotebook {
 private:
     amCorkboard* m_corkboard = nullptr;
-    amTimeline* m_timeline = nullptr;
+    amTLTimeline* m_timeline = nullptr;
     amOutlineFilesPanel* m_files = nullptr;
 
 public:
@@ -34,7 +34,7 @@ public:
         wxStringInputStream& files);
 
     amCorkboard* GetCorkboard() { return m_corkboard; }
-    amTimeline* GetTimeline() { return m_timeline; }
+    amTLTimeline* GetTimeline() { return m_timeline; }
     amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
 
     void ClearAll();
