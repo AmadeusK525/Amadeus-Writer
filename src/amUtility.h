@@ -523,7 +523,10 @@ public:
     }
 
     inline virtual void OnScroll(wxScrollWinEvent& event) {    
-    
+        if (wxGetKeyState(WXK_COMMAND))
+            return;
+
+        event.Skip();
     }
 };
 

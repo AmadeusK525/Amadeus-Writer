@@ -90,7 +90,7 @@ private:
 	amCorkboard* parent = nullptr;
 	amProjectManager* m_manager = nullptr;
 
-	wxSFShapeBase* shapeForMenu = nullptr;
+	wxSFShapeBase* m_shapeForMenu = nullptr;
 
 	bool m_isFullScreen = false;
 	bool m_isConnecting = false;

@@ -241,11 +241,11 @@ void CorkboardCanvas::OnMenu(wxCommandEvent& event) {
 	if (id == MENU_NoteBlack || id == MENU_NoteBlue || id == MENU_NoteDefault ||
 		id == MENU_NoteGreen || id == MENU_NotePink || id == MENU_NoteRed ||
 		id == MENU_NoteWhite || id == MENU_NoteYellow)
-		((NoteShape*)shapeForMenu)->ChangeColour(id);
+		((NoteShape*)m_shapeForMenu)->ChangeColour(id);
 	else if (id == MENU_DeleteNote || id == MENU_DeleteImage)
-		GetDiagramManager()->RemoveShape(shapeForMenu);
+		GetDiagramManager()->RemoveShape(m_shapeForMenu);
 
-	shapeForMenu = nullptr;
+	m_shapeForMenu = nullptr;
 	SaveCanvasState();
 }
 
@@ -368,11 +368,11 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 	amSFShapeCanvas::OnRightUp(event);
 
 	if (!isDragginRightCache) {
-		shapeForMenu = GetShapeUnderCursor();
+		m_shapeForMenu = GetShapeUnderCursor();
 
-		if (shapeForMenu) {
+		if (m_shapeForMenu) {
 			wxMenu menu;
-			if (shapeForMenu->IsKindOf(CLASSINFO(NoteShape))) {
+			if (m_shapeForMenu->IsKindOf(CLASSINFO(NoteShape))) {
 				menu.AppendRadioItem(MENU_NoteDefault, "Default");
 				menu.AppendRadioItem(MENU_NoteBlack, "Black");
 				menu.AppendRadioItem(MENU_NoteWhite, "White");
@@ -384,10 +384,10 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
 				menu.AppendSeparator();
 				menu.Append(MENU_DeleteNote, "Delete");
 
-				menu.Check(((NoteShape*)shapeForMenu)->m_currentColour, true);
-			} else if (shapeForMenu->IsKindOf(CLASSINFO(ImageShape))
-				|| shapeForMenu->IsKindOf(CLASSINFO(wxSFLineShape))
-				|| shapeForMenu->IsKindOf(CLASSINFO(wxSFEditTextShape))) {
+				menu.Check(((NoteShape*)m_shapeForMenu)->m_currentColour, true);
+			} else if (m_shapeForMenu->IsKindOf(CLASSINFO(ImageShape))
+				|| m_shapeForMenu->IsKindOf(CLASSINFO(wxSFLineShape))
+				|| m_shapeForMenu->IsKindOf(CLASSINFO(wxSFEditTextShape))) {
 				menu.Append(MENU_DeleteImage, "Delete");
 			}
 
