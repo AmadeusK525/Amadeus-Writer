@@ -10,7 +10,12 @@
 
 enum {
 	BUTTON_AddThreadDone,
-	BUTTON_AddSectionDone,
+	BUTTON_AddSectionDone
+};
+
+enum amTLThreadDlgMode {
+	MODE_THREAD_Add,
+	MODE_THREAD_Change
 };
 
 class amTLAddThreadDlg : public wxFrame {
@@ -23,11 +28,14 @@ private:
 
 	wxColourPickerCtrl* m_colourPicker = nullptr;
 
+	amTLThreadDlgMode m_mode = MODE_THREAD_Add;
+
 public:
-	amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amProjectManager* manager, const wxSize& size = wxDefaultSize);
+	amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amProjectManager* manager,
+		amTLThreadDlgMode mode = MODE_THREAD_Add, const wxSize& size = wxDefaultSize);
 	
-	void OnAdd(wxCommandEvent& event);
-	void OnUpdateAdd(wxUpdateUIEvent& event);
+	void OnDone(wxCommandEvent& event);
+	void OnUpdateDone(wxUpdateUIEvent& event);
 
 	void SetCharacters(wxVector<Character>& characters);
 	void OnListResize(wxSizeEvent& event);
@@ -37,6 +45,10 @@ public:
 	DECLARE_EVENT_TABLE()
 };
 
+enum amTLSectionDlgMode {
+	MODE_SECTION_Add,
+	MODE_SECTION_Change
+};
 
 class amTLAddSectionDlg : public wxFrame {
 private:
@@ -45,11 +57,14 @@ private:
 	wxTextCtrl* m_titleTc = nullptr;
 	wxColourPickerCtrl* m_colourPicker = nullptr;
 
-public:
-	amTLAddSectionDlg(wxWindow* parent, amTLTimeline* timeline, const wxSize& size);
+	amTLSectionDlgMode m_mode = MODE_SECTION_Add;
 
-	void OnAdd(wxCommandEvent& event);
-	void OnUpdateAdd(wxUpdateUIEvent& event);
+public:
+	amTLAddSectionDlg(wxWindow* parent, amTLTimeline* timeline,
+		amTLSectionDlgMode mode = MODE_SECTION_Add, const wxSize& size = wxDefaultSize);
+
+	void OnDone(wxCommandEvent& event);
+	void OnUpdateDone(wxUpdateUIEvent& event);
 
 	void OnClose(wxCloseEvent& event);
 

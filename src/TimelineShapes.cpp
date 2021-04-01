@@ -89,6 +89,10 @@ TimelineCard::TimelineCard(const TimelineCard& other) : wxSFRoundRectShape(other
 }
 
 void TimelineCard::RecalculatePosition() {
+	SetRectSize(m_width, m_height);
+	m_title->UpdateRectSize();
+	m_content->UpdateRectSize();
+
 	int sectionMarkerWidth = amTLSection::GetMarkerWidth();
 	int sectionHorSpacing = amTLSection::GetHorizontalSpcaing();
 

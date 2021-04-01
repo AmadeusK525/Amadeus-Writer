@@ -38,6 +38,8 @@ resetCenter RCDATA "Assets\\ResetCenter.png"
 
 arrowRight RCDATA "Assets\\ArrowRight.png"
 arrowLeft RCDATA "Assets\\ArrowLeft.png"
+arrowUp RCDATA "Assets\\ArrowUp.png"
+arrowDown RCDATA "Assets\\ArrowDown.png"
 plus RCDATA "Assets\\PlusIcon.png"
 minus RCDATA "Assets\\MinusIcon.png"
 

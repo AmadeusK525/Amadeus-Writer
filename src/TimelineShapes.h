@@ -35,6 +35,11 @@ public:
 	inline static int GetWidth() { return m_width; }
 	inline static int GetHeight() { return m_height; }
 
+	inline static void SetHorizontalSpacing(int spacing) { m_horSpacing = spacing; }
+	inline static void SetVerticalSpacing(int spacing) { m_verSpacing = spacing; }
+	inline static void SetWidth(int width) { m_width = width; }
+	inline static void SetHeight(int height) { m_height = height; }
+
 	inline void SetRow(int row) { m_row = row; }
 	inline void SetColumn(int col) { m_col = col; }
 	inline void SetSection(int section) { m_section = section; }

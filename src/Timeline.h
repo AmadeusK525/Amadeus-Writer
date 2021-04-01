@@ -3,6 +3,7 @@
 #pragma once
 
 #include <wx\wxsf\wxShapeFramework.h>
+#include <wx\clrpicker.h>
 #include <wx\notebook.h>
 #include <wx\timer.h>
 
@@ -57,12 +58,12 @@ public:
 		CalculateTitleWrap();
 	}
 
-	void Draw(wxDC& dc);
+	void Draw(wxDC& dc, float titleOffset = 0.0);
 	void DrawNormal(wxDC& dc);
 	void DrawHover(wxDC& dc);
 	void DrawSelected(wxDC& dc);
 
-	void DrawTitle(wxDC& dc);
+	void DrawTitle(wxDC& dc, float titleOffset = 0.0);
 
 	inline bool Contains(wxPoint& pos) {
 		m_boundingRect.width = m_width;
@@ -86,11 +87,16 @@ public:
 	inline void SetColour(wxColour& colour) { m_colour = colour; }
 
 	inline wxString& GetCharacter() { return m_character; }
+	inline void SetCharacter(const wxString& newCharacter) { 
+		m_character = newCharacter;
+		CalculateTitleWrap();
+	}
 
 	inline wxRect& GetRect() { return m_boundingRect; }
 	inline void SetRect(wxRect& rect) { m_boundingRect = rect; }
 
 	inline static int GetTitleOffset() { return m_titleOffset; }
+	inline static void SetTitleOffset(int offset) { m_titleOffset = offset; }
 
 	void OnLeftDown(const wxPoint& pos);
 	void KillFocus();
@@ -168,6 +174,10 @@ public:
 	}
 
 	inline const wxString& GetTitle() const { return m_title; }
+	inline void SetTitle(const wxString& newTitle) { 
+		m_title = newTitle;
+		CalculateTitleWrap();
+	}
 
 	void AppendCard();
 	void PrependCard();
@@ -187,9 +197,16 @@ public:
 	inline static int GetHorizontalSpcaing() { return m_horSpacing; }
 	inline static int GetTitleOffset() { return m_titleOffset; }
 
+	inline static void SetMarkerWidth(int width) { m_markerWidth = width; }
+	inline static void SetHorizontalSpacing(int spacing) { m_horSpacing = spacing; }
+	inline static void SetTitleOffset(int offset) { m_titleOffset = offset; }
+
 	inline wxRect& GetRect() { return m_insideRect; }
 	inline int GetRight() { return m_insideRect.GetRight() + m_markerWidth; }
 	inline void SetHeight(int height) { m_insideRect.height = height; }
+
+	inline wxColour& GetColour() { return m_colour; }
+	void SetColour(const wxColour& colour) { m_colour = colour; }
 
 	wxPoint GetCellInPosition(wxPoint& pos);
 
@@ -221,6 +238,13 @@ public:
 //////////////////////////// TimelineCanvas ///////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+struct amTLCell {
+	wxPoint pos{ -1,-1 };
+	int xCell = -1, yCell = -1;
+
+	amTLCell() = default;
+	amTLCell(int xCell, int yCell, const wxPoint& pos) : xCell(xCell), yCell(yCell), pos(pos) {}
+};
 
 class amTLTimelineCanvas : public amSFShapeCanvas {
 private:
@@ -229,10 +253,11 @@ private:
 	wxVector<amTLThread*> m_threads{};
 	wxVector<amTLSection*> m_sections{};
 
-	pair<wxPoint, wxRect> m_curDragCell{ wxPoint(-1, -1), wxRect(-1,-1, 300, 200) };
+	amTLCell m_curDragCell;
 	int m_curDragSection = 0;
 	bool m_isDragOnEmptySection = false;
 
+	int m_bottom = -1;
 	bool m_drawSeparators = true;
 	bool m_propagateColour = true;
 
@@ -240,11 +265,6 @@ private:
 	amTLThread* m_selectedThread = nullptr;
 
 	amTLSection* m_selectedSection = nullptr;
-
-	bool m_beginDraggingRight = false;
-	bool m_isDraggingRight = false;
-	wxPoint m_rightDownPos{};
-	wxPoint m_scrollbarPos{};
 
 	wxTimer m_threadSelectionTimer{};
 
@@ -272,9 +292,12 @@ public:
 	
 	bool CalculateCellDrag(wxPoint& pos);
 
+	inline wxVector<amTLSection*>& GetSections() { return m_sections; }
 	inline wxVector<amTLThread*>& GetThreads() { return m_threads; }
 	wxColour GetThreadColour(int thread);
-	int GetBottom();
+
+	inline int GetBottom() { return m_bottom; }
+	inline void SetBottom(int bottom) { m_bottom = bottom; }
 
 	void OnThreadSelected(amTLThread* thread);
 	void OnThreadUnselected(amTLThread* thread);
@@ -283,8 +306,9 @@ public:
 	void UpdateSelectedThreadSBData();
 	void UpdateSelectedSectionSBData();
 
-	amTLThread* GetSelectedThread() { return m_selectedThread; }
-	amTLSection* GetSection(int index) { return m_sections[index]; }
+	inline amTLThread* GetSelectedThread() { return m_selectedThread; }
+	inline amTLSection* GetSelectedSection() { return m_selectedSection; }
+	inline amTLSection* GetSection(int index) { return m_sections[index]; }
 
 	virtual void DrawBackground(wxDC& dc, bool fromPaint);
 	virtual void DrawForeground(wxDC& dc, bool fromPaint);
@@ -303,8 +327,6 @@ public:
 	void OnLeaveWindow(wxMouseEvent& event);
 
 	wxSize GetGoodSize();
-
-private:
 	void RepositionThreads();
 };
 
@@ -331,6 +353,7 @@ public:
 
 	bool IsCharacterPresent(const wxString& character);
 	inline bool CanAddCards() { return m_canvas->CanAddCards(); }
+	void RecalculateCanvas(bool doThreads, bool doCards, bool doSections);
 
 	void AppendThread(const wxString& character, const wxColour& colour);
 	void AppendSection(const wxString& title, const wxColour& colour);
@@ -341,11 +364,16 @@ public:
 	void AddCardBefore(TimelineCard* card);
 	void AddCardAfter(TimelineCard* card);
 
+	void EditCurrentThread(const wxString& newCharacter);
+	void EditCurrentSection(const wxString& newTitle);
+
 	void ShowSidebar();
 
 	void SetThreadData(amTLThread* thread, ShapeList& shapes);
 	void SetSectionData(amTLSection* section, ShapeList& shapes);
 	void SetCardData(TimelineCard* card);
+
+	inline amTLTimelineCanvas* GetCanvas() { return m_canvas; }
 
 	void Save();
 	void Load(wxStringInputStream& stream);
@@ -368,25 +396,61 @@ enum {
 	BUTTON_AddCardBefore,
 	BUTTON_AddCardAfter,
 
-	BUTTON_AddCardToSection
+	BUTTON_AddCardToSection,
+
+	BUTTON_ChangeCharacterThread,
+	BUTTON_ChangeNameSection,
+
+	BUTTON_MoveUpThread,
+	BUTTON_MoveDownThread,
+
+	COLOUR_ThreadPicker,
+	COLOUR_SectionPicker,
+
+	SPINBUTTON_ThreadHeight,
+	SPINBUTTON_ThreadTitleOffset,
+	SPINBUTTON_CardWidth,
+	SPINBUTTON_CardHeight,
+	SPINBUTTON_CardXSpacing,
+	SPINBUTTON_CardYSpacing,
+	SPINBUTTON_SectionTitleOffset,
+	SPINBUTTON_SectionMarkerWidth,
+	SPINBUTTON_SectionSpacing,
+
+	BUTTON_ResetPreferences
 };
 
 
 class amTLTimelineSidebar : public wxPanel {
 	amTLTimeline* m_parent = nullptr;
 
-	wxNotebook* m_content = nullptr;
+	wxNotebook* m_notebook = nullptr;
 	
 	wxScrolledWindow* m_threadPanel = nullptr;
 	amTLThreadThumbnail* m_threadThumbnail = nullptr;
-	wxStaticText* m_curThreadName = nullptr;
+	wxStaticText* m_threadName = nullptr;
+	wxStaticText* m_threadCardCount = nullptr;
+	wxColourPickerCtrl* m_threadColourPicker = nullptr;
 
 	wxScrolledWindow* m_cardPanel = nullptr;
 	amTLCardThumbnail* m_cardThumbnail = nullptr;
 
 	wxScrolledWindow* m_sectionPanel = nullptr;
 	amTLSectionThumbnail* m_sectionThumbnail = nullptr;
-	wxStaticText* m_curSectionName = nullptr;
+	wxStaticText* m_sectionName = nullptr;
+	wxStaticText* m_sectionCardCount = nullptr;
+	wxColourPickerCtrl* m_sectionColourPicker = nullptr;
+
+	wxScrolledWindow* m_preferencesPanel = nullptr;
+	wxSpinCtrl* m_threadHeight = nullptr,
+		* m_threadTitleOffset = nullptr;
+	wxSpinCtrl* m_cardWidth = nullptr,
+		* m_cardHeight = nullptr,
+		* m_cardXSpacing = nullptr,
+		* m_cardYSpacing = nullptr;
+	wxSpinCtrl* m_sectionTitleOffset = nullptr,
+		* m_sectionMarkerWidth = nullptr,
+		* m_sectionSpacing = nullptr;
 
 	wxRect m_pullRect{ 5, 5, 30, 30 };
 
@@ -403,9 +467,21 @@ public:
 	void OnAddCardBefore(wxCommandEvent& event);
 	void OnAddCardAfter(wxCommandEvent& event);
 
+	void OnChangeCharacterThread(wxCommandEvent& event);
+	void OnChangeNameSection(wxCommandEvent& event);
+
+	void OnThreadColourChanged(wxColourPickerEvent& event);
+	void OnSectionColourChanged(wxColourPickerEvent& event);
+
+	void OnPreferences(wxSpinEvent& event);
+	void OnResetPreferences(wxCommandEvent& event);
+
 	void SetThreadData(amTLThread* thread, ShapeList& shapes);
 	void SetSectionData(amTLSection* section, ShapeList& shapes);
 	void SetCardData(TimelineCard* card);
+
+	inline wxStaticText* GetThreadStaticText() { return m_threadName; }
+	inline wxStaticText* GetSectionStaticText() { return m_sectionName; }
 
 	void OnPaint(wxPaintEvent& event);
 	void OnMouseMove(wxMouseEvent& event);
@@ -441,7 +517,7 @@ public:
 
 	void SetData(amTLThread* thread, ShapeList& shapes);
 	inline amTLThread* GetThread() { return m_thread; }
-
+	inline ShapeList& GetCards() { return m_shapes; }
 };
 
 class amTLCardThumbnail : public wxSFThumbnail {

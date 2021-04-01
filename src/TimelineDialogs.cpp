@@ -5,15 +5,17 @@ BEGIN_EVENT_TABLE(amTLAddThreadDlg, wxFrame)
 EVT_SIZE(amTLAddThreadDlg::OnListResize)
 EVT_CLOSE(amTLAddThreadDlg::OnClose)
 
-EVT_BUTTON(BUTTON_AddThreadDone, amTLAddThreadDlg::OnAdd)
-EVT_UPDATE_UI(BUTTON_AddThreadDone, amTLAddThreadDlg::OnUpdateAdd)
+EVT_BUTTON(BUTTON_AddThreadDone, amTLAddThreadDlg::OnDone)
+EVT_UPDATE_UI(BUTTON_AddThreadDone, amTLAddThreadDlg::OnUpdateDone)
 
 END_EVENT_TABLE()
 
-amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amProjectManager* manager,	const wxSize& size) :
+amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amProjectManager* manager,
+	amTLThreadDlgMode mode, const wxSize& size):
 	wxFrame(parent, -1, "Add new thread", wxDefaultPosition, size, wxFRAME_FLOAT_ON_PARENT | wxCAPTION | wxCLOSE_BOX | wxRESIZE_BORDER) {
 	m_timeline = timeline;
 	m_manager = manager;
+	m_mode = mode;
 
 	wxPanel* panel = new wxPanel(this);
 	panel->SetBackgroundColour(wxColour(20, 20, 20));
@@ -33,20 +35,6 @@ amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amP
 	m_characterImages = new wxImageList(24, 24);
 	m_characterList->AssignImageList(m_characterImages, wxIMAGE_LIST_SMALL);
 
-	wxStaticText* colourLabel = new wxStaticText(panel, -1, _("Color:"));
-	colourLabel->SetForegroundColour(wxColour(255, 255, 255));
-	colourLabel->SetFont(wxFontInfo(13).Bold());
-
-	m_colourPicker = new wxColourPickerCtrl(panel, -1, wxColour(255, 255, 255));
-	m_colourPicker->GetPickerCtrl()->SetBackgroundColour(wxColour(255,255,255));
-	m_colourPicker->Bind(wxEVT_COLOURPICKER_CHANGED, [&](wxColourPickerEvent& event) {
-		m_colourPicker->GetPickerCtrl()->SetBackgroundColour(event.GetColour());
-		});
-
-	wxBoxSizer* horizontal = new wxBoxSizer(wxHORIZONTAL);
-	horizontal->Add(colourLabel, wxSizerFlags(0).CenterVertical());
-	horizontal->Add(m_colourPicker, wxSizerFlags(1).Expand().Border(wxALL, 5));
-
 	wxButton* nextBtn = new wxButton(panel, BUTTON_AddThreadDone, _("Done"));
 
 	wxBoxSizer* vertical = new wxBoxSizer(wxVERTICAL);
@@ -55,22 +43,44 @@ amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amP
 	vertical->AddSpacer(5);
 	vertical->Add(m_characterList, wxSizerFlags(1).Expand());
 	vertical->AddSpacer(10);
-	vertical->Add(horizontal, wxSizerFlags(0).Expand());
-	vertical->AddSpacer(5);
-	vertical->Add(nextBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
 
+	if (m_mode == MODE_THREAD_Add) {
+		wxStaticText* colourLabel = new wxStaticText(panel, -1, _("Color:"));
+		colourLabel->SetForegroundColour(wxColour(255, 255, 255));
+		colourLabel->SetFont(wxFontInfo(13).Bold());
+
+		m_colourPicker = new wxColourPickerCtrl(panel, -1, wxColour(255, 255, 255));
+		m_colourPicker->GetPickerCtrl()->SetBackgroundColour(wxColour(255, 255, 255));
+		m_colourPicker->Bind(wxEVT_COLOURPICKER_CHANGED, [&](wxColourPickerEvent& event) {
+			m_colourPicker->GetPickerCtrl()->SetBackgroundColour(event.GetColour());
+			});
+
+		wxBoxSizer* horizontal = new wxBoxSizer(wxHORIZONTAL);
+		horizontal->Add(colourLabel, wxSizerFlags(0).CenterVertical());
+		horizontal->Add(m_colourPicker, wxSizerFlags(1).Expand().Border(wxALL, 5));
+
+		vertical->Add(horizontal, wxSizerFlags(0).Expand());
+		vertical->AddSpacer(5);
+	} else
+		SetTitle("Change character");
+
+	vertical->Add(nextBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
 	panel->SetSizer(vertical);
 
 	SetCharacters(m_manager->GetCharacters());
 	SetIcon(wxICON(amadeus));
 }
 
-void amTLAddThreadDlg::OnAdd(wxCommandEvent& event) {
-	m_timeline->AppendThread(m_characterList->GetItemText(m_characterList->GetFirstSelected()), m_colourPicker->GetColour());
+void amTLAddThreadDlg::OnDone(wxCommandEvent& event) {
+	if (m_mode == MODE_THREAD_Add)
+		m_timeline->AppendThread(m_characterList->GetItemText(m_characterList->GetFirstSelected()), m_colourPicker->GetColour());
+	else
+		m_timeline->EditCurrentThread(m_characterList->GetItemText(m_characterList->GetFirstSelected()));
+
 	Close();
 }
 
-void amTLAddThreadDlg::OnUpdateAdd(wxUpdateUIEvent& event) {
+void amTLAddThreadDlg::OnUpdateDone(wxUpdateUIEvent& event) {
 	event.Enable(m_characterList->GetSelectedItemCount());
 }
 
@@ -107,22 +117,20 @@ void amTLAddThreadDlg::OnClose(wxCloseEvent& event) {
 
 BEGIN_EVENT_TABLE(amTLAddSectionDlg, wxFrame)
 
-EVT_BUTTON(BUTTON_AddSectionDone, amTLAddSectionDlg::OnAdd)
-EVT_UPDATE_UI(BUTTON_AddSectionDone, amTLAddSectionDlg::OnUpdateAdd)
+EVT_BUTTON(BUTTON_AddSectionDone, amTLAddSectionDlg::OnDone)
+EVT_UPDATE_UI(BUTTON_AddSectionDone, amTLAddSectionDlg::OnUpdateDone)
 
 EVT_CLOSE(amTLAddSectionDlg::OnClose)
 
 END_EVENT_TABLE()
 
-amTLAddSectionDlg::amTLAddSectionDlg(wxWindow* parent, amTLTimeline* timeline, const wxSize& size) :
+amTLAddSectionDlg::amTLAddSectionDlg(wxWindow* parent, amTLTimeline* timeline,
+	amTLSectionDlgMode mode, const wxSize& size) :
 	wxFrame(parent, -1, "Add new section", wxDefaultPosition, size, wxFRAME_FLOAT_ON_PARENT | wxCAPTION | wxCLOSE_BOX | wxRESIZE_BORDER),
-	m_timeline(timeline) {
+	m_timeline(timeline), m_mode(mode) {
+
 	wxPanel* panel = new wxPanel(this);
 	panel->SetBackgroundColour(wxColour(20, 20, 20));
-
-	wxStaticText* mainLabel = new wxStaticText(panel, -1, "Add new Section:");
-	mainLabel->SetForegroundColour(wxColour(255, 255, 255));
-	mainLabel->SetFont(wxFontInfo(18).Bold());
 
 	wxStaticText* titleLabel = new wxStaticText(panel, -1, _("Title"));
 	titleLabel->SetForegroundColour(wxColour(255, 255, 255));
@@ -132,38 +140,57 @@ amTLAddSectionDlg::amTLAddSectionDlg(wxWindow* parent, amTLTimeline* timeline, c
 	m_titleTc->SetBackgroundColour(wxColour(45, 45, 45));
 	m_titleTc->SetForegroundColour(wxColour(255, 255, 255));
 
-	wxStaticText* colourLabel = new wxStaticText(panel, -1, _("Colour"));
-	colourLabel->SetForegroundColour(wxColour(255, 255, 255));
-	colourLabel->SetFont(wxFontInfo(13).Bold());
-
-	m_colourPicker = new wxColourPickerCtrl(panel, -1, wxColour(255, 255, 255));
-	m_colourPicker->Bind(wxEVT_COLOURPICKER_CHANGED, [&](wxColourPickerEvent& event) {
-		m_colourPicker->GetPickerCtrl()->SetBackgroundColour(event.GetColour());
-		});
-
-	wxButton* nextBtn = new wxButton(panel, BUTTON_AddSectionDone, "Add");
+	wxButton* doneBtn = new wxButton(panel, BUTTON_AddSectionDone, _("Done"));
 
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-	sizer->Add(mainLabel, wxSizerFlags(0).Left().Border(wxALL, 5));
-	sizer->AddSpacer(10);
+	if (m_mode == MODE_SECTION_Add) {
+		wxStaticText* mainLabel = new wxStaticText(panel, -1, _("Add new Section:"));
+		mainLabel->SetForegroundColour(wxColour(255, 255, 255));
+		mainLabel->SetFont(wxFontInfo(18).Bold());
+
+		sizer->Add(mainLabel, wxSizerFlags(0).Left().Border(wxALL, 5));
+		sizer->AddSpacer(10);
+	}
+
 	sizer->Add(titleLabel, wxSizerFlags(0).CenterHorizontal().Border(wxALL, 5));
 	sizer->Add(m_titleTc, wxSizerFlags(0).Expand());
-	sizer->AddSpacer(15);
-	sizer->Add(colourLabel, wxSizerFlags(0).CenterHorizontal().Border(wxALL, 5));
-	sizer->Add(m_colourPicker, wxSizerFlags(0).Expand());
+
+	if (m_mode == MODE_SECTION_Add) {
+		wxStaticText* colourLabel = new wxStaticText(panel, -1, _("Colour"));
+		colourLabel->SetForegroundColour(wxColour(255, 255, 255));
+		colourLabel->SetFont(wxFontInfo(13).Bold());
+
+		m_colourPicker = new wxColourPickerCtrl(panel, -1, wxColour(255, 255, 255));
+		m_colourPicker->GetPickerCtrl()->SetBackgroundColour(wxColour(255, 255, 255));
+		m_colourPicker->Bind(wxEVT_COLOURPICKER_CHANGED, [&](wxColourPickerEvent& event) {
+			m_colourPicker->GetPickerCtrl()->SetBackgroundColour(event.GetColour());
+			}
+		);
+
+		sizer->AddSpacer(15);
+		sizer->Add(colourLabel, wxSizerFlags(0).CenterHorizontal().Border(wxALL, 5));
+		sizer->Add(m_colourPicker, wxSizerFlags(0).Expand());
+	} else {
+		SetTitle(_("Change Section title"));
+	}
+
 	sizer->AddStretchSpacer(1);
-	sizer->Add(nextBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
+	sizer->Add(doneBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
 
 	panel->SetSizer(sizer);
 	SetIcon(wxICON(amadeus));
 }
 
-void amTLAddSectionDlg::OnAdd(wxCommandEvent& event) {
-	m_timeline->AppendSection(m_titleTc->GetValue(), m_colourPicker->GetColour());
+void amTLAddSectionDlg::OnDone(wxCommandEvent& event) {
+	if (m_mode == MODE_SECTION_Add)
+		m_timeline->AppendSection(m_titleTc->GetValue(), m_colourPicker->GetColour());
+	else
+		m_timeline->EditCurrentSection(m_titleTc->GetValue());
+
 	Close();
 }
 
-void amTLAddSectionDlg::OnUpdateAdd(wxUpdateUIEvent& event) {
+void amTLAddSectionDlg::OnUpdateDone(wxUpdateUIEvent& event) {
 	event.Enable(!m_titleTc->IsEmpty());
 }
 
