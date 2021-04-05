@@ -419,7 +419,7 @@ TimelineCard* amTLTimelineCanvas::AddCard(int rowIndex, int colIndex, int sectio
 	return card;
 }
 
-TimelineCard* amTLTimelineCanvas::AppendCard(int rowIndex) {
+TimelineCard* amTLTimelineCanvas::AppendCard(int rowIndex, int sectionIndex) {
 	if (!CanAddCards()) {
 		wxMessageBox("You need at least one thread and one section to be able to place cards on the Timeline!");
 		return nullptr;
@@ -428,7 +428,7 @@ TimelineCard* amTLTimelineCanvas::AppendCard(int rowIndex) {
 	TimelineCard* card = (TimelineCard*)GetDiagramManager()->AddShape(CLASSINFO(TimelineCard), wxPoint());
 
 	SetCardToRow(rowIndex, card);
-	SetCardToSection(m_sections.size() - 1, card);
+	SetCardToSection(sectionIndex, card);
 	SetCardToColumn(m_sections.back()->GetLast(), card);
 
 	RepositionThreads();
@@ -470,28 +470,39 @@ pair<int, int> amTLTimelineCanvas::SetCardToSection(int section, TimelineCard* s
 	if (prevSection == -1)
 		prevSection = m_sections.size();
 
+	amTLSection* focusSection = nullptr;
+
 	if (prevSection > section) {
-		if (prevSection - section > 1)
-			for (int i = section + 1; i < prevSection; i++)
-				m_sections[i]->ShiftRight();
+		for (amTLSection*& sectionIt : m_sections) {
+			int sectionItIndex = sectionIt->GetIndex();
 
-		if (prevSection < m_sections.size())
-			m_sections[prevSection]->RemoveCardFromBeggining();
-		
-
-		m_sections[section]->AppendCard();
+			if (sectionItIndex > section && sectionItIndex < prevSection) {
+				sectionIt->ShiftRight();
+			} else if (sectionItIndex == prevSection) {
+				if (prevSection < m_sections.size())
+					sectionIt->RemoveCardFromBeggining();
+			} else if (sectionItIndex == section) {
+				sectionIt->AppendCard();
+				focusSection = sectionIt;
+			}
+		}
 	} else {
-		if (section - prevSection > 1)
-			for (int i = prevSection + 1; i < section; i++)
-				m_sections[i]->ShiftLeft();
+		for (amTLSection*& sectionIt : m_sections) {
+			int sectionItIndex = sectionIt->GetIndex();
 
-		if (prevSection < m_sections.size())
-			m_sections[prevSection]->RemoveCardFromEnd();
-
-		m_sections[section]->PrependCard();
+			if (sectionItIndex > prevSection && sectionItIndex < section) {
+				sectionIt->ShiftLeft();
+			} else if (sectionItIndex == prevSection) {
+				if (prevSection < m_sections.size())
+					sectionIt->RemoveCardFromEnd();
+			} else if (sectionItIndex == section) {
+				sectionIt->PrependCard();
+				focusSection = sectionIt;
+			}
+		}
 	}
 
-	return pair<int, int>(m_sections[section]->GetFirst(), m_sections[section]->GetLast());
+	return pair<int, int>(focusSection->GetFirst(), focusSection->GetLast());
 }
 
 bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
@@ -1133,14 +1144,14 @@ void amTLTimeline::AppendSection(const wxString& title, const wxColour& colour) 
 	m_canvas->AppendSection(title, colour);
 }
 
-void amTLTimeline::AddCardToThread(amTLThread* thread) {
+void amTLTimeline::AddCardToThread(amTLThread* thread, int sectionIndex) {
 	if (thread)
 		m_canvas->AppendCard(thread->GetIndex());
 }
 
-void amTLTimeline::AddCardToSection(amTLSection* section) {
+void amTLTimeline::AddCardToSection(amTLSection* section, int threadIndex) {
 	if (section)
-		m_canvas->AddCard(0, section->GetLast() + 1, section->GetIndex());
+		m_canvas->AddCard(threadIndex, section->GetLast() + 1, section->GetIndex());
 }
 
 void amTLTimeline::AddCardBefore(TimelineCard* card) {
@@ -1741,16 +1752,29 @@ void amTLTimelineSidebar::OnAddSection(wxCommandEvent& event) {
 
 void amTLTimelineSidebar::OnAddCardToThread(wxCommandEvent& event) {
 	amTLThread* thread = m_threadThumbnail->GetThread();
+	if (thread) {
+		amTLSection* section = m_sectionThumbnail->GetSection();
+		int sectionIndex = 9999;
 
-	if (thread)
-		m_parent->AddCardToThread(thread);
+		if (section)
+			sectionIndex = section->GetIndex();
+
+		m_parent->AddCardToThread(thread, sectionIndex);
+	}
 }
 
 void amTLTimelineSidebar::OnAddCardToSection(wxCommandEvent& event) {
 	amTLSection* section = m_sectionThumbnail->GetSection();
+	
+	if (section) {
+		amTLThread* thread = m_threadThumbnail->GetThread();
+		int threadIndex = 0;
 
-	if (section)
-		m_parent->AddCardToSection(section);
+		if (thread)
+			threadIndex = thread->GetIndex();
+
+		m_parent->AddCardToSection(section, threadIndex);
+	}
 }
 
 void amTLTimelineSidebar::OnAddCardBefore(wxCommandEvent& event) {

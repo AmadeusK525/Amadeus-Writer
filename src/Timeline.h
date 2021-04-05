@@ -284,7 +284,7 @@ public:
 		AddThread(m_threads.size(), character, colour, refresh);
 	}
 	TimelineCard* AddCard(int rowIndex, int colIndex, int sectionIndex);
-	TimelineCard* AppendCard(int rowIndex);
+	TimelineCard* AppendCard(int rowIndex, int sectionIndex = 9999);
 
 	void AppendSection(const wxString& title, const wxColour& colour);
 
@@ -367,8 +367,8 @@ public:
 	void AppendThread(const wxString& character, const wxColour& colour);
 	void AppendSection(const wxString& title, const wxColour& colour);
 
-	void AddCardToThread(amTLThread* thread);
-	void AddCardToSection(amTLSection* section);
+	void AddCardToThread(amTLThread* thread, int sectionIndex);
+	void AddCardToSection(amTLSection* section, int threadIndex);
 
 	void AddCardBefore(TimelineCard* card);
 	void AddCardAfter(TimelineCard* card);
