@@ -49,8 +49,9 @@ amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amP
 		colourLabel->SetForegroundColour(wxColour(255, 255, 255));
 		colourLabel->SetFont(wxFontInfo(13).Bold());
 
-		m_colourPicker = new wxColourPickerCtrl(panel, -1, wxColour(255, 255, 255));
-		m_colourPicker->GetPickerCtrl()->SetBackgroundColour(wxColour(255, 255, 255));
+		wxColour defaultColour(std::rand() % 255, std::rand() % 255, std::rand() % 255);
+		m_colourPicker = new wxColourPickerCtrl(panel, -1, defaultColour);
+		m_colourPicker->GetPickerCtrl()->SetBackgroundColour(defaultColour);
 		m_colourPicker->Bind(wxEVT_COLOURPICKER_CHANGED, [&](wxColourPickerEvent& event) {
 			m_colourPicker->GetPickerCtrl()->SetBackgroundColour(event.GetColour());
 			});
@@ -110,6 +111,83 @@ void amTLAddThreadDlg::OnListResize(wxSizeEvent& event) {
 }
 
 void amTLAddThreadDlg::OnClose(wxCloseEvent& event) {
+	m_parent->Enable(true);
+	event.Skip();
+}
+
+
+BEGIN_EVENT_TABLE(amTLCardDlg, wxFrame)
+
+EVT_CLOSE(amTLCardDlg::OnClose)
+
+EVT_BUTTON(BUTTON_CardDone, amTLCardDlg::OnDone)
+EVT_UPDATE_UI(BUTTON_CardDone, amTLCardDlg::OnUpdateDone)
+
+END_EVENT_TABLE()
+
+amTLCardDlg::amTLCardDlg(wxWindow* parent, amTLTimeline* timeline, const wxString& currentString,
+	amTLCardDlgMode mode, const wxSize& size) :
+	wxFrame(parent, -1, "", wxDefaultPosition, size) {
+	m_timeline = timeline;
+	m_mode = mode;
+
+	wxPanel* panel = new wxPanel(this);
+	panel->SetBackgroundColour(wxColour(30, 30, 30));
+
+	wxStaticText* label = new wxStaticText(panel, -1, "");
+	label->SetForegroundColour(wxColour(255, 255, 255));
+	label->SetFont(wxFontInfo(13).Bold());
+
+	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+	sizer->Add(label, wxSizerFlags().CenterHorizontal().Border(wxALL, 5));
+
+	if (mode == MODE_CARD_Title) {
+		label->SetLabel("Edit title");
+		SetTitle("Edit card title");
+
+		m_title = new wxTextCtrl(panel, -1, currentString, wxDefaultPosition, wxDefaultSize,
+			wxTE_CENTER | wxBORDER_SIMPLE);
+		m_title->SetBackgroundColour(wxColour(20, 20, 20));
+		m_title->SetForegroundColour(wxColour(255, 255, 255));
+
+		sizer->Add(m_title, wxSizerFlags(0).Expand().Border(wxALL, 5));
+		sizer->AddStretchSpacer(1);
+	} else {
+		label->SetLabel("Edit content");
+		SetTitle("Edit card content");
+
+		m_content = new wxTextCtrl(panel, -1, currentString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_SIMPLE);
+		m_content->SetBackgroundColour(wxColour(20, 20, 20));
+		m_content->SetForegroundColour(wxColour(255, 255, 255));
+
+		sizer->Add(m_content, wxSizerFlags(1).Expand().Border(wxALL, 5));
+	}
+
+	wxButton* doneBtn = new wxButton(panel, BUTTON_CardDone, "Done");
+	sizer->Add(doneBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
+
+	panel->SetSizer(sizer);
+	SetIcon(wxICON(amadeus));
+}
+
+void amTLCardDlg::OnDone(wxCommandEvent& event) {
+	if (m_mode == MODE_CARD_Title)
+		m_timeline->EditCurrentCardTitle(m_title->GetValue());
+	else
+		m_timeline->EditCurrentCardContent(m_content->GetValue());
+	
+	m_parent->Enable(true);
+	Close();
+}
+
+void amTLCardDlg::OnUpdateDone(wxUpdateUIEvent& event) {
+	if (m_mode == MODE_CARD_Title)
+		event.Enable(!m_title->IsEmpty());
+	else
+		event.Enable(!m_content->IsEmpty());
+}
+
+void amTLCardDlg::OnClose(wxCloseEvent& event) {
 	m_parent->Enable(true);
 	event.Skip();
 }

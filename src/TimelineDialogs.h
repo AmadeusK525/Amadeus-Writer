@@ -10,6 +10,7 @@
 
 enum {
 	BUTTON_AddThreadDone,
+	BUTTON_CardDone,
 	BUTTON_AddSectionDone
 };
 
@@ -39,6 +40,33 @@ public:
 
 	void SetCharacters(wxVector<Character>& characters);
 	void OnListResize(wxSizeEvent& event);
+
+	void OnClose(wxCloseEvent& event);
+
+	DECLARE_EVENT_TABLE()
+};
+
+
+enum amTLCardDlgMode {
+	MODE_CARD_Title,
+	MODE_CARD_Content
+};
+
+class amTLCardDlg : public wxFrame {
+private:
+	amTLTimeline* m_timeline = nullptr;
+
+	wxTextCtrl* m_title = nullptr,
+		* m_content = nullptr;
+
+	amTLCardDlgMode m_mode = MODE_CARD_Title;
+
+public:
+	amTLCardDlg(wxWindow* parent, amTLTimeline* timeline, const wxString& currentString,
+		amTLCardDlgMode mode, const wxSize& size);
+
+	void OnDone(wxCommandEvent& event);
+	void OnUpdateDone(wxUpdateUIEvent& event);
 
 	void OnClose(wxCloseEvent& event);
 

@@ -217,7 +217,7 @@ wxPoint amTLSection::GetCellInPosition(wxPoint& pos) {
 	return wxPoint(xCell, yCell);
 }
 
-void amTLSection::DrawNormal(wxDC& dc, bool drawSeparators) {
+void amTLSection::DrawNormal(wxDC& dc, float curCanvasLeft, bool drawSeparators) {
 	dc.SetPen(m_border);
 	dc.SetBrush(wxBrush(m_colour));
 
@@ -232,18 +232,26 @@ void amTLSection::DrawNormal(wxDC& dc, bool drawSeparators) {
 		dc.DrawRectangle(wxPoint(m_insideRect.GetLeft(), 30), wxSize(m_insideRect.GetWidth(), m_titleHeight));
 
 		dc.SetTextForeground({ 255,255,255 });
-		dc.DrawText(m_titleToDraw, wxPoint(m_insideRect.GetLeft() + 20, 40));
+		int textPos = m_insideRect.GetLeft() + 20;
+
+		if (curCanvasLeft > textPos) {
+			if (curCanvasLeft + m_titleWidth >= m_insideRect.GetRight())
+				dc.DrawText(m_titleToDraw, wxPoint(m_insideRect.GetRight() - m_titleWidth, 40));
+			else
+				dc.DrawText(m_titleToDraw, wxPoint(curCanvasLeft, 40));
+		} else
+			dc.DrawText(m_titleToDraw, wxPoint(textPos, 40));
 	}
 	
 	if (drawSeparators) {
 		dc.SetPen(m_separatorPen);
 	
 		for (int& it : m_separators)
-			dc.DrawLine(wxPoint(it, m_separatorY), wxPoint(it, m_insideRect.height));
+			dc.DrawLine(wxPoint(it, m_titleOffset), wxPoint(it, m_insideRect.height));
 	
 		int height2 = m_insideRect.GetHeight() + 10;
 
-		dc.DrawLine(wxPoint(m_insideRect.GetLeft(), m_separatorY), wxPoint(m_insideRect.GetRight(), m_separatorY));
+		dc.DrawLine(wxPoint(m_insideRect.GetLeft(), m_titleOffset), wxPoint(m_insideRect.GetRight(), m_titleOffset));
 		dc.DrawLine(m_insideRect.GetBottomLeft(), m_insideRect.GetBottomRight());
 		dc.DrawLine(wxPoint(m_insideRect.GetLeft(), height2),
 			wxPoint(m_insideRect.GetRight(), height2));
@@ -286,6 +294,7 @@ void amTLSection::CalculateTitleWrap() {
 
 		pGC->GetTextExtent(m_titleToDraw.SubString(0, index), &wd, &hd);
 		m_titleHeight = hd + 20;
+		m_titleWidth = wd;
 
 		if (wd >= maxWidth) {
 			m_titleToDraw.Remove(index - 3);
@@ -375,21 +384,12 @@ void amTLTimelineCanvas::CleanUp() {
 	}
 }
 
-void amTLTimelineCanvas::AddThread(int pos, const wxString& character, const wxColour& colour, bool refresh) {
-	amTLThread* newThread = nullptr;
-	if (pos >= m_threads.size()) {
-		newThread = new amTLThread(character, m_threads.size(), -1, colour, this);
-		m_threads.push_back(newThread);
-	} else {
-		int i = 0;
+void amTLTimelineCanvas::AddThread(int index, const wxString& character, const wxColour& colour, bool refresh) {
+	if (index > m_threads.size())
+		index = m_threads.size();
 
-		for (amTLThread*& thread : m_threads) {
-			if (i++ >= pos) {
-				newThread = new amTLThread(character, pos, -1, colour, this);
-				m_threads.insert(&thread, newThread);
-			}
-		}
-	}
+	amTLThread* newThread = new amTLThread(character, index, -1, colour, this);
+	m_threads.push_back(newThread);
 
 	if (refresh) {
 		RepositionThreads();
@@ -616,11 +616,92 @@ bool amTLTimelineCanvas::CalculateCellDrag(wxPoint& pos) {
 	return changed;
 }
 
-wxColour amTLTimelineCanvas::GetThreadColour(int thread) {
-	if (thread >= m_threads.size())
+void amTLTimelineCanvas::MoveThread(amTLThread* thread, bool moveUp) {
+	if (moveUp) {
+		int previousIndex = thread->GetIndex();
+		if (previousIndex <= 0)
+			return;
+
+		ShapeList cards;
+		GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+
+		ShapeList::compatibility_iterator node = cards.GetFirst();
+		TimelineCard* card = nullptr;
+
+		while (node) {
+			card = (TimelineCard*)node->GetData();
+			int prevCardRow = card->GetRow();
+
+			if (prevCardRow == previousIndex) {
+				card->SetRow(prevCardRow - 1);
+				card->RecalculatePosition();
+			} else if (prevCardRow == previousIndex - 1) {
+				card->SetRow(prevCardRow + 1);
+				card->RecalculatePosition();
+			}
+
+			node = node->GetNext();
+		}
+
+		for (amTLThread*& otherThread : m_threads) {
+			int prevOtherThreadIndex = otherThread->GetIndex();
+
+			if (prevOtherThreadIndex == previousIndex - 1) {
+				otherThread->SetIndex(prevOtherThreadIndex + 1);
+				break;
+			}
+		}
+
+		thread->SetIndex(previousIndex - 1);
+	} else {
+		int previousIndex = thread->GetIndex();
+		if (previousIndex >= m_threads.size() - 1)
+			return;
+
+		ShapeList cards;
+		GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+
+		ShapeList::compatibility_iterator node = cards.GetFirst();
+		TimelineCard* card = nullptr;
+
+		while (node) {
+			card = (TimelineCard*)node->GetData();
+			int prevCardRow = card->GetRow();
+
+			if (prevCardRow == previousIndex) {
+				card->SetRow(prevCardRow + 1);
+				card->RecalculatePosition();
+			} else if (prevCardRow == previousIndex + 1) {
+				card->SetRow(prevCardRow - 1);
+				card->RecalculatePosition();
+			}
+
+			node = node->GetNext();
+		}
+
+		for (amTLThread*& otherThread : m_threads) {
+			int prevOtherThreadIndex = otherThread->GetIndex();
+
+			if (prevOtherThreadIndex == previousIndex + 1) {
+				otherThread->SetIndex(prevOtherThreadIndex - 1);
+				break;
+			}
+		}
+
+		thread->SetIndex(previousIndex + 1);
+	}
+
+	RepositionThreads();
+}
+
+wxColour amTLTimelineCanvas::GetThreadColour(int threadIndex) {
+	if (threadIndex >= m_threads.size())
 		return wxColour(255, 255, 255);
 
-	return m_threads[thread]->GetColour();
+	for (amTLThread*& thread : m_threads) {
+		if (thread->GetIndex() == threadIndex)
+			return thread->GetColour();
+	}
 }
 
 void amTLTimelineCanvas::OnThreadSelected(amTLThread* thread) {
@@ -696,6 +777,33 @@ void amTLTimelineCanvas::UpdateSelectedSectionSBData() {
 	m_parent->SetSectionData(m_selectedSection, filtered);
 }
 
+void amTLTimelineCanvas::ResetCardColours() {
+	ShapeList cards;
+	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+
+	ShapeList::compatibility_iterator node = cards.GetFirst();
+	TimelineCard* card = nullptr;
+
+	if (m_propagateColour) {
+		while (node) {
+			card = (TimelineCard*)node->GetData();
+			for (amTLThread*& thread : m_threads) {
+				if (thread->GetIndex() == card->GetRow())
+					card->SetColour(thread->GetColour());
+			}
+
+			node = node->GetNext();
+		}
+	} else {
+		wxColour colour(200, 200, 200);
+		while (node) {
+			card = (TimelineCard*)node->GetData();
+			card->SetColour(colour);
+			node = node->GetNext();
+		}
+	}
+}
+
 void amTLTimelineCanvas::DrawBackground(wxDC& dc, bool fromPaint) {
 	amSFShapeCanvas::DrawBackground(dc, fromPaint);
 
@@ -703,6 +811,7 @@ void amTLTimelineCanvas::DrawBackground(wxDC& dc, bool fromPaint) {
 	CalcUnscrolledPosition(0, 0, &xs, &ys);
 
 	float xo = (float)xs / GetScale();
+	m_curLeft = xo;
 
 	for (amTLThread*& thread : m_threads)
 		thread->Draw(dc, xo);
@@ -710,7 +819,7 @@ void amTLTimelineCanvas::DrawBackground(wxDC& dc, bool fromPaint) {
 
 void amTLTimelineCanvas::DrawForeground(wxDC& dc, bool fromPaint) {
 	for (amTLSection*& section : m_sections)
-		section->DrawNormal(dc, m_drawSeparators);
+		section->DrawNormal(dc, m_curLeft, m_drawSeparators);
 
 	dc.SetPen(wxPen(wxColour(180, 180, 255, 128), 2));
 	dc.SetBrush(wxBrush(wxColour(200, 200, 255, 128)));
@@ -752,7 +861,7 @@ void amTLTimelineCanvas::OnMouseMove(wxMouseEvent& event) {
 
 			m_threadUnderMouse = thread;
 			thread->OnMouseMove(pos);
-			
+
 			hasThreadHover = true;
 			break;
 		}
@@ -765,7 +874,7 @@ void amTLTimelineCanvas::OnMouseMove(wxMouseEvent& event) {
 	
 	amSFShapeCanvas::OnMouseMove(event);
 	if (!isRefreshed && m_isDraggingRight) {
-		Refresh(false, &wxRect(0, 0, 500, GetClientSize().y));
+		InvalidateVisibleRect();
 	}
 }
 
@@ -777,7 +886,7 @@ void amTLTimelineCanvas::OnLeftDown(wxMouseEvent& event) {
 		CalculateCellDrag(pos);
 		
 		TimelineCard* card = dynamic_cast<TimelineCard*>(pShape->GetGrandParentShape());
-		m_parent->SetCardData(card);
+		m_selectedCard = card;
 	} else {
 		bool hitThread = false;
 		for (amTLThread*& thread : m_threads) {
@@ -821,8 +930,9 @@ void amTLTimelineCanvas::OnLeftDown(wxMouseEvent& event) {
 			UpdateSelectedSectionSBData();
 		}
 
-		m_parent->SetCardData(nullptr);
+		m_selectedCard = nullptr;
 	}
+	m_parent->SetCardData(m_selectedCard);
 
 	if (!wxGetKeyState(WXK_COMMAND))
 		amSFShapeCanvas::OnLeftDown(event);
@@ -852,6 +962,10 @@ void amTLTimelineCanvas::OnLeftUp(wxMouseEvent& event) {
 			
 			if (!SetCardToColumn(column, pSel))
 				pSel->RecalculatePosition();
+
+			m_curDragCell.xCell = -1;
+			m_curDragCell.yCell = -1;
+			m_curDragCell.pos = { -1,-1 };
 
 			UpdateSelectedThreadSBData();
 			UpdateSelectedSectionSBData();
@@ -916,7 +1030,7 @@ wxSize amTLTimelineCanvas::GetGoodSize() {
 	if (!m_sections.empty())
 		return wxSize(m_sections.back()->GetRight() + 300, GetBottom() + 300);
 	else
-		return wxSize(300, 150);
+		return wxSize(500, 250);
 }
 
 void amTLTimelineCanvas::RepositionThreads() {
@@ -928,27 +1042,25 @@ void amTLTimelineCanvas::RepositionThreads() {
 	int cardVerSpacing = TimelineCard::GetVerticalSpacing();
 	int cardHeight = TimelineCard::GetHeight();
 	int threadHeight = amTLThread::GetHeight();
+	int sectionTitleOffset = amTLSection::GetTitleOffset();
 
 	int bottom = -1;
-	int i = 0;
+	int i;
 	for (amTLThread*& thread : m_threads) {
+		i = thread->GetIndex();
 		thread->SetY(((cardVerSpacing + cardHeight) * (i + 1))
 			- (cardHeight / 2)
 			- (threadHeight / 2)
-			+ amTLSection::GetTitleOffset());
+			+ sectionTitleOffset);
 
 		thread->SetRect(wxRect(0,
 			thread->GetY() + (threadHeight / 2) - (cardHeight / 2) - (cardVerSpacing / 2),
 			width,
 			cardVerSpacing + cardHeight));
 
-		thread->SetIndex(i);
-
 		int current = thread->GetRect().GetBottom();
 		if (current > bottom)
 			bottom = current;
-	
-		i++;
 	}
 
 	SetBottom(bottom);
@@ -1048,6 +1160,22 @@ void amTLTimeline::EditCurrentThread(const wxString& newCharacter) {
 
 	m_canvas->Refresh();
 	m_sidebar->GetThreadStaticText()->SetLabel(newCharacter);
+}
+
+void amTLTimeline::EditCurrentCardTitle(const wxString& newTitle) {
+	TimelineCard* card = m_canvas->GetSelectedCard();
+	if (card)
+		card->SetTitle(newTitle);
+
+	m_canvas->Refresh();
+}
+
+void amTLTimeline::EditCurrentCardContent(const wxString& newContent) {
+	TimelineCard* card = m_canvas->GetSelectedCard();
+	if (card)
+		card->SetContent(newContent);
+
+	m_canvas->Refresh();
 }
 
 void amTLTimeline::EditCurrentSection(const wxString& newTitle) {
@@ -1156,20 +1284,28 @@ EVT_BUTTON(BUTTON_AddCardAfter, amTLTimelineSidebar::OnAddCardAfter)
 EVT_BUTTON(BUTTON_AddCardToSection, amTLTimelineSidebar::OnAddCardToSection)
 
 EVT_BUTTON(BUTTON_ChangeCharacterThread, amTLTimelineSidebar::OnChangeCharacterThread)
+EVT_BUTTON(BUTTON_ChangeNameCard, amTLTimelineSidebar::OnChangeNameCard)
+EVT_BUTTON(BUTTON_ChangeContentCard, amTLTimelineSidebar::OnChangeContentCard)
 EVT_BUTTON(BUTTON_ChangeNameSection, amTLTimelineSidebar::OnChangeNameSection)
 
 EVT_COLOURPICKER_CHANGED(COLOUR_ThreadPicker, amTLTimelineSidebar::OnThreadColourChanged)
 EVT_COLOURPICKER_CHANGED(COLOUR_SectionPicker, amTLTimelineSidebar::OnSectionColourChanged)
 
-EVT_SPINCTRL(SPINBUTTON_ThreadHeight, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_ThreadTitleOffset, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_CardWidth, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_CardHeight, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_CardXSpacing, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_CardYSpacing, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_SectionTitleOffset, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_SectionMarkerWidth, amTLTimelineSidebar::OnPreferences)
-EVT_SPINCTRL(SPINBUTTON_SectionSpacing, amTLTimelineSidebar::OnPreferences)
+EVT_BUTTON(BUTTON_MoveUpThread, amTLTimelineSidebar::OnMoveThread)
+EVT_BUTTON(BUTTON_MoveDownThread, amTLTimelineSidebar::OnMoveThread)
+
+EVT_SPINCTRL(SPINBUTTON_ThreadHeight, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_ThreadTitleOffset, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_CardWidth, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_CardHeight, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_CardXSpacing, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_CardYSpacing, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_SectionTitleOffset, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_SectionMarkerWidth, amTLTimelineSidebar::OnPreferencesSpin)
+EVT_SPINCTRL(SPINBUTTON_SectionSpacing, amTLTimelineSidebar::OnPreferencesSpin)
+
+EVT_CHECKBOX(CHECKBOX_ThreadPropagateColour, amTLTimelineSidebar::OnPreferencesCheck)
+EVT_CHECKBOX(CHECKBOX_SectionDrawSeparators, amTLTimelineSidebar::OnPreferencesCheck)
 
 EVT_BUTTON(BUTTON_ResetPreferences, amTLTimelineSidebar::OnResetPreferences)
 
@@ -1178,7 +1314,7 @@ END_EVENT_TABLE()
 amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* canvas) : wxPanel(parent) {
 	m_parent = (amTLTimeline*)parent;
 
-	SetBackgroundColour(wxColour(60, 60, 60));
+	SetBackgroundColour(wxColour(50, 50, 50));
 	SetDoubleBuffered(true);
 
 	m_notebook = new wxNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
@@ -1244,10 +1380,16 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	wxButton* moveUpThread = new wxButton(m_threadPanel, BUTTON_MoveUpThread, "", wxDefaultPosition, wxSize(25, 25));
 	moveUpThread->SetBitmap(wxBITMAP_PNG(arrowUp));
 	moveUpThread->SetToolTip(_("Move thread position up"));
+	moveUpThread->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) {
+		event.Enable(m_threadThumbnail->GetThread());
+		});
 
 	wxButton* moveDownThread = new wxButton(m_threadPanel, BUTTON_MoveDownThread, "", wxDefaultPosition, wxSize(25, 25));
 	moveDownThread->SetBitmap(wxBITMAP_PNG(arrowDown));
 	moveDownThread->SetToolTip(_("Move thread position down"));
+	moveDownThread->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) {
+		event.Enable(m_threadThumbnail->GetThread());
+		});
 
 	wxBoxSizer* moveThreadLine = new wxBoxSizer(wxHORIZONTAL);
 	moveThreadLine->Add(moveUpThread);
@@ -1282,6 +1424,11 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 
 	wxButton* addCardBefore = new wxButton(m_cardPanel, BUTTON_AddCardBefore, _("Add before"));
 	wxButton* addCardAfter = new wxButton(m_cardPanel, BUTTON_AddCardAfter, _("Add after"));
+	
+	addCardBefore->SetBackgroundColour(wxColour(30, 30, 30));
+	addCardBefore->SetForegroundColour(wxColour(255, 255, 255));
+	addCardAfter->SetBackgroundColour(wxColour(30, 30, 30));
+	addCardAfter->SetForegroundColour(wxColour(255, 255, 255));
 
 	addCardBefore->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_cardThumbnail->GetCard()); });
 	addCardAfter->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_cardThumbnail->GetCard()); });
@@ -1291,10 +1438,27 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	addCardsSizer->AddStretchSpacer(1);
 	addCardsSizer->Add(addCardAfter, wxSizerFlags(0).Expand());
 
+	wxButton* changeNameCard = new wxButton(m_cardPanel, BUTTON_ChangeNameCard, "Edit title");
+	changeNameCard->SetBackgroundColour(wxColour(30, 30, 30));
+	changeNameCard->SetForegroundColour(wxColour(255, 255, 255));
+	changeNameCard->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) {
+		event.Enable(m_cardThumbnail->GetCard());
+		});
+
+	wxButton* changeContentCard = new wxButton(m_cardPanel, BUTTON_ChangeContentCard, "Edit content");
+	changeContentCard->SetBackgroundColour(wxColour(30, 30, 30));
+	changeContentCard->SetForegroundColour(wxColour(255, 255, 255));
+	changeContentCard->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) {
+		event.Enable(m_cardThumbnail->GetCard());
+		});
+
 	wxBoxSizer* cardPanelSizer = new wxBoxSizer(wxVERTICAL);
 	cardPanelSizer->Add(curCardLabel, wxSizerFlags(0).Left().Border(wxLEFT, 5));
 	cardPanelSizer->Add(m_cardThumbnail, wxSizerFlags(0).Expand().Border(wxALL, 5));
 	cardPanelSizer->Add(addCardsSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 5));
+	cardPanelSizer->AddSpacer(15);
+	cardPanelSizer->Add(changeNameCard, wxSizerFlags(0).Expand().Border(wxALL, 5));
+	cardPanelSizer->Add(changeContentCard, wxSizerFlags(0).Expand().Border(wxALL, 5));
 
 	m_cardPanel->SetSizer(cardPanelSizer);
 
@@ -1401,6 +1565,10 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	threadHeightSizer->AddSpacer(5);
 	threadHeightSizer->Add(m_threadHeight, wxSizerFlags(0).Expand());
 
+	m_threadPropagateColour = new wxCheckBox(m_preferencesPanel, CHECKBOX_ThreadPropagateColour, "Propagate colour");
+	m_threadPropagateColour->SetForegroundColour(wxColour(255, 255, 255));
+	m_threadPropagateColour->SetValue(true);
+
 	wxStaticText* cardLabel = new wxStaticText(m_preferencesPanel, -1, _("Cards"));
 	cardLabel->SetForegroundColour(wxColour(255, 255, 255));
 	cardLabel->SetFont(wxFontInfo(12).Bold());
@@ -1500,12 +1668,17 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	sectionSpacingSizer->AddSpacer(5);
 	sectionSpacingSizer->Add(m_sectionSpacing, wxSizerFlags(0).Expand());
 
-	wxButton* resetPreferences = new wxButton(m_preferencesPanel, BUTTON_ResetPreferences, "Reset preferences");
+	m_sectionSeparators = new wxCheckBox(m_preferencesPanel, CHECKBOX_SectionDrawSeparators, "Draw separators");
+	m_sectionSeparators->SetForegroundColour(wxColour(255, 255, 255));
+	m_sectionSeparators->SetValue(true);
 
+	wxButton* resetPreferences = new wxButton(m_preferencesPanel, BUTTON_ResetPreferences, "Reset preferences");
+	
 	wxBoxSizer* preferencesSizer = new wxBoxSizer(wxVERTICAL);
 	preferencesSizer->Add(threadLabel, wxSizerFlags(0).Left().Border(wxALL, 5));
 	preferencesSizer->Add(threadTitleOffsetSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
 	preferencesSizer->Add(threadHeightSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
+	preferencesSizer->Add(m_threadPropagateColour, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
 	preferencesSizer->AddSpacer(25);
 	preferencesSizer->Add(cardLabel, wxSizerFlags(0).Expand().Border(wxALL, 5));
 	preferencesSizer->Add(cardWidthSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
@@ -1517,6 +1690,7 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	preferencesSizer->Add(sectionTitleOffsetSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
 	preferencesSizer->Add(sectionMarkerSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
 	preferencesSizer->Add(sectionSpacingSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
+	preferencesSizer->Add(m_sectionSeparators, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
 	preferencesSizer->AddSpacer(25);
 	preferencesSizer->Add(resetPreferences, wxSizerFlags(0).Left().Border(wxALL, 5));
 
@@ -1605,6 +1779,28 @@ void amTLTimelineSidebar::OnChangeCharacterThread(wxCommandEvent& event) {
 	pManager->GetMainFrame()->Enable(false);
 }
 
+void amTLTimelineSidebar::OnChangeNameCard(wxCommandEvent& event) {
+	amProjectManager* manager = amGetManager();
+
+	amTLCardDlg* change = new amTLCardDlg(manager->GetMainFrame(), m_parent, m_cardThumbnail->GetCard()->GetTitle(),
+		MODE_CARD_Title, FromDIP(wxSize(250, 150)));
+	change->CenterOnScreen();
+	change->Show();
+
+	manager->GetMainFrame()->Enable(false);
+}
+
+void amTLTimelineSidebar::OnChangeContentCard(wxCommandEvent& event) {
+	amProjectManager* manager = amGetManager();
+
+	amTLCardDlg* change = new amTLCardDlg(manager->GetMainFrame(), m_parent, m_cardThumbnail->GetCard()->GetContent(),
+		MODE_CARD_Content, FromDIP(wxSize(300, 250)));
+	change->CenterOnScreen();
+	change->Show();
+
+	manager->GetMainFrame()->Enable(false);
+}
+
 void amTLTimelineSidebar::OnChangeNameSection(wxCommandEvent& event) {
 	amProjectManager* manager = amGetManager();
 
@@ -1612,6 +1808,8 @@ void amTLTimelineSidebar::OnChangeNameSection(wxCommandEvent& event) {
 		MODE_SECTION_Change, FromDIP(wxSize(300, 150)));
 	change->CenterOnScreen();
 	change->Show();
+
+	manager->GetMainFrame()->Enable(false);
 }
 
 void amTLTimelineSidebar::OnThreadColourChanged(wxColourPickerEvent& event) {
@@ -1638,7 +1836,14 @@ void amTLTimelineSidebar::OnSectionColourChanged(wxColourPickerEvent& event) {
 	m_parent->GetCanvas()->Refresh();
 }
 
-void amTLTimelineSidebar::OnPreferences(wxSpinEvent& event) {
+void amTLTimelineSidebar::OnMoveThread(wxCommandEvent& event) {
+	amTLTimelineCanvas* canvas = m_parent->GetCanvas();
+	
+	canvas->MoveThread(m_threadThumbnail->GetThread(), event.GetId() == BUTTON_MoveUpThread);
+	canvas->Refresh();
+}
+
+void amTLTimelineSidebar::OnPreferencesSpin(wxSpinEvent& event) {
 	int value = event.GetInt();
 	bool doThreads = false, doCards = false, doSections = false;
 
@@ -1674,8 +1879,8 @@ void amTLTimelineSidebar::OnPreferences(wxSpinEvent& event) {
 
 	case SPINBUTTON_CardYSpacing:
 		TimelineCard::SetVerticalSpacing(value);
+		doThreads = true;
 		doCards = true;
-		doSections = true;
 		break;
 
 	case SPINBUTTON_SectionTitleOffset:
@@ -1699,6 +1904,24 @@ void amTLTimelineSidebar::OnPreferences(wxSpinEvent& event) {
 	}
 
 	m_parent->RecalculateCanvas(doThreads, doCards, doSections);
+}
+
+void amTLTimelineSidebar::OnPreferencesCheck(wxCommandEvent& event) {
+	bool value = event.GetInt();
+	amTLTimelineCanvas* canvas = m_parent->GetCanvas();
+
+	switch (event.GetId()) {
+	case CHECKBOX_ThreadPropagateColour:
+		canvas->SetPropagateColour(value);
+		canvas->ResetCardColours();
+		break;
+
+	case  CHECKBOX_SectionDrawSeparators:
+		canvas->SetDrawSeparators(value);
+		break;
+	}
+
+	canvas->Refresh();
 }
 
 void amTLTimelineSidebar::OnResetPreferences(wxCommandEvent& event) {
@@ -1970,7 +2193,7 @@ void amTLSectionThumbnail::DrawContent(wxDC& dc) {
 	if (!m_section)
 		return;
 
-	m_section->DrawNormal(dc, false);
+	m_section->DrawNormal(dc, 0.0, false);
 
 	ShapeList::compatibility_iterator node = m_shapes.GetFirst();
 	wxSFShapeBase* pShape;

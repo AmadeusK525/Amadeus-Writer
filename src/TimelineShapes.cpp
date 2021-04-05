@@ -117,6 +117,16 @@ void TimelineCard::DrawOnOrigin(wxDC& dc, bool children) {
 	m_nRelativePosition = { tempx, tempy };
 }
 
+void TimelineCard::SetTitle(const wxString& title) {
+	m_title->SetText(title);
+	m_title->CalcWrappedText();
+}
+
+void TimelineCard::SetContent(const wxString& content) {
+	m_content->SetText(content);
+	m_content->CalcWrappedText();
+}
+
 void TimelineCard::SetColour(wxColour& colour) {
 	SetFill(colour);
 

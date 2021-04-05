@@ -44,6 +44,7 @@ private:
 	wxString m_character{ "" };
 	wxString m_titleToDraw{ "" };
 	int m_titleHeight = -1;
+	int m_titleWidth = -1;
 
 	static int m_height, m_width;
 	static int m_titleOffset;
@@ -137,6 +138,7 @@ private:
 	static wxPen m_separatorPen;
 
 	int m_titleHeight = -1;
+	int m_titleWidth = -1;
 
 	int m_index = -1;
 	int m_first = -1, m_last = -1;
@@ -148,7 +150,6 @@ private:
 
 	wxRect m_insideRect{ -1,0,-1,-1 };
 	wxVector<int> m_separators{};
-	int m_separatorY;
 
 public:
 	inline amTLSection(int index, int first, int last, amTLTimelineCanvas* canvas,
@@ -159,8 +160,6 @@ public:
 		m_last = last;
 
 		m_canvas = canvas;
-
-		m_separatorY = GetTitleOffset();
 
 		if (title == wxEmptyString)
 			m_title = "Section " + std::to_string(index + 1);
@@ -210,7 +209,7 @@ public:
 
 	wxPoint GetCellInPosition(wxPoint& pos);
 
-	void DrawNormal(wxDC& dc, bool drawSeparators);
+	void DrawNormal(wxDC& dc, float curCanvasLeft, bool drawSeparators);
 
 	bool Contains(wxPoint& pos) { return m_insideRect.Contains(pos); }
 	bool EmptyContains(wxPoint& pos);
@@ -257,12 +256,15 @@ private:
 	int m_curDragSection = 0;
 	bool m_isDragOnEmptySection = false;
 
-	int m_bottom = -1;
+	int m_bottom = 300;
+	float m_curLeft = 0;
 	bool m_drawSeparators = true;
 	bool m_propagateColour = true;
 
 	amTLThread* m_threadUnderMouse = nullptr;
 	amTLThread* m_selectedThread = nullptr;
+
+	TimelineCard* m_selectedCard = nullptr;
 
 	amTLSection* m_selectedSection = nullptr;
 
@@ -292,9 +294,11 @@ public:
 	
 	bool CalculateCellDrag(wxPoint& pos);
 
+	void MoveThread(amTLThread* thread, bool moveUp);
+
 	inline wxVector<amTLSection*>& GetSections() { return m_sections; }
 	inline wxVector<amTLThread*>& GetThreads() { return m_threads; }
-	wxColour GetThreadColour(int thread);
+	wxColour GetThreadColour(int threadIndex);
 
 	inline int GetBottom() { return m_bottom; }
 	inline void SetBottom(int bottom) { m_bottom = bottom; }
@@ -307,8 +311,13 @@ public:
 	void UpdateSelectedSectionSBData();
 
 	inline amTLThread* GetSelectedThread() { return m_selectedThread; }
+	inline TimelineCard* GetSelectedCard() { return m_selectedCard; }
 	inline amTLSection* GetSelectedSection() { return m_selectedSection; }
 	inline amTLSection* GetSection(int index) { return m_sections[index]; }
+
+	inline void SetDrawSeparators(bool draw) { m_drawSeparators = draw; }
+	inline void SetPropagateColour(bool propagate) { m_propagateColour = propagate; }
+	void ResetCardColours();
 
 	virtual void DrawBackground(wxDC& dc, bool fromPaint);
 	virtual void DrawForeground(wxDC& dc, bool fromPaint);
@@ -365,6 +374,8 @@ public:
 	void AddCardAfter(TimelineCard* card);
 
 	void EditCurrentThread(const wxString& newCharacter);
+	void EditCurrentCardTitle(const wxString& newTitle);
+	void EditCurrentCardContent(const wxString& newContent);
 	void EditCurrentSection(const wxString& newTitle);
 
 	void ShowSidebar();
@@ -399,6 +410,8 @@ enum {
 	BUTTON_AddCardToSection,
 
 	BUTTON_ChangeCharacterThread,
+	BUTTON_ChangeNameCard,
+	BUTTON_ChangeContentCard,
 	BUTTON_ChangeNameSection,
 
 	BUTTON_MoveUpThread,
@@ -416,6 +429,9 @@ enum {
 	SPINBUTTON_SectionTitleOffset,
 	SPINBUTTON_SectionMarkerWidth,
 	SPINBUTTON_SectionSpacing,
+
+	CHECKBOX_ThreadPropagateColour,
+	CHECKBOX_SectionDrawSeparators,
 
 	BUTTON_ResetPreferences
 };
@@ -444,6 +460,7 @@ class amTLTimelineSidebar : public wxPanel {
 	wxScrolledWindow* m_preferencesPanel = nullptr;
 	wxSpinCtrl* m_threadHeight = nullptr,
 		* m_threadTitleOffset = nullptr;
+	wxCheckBox* m_threadPropagateColour = nullptr;
 	wxSpinCtrl* m_cardWidth = nullptr,
 		* m_cardHeight = nullptr,
 		* m_cardXSpacing = nullptr,
@@ -451,6 +468,7 @@ class amTLTimelineSidebar : public wxPanel {
 	wxSpinCtrl* m_sectionTitleOffset = nullptr,
 		* m_sectionMarkerWidth = nullptr,
 		* m_sectionSpacing = nullptr;
+	wxCheckBox* m_sectionSeparators = nullptr;
 
 	wxRect m_pullRect{ 5, 5, 30, 30 };
 
@@ -468,12 +486,17 @@ public:
 	void OnAddCardAfter(wxCommandEvent& event);
 
 	void OnChangeCharacterThread(wxCommandEvent& event);
+	void OnChangeNameCard(wxCommandEvent& event);
+	void OnChangeContentCard(wxCommandEvent& event);
 	void OnChangeNameSection(wxCommandEvent& event);
 
 	void OnThreadColourChanged(wxColourPickerEvent& event);
 	void OnSectionColourChanged(wxColourPickerEvent& event);
 
-	void OnPreferences(wxSpinEvent& event);
+	void OnMoveThread(wxCommandEvent& event);
+
+	void OnPreferencesSpin(wxSpinEvent& event);
+	void OnPreferencesCheck(wxCommandEvent& event);
 	void OnResetPreferences(wxCommandEvent& event);
 
 	void SetThreadData(amTLThread* thread, ShapeList& shapes);

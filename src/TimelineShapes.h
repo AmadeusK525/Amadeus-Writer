@@ -30,6 +30,12 @@ public:
 	inline int GetColumn() { return m_col; }
 	inline int GetSection() { return m_section; }
 
+	inline wxString GetTitle() { return m_title->GetText(); }
+	inline wxString GetContent() { return m_content->GetText(); }
+
+	void SetTitle(const wxString& title);
+	void SetContent(const wxString& content);
+
 	inline static int GetHorizontalSpacing() { return m_horSpacing; }
 	inline static int GetVerticalSpacing() { return m_verSpacing; }
 	inline static int GetWidth() { return m_width; }
