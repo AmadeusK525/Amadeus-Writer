@@ -297,7 +297,7 @@ public:
 
 	pair<int, int> SetCardToSection(int section, TimelineCard* shape);
 	bool SetCardToColumn(int column, TimelineCard* shape);
-	bool SetCardToRow(int row, TimelineCard* shape);
+	bool SetCardToRow(int row, TimelineCard* shape, bool recalculatePos = false);
 	
 	bool CalculateCellDrag(wxPoint& pos);
 
@@ -448,6 +448,11 @@ enum {
 	BUTTON_MoveUpThread,
 	BUTTON_MoveDownThread,
 
+	BUTTON_MoveCardUp,
+	BUTTON_MoveCardDown,
+	BUTTON_MoveCardLeft,
+	BUTTON_MoveCardRight,
+
 	COLOUR_ThreadPicker,
 	COLOUR_SectionPicker,
 
@@ -525,6 +530,7 @@ public:
 	void OnSectionColourChanged(wxColourPickerEvent& event);
 
 	void OnMoveThread(wxCommandEvent& event);
+	void OnMoveCard(wxCommandEvent& event);
 
 	void OnDeleteThread(wxCommandEvent& event);
 	void OnDeleteCard(wxCommandEvent& event);

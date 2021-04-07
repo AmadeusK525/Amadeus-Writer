@@ -27,7 +27,7 @@ public:
 	void DrawOnOrigin(wxDC& dc, bool children = true);
 
 	inline int GetThreadIndex() { return m_row; }
-	inline int GetColumn() { return m_col; }
+	inline int GetColumnIndex() { return m_col; }
 	inline int GetSectionIndex() { return m_section; }
 
 	inline wxString GetTitle() { return m_title->GetText(); }

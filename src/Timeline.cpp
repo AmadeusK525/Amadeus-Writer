@@ -490,6 +490,9 @@ pair<int, int> amTLTimelineCanvas::SetCardToSection(int section, TimelineCard* s
 	if (m_sections.empty())
 		return pair<int, int>(-1, -1);
 
+	if (section >= m_sections.size())
+		section = m_sections.size() - 1;
+
 	int prevSection = shape->GetSectionIndex();
 	shape->SetSection(section);
 	
@@ -542,7 +545,7 @@ bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), list);
 
 	TimelineCard* card = shape;
-	int prevCol = card->GetColumn();
+	int prevCol = card->GetColumnIndex();
 
 	if (prevCol == column)
 		return false;
@@ -556,7 +559,7 @@ bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 
 			if (card == shape)
 				card->SetColumn(column);
-			else if (card->GetColumn() >= column && card->GetColumn() < prevCol)
+			else if (card->GetColumnIndex() >= column && card->GetColumnIndex() < prevCol)
 				card->IncrementColumn();
 			else
 				continue;
@@ -569,7 +572,7 @@ bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 
 			if (card == shape)
 				card->SetColumn(column);
-			else if (card->GetColumn() > prevCol && card->GetColumn() <= column)
+			else if (card->GetColumnIndex() > prevCol && card->GetColumnIndex() <= column)
 				card->DecrementColumn();
 			else
 				continue;
@@ -583,7 +586,7 @@ bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 	return true;
 }
 
-bool amTLTimelineCanvas::SetCardToRow(int row, TimelineCard* shape) {
+bool amTLTimelineCanvas::SetCardToRow(int row, TimelineCard* shape, bool recalculatePos) {
 	if (shape->GetThreadIndex() == row)
 		return false;
 
@@ -591,6 +594,9 @@ bool amTLTimelineCanvas::SetCardToRow(int row, TimelineCard* shape) {
 
 	if (m_propagateColour)
 		shape->SetColour(GetThreadColour(row));
+
+	if (recalculatePos)
+		shape->RecalculatePosition();
 
 	return true;
 }
@@ -978,8 +984,8 @@ void amTLTimelineCanvas::UpdateSelectedSectionSBData() {
 			card = (TimelineCard*)node->GetData();
 
 			if (card) {
-				if (card->GetColumn() < m_selectedSection->GetFirst() 
-					|| card->GetColumn() > m_selectedSection->GetLast())
+				if (card->GetColumnIndex() < m_selectedSection->GetFirst() 
+					|| card->GetColumnIndex() > m_selectedSection->GetLast())
 					filtered.remove(card);
 			}
 
@@ -1401,12 +1407,12 @@ void amTLTimeline::AddCardToSection(amTLSection* section, int threadIndex) {
 
 void amTLTimeline::AddCardBefore(TimelineCard* card) {
 	int sectionIndex = card->GetSectionIndex();
-	m_canvas->AddCard(card->GetThreadIndex(), card->GetColumn(), sectionIndex);
+	m_canvas->AddCard(card->GetThreadIndex(), card->GetColumnIndex(), sectionIndex);
 }
 
 void amTLTimeline::AddCardAfter(TimelineCard* card) {
 	int sectionIndex = card->GetSectionIndex();
-	m_canvas->AddCard(card->GetThreadIndex(), card->GetColumn() + 1, sectionIndex);
+	m_canvas->AddCard(card->GetThreadIndex(), card->GetColumnIndex() + 1, sectionIndex);
 }
 
 void amTLTimeline::EditCurrentThread(const wxString& newCharacter) {
@@ -1549,6 +1555,11 @@ EVT_COLOURPICKER_CHANGED(COLOUR_SectionPicker, amTLTimelineSidebar::OnSectionCol
 
 EVT_BUTTON(BUTTON_MoveUpThread, amTLTimelineSidebar::OnMoveThread)
 EVT_BUTTON(BUTTON_MoveDownThread, amTLTimelineSidebar::OnMoveThread)
+
+EVT_BUTTON(BUTTON_MoveCardUp, amTLTimelineSidebar::OnMoveCard)
+EVT_BUTTON(BUTTON_MoveCardDown, amTLTimelineSidebar::OnMoveCard)
+EVT_BUTTON(BUTTON_MoveCardLeft, amTLTimelineSidebar::OnMoveCard)
+EVT_BUTTON(BUTTON_MoveCardRight, amTLTimelineSidebar::OnMoveCard)
 
 EVT_BUTTON(BUTTON_DeleteThreadSidebar, amTLTimelineSidebar::OnDeleteThread)
 EVT_BUTTON(BUTTON_DeleteCardSidebar, amTLTimelineSidebar::OnDeleteCard)
@@ -1720,10 +1731,10 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 		event.Enable(m_cardThumbnail->GetCard());
 		});
 
-	wxButton* moveCardUp = new wxButton(m_cardPanel, -1, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	wxButton* moveCardDown = new wxButton(m_cardPanel, -1, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	wxButton* moveCardLeft = new wxButton(m_cardPanel, -1, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	wxButton* moveCardRight = new wxButton(m_cardPanel, -1, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
+	wxButton* moveCardUp = new wxButton(m_cardPanel, BUTTON_MoveCardUp, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
+	wxButton* moveCardDown = new wxButton(m_cardPanel, BUTTON_MoveCardDown, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
+	wxButton* moveCardLeft = new wxButton(m_cardPanel, BUTTON_MoveCardLeft, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
+	wxButton* moveCardRight = new wxButton(m_cardPanel, BUTTON_MoveCardRight, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
 
 	moveCardUp->SetBitmap(wxBITMAP_PNG(arrowUp));
 	moveCardDown->SetBitmap(wxBITMAP_PNG(arrowDown));
@@ -2160,6 +2171,57 @@ void amTLTimelineSidebar::OnMoveThread(wxCommandEvent& event) {
 	amTLTimelineCanvas* canvas = m_parent->GetCanvas();
 	
 	canvas->MoveThread(m_threadThumbnail->GetThread(), event.GetId() == BUTTON_MoveUpThread);
+	canvas->Refresh();
+}
+
+void amTLTimelineSidebar::OnMoveCard(wxCommandEvent& event) {
+	amTLTimelineCanvas* canvas = m_parent->GetCanvas();
+	TimelineCard* card = m_cardThumbnail->GetCard();
+	if (!card)
+		return;
+
+	int sectionIndex = card->GetSectionIndex();
+	int columnIndex = card->GetColumnIndex();
+
+	switch (event.GetId()) {
+	case BUTTON_MoveCardUp:
+		canvas->SetCardToRow(card->GetThreadIndex() - 1, card, true);
+		break;
+
+	case BUTTON_MoveCardDown:
+		canvas->SetCardToRow(card->GetThreadIndex() + 1, card, true);
+		break;
+
+	case BUTTON_MoveCardLeft:
+		if (canvas->GetSection(sectionIndex)->GetFirst() == columnIndex) {
+			if (sectionIndex == 0)
+				return;
+
+			canvas->SetCardToSection(sectionIndex - 1, card);
+			card->RecalculatePosition();
+			break;
+		}
+
+		canvas->SetCardToColumn(columnIndex- 1, card);
+		break;
+
+	case BUTTON_MoveCardRight:
+		if (canvas->GetSection(sectionIndex)->GetLast() == columnIndex) {
+			if (sectionIndex == canvas->GetSections().size() - 1)
+				return;
+
+			canvas->SetCardToSection(sectionIndex + 1, card);
+			card->RecalculatePosition();
+			break;
+		}
+
+		canvas->SetCardToColumn(columnIndex + 1, card);
+		break;
+
+	default:
+		break;
+	}
+
 	canvas->Refresh();
 }
 
