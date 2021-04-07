@@ -108,6 +108,7 @@ public:
 	void OnMouseLeave();
 
 	void CalculateTitleWrap();
+	void RecalculatePosition();
 
 	inline void MarkSerializableDataMembers() {
 		XS_SERIALIZE_INT(m_y, "y");
@@ -190,7 +191,7 @@ public:
 	inline int GetLast() { return m_last; }
 	inline int GetIndex() { return m_index; }
 
-	inline int SetIndex(int i) { m_index = i; }
+	inline void SetIndex(int i) { m_index = i; }
 
 	inline static int GetMarkerWidth() { return m_markerWidth; }
 	inline static int GetHorizontalSpcaing() { return m_horSpacing; }
@@ -236,6 +237,12 @@ public:
 ///////////////////////////////////////////////////////////////////////
 //////////////////////////// TimelineCanvas ///////////////////////////
 ///////////////////////////////////////////////////////////////////////
+
+enum {
+	MENU_DeleteTimelineCard,
+	MENU_DeleteTimelineThread,
+	MENU_DeleteTimelineSection
+};
 
 struct amTLCell {
 	wxPoint pos{ -1,-1 };
@@ -284,7 +291,7 @@ public:
 		AddThread(m_threads.size(), character, colour, refresh);
 	}
 	TimelineCard* AddCard(int rowIndex, int colIndex, int sectionIndex);
-	TimelineCard* AppendCard(int rowIndex, int sectionIndex = 9999);
+	TimelineCard* AppendCard(int rowIndex, int sectionIndex = -1);
 
 	void AppendSection(const wxString& title, const wxColour& colour);
 
@@ -294,7 +301,16 @@ public:
 	
 	bool CalculateCellDrag(wxPoint& pos);
 
-	void MoveThread(amTLThread* thread, bool moveUp);
+	void MoveThread(amTLThread* thread, bool moveUp, bool repositionAll = true);
+
+	void OnDeleteCard(wxCommandEvent& event);
+	void OnDeleteThread(wxCommandEvent& event);
+	void OnDeleteSection(wxCommandEvent& event);
+
+	void DeleteCard(TimelineCard* card, bool refresh = true, bool updateThumbnails = true);
+	inline void DeleteSelectedCard() { DeleteCard(m_selectedCard); }
+	void DeleteSelectedThread();
+	void DeleteSelectedSection();
 
 	inline wxVector<amTLSection*>& GetSections() { return m_sections; }
 	inline wxVector<amTLThread*>& GetThreads() { return m_threads; }
@@ -313,7 +329,7 @@ public:
 	inline amTLThread* GetSelectedThread() { return m_selectedThread; }
 	inline TimelineCard* GetSelectedCard() { return m_selectedCard; }
 	inline amTLSection* GetSelectedSection() { return m_selectedSection; }
-	inline amTLSection* GetSection(int index) { return m_sections[index]; }
+	amTLSection* GetSection(int index);
 
 	inline void SetDrawSeparators(bool draw) { m_drawSeparators = draw; }
 	inline void SetPropagateColour(bool propagate) { m_propagateColour = propagate; }
@@ -330,6 +346,8 @@ public:
 	virtual void OnLeftUp(wxMouseEvent& event);
 	virtual void OnLeftDoubleClick(wxMouseEvent& event);
 
+	virtual void OnRightUp(wxMouseEvent& event);
+
 	virtual void OnKeyDown(wxKeyEvent& event);
 	virtual void OnTextChange(wxSFEditTextShape* shape);
 
@@ -337,6 +355,11 @@ public:
 
 	wxSize GetGoodSize();
 	void RepositionThreads();
+
+	DECLARE_EVENT_TABLE()
+
+private:
+	void SelectThread(amTLThread* thread, const wxPoint& pos);
 };
 
 
@@ -378,6 +401,10 @@ public:
 	void EditCurrentCardContent(const wxString& newContent);
 	void EditCurrentSection(const wxString& newTitle);
 
+	void DeleteCurrentThread() { m_canvas->OnDeleteThread(wxCommandEvent()); }
+	void DeleteCurrentCard() { m_canvas->OnDeleteCard(wxCommandEvent()); }
+	void DeleteCurrentSection() { m_canvas->OnDeleteSection(wxCommandEvent()); }
+
 	void ShowSidebar();
 
 	void SetThreadData(amTLThread* thread, ShapeList& shapes);
@@ -413,6 +440,10 @@ enum {
 	BUTTON_ChangeNameCard,
 	BUTTON_ChangeContentCard,
 	BUTTON_ChangeNameSection,
+
+	BUTTON_DeleteThreadSidebar,
+	BUTTON_DeleteCardSidebar,
+	BUTTON_DeleteSectionSidebar,
 
 	BUTTON_MoveUpThread,
 	BUTTON_MoveDownThread,
@@ -494,6 +525,10 @@ public:
 	void OnSectionColourChanged(wxColourPickerEvent& event);
 
 	void OnMoveThread(wxCommandEvent& event);
+
+	void OnDeleteThread(wxCommandEvent& event);
+	void OnDeleteCard(wxCommandEvent& event);
+	void OnDeleteSection(wxCommandEvent& event);
 
 	void OnPreferencesSpin(wxSpinEvent& event);
 	void OnPreferencesCheck(wxCommandEvent& event);

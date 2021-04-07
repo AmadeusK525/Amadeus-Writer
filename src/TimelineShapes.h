@@ -26,9 +26,9 @@ public:
 
 	void DrawOnOrigin(wxDC& dc, bool children = true);
 
-	inline int GetRow() { return m_row; }
+	inline int GetThreadIndex() { return m_row; }
 	inline int GetColumn() { return m_col; }
-	inline int GetSection() { return m_section; }
+	inline int GetSectionIndex() { return m_section; }
 
 	inline wxString GetTitle() { return m_title->GetText(); }
 	inline wxString GetContent() { return m_content->GetText(); }
@@ -53,7 +53,8 @@ public:
 	inline void IncrementColumn(int incrementBy = 1) { m_col += incrementBy; }
 	inline void DecrementColumn(int decrementBy = 1) { m_col -= decrementBy; }
 
-	void SetColour(wxColour& colour);
+	void SetColour(const wxColour& colour);
+	void SetTextColour(const wxColour& colour);
 
 	void MarkSerializableDataMembers();
 

@@ -364,10 +364,10 @@ void CorkboardCanvas::OnLeftUp(wxMouseEvent& event) {
 }
 
 void CorkboardCanvas::OnRightUp(wxMouseEvent& event) {
-	bool isDragginRightCache = m_isDraggingRight;
+	bool isDraggingRightCache = m_isDraggingRight;
 	amSFShapeCanvas::OnRightUp(event);
 
-	if (!isDragginRightCache) {
+	if (!isDraggingRightCache) {
 		m_shapeForMenu = GetShapeUnderCursor();
 
 		if (m_shapeForMenu) {

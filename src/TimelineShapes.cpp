@@ -127,7 +127,7 @@ void TimelineCard::SetContent(const wxString& content) {
 	m_content->CalcWrappedText();
 }
 
-void TimelineCard::SetColour(wxColour& colour) {
+void TimelineCard::SetColour(const wxColour& colour) {
 	SetFill(colour);
 
 	unsigned char r = colour.Red();
@@ -150,6 +150,11 @@ void TimelineCard::SetColour(wxColour& colour) {
 		b += 40;
 
 	m_content->SetFill(wxColour(r, g, b));
+}
+
+void TimelineCard::SetTextColour(const wxColour& colour) {
+	m_title->SetTextColour(colour);
+	m_content->SetTextColour(colour);
 }
 
 void TimelineCard::MarkSerializableDataMembers() {
