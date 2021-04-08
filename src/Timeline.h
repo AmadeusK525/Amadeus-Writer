@@ -11,6 +11,8 @@
 #include "ProjectManager.h"
 #include "amUtility.h"
 
+#include <map>
+
 using std::pair;
 
 class amTLThread;
@@ -52,8 +54,10 @@ private:
 	bool m_isHovering = false, m_isSelected = false, m_drawSelected = false;
 
 public:
-	amTLThread() = default;
-	amTLThread(const wxString& character, int index, int y, const wxColour& colour, amTLTimelineCanvas* canvas) :
+	XS_DECLARE_CLONABLE_CLASS(amTLThread);
+
+	inline amTLThread() { MarkSerializableDataMembers(); }
+	inline amTLThread(const wxString& character, int index, int y, const wxColour& colour, amTLTimelineCanvas* canvas) :
 		m_character(character), m_index(index), m_y(y), m_colour(colour), m_canvas(canvas) {
 		MarkSerializableDataMembers();
 		CalculateTitleWrap();
@@ -110,12 +114,19 @@ public:
 	void CalculateTitleWrap();
 	void RecalculatePosition();
 
+	inline void SetCanvas(amTLTimelineCanvas* canvas) { m_canvas = canvas; }
+
 	inline void MarkSerializableDataMembers() {
-		XS_SERIALIZE_INT(m_y, "y");
-		XS_SERIALIZE_INT(m_index, "index");
-		XS_SERIALIZE_INT(m_height, "height");
-		XS_SERIALIZE_INT(m_width, "width");
-		XS_SERIALIZE_INT(m_titleOffset, "titleOffset");
+		XS_SERIALIZE_INT_EX(m_y, "y", -1);
+		XS_SERIALIZE_INT_EX(m_index, "index", -1);
+		XS_SERIALIZE_INT_EX(m_height, "height", 10);
+		XS_SERIALIZE_INT_EX(m_width, "width", -1);
+		XS_SERIALIZE_STRING_EX(m_character, "character", "");
+		XS_SERIALIZE_FONT_EX(m_titleFont, "font", wxFontInfo(15).Bold().AntiAliased());
+		XS_SERIALIZE_STRING_EX(m_titleToDraw, "titleToDraw", "");
+		XS_SERIALIZE_INT_EX(m_titleOffset, "titleOffset", 150);
+		XS_SERIALIZE_INT_EX(m_titleHeight, "titleHeight", 10);
+		XS_SERIALIZE_COLOUR_EX(m_colour, "colour", wxColour(200, 200, 255));
 	}
 };
 
@@ -153,6 +164,9 @@ private:
 	wxVector<int> m_separators{};
 
 public:
+	XS_DECLARE_CLONABLE_CLASS(amTLSection);
+
+	inline amTLSection() { MarkSerializableDataMembers(); }
 	inline amTLSection(int index, int first, int last, amTLTimelineCanvas* canvas,
 		const wxString& title = wxEmptyString, const wxColour& colour = { 255,255,255 }) {
 		m_index = index;
@@ -218,6 +232,8 @@ public:
 	void CalculateTitleWrap();
 	void RecalculatePosition();
 
+	inline void SetCanvas(amTLTimelineCanvas* canvas) { m_canvas = canvas; }
+
 	inline void MarkSerializableDataMembers() {
 		XS_SERIALIZE_STRING_EX(m_title, "title", "");
 		XS_SERIALIZE_STRING_EX(m_titleToDraw, "titleToDraw", "");
@@ -225,11 +241,9 @@ public:
 		XS_SERIALIZE_INT_EX(m_index, "index", -1);
 		XS_SERIALIZE_INT_EX(m_first, "first", -1);
 		XS_SERIALIZE_INT_EX(m_last, "last", -1);
+		XS_SERIALIZE_ARRAYINT(m_separators, "separators");
 		XS_SERIALIZE_COLOUR_EX(m_colour, "colour", wxColour(255, 255, 255));
-		XS_SERIALIZE_BOOL_EX(m_isEmpty, "isEmpty", false);
-		XS_SERIALIZE_INT_EX(m_markerWidth, "markerWidth", -1);
-		XS_SERIALIZE_INT_EX(m_horSpacing, "horSpacing", -1);
-		XS_SERIALIZE_INT_EX(m_titleOffset, "titleOffset", -1);
+		XS_SERIALIZE_BOOL_EX(m_isEmpty, "isEmpty", true);
 	}
 };
 
@@ -379,6 +393,7 @@ private:
 	amTLTimelineSidebar* m_sidebar = nullptr;
 
 	bool m_isSidebarShown = false;
+	bool m_isSaving = false;
 
 public:
 	amTLTimeline(wxWindow* parent);
@@ -414,10 +429,10 @@ public:
 	inline amTLTimelineCanvas* GetCanvas() { return m_canvas; }
 
 	void Save();
-	void Load(wxStringInputStream& stream);
+	void Load(wxStringInputStream& canvas, wxStringInputStream& elements);
 
-	void SaveThreads(wxStringOutputStream& stream);
-	void LoadThreads(wxStringInputStream& stream);
+	void SaveTimelineElements(wxStringOutputStream& stream);
+	void LoadTimelineElements(wxStringInputStream& stream);
 };
 
 
@@ -546,6 +561,8 @@ public:
 
 	inline wxStaticText* GetThreadStaticText() { return m_threadName; }
 	inline wxStaticText* GetSectionStaticText() { return m_sectionName; }
+
+	std::map<wxString, int> GetPreferences();
 
 	void OnPaint(wxPaintEvent& event);
 	void OnMouseMove(wxMouseEvent& event);

@@ -160,6 +160,7 @@ void TimelineCard::SetTextColour(const wxColour& colour) {
 void TimelineCard::MarkSerializableDataMembers() {
 	XS_SERIALIZE_EX(m_row, wxT("row"), -1);
 	XS_SERIALIZE_EX(m_col, wxT("column"), -1);
+	XS_SERIALIZE_EX(m_section, wxT("section"), -1);
 }
 
 bool TimelineCard::operator<(const TimelineCard& other) {

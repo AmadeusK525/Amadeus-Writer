@@ -163,7 +163,7 @@ void amProjectSQLDatabase::CreateAllTables() {
 	tOutlineTimelines.Add("id INTEGER PRIMARY KEY");
 	tOutlineTimelines.Add("name TEXT");
 	tOutlineTimelines.Add("content TEXT");
-	tOutlineTimelines.Add("threads_xml");
+	tOutlineTimelines.Add("timeline_elements TEXT");
 
 	wxArrayString tOutlineFiles;
 	tOutlineFiles.Add("id INTEGER PRIMARY KEY");
@@ -485,7 +485,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amDocument& do
 		if (!first)
 			update << ", ";
 
-		update << "name = '" << buffer.Format("%q", (const char*)document.name) << "'";
+		update << "name = '" << buffer.Format("%q", (const char*)document.name.ToUTF8()) << "'";
 		first = false;
 	}
 
@@ -632,29 +632,29 @@ bool amProjectManager::DoLoadProject(const wxString& path) {
 
 		LoadBooks();
 
-		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT content FROM outline_corkboards");
-		wxString str1, str2, str3;
+		wxString str1, str2, str3, str4;
 
+		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT content FROM outline_corkboards;");
 		while (result.NextRow())
 			str1 = result.GetAsString("content");
 
-		result = m_storage.ExecuteQuery("SELECT content FROM outline_timelines");
-
-		while (result.NextRow())
+		result = m_storage.ExecuteQuery("SELECT content, timeline_elements FROM outline_timelines;");
+		while (result.NextRow()) {
 			str2 = result.GetAsString("content");
+			str3 = result.GetAsString("timeline_elements");
+		}
 
-		result = m_storage.ExecuteQuery("SELECT content FROM outline_files");
-
+		result = m_storage.ExecuteQuery("SELECT content FROM outline_files;");
 		while (result.NextRow())
-			str3 = result.GetAsString("content");
+			str4 = result.GetAsString("content");
 
-		wxStringInputStream corkboard(str1), timeline(str2), files(str3);
+		wxStringInputStream corkboard(str1), timelineCanvas(str2), timelineElements(str3), files(str4);
 
 		m_storage.Commit();
 
 		m_overview->LoadOverview();
 		m_elements->UpdateAll();
-		m_outline->LoadOutline(corkboard, timeline, files);
+		m_outline->LoadOutline(corkboard, timelineCanvas, timelineElements, files);
 
 		m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
 		SetLastSave();

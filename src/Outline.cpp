@@ -30,11 +30,12 @@ void amOutline::SaveOutline() {
 }
 
 void amOutline::LoadOutline(wxStringInputStream& corkboard,
-    wxStringInputStream& timeline,
+    wxStringInputStream& timelineCanvas,
+    wxStringInputStream& timelineElements,
     wxStringInputStream& files) {
 
     m_corkboard->Load(corkboard);
-    m_timeline->Load(timeline);
+    m_timeline->Load(timelineCanvas, timelineElements);
     m_files->Load(files);
 }
 

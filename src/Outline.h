@@ -30,7 +30,8 @@ public:
 
     void SaveOutline();
     void LoadOutline(wxStringInputStream& corkboard,
-        wxStringInputStream& timeline,
+        wxStringInputStream& timelineCanvas,
+        wxStringInputStream& timelineElements,
         wxStringInputStream& files);
 
     amCorkboard* GetCorkboard() { return m_corkboard; }
