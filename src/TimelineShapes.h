@@ -5,7 +5,7 @@
 #include <wx\wxsf\wxShapeFramework.h>
 #include "CorkboardShapes.h"
 
-class TimelineCard : public wxSFRoundRectShape {
+class amTLTimelineCard : public wxSFRoundRectShape {
 private:
 	int m_row = -1, m_col = -1;
 	int m_section = -1;
@@ -16,11 +16,11 @@ private:
 	AutoWrapTextShape* m_title = nullptr, * m_content = nullptr;
 
 public:
-	XS_DECLARE_CLONABLE_CLASS(TimelineCard);
+	XS_DECLARE_CLONABLE_CLASS(amTLTimelineCard);
 
-	TimelineCard();
-	TimelineCard(int row, int col);
-	TimelineCard(const TimelineCard& other);
+	amTLTimelineCard();
+	amTLTimelineCard(int row, int col);
+	amTLTimelineCard(const amTLTimelineCard& other);
 
 	void RecalculatePosition();
 
@@ -58,7 +58,7 @@ public:
 
 	void MarkSerializableDataMembers();
 
-	bool operator<(const TimelineCard& other);
+	bool operator<(const amTLTimelineCard& other);
 };
 
 #endif

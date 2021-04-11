@@ -2,6 +2,7 @@
 #include "Document.h"
 #include "Timeline.h"
 #include "TimelineDialogs.h"
+#include "Outline.h"
 #include "MainFrame.h"
 
 #include <wx\sstream.h>
@@ -142,8 +143,8 @@ void amTLThread::CalculateTitleWrap() {
 }
 
 void amTLThread::RecalculatePosition() {
-	int cardVerSpacing = TimelineCard::GetVerticalSpacing();
-	int cardHeight = TimelineCard::GetHeight();
+	int cardVerSpacing = amTLTimelineCard::GetVerticalSpacing();
+	int cardHeight = amTLTimelineCard::GetHeight();
 	int threadHeight = amTLThread::GetHeight();
 	int sectionTitleOffset = amTLSection::GetTitleOffset();
 
@@ -227,15 +228,15 @@ void amTLSection::ShiftRight() {
 
 wxPoint amTLSection::GetCellInPosition(wxPoint& pos) {
 	int xCell = ((pos.x - m_insideRect.x) /
-		(TimelineCard::GetHorizontalSpacing() + TimelineCard::GetWidth())) + m_first;
+		(amTLTimelineCard::GetHorizontalSpacing() + amTLTimelineCard::GetWidth())) + m_first;
 
 	int yCell;
 	
 	if (pos.y <= m_titleOffset)
 		yCell = 0;
 	else
-		yCell = (((pos.y - (TimelineCard::GetVerticalSpacing() / 2)) - GetTitleOffset()) /
-		(TimelineCard::GetVerticalSpacing() + TimelineCard::GetHeight()));
+		yCell = (((pos.y - (amTLTimelineCard::GetVerticalSpacing() / 2)) - GetTitleOffset()) /
+		(amTLTimelineCard::GetVerticalSpacing() + amTLTimelineCard::GetHeight()));
 
 	return wxPoint(xCell, yCell);
 }
@@ -331,8 +332,8 @@ void amTLSection::CalculateTitleWrap() {
 }
 
 void amTLSection::RecalculatePosition() {
-	int cardHorizontalSpacing = TimelineCard::GetHorizontalSpacing();
-	int cardWidth = TimelineCard::GetWidth();
+	int cardHorizontalSpacing = amTLTimelineCard::GetHorizontalSpacing();
+	int cardWidth = amTLTimelineCard::GetWidth();
 
 	int cardSpace = cardHorizontalSpacing + cardWidth;
 
@@ -389,7 +390,7 @@ amTLTimelineCanvas::amTLTimelineCanvas(wxSFDiagramManager* manager, wxWindow* pa
 	SetScale(0.75);
 
 	GetDiagramManager()->ClearAcceptedShapes();
-	GetDiagramManager()->AcceptShape("TimelineCard");
+	GetDiagramManager()->AcceptShape("amTLTimelineCard");
 
 	wxSFShapeCanvas::EnableGC(true);
 	EnableScrolling(false, true);
@@ -433,13 +434,13 @@ void amTLTimelineCanvas::AddThread(int index, const wxString& character, const w
 	}
 }
 
-TimelineCard* amTLTimelineCanvas::AddCard(int rowIndex, int colIndex, int sectionIndex) {
+amTLTimelineCard* amTLTimelineCanvas::AddCard(int rowIndex, int colIndex, int sectionIndex) {
 	if (!CanAddCards()) {
 		wxMessageBox("You need at least one thread and one section to be able to place cards on the Timeline!");
 		return nullptr;
 	}
 	
-	TimelineCard* card = (TimelineCard*)GetDiagramManager()->AddShape(CLASSINFO(TimelineCard), wxPoint());
+	amTLTimelineCard* card = (amTLTimelineCard*)GetDiagramManager()->AddShape(CLASSINFO(amTLTimelineCard), wxPoint());
 	if (sectionIndex == -1)
 		sectionIndex = m_sections.size() - 1;
 
@@ -453,13 +454,13 @@ TimelineCard* amTLTimelineCanvas::AddCard(int rowIndex, int colIndex, int sectio
 	return card;
 }
 
-TimelineCard* amTLTimelineCanvas::AppendCard(int rowIndex, int sectionIndex) {
+amTLTimelineCard* amTLTimelineCanvas::AppendCard(int rowIndex, int sectionIndex) {
 	if (!CanAddCards()) {
 		wxMessageBox("You need at least one thread and one section to be able to place cards on the Timeline!");
 		return nullptr;
 	}
 	
-	TimelineCard* card = (TimelineCard*)GetDiagramManager()->AddShape(CLASSINFO(TimelineCard), wxPoint());
+	amTLTimelineCard* card = (amTLTimelineCard*)GetDiagramManager()->AddShape(CLASSINFO(amTLTimelineCard), wxPoint());
 	if (sectionIndex == -1)
 		sectionIndex = m_sections.size() - 1;
 
@@ -475,7 +476,7 @@ TimelineCard* amTLTimelineCanvas::AppendCard(int rowIndex, int sectionIndex) {
 
 void amTLTimelineCanvas::AppendSection(const wxString& title, const wxColour& colour) {
 	ShapeList shapes;
-	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), shapes);
+	GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), shapes);
 
 	amTLSection* section = new amTLSection(m_sections.size(), shapes.size(), shapes.size() - 1, this, title, colour);
 	m_sections.push_back(section);
@@ -492,11 +493,11 @@ void amTLTimelineCanvas::AppendSection(const wxString& title, const wxColour& co
 /// <param name="section"></param>
 /// <param name="shape"></param>
 /// <returns>std::pair, in which first is section's first card and second is section's last card.</returns>
-pair<int, int> amTLTimelineCanvas::SetCardToSection(int section, TimelineCard* shape) {
+pair<int, int> amTLTimelineCanvas::SetCardToSection(int section, amTLTimelineCard* shape) {
 	if (m_sections.empty())
 		return pair<int, int>(-1, -1);
 
-	if (section >= m_sections.size())
+	if (section >= m_sections.size() && section != 9999)
 		section = m_sections.size() - 1;
 
 	int prevSection = shape->GetSectionIndex();
@@ -546,11 +547,11 @@ pair<int, int> amTLTimelineCanvas::SetCardToSection(int section, TimelineCard* s
 		return pair<int, int>(-1, -1);
 }
 
-bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
+bool amTLTimelineCanvas::SetCardToColumn(int column, amTLTimelineCard* shape) {
 	ShapeList list;
-	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), list);
+	GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), list);
 
-	TimelineCard* card = shape;
+	amTLTimelineCard* card = shape;
 	int prevCol = card->GetColumnIndex();
 
 	if (prevCol == column)
@@ -561,7 +562,7 @@ bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 
 	if (prevCol > column) {
 		for (int i = 0; i < list.GetCount(); i++) {
-			card = (TimelineCard*)list[i];
+			card = (amTLTimelineCard*)list[i];
 
 			if (card == shape)
 				card->SetColumn(column);
@@ -574,7 +575,7 @@ bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 		}
 	} else if (prevCol < column) {
 		for (int i = 0; i < list.GetCount(); i++) {
-			card = (TimelineCard*)list[i];
+			card = (amTLTimelineCard*)list[i];
 
 			if (card == shape)
 				card->SetColumn(column);
@@ -592,9 +593,15 @@ bool amTLTimelineCanvas::SetCardToColumn(int column, TimelineCard* shape) {
 	return true;
 }
 
-bool amTLTimelineCanvas::SetCardToRow(int row, TimelineCard* shape, bool recalculatePos) {
-	if (shape->GetThreadIndex() == row)
+bool amTLTimelineCanvas::SetCardToRow(int row, amTLTimelineCard* shape, bool recalculatePos) {
+	int prevRow = shape->GetThreadIndex();
+	if (prevRow== row)
 		return false;
+
+	if (row > m_threads.size() - 1)
+		row = m_threads.size() - 1;
+	else if (row < 0)
+		row = 0;
 
 	shape->SetRow(row);
 
@@ -618,17 +625,17 @@ bool amTLTimelineCanvas::CalculateCellDrag(wxPoint& pos) {
 
 			if (cell.y != m_curDragCell.yCell || m_isDragOnEmptySection) {
 				m_curDragCell.yCell = cell.y;
-				m_curDragCell.pos.y = (TimelineCard::GetVerticalSpacing() * (cell.y + 1)) +
-					(TimelineCard::GetHeight() * cell.y) + amTLSection::GetTitleOffset();
+				m_curDragCell.pos.y = (amTLTimelineCard::GetVerticalSpacing() * (cell.y + 1)) +
+					(amTLTimelineCard::GetHeight() * cell.y) + amTLSection::GetTitleOffset();
 				changed = true;
 			}
 
 			if (cell.x != m_curDragCell.xCell || m_isDragOnEmptySection) {
-				int cardHorSpacing = TimelineCard::GetHorizontalSpacing();
+				int cardHorSpacing = amTLTimelineCard::GetHorizontalSpacing();
 				int sectionMarkerWidth = amTLSection::GetMarkerWidth();
 
 				m_curDragCell.xCell = cell.x;
-				m_curDragCell.pos.x = ((TimelineCard::GetWidth() + cardHorSpacing) * cell.x) 
+				m_curDragCell.pos.x = ((amTLTimelineCard::GetWidth() + cardHorSpacing) * cell.x) 
 					+ (sectionMarkerWidth + (cardHorSpacing / 2)) 
 					+ (i * (amTLSection::GetHorizontalSpcaing() + (sectionMarkerWidth * 2))
 					+ amTLThread::GetTitleOffset());
@@ -678,13 +685,13 @@ void amTLTimelineCanvas::MoveThread(amTLThread* thread, bool moveUp, bool reposi
 			return;
 
 		ShapeList cards;
-		GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+		GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), cards);
 
 		ShapeList::compatibility_iterator node = cards.GetFirst();
-		TimelineCard* card = nullptr;
+		amTLTimelineCard* card = nullptr;
 
 		while (node) {
-			card = (TimelineCard*)node->GetData();
+			card = (amTLTimelineCard*)node->GetData();
 			int prevCardRow = card->GetThreadIndex();
 
 			if (prevCardRow == previousIndex) {
@@ -715,13 +722,13 @@ void amTLTimelineCanvas::MoveThread(amTLThread* thread, bool moveUp, bool reposi
 			return;
 
 		ShapeList cards;
-		GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+		GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), cards);
 
 		ShapeList::compatibility_iterator node = cards.GetFirst();
-		TimelineCard* card = nullptr;
+		amTLTimelineCard* card = nullptr;
 
 		while (node) {
-			card = (TimelineCard*)node->GetData();
+			card = (amTLTimelineCard*)node->GetData();
 			int prevCardRow = card->GetThreadIndex();
 
 			if (prevCardRow == previousIndex) {
@@ -798,7 +805,7 @@ void amTLTimelineCanvas::OnDeleteSection(wxCommandEvent& event) {
 	}
 }
 
-void amTLTimelineCanvas::DeleteCard(TimelineCard* card, bool refresh, bool UpdateThumbnails) {
+void amTLTimelineCanvas::DeleteCard(amTLTimelineCard* card, bool refresh, bool UpdateThumbnails) {
 	if (!card)
 		return;
 
@@ -827,14 +834,14 @@ void amTLTimelineCanvas::DeleteSelectedThread() {
 		return;
 
 	ShapeList cards;
-	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+	GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), cards);
 	ShapeList::compatibility_iterator node = cards.GetFirst();
 
 	int threadIndex = m_selectedThread->GetIndex();
-	TimelineCard* card = nullptr;
+	amTLTimelineCard* card = nullptr;
 
 	while (node) {
-		card = (TimelineCard*)node->GetData();
+		card = (amTLTimelineCard*)node->GetData();
 		if (card->GetThreadIndex() == threadIndex)
 			DeleteCard(card, false, false);
 
@@ -876,15 +883,15 @@ void amTLTimelineCanvas::DeleteSelectedSection() {
 		return;
 
 	ShapeList cards;
-	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+	GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), cards);
 	ShapeList::compatibility_iterator node = cards.GetFirst();
 
 	int sectionIndex = m_selectedSection->GetIndex();
-	TimelineCard* card = nullptr;
+	amTLTimelineCard* card = nullptr;
 
 	int curCardSectionIndex = -1;
 	while (node) {
-		card = (TimelineCard*)node->GetData();
+		card = (amTLTimelineCard*)node->GetData();
 		curCardSectionIndex = card->GetSectionIndex();
 
 		if (curCardSectionIndex == sectionIndex)
@@ -958,14 +965,14 @@ void amTLTimelineCanvas::UpdateSelectedThreadSBData() {
 	ShapeList filtered;
 
 	if (m_selectedThread) {
-		GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), shapes);
+		GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), shapes);
 
 		ShapeList::compatibility_iterator node = shapes.GetFirst();
 		filtered = shapes;
-		TimelineCard* card;
+		amTLTimelineCard* card;
 
 		while (node) {
-			card = (TimelineCard*)node->GetData();
+			card = (amTLTimelineCard*)node->GetData();
 
 			if (card) {
 				if (card->GetThreadIndex() != m_selectedThread->GetIndex())
@@ -984,14 +991,14 @@ void amTLTimelineCanvas::UpdateSelectedSectionSBData() {
 	ShapeList filtered;
 
 	if (m_selectedSection) {
-		GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), shapes);
+		GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), shapes);
 
 		ShapeList::compatibility_iterator node = shapes.GetFirst();
 		filtered = shapes;
-		TimelineCard* card;
+		amTLTimelineCard* card;
 
 		while (node) {
-			card = (TimelineCard*)node->GetData();
+			card = (amTLTimelineCard*)node->GetData();
 
 			if (card) {
 				if (card->GetColumnIndex() < m_selectedSection->GetFirst() 
@@ -1017,14 +1024,14 @@ amTLSection* amTLTimelineCanvas::GetSection(int index) {
 
 void amTLTimelineCanvas::ResetCardColours() {
 	ShapeList cards;
-	GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+	GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), cards);
 
 	ShapeList::compatibility_iterator node = cards.GetFirst();
-	TimelineCard* card = nullptr;
+	amTLTimelineCard* card = nullptr;
 	wxColour textColour(0, 0, 0);
 	if (m_propagateColour) {
 		while (node) {
-			card = (TimelineCard*)node->GetData();
+			card = (amTLTimelineCard*)node->GetData();
 			card->SetTextColour(textColour);
 			for (amTLThread*& thread : m_threads) {
 				if (thread->GetIndex() == card->GetThreadIndex())
@@ -1037,7 +1044,7 @@ void amTLTimelineCanvas::ResetCardColours() {
 		wxColour colour(40, 40, 40);
 		textColour = { 255,255,255 };
 		while (node) {
-			card = (TimelineCard*)node->GetData();
+			card = (amTLTimelineCard*)node->GetData();
 			card->SetColour(colour);
 			card->SetTextColour(textColour);
 			node = node->GetNext();
@@ -1066,7 +1073,7 @@ void amTLTimelineCanvas::DrawForeground(wxDC& dc, bool fromPaint) {
 	dc.SetBrush(wxBrush(wxColour(200, 200, 255, 128)));
 
 	if (m_nWorkingMode == modeSHAPEMOVE && m_curDragCell.xCell != -1) {
-		dc.DrawRectangle(wxRect(m_curDragCell.pos, wxSize(TimelineCard::GetWidth(), TimelineCard::GetHeight())));
+		dc.DrawRectangle(wxRect(m_curDragCell.pos, wxSize(amTLTimelineCard::GetWidth(), amTLTimelineCard::GetHeight())));
 	}
 
 	dc.SetPen(wxNullPen);
@@ -1126,7 +1133,7 @@ void amTLTimelineCanvas::OnLeftDown(wxMouseEvent& event) {
 	if (pShape) {
 		CalculateCellDrag(pos);
 		
-		TimelineCard* card = dynamic_cast<TimelineCard*>(pShape->GetGrandParentShape());
+		amTLTimelineCard* card = dynamic_cast<amTLTimelineCard*>(pShape->GetGrandParentShape());
 		m_selectedCard = card;
 	} else {
 		bool hitThread = false;
@@ -1176,9 +1183,9 @@ void amTLTimelineCanvas::OnLeftUp(wxMouseEvent& event) {
 		ShapeList sel;
 		GetSelectedShapes(sel);
 
-		TimelineCard* pSel = nullptr;
+		amTLTimelineCard* pSel = nullptr;
 		if (!sel.IsEmpty()) {
-			pSel = (TimelineCard*)sel[0];
+			pSel = (amTLTimelineCard*)sel[0];
 			SetCardToRow(m_curDragCell.yCell, pSel);
 
 			int prevSection = pSel->GetSectionIndex();
@@ -1239,7 +1246,7 @@ void amTLTimelineCanvas::OnRightUp(wxMouseEvent& event) {
 
 		wxSFShapeBase* shape = GetShapeUnderCursor();
 		if (shape) {
-			TimelineCard* card = dynamic_cast<TimelineCard*>(shape->GetGrandParentShape());
+			amTLTimelineCard* card = dynamic_cast<amTLTimelineCard*>(shape->GetGrandParentShape());
 			if (card) {
 				m_selectedCard = card;
 				m_parent->SetCardData(card);
@@ -1349,13 +1356,13 @@ void amTLTimelineCanvas::SelectThread(amTLThread* thread, const wxPoint& pos) {
 
 
 amTLTimeline::amTLTimeline(wxWindow* parent) : amSplitterWindow(parent) {
-	m_parent = (amOutline*)(parent->GetParent());
+	m_outline = (amOutline*)(parent->GetParent());
 	m_manager = amGetManager();
 	
 	m_canvas = new amTLTimelineCanvas(&m_canvasManager, this);
 	m_sidebar = new amTLTimelineSidebar(this, m_canvas);
 
-	SetMinimumPaneSize(40);
+	SetMinimumPaneSize(FromDIP(40));
 	SplitVertically(m_canvas, m_sidebar, 99999);
 	SetSashGravity(1.0);
 	SetSashInvisible(true);
@@ -1380,11 +1387,11 @@ void amTLTimeline::RecalculateCanvas(bool doThreads, bool doCards, bool doSectio
 
 	if (doCards) {
 		ShapeList cards;
-		m_canvas->GetDiagramManager()->GetShapes(CLASSINFO(TimelineCard), cards);
+		m_canvas->GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), cards);
 
 		ShapeList::compatibility_iterator node = cards.GetFirst();
 		while (node) {
-			TimelineCard* card = (TimelineCard*)node->GetData();
+			amTLTimelineCard* card = (amTLTimelineCard*)node->GetData();
 			card->RecalculatePosition();
 
 			node = node->GetNext();
@@ -1423,13 +1430,13 @@ void amTLTimeline::AddCardToSection(amTLSection* section, int threadIndex) {
 	Save();
 }
 
-void amTLTimeline::AddCardBefore(TimelineCard* card) {
+void amTLTimeline::AddCardBefore(amTLTimelineCard* card) {
 	int sectionIndex = card->GetSectionIndex();
 	m_canvas->AddCard(card->GetThreadIndex(), card->GetColumnIndex(), sectionIndex);
 	Save();
 }
 
-void amTLTimeline::AddCardAfter(TimelineCard* card) {
+void amTLTimeline::AddCardAfter(amTLTimelineCard* card) {
 	int sectionIndex = card->GetSectionIndex();
 	m_canvas->AddCard(card->GetThreadIndex(), card->GetColumnIndex() + 1, sectionIndex);
 	Save();
@@ -1446,7 +1453,7 @@ void amTLTimeline::EditCurrentThread(const wxString& newCharacter) {
 }
 
 void amTLTimeline::EditCurrentCardTitle(const wxString& newTitle) {
-	TimelineCard* card = m_canvas->GetSelectedCard();
+	amTLTimelineCard* card = m_canvas->GetSelectedCard();
 	if (card)
 		card->SetTitle(newTitle);
 
@@ -1455,7 +1462,7 @@ void amTLTimeline::EditCurrentCardTitle(const wxString& newTitle) {
 }
 
 void amTLTimeline::EditCurrentCardContent(const wxString& newContent) {
-	TimelineCard* card = m_canvas->GetSelectedCard();
+	amTLTimelineCard* card = m_canvas->GetSelectedCard();
 	if (card)
 		card->SetContent(newContent);
 
@@ -1473,27 +1480,31 @@ void amTLTimeline::EditCurrentSection(const wxString& newTitle) {
 	Save();
 }
 
-void amTLTimeline::ShowSidebar() {
-	int i = 1;
+void amTLTimeline::ShowSidebar(bool force) {
+	wxSize canvasSize = m_canvas->GetClientSize();
 	int j = GetSashPosition();
 
-	wxSize canvasSize = m_canvas->GetClientSize();
-
-	bool show = !m_isSidebarShown;
+	bool show;
+	if (force)
+		show = true;
+	else
+		show = !m_isSidebarShown;
 
 	if (show) {
-		while (i <= 220) {
-			SetSashPosition(j - i);
-			i += 20;
+		int min = GetClientSize().x - FromDIP(260);
+		while (j >= min) {
+			SetSashPosition(j);
+			j -= 20;
 		}
 		m_sidebar->ShowContent(show);
 	} else {
 		m_canvas->ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_NEVER);
 		m_sidebar->ShowContent(show);
 
-		while (i <= 220) {
-			SetSashPosition(j + i++);
-			i += 20;
+		int max = GetClientSize().x - FromDIP(40);
+		while (j <= max) {
+			SetSashPosition(j);
+			j += 20;
 		}
 
 		m_canvas->ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
@@ -1519,37 +1530,39 @@ void amTLTimeline::SetSectionData(amTLSection* section, ShapeList& shapes) {
 	m_sidebar->SetSectionData(section, shapes);
 }
 
-void amTLTimeline::SetCardData(TimelineCard* card) {
+void amTLTimeline::SetCardData(amTLTimelineCard* card) {
 	if (!m_sidebar)
 		return;
 
 	m_sidebar->SetCardData(card);
 }
 
-void amTLTimeline::Save() {
-	std::thread thread([&]() {
-		if (!m_isSaving) {
+void amTLTimeline::Save(bool doCanvas, bool doElements) {
+	if (!m_isSaving) {
+		std::thread thread([&]() {
 			m_isSaving = true;
 			amDocument document;
 			document.tableName = "outline_timelines";
 			document.name = "Timeline Canvas";
 
-			document.strings.push_back(pair<wxString, wxString>("content", wxString()));
-			document.strings.push_back(pair<wxString, wxString>("timeline_elements", wxString()));
+			if (doCanvas) {
+				document.strings.push_back(pair<wxString, wxString>("content", wxString()));
+				wxStringOutputStream sstream(&document.strings.front().second);
+				m_canvas->SaveCanvas(sstream);
+			}
 
-			wxStringOutputStream sstream(&document.strings[0].second);
-			m_canvas->SaveCanvas(sstream);
-
-			wxStringOutputStream sstream2(&document.strings[1].second);
-			SaveTimelineElements(sstream2);
+			if (doElements) {
+				document.strings.push_back(pair<wxString, wxString>("timeline_elements", wxString()));
+				wxStringOutputStream sstream2(&document.strings.back().second);
+				SaveTimelineElements(sstream2);
+			}
 
 			m_manager->SaveDocument(document, document);
 			m_isSaving = false;
-		}}
-	);
-
-	thread.detach();
-	
+			}
+		);
+		thread.detach();
+	}
 }
 
 void amTLTimeline::Load(wxStringInputStream& canvas, wxStringInputStream& elements) {
@@ -1606,6 +1619,8 @@ void amTLTimeline::LoadTimelineElements(wxStringInputStream& stream) {
 					preferences[prefChild->GetAttribute("name")] = wxAtoi(prefChild->GetChildren()->GetContent());
 					prefChild = prefChild->GetNext();
 				}
+
+				m_sidebar->SetPreferences(preferences);
 			} else if (child->GetName() == "Elements") {
 				wxXmlNode* elementChild = child->GetChildren();
 				while (elementChild) {
@@ -1642,6 +1657,8 @@ void amTLTimeline::LoadTimelineElements(wxStringInputStream& stream) {
 			}
 			child = child->GetNext();
 		}
+		m_canvas->ResetCardColours();
+		RecalculateCanvas(true, true, true);
 	}
 }
 
@@ -1696,6 +1713,7 @@ EVT_CHECKBOX(CHECKBOX_ThreadPropagateColour, amTLTimelineSidebar::OnPreferencesC
 EVT_CHECKBOX(CHECKBOX_SectionDrawSeparators, amTLTimelineSidebar::OnPreferencesCheck)
 
 EVT_BUTTON(BUTTON_ResetPreferences, amTLTimelineSidebar::OnResetPreferences)
+EVT_TOGGLEBUTTON(BUTTON_TimelineFullScreen, amTLTimelineSidebar::OnFullScreen)
 
 END_EVENT_TABLE()
 
@@ -2136,10 +2154,15 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	m_notebook->AddPage(m_sectionPanel, _("Sections"));
 	m_notebook->AddPage(m_preferencesPanel, _("Preferences"));
 
-	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-	sizer->Add(m_notebook, wxSizerFlags(1).Expand().Border(wxTOP, 40));
+	m_fullScreenBtn = new wxBitmapToggleButton(this, BUTTON_TimelineFullScreen,
+		wxBITMAP_PNG(fullScreenPng), wxDefaultPosition, FromDIP(wxSize(30, 30)));
+	m_fullScreenBtn->Show(false);
 
-	SetSizer(sizer);
+	m_mainSizer = new wxBoxSizer(wxVERTICAL);
+	m_mainSizer->Add(m_fullScreenBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
+	m_mainSizer->Add(m_notebook, wxSizerFlags(1).Expand());
+
+	SetSizer(m_mainSizer);
 	m_notebook->Hide();
 
 	Bind(wxEVT_PAINT, &amTLTimelineSidebar::OnPaint, this);
@@ -2149,6 +2172,13 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 
 void amTLTimelineSidebar::ShowContent(bool show) {
 	m_notebook->Show(show);
+	m_fullScreenBtn->Show(show);
+}
+
+void amTLTimelineSidebar::OnFullScreen(wxCommandEvent& event) {
+	amOutline* outline = m_parent->GetOutline();
+	amDoSubWindowFullscreen(m_parent, outline->GetTimelineHolder(), event.GetInt(),
+		outline->GetTimelineHolderSizer(), wxSizerFlags(1).Expand(), 0);
 }
 
 void amTLTimelineSidebar::OnAddThread(wxCommandEvent& event) {
@@ -2202,14 +2232,14 @@ void amTLTimelineSidebar::OnAddCardToSection(wxCommandEvent& event) {
 }
 
 void amTLTimelineSidebar::OnAddCardBefore(wxCommandEvent& event) {
-	TimelineCard* card = m_cardThumbnail->GetCard();
+	amTLTimelineCard* card = m_cardThumbnail->GetCard();
 
 	if (card)
 		m_parent->AddCardBefore(card);
 }
 
 void amTLTimelineSidebar::OnAddCardAfter(wxCommandEvent& event) {
-	TimelineCard* card = m_cardThumbnail->GetCard();
+	amTLTimelineCard* card = m_cardThumbnail->GetCard();
 
 	if (card)
 		m_parent->AddCardAfter(card);
@@ -2267,7 +2297,7 @@ void amTLTimelineSidebar::OnThreadColourChanged(wxColourPickerEvent& event) {
 	ShapeList::compatibility_iterator node = m_threadThumbnail->GetCards().GetFirst();
 
 	while (node) {
-		TimelineCard* card = dynamic_cast<TimelineCard*>(node->GetData());
+		amTLTimelineCard* card = dynamic_cast<amTLTimelineCard*>(node->GetData());
 		if (card)
 			card->SetColour(event.GetColour());
 
@@ -2293,7 +2323,7 @@ void amTLTimelineSidebar::OnMoveThread(wxCommandEvent& event) {
 
 void amTLTimelineSidebar::OnMoveCard(wxCommandEvent& event) {
 	amTLTimelineCanvas* canvas = m_parent->GetCanvas();
-	TimelineCard* card = m_cardThumbnail->GetCard();
+	amTLTimelineCard* card = m_cardThumbnail->GetCard();
 	if (!card)
 		return;
 
@@ -2371,25 +2401,25 @@ void amTLTimelineSidebar::OnPreferencesSpin(wxSpinEvent& event) {
 		break;
 
 	case SPINBUTTON_CardWidth:
-		TimelineCard::SetWidth(value);
+		amTLTimelineCard::SetWidth(value);
 		doCards = true;
 		doSections = true;
 		break;
 
 	case SPINBUTTON_CardHeight:
-		TimelineCard::SetHeight(value);
+		amTLTimelineCard::SetHeight(value);
 		doThreads = true;
 		doCards = true;
 		break;
 
 	case SPINBUTTON_CardXSpacing:
-		TimelineCard::SetHorizontalSpacing(value);
+		amTLTimelineCard::SetHorizontalSpacing(value);
 		doCards = true;
 		doSections = true;
 		break;
 
 	case SPINBUTTON_CardYSpacing:
-		TimelineCard::SetVerticalSpacing(value);
+		amTLTimelineCard::SetVerticalSpacing(value);
 		doThreads = true;
 		doCards = true;
 		break;
@@ -2415,6 +2445,7 @@ void amTLTimelineSidebar::OnPreferencesSpin(wxSpinEvent& event) {
 	}
 
 	m_parent->RecalculateCanvas(doThreads, doCards, doSections);
+	m_parent->Save(false, true);
 }
 
 void amTLTimelineSidebar::OnPreferencesCheck(wxCommandEvent& event) {
@@ -2433,6 +2464,7 @@ void amTLTimelineSidebar::OnPreferencesCheck(wxCommandEvent& event) {
 	}
 
 	canvas->Refresh();
+	m_parent->Save(false, true);
 }
 
 void amTLTimelineSidebar::OnResetPreferences(wxCommandEvent& event) {
@@ -2447,10 +2479,10 @@ void amTLTimelineSidebar::OnResetPreferences(wxCommandEvent& event) {
 		amTLThread::SetHeight(10);
 		amTLThread::SetTitleOffset(300);
 
-		TimelineCard::SetWidth(250);
-		TimelineCard::SetHeight(150);
-		TimelineCard::SetHorizontalSpacing(40);
-		TimelineCard::SetVerticalSpacing(10);
+		amTLTimelineCard::SetWidth(250);
+		amTLTimelineCard::SetHeight(150);
+		amTLTimelineCard::SetHorizontalSpacing(40);
+		amTLTimelineCard::SetVerticalSpacing(10);
 
 		amTLSection::SetTitleOffset(200);
 		amTLSection::SetMarkerWidth(20);
@@ -2469,6 +2501,7 @@ void amTLTimelineSidebar::OnResetPreferences(wxCommandEvent& event) {
 		m_sectionSpacing->SetValue(400);
 
 		m_parent->RecalculateCanvas(true, true, true);
+		m_parent->Save(false);
 		break;
 
 	default:
@@ -2479,7 +2512,7 @@ void amTLTimelineSidebar::OnResetPreferences(wxCommandEvent& event) {
 std::map<wxString, int> amTLTimelineSidebar::GetPreferences() {
 	std::map<wxString, int> map;
 	map["thread-height"] = m_threadHeight->GetValue();
-	map["thread-title-height"] = m_threadTitleOffset->GetValue();
+	map["thread-title-offset"] = m_threadTitleOffset->GetValue();
 	map["thread-propagate-colour"] = m_threadPropagateColour->GetValue();
 	map["card-width"] = m_cardWidth->GetValue();
 	map["card-height"] = m_cardHeight->GetValue();
@@ -2491,6 +2524,41 @@ std::map<wxString, int> amTLTimelineSidebar::GetPreferences() {
 	map["section-separators"] = m_sectionSeparators->GetValue();
 
 	return map;
+}
+
+void amTLTimelineSidebar::SetPreferences(std::map<wxString, int> preferences) {
+	m_threadHeight->SetValue(preferences["thread-height"]);
+	amTLThread::SetHeight(preferences["thread-height"]);
+
+	m_threadTitleOffset->SetValue(preferences["thread-title-offset"]);
+	amTLThread::SetTitleOffset(preferences["thread-title-offset"]);
+	
+	m_threadPropagateColour->SetValue(preferences["thread-propagate-colour"]);
+	m_parent->GetCanvas()->SetPropagateColour(preferences["thread-propagate-colour"]);
+	
+	m_cardWidth->SetValue(preferences["card-width"]);
+	amTLTimelineCard::SetWidth(preferences["card-width"]);
+	
+	m_cardHeight->SetValue(preferences["card-height"]);
+	amTLTimelineCard::SetHeight(preferences["card-height"]);
+	
+	m_cardXSpacing->SetValue(preferences["card-x-spacing"]);
+	amTLTimelineCard::SetHorizontalSpacing(preferences["card-x-spacing"]);
+	
+	m_cardYSpacing->SetValue(preferences["card-y-spacing"]);
+	amTLTimelineCard::SetVerticalSpacing(preferences["card-y-spacing"]);
+	
+	m_sectionTitleOffset->SetValue(preferences["section-titleOffset"]);
+	amTLSection::SetTitleOffset(preferences["section-titleOffset"]);
+	
+	m_sectionMarkerWidth->SetValue(preferences["section-marker-width"]);
+	amTLSection::SetMarkerWidth(preferences["section-marker-width"]);
+	
+	m_sectionSpacing->SetValue(preferences["section-spacing"]);
+	amTLSection::SetHorizontalSpacing(preferences["section-spacing"]);
+	
+	m_sectionSeparators->SetValue(preferences["section-separators"]);
+	m_parent->GetCanvas()->SetDrawSeparators(preferences["section-separators"]);
 }
 
 void amTLTimelineSidebar::OnPaint(wxPaintEvent& event) {
@@ -2565,7 +2633,7 @@ void amTLTimelineSidebar::SetSectionData(amTLSection* section, ShapeList& shapes
 	m_sectionPanel->Thaw();
 }
 
-void amTLTimelineSidebar::SetCardData(TimelineCard* card) {
+void amTLTimelineSidebar::SetCardData(amTLTimelineCard* card) {
 	if (!m_cardThumbnail)
 		return;
 
@@ -2669,7 +2737,7 @@ amTLCardThumbnail::amTLCardThumbnail(wxWindow* parent) : wxSFThumbnail(parent) {
 void amTLCardThumbnail::DrawContent(wxDC& dc) {
 	wxSize szThumb = GetClientSize();
 
-	int cardX = TimelineCard::GetWidth(), cardY = TimelineCard::GetHeight();
+	int cardX = amTLTimelineCard::GetWidth(), cardY = amTLTimelineCard::GetHeight();
 	double scale = (double)szThumb.x / (double)cardX;
 
 	int y = scale * cardY;
@@ -2691,7 +2759,7 @@ void amTLCardThumbnail::OnPaint(wxPaintEvent& event) {
 
 	dc.Clear();
 
-	int cardX = TimelineCard::GetWidth(), cardY = TimelineCard::GetHeight();
+	int cardX = amTLTimelineCard::GetWidth(), cardY = amTLTimelineCard::GetHeight();
 	double scale = (double)szThumb.x / (double)cardX;
 
 	int y = scale * cardY;

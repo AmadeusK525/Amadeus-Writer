@@ -6,6 +6,7 @@
 #include <wx\clrpicker.h>
 #include <wx\notebook.h>
 #include <wx\timer.h>
+#include <wx\tglbtn.h>
 
 #include "TimelineShapes.h"
 #include "ProjectManager.h"
@@ -285,7 +286,7 @@ private:
 	amTLThread* m_threadUnderMouse = nullptr;
 	amTLThread* m_selectedThread = nullptr;
 
-	TimelineCard* m_selectedCard = nullptr;
+	amTLTimelineCard* m_selectedCard = nullptr;
 
 	amTLSection* m_selectedSection = nullptr;
 
@@ -304,14 +305,14 @@ public:
 	inline void AppendThread(const wxString& character, const wxColour& colour, bool refresh = true) {
 		AddThread(m_threads.size(), character, colour, refresh);
 	}
-	TimelineCard* AddCard(int rowIndex, int colIndex, int sectionIndex);
-	TimelineCard* AppendCard(int rowIndex, int sectionIndex = -1);
+	amTLTimelineCard* AddCard(int rowIndex, int colIndex, int sectionIndex);
+	amTLTimelineCard* AppendCard(int rowIndex, int sectionIndex = -1);
 
 	void AppendSection(const wxString& title, const wxColour& colour);
 
-	pair<int, int> SetCardToSection(int section, TimelineCard* shape);
-	bool SetCardToColumn(int column, TimelineCard* shape);
-	bool SetCardToRow(int row, TimelineCard* shape, bool recalculatePos = false);
+	pair<int, int> SetCardToSection(int section, amTLTimelineCard* shape);
+	bool SetCardToColumn(int column, amTLTimelineCard* shape);
+	bool SetCardToRow(int row, amTLTimelineCard* shape, bool recalculatePos = false);
 	
 	bool CalculateCellDrag(wxPoint& pos);
 
@@ -321,7 +322,7 @@ public:
 	void OnDeleteThread(wxCommandEvent& event);
 	void OnDeleteSection(wxCommandEvent& event);
 
-	void DeleteCard(TimelineCard* card, bool refresh = true, bool updateThumbnails = true);
+	void DeleteCard(amTLTimelineCard* card, bool refresh = true, bool updateThumbnails = true);
 	inline void DeleteSelectedCard() { DeleteCard(m_selectedCard); }
 	void DeleteSelectedThread();
 	void DeleteSelectedSection();
@@ -341,7 +342,7 @@ public:
 	void UpdateSelectedSectionSBData();
 
 	inline amTLThread* GetSelectedThread() { return m_selectedThread; }
-	inline TimelineCard* GetSelectedCard() { return m_selectedCard; }
+	inline amTLTimelineCard* GetSelectedCard() { return m_selectedCard; }
 	inline amTLSection* GetSelectedSection() { return m_selectedSection; }
 	amTLSection* GetSection(int index);
 
@@ -385,7 +386,7 @@ private:
 class amTLTimeline : public amSplitterWindow {
 private:
 	amProjectManager* m_manager = nullptr;
-	amOutline* m_parent = nullptr;
+	amOutline* m_outline = nullptr;
 
 	amTLTimelineCanvas* m_canvas = nullptr;
 	wxSFDiagramManager m_canvasManager;
@@ -408,8 +409,8 @@ public:
 	void AddCardToThread(amTLThread* thread, int sectionIndex);
 	void AddCardToSection(amTLSection* section, int threadIndex);
 
-	void AddCardBefore(TimelineCard* card);
-	void AddCardAfter(TimelineCard* card);
+	void AddCardBefore(amTLTimelineCard* card);
+	void AddCardAfter(amTLTimelineCard* card);
 
 	void EditCurrentThread(const wxString& newCharacter);
 	void EditCurrentCardTitle(const wxString& newTitle);
@@ -420,15 +421,16 @@ public:
 	void DeleteCurrentCard() { m_canvas->OnDeleteCard(wxCommandEvent()); }
 	void DeleteCurrentSection() { m_canvas->OnDeleteSection(wxCommandEvent()); }
 
-	void ShowSidebar();
+	void ShowSidebar(bool force = false);
 
 	void SetThreadData(amTLThread* thread, ShapeList& shapes);
 	void SetSectionData(amTLSection* section, ShapeList& shapes);
-	void SetCardData(TimelineCard* card);
+	void SetCardData(amTLTimelineCard* card);
 
 	inline amTLTimelineCanvas* GetCanvas() { return m_canvas; }
+	inline amOutline* GetOutline() { return m_outline; }
 
-	void Save();
+	void Save(bool doCanvas = true, bool doElements = true);
 	void Load(wxStringInputStream& canvas, wxStringInputStream& elements);
 
 	void SaveTimelineElements(wxStringOutputStream& stream);
@@ -484,7 +486,8 @@ enum {
 	CHECKBOX_ThreadPropagateColour,
 	CHECKBOX_SectionDrawSeparators,
 
-	BUTTON_ResetPreferences
+	BUTTON_ResetPreferences,
+	BUTTON_TimelineFullScreen
 };
 
 
@@ -521,12 +524,18 @@ class amTLTimelineSidebar : public wxPanel {
 		* m_sectionSpacing = nullptr;
 	wxCheckBox* m_sectionSeparators = nullptr;
 
+	wxBitmapToggleButton* m_fullScreenBtn = nullptr;
+	bool m_isFullScreen = false;
+
+	wxBoxSizer* m_mainSizer = nullptr;
+
 	wxRect m_pullRect{ 5, 5, 30, 30 };
 
 public:
 	amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* canvas);
 
 	void ShowContent(bool show = true);
+	void OnFullScreen(wxCommandEvent& event);
 
 	void OnAddThread(wxCommandEvent& event);
 	void OnAddSection(wxCommandEvent& event);
@@ -557,12 +566,13 @@ public:
 
 	void SetThreadData(amTLThread* thread, ShapeList& shapes);
 	void SetSectionData(amTLSection* section, ShapeList& shapes);
-	void SetCardData(TimelineCard* card);
+	void SetCardData(amTLTimelineCard* card);
 
 	inline wxStaticText* GetThreadStaticText() { return m_threadName; }
 	inline wxStaticText* GetSectionStaticText() { return m_sectionName; }
 
 	std::map<wxString, int> GetPreferences();
+	void SetPreferences(std::map<wxString, int> preferences);
 
 	void OnPaint(wxPaintEvent& event);
 	void OnMouseMove(wxMouseEvent& event);
@@ -603,13 +613,13 @@ public:
 
 class amTLCardThumbnail : public wxSFThumbnail {
 private:
-	TimelineCard* m_card = nullptr;
+	amTLTimelineCard* m_card = nullptr;
 
 public:
 	amTLCardThumbnail(wxWindow* parent);
 
-	inline void SetData(TimelineCard* card) { m_card = card; }
-	inline TimelineCard* GetCard() { return m_card; }
+	inline void SetData(amTLTimelineCard* card) { m_card = card; }
+	inline amTLTimelineCard* GetCard() { return m_card; }
 
 	void OnPaint(wxPaintEvent& event);
 	virtual void DrawContent(wxDC& dc);

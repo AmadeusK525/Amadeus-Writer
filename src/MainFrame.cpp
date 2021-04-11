@@ -537,23 +537,6 @@ void amMainFrame::Search(wxCommandEvent& event) {
 	}
 }
 
-void amMainFrame::DoSubWindowFullScreen(bool doFullScreen, wxWindow* window) {
-	m_mainPanel->Show(!doFullScreen);
-
-	if (doFullScreen) {
-		m_holderSizer->Replace(m_mainPanel, window);
-
-		ShowFullScreen(true);
-	} else {
-		m_holderSizer->Replace(window, m_mainPanel);
-
-		if (!m_isFrameFullScreen)
-			ShowFullScreen(false);
-	}
-
-	Layout();
-}
-
 amOverview* amMainFrame::GetOverview() {
 	return m_overview;
 }

@@ -35,7 +35,7 @@ public:
 
 private:
 	amProjectManager* m_manager = nullptr;
-    amOutline* m_parent = nullptr;
+    amOutline* m_outline = nullptr;
     wxToolBar* m_toolBar = nullptr;
 
     wxBoxSizer* m_corkboardSizer = nullptr;
@@ -56,11 +56,12 @@ public:
     void OnTool(wxCommandEvent& event);
 
     void CallFullScreen(wxCommandEvent& event);
-    void FullScreen(bool fs);
+    void LayoutAll();
+	inline amOutline* GetOutline() { return m_outline; }
 
     void SetToolMode(ToolMode mode);
     ToolMode getToolMode() { return m_toolMode; }
-    wxToolBar* getToolbar() { return m_toolBar; }
+    wxToolBar* GetToolbar() { return m_toolBar; }
 
     void ExportToImage(wxBitmapType type);
 
@@ -87,7 +88,7 @@ public:
 
 class CorkboardCanvas : public amSFShapeCanvas {
 private:
-	amCorkboard* parent = nullptr;
+	amCorkboard* m_parent = nullptr;
 	amProjectManager* m_manager = nullptr;
 
 	wxSFShapeBase* m_shapeForMenu = nullptr;
@@ -105,8 +106,6 @@ public:
 	void OnMenu(wxCommandEvent& event);
 
 	virtual void OnLeftDown(wxMouseEvent& event);
-	virtual void OnLeftUp(wxMouseEvent& event);
-
 	virtual void OnRightUp(wxMouseEvent& event);
 
 	virtual void OnUpdateVirtualSize(wxRect& vrtrect);

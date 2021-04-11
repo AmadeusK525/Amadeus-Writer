@@ -79,6 +79,9 @@ public:
     void Search(wxCommandEvent& event);
 
     void DoSubWindowFullScreen(bool fs, wxWindow* window);
+    inline wxPanel* GetMainPanel() { return m_mainPanel; }
+    inline wxBoxSizer* GetHolderSizer() { return m_holderSizer; }
+    inline bool IsFrameFullScreen() { return m_isFrameFullScreen; }
 
     DECLARE_EVENT_TABLE()
 };

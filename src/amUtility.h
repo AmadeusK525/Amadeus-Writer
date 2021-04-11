@@ -48,6 +48,8 @@ inline wxImage amGetScaledImage(int maxWidth, int maxHeight, wxImage& image) {
     return image.Scale(neww, newh, wxIMAGE_QUALITY_HIGH).Size(wxSize(maxWidth, maxHeight), wxPoint(xoffset, yoffset));
 }
 
+void amDoSubWindowFullscreen(wxWindow* window, wxWindow* originalParent, bool fs,
+    wxBoxSizer* originalSizer = nullptr, wxSizerFlags flags = { 0 }, int sizerInex = -1);
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// wxDVC Classes ///////////////////////////////

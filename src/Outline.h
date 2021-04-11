@@ -22,8 +22,11 @@ private:
 
 public:
     // Hack for doing corkboard fullscreen
-    wxPanel* m_corkboardHolder = nullptr;
-    wxBoxSizer* m_corkHolderSizer = nullptr;
+    wxPanel* m_corkboardHolder = nullptr,
+        * m_timelineHolder = nullptr;
+
+    wxBoxSizer* m_corkHolderSizer = nullptr,
+        * m_timelineHolderSizer = nullptr;
 
 public:
     amOutline(wxWindow* parent);
@@ -34,9 +37,14 @@ public:
         wxStringInputStream& timelineElements,
         wxStringInputStream& files);
 
-    amCorkboard* GetCorkboard() { return m_corkboard; }
-    amTLTimeline* GetTimeline() { return m_timeline; }
-    amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
+    inline amCorkboard* GetCorkboard() { return m_corkboard; }
+    inline amTLTimeline* GetTimeline() { return m_timeline; }
+    inline amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
+
+    inline wxPanel* GetCorkboardHolder() { return m_corkboardHolder; }
+    inline wxBoxSizer* GetCorkHolderSizer() { return m_corkHolderSizer; }
+    inline wxPanel* GetTimelineHolder() { return m_timelineHolder; }
+    inline wxBoxSizer* GetTimelineHolderSizer() { return m_timelineHolderSizer; }
 
     void ClearAll();
 };
