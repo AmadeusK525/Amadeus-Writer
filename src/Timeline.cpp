@@ -1581,7 +1581,7 @@ void amTLTimeline::SaveTimelineElements(wxStringOutputStream& stream) {
 	wxXmlNode* preferencesNode = new wxXmlNode(wxXML_ELEMENT_NODE, "Preferences");
 	root->AddChild(preferencesNode);
 
-	std::map preferences = m_sidebar->GetPreferences();
+	std::map<wxString, int> preferences = m_sidebar->GetPreferences();
 	for (pair<const wxString, int>& it : preferences) {
 		wxXmlNode* node = new wxXmlNode(preferencesNode, wxXML_ELEMENT_NODE, "value");
 		node->AddAttribute("name", it.first);

@@ -47,7 +47,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(11));
 
-	m_ageLabel = new wxStaticText(this, -1, "Age: ");
+	m_ageLabel = new wxStaticText(this, -1, _("Age: "));
 	m_ageLabel->SetFont(font);
 	m_ageLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_ageLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -59,7 +59,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_age->SetFont(font2);
 	m_age->Show(false);
 
-	m_sexLabel = new wxStaticText(this, -1, "Sex: ");
+	m_sexLabel = new wxStaticText(this, -1, _("Sex: "));
 	m_sexLabel->SetFont(font);
 	m_sexLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_sexLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -70,7 +70,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_sex->SetFont(font2);
 	m_sex->Show(false);
 
-	m_heightLabel = new wxStaticText(this, -1, "Height: ");
+	m_heightLabel = new wxStaticText(this, -1, _("Height: "));
 	m_heightLabel->SetFont(font);
 	m_heightLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_heightLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -90,7 +90,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	firstLine->Add(m_heightLabel, wxSizerFlags(0).Border(wxLEFT, 20));
 	firstLine->Add(m_height, wxSizerFlags(2).Border(wxRIGHT, 5));
 
-	m_nickLabel = new wxStaticText(this, -1, "Nickname: ");
+	m_nickLabel = new wxStaticText(this, -1, _("Nickname: "));
 	m_nickLabel->SetFont(font);
 	m_nickLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_nickLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -102,7 +102,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_nick->SetFont(font2);
 	m_nick->Show(false);
 
-	m_natLabel = new wxStaticText(this, -1, "Nationality: ");
+	m_natLabel = new wxStaticText(this, -1, _("Nationality: "));
 	m_natLabel->SetFont(font);
 	m_natLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_natLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -120,7 +120,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	secondLine->Add(m_natLabel, wxSizerFlags(0).Border(wxLEFT, 20));
 	secondLine->Add(m_nat, wxSizerFlags(1));
 
-	m_appLabel = new wxStaticText(this, -1, "Appearance", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
+	m_appLabel = new wxStaticText(this, -1, _("Appearance"), wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
 	m_appLabel->SetFont(font);
 	m_appLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_appLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -132,8 +132,9 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_appearance->SetForegroundColour(wxColour(255, 255, 255));
 	m_appearance->SetFont(wxFontInfo(9));
 	m_appearance->Show(false);
+	m_appearance->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
 
-	m_perLabel = new wxStaticText(this, -1, "Personality", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
+	m_perLabel = new wxStaticText(this, -1, _("Personality"), wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
 	m_perLabel->SetFont(font);
 	m_perLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_perLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -145,8 +146,9 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_personality->SetForegroundColour(wxColour(255, 255, 255));
 	m_personality->SetFont(wxFontInfo(9));
 	m_personality->Show(false);
+	m_personality->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
 
-	m_bsLabel = new wxStaticText(this, -1, "Backstory", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
+	m_bsLabel = new wxStaticText(this, -1, _("Backstory"), wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
 	m_bsLabel->SetFont(font);
 	m_bsLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_bsLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -158,6 +160,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_backstory->SetForegroundColour(wxColour(255, 255, 255));
 	m_backstory->SetFont(wxFontInfo(9));
 	m_backstory->Show(false);
+	m_backstory->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
 
 	m_vertical->Add(firstLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM | wxLEFT | wxRIGHT, 10));
 	m_vertical->Add(secondLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM | wxLEFT | wxRIGHT, 10));
@@ -263,6 +266,7 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	m_role->SetForegroundColour(rolefg);
 
 	wxWindowList list;
+	int width = m_appearance->GetClientSize().x;
 
 	isNotEmpty = !character->appearance.IsEmpty();
 	m_appearance->Show(isNotEmpty);
@@ -324,6 +328,7 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 			content->SetForegroundColour(wxColour(255, 255, 255));
 			content->SetFont(wxFontInfo(9));
 			content->SetCursor(wxCURSOR_DEFAULT);
+			content->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
 
 			m_vertical->Add(label, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
 			m_vertical->Add(content, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
@@ -374,8 +379,9 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_general->SetForegroundColour(wxColour(255, 255, 255));
 	m_general->SetFont(font2);
 	m_general->Show(false);
+	m_general->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
 
-	m_natLabel = new wxStaticText(this, -1, "Natural Aspects", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
+	m_natLabel = new wxStaticText(this, -1, _("Natural Aspects"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_natLabel->SetFont(font);
 	m_natLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_natLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -387,8 +393,9 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_natural->SetForegroundColour(wxColour(255, 255, 255));
 	m_natural->SetFont(font2);
 	m_natural->Show(false);
+	m_natural->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
 
-	m_archLabel = new wxStaticText(this, -1, "Architecture", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
+	m_archLabel = new wxStaticText(this, -1, _("Architecture"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_archLabel->SetFont(font);
 	m_archLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_archLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -400,8 +407,9 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_architecture->SetForegroundColour(wxColour(255, 255, 255));
 	m_architecture->SetFont(font2);
 	m_architecture->Show(false);
+	m_architecture->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
 
-	m_ecoLabel = new wxStaticText(this, -1, "Economy", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
+	m_ecoLabel = new wxStaticText(this, -1, _("Economy"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_ecoLabel->SetFont(font);
 	m_ecoLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_ecoLabel->SetForegroundColour(wxColour(230, 230, 230));
@@ -413,8 +421,9 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_economy->SetForegroundColour(wxColour(255, 255, 255));
 	m_economy->SetFont(font2);
 	m_economy->Show(false);
+	m_economy->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
 
-	m_culLabel = new wxStaticText(this, -1, "Culture", wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
+	m_culLabel = new wxStaticText(this, -1, _("Culture"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_culLabel->SetFont(font);
 	m_culLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_culLabel->SetForegroundColour(wxColour(255, 255, 255));
@@ -426,8 +435,9 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_culture->SetForegroundColour(wxColour(255, 255, 255));
 	m_culture->SetFont(font2);
 	m_culture->Show(false);
+	m_culture->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
 
-	m_poliLabel = new wxStaticText(this, -1, "Politics", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_SIMPLE);
+	m_poliLabel = new wxStaticText(this, -1, _("Politics"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_SIMPLE);
 	m_poliLabel->SetFont(font);
 	m_poliLabel->SetBackgroundColour(wxColour(15, 15, 15));
 	m_poliLabel->SetForegroundColour(wxColour(255, 255, 255));
@@ -439,6 +449,7 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_politics->SetForegroundColour(wxColour(255, 255, 255));
 	m_politics->SetFont(font2);
 	m_politics->Show(false);
+	m_politics->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
 
 	m_firstColumn = new wxBoxSizer(wxVERTICAL);
 	m_firstColumn->Add(m_generalLabel, wxSizerFlags(0));
@@ -573,6 +584,7 @@ void amLocationShowcase::SetData(Element& locToSet) {
 			content->SetForegroundColour(wxColour(255, 255, 255));
 			content->SetFont(wxFontInfo(9));
 			content->SetCursor(wxCURSOR_DEFAULT);
+			content->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
 
 			m_first = !m_first;
 			m_custom.push_back(pair<wxStaticText*, wxTextCtrl*>(label, content));

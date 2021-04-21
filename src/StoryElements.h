@@ -7,11 +7,12 @@
 
 #include "Document.h"
 
+struct Element;
 struct Chapter;
+struct Location;
+struct Item;
 
 using std::pair;
-using std::ostream;
-using std::istream;
 
 enum CompType {
 	CompRole,
@@ -72,6 +73,22 @@ struct Element {
 ////////////////////////////////// Character ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+enum CharacterRelation
+{
+	CR_Parent,
+	CR_Grandparent,
+
+	CR_Sibling,
+	CR_Cousing,
+
+	CR_Child,
+	CR_Grandchild,
+
+	CR_Friend,
+	CR_Enemy,
+
+	CR_Other
+};
 
 struct Character : public Element {
 	wxString sex{ "" }, age{ "" }, nat{ "" },
@@ -79,6 +96,10 @@ struct Character : public Element {
 		personality{ "" }, backstory{ "" };
 
 	static CompType cCompType;
+
+	wxVector<pair<Character*, CharacterRelation>> relatedCharacters;
+	wxVector<Location*> relatedLocations;
+	wxVector<Item*> relatedItems;
 
 	Character() = default;
 
@@ -98,10 +119,27 @@ struct Character : public Element {
 ////////////////////////////////// Location ////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+enum LocationType {
+	LOCATION_Continent,
+	LOCATION_Country,
+	LOCATION_State,
+	LOCATION_City,
+	LOCATION_Village,
+	LOCATION_District,
+	LOCATION_Neighborhood,
+	LOCATION_Street,
+	LOCATION_House,
+
+	LOCATION_Area,
+	LOCATION_Other
+};
 
 struct Location : public Element {
 	wxString general{ "" }, natural{ "" }, architecture{ "" },
 		politics{ "" }, economy{ "" }, culture{ "" };
+
+	wxVector<Character*> relatedCharacters;
+	wxVector<Location*> relatedLocations;
 
 	static CompType lCompType;
 
@@ -130,6 +168,10 @@ struct Item : public Element {
 
 	wxString width{ "" }, height{ "" }, depth{ "" };
 	
+	wxVector<Character*> relatedCharacters;
+	wxVector<Location*> relatedLocations;
+	wxVector<Item*> relatedItems;
+
 	bool isMagic{ false };
 	bool isManMade{ true };
 

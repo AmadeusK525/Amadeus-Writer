@@ -6,6 +6,7 @@
 #include "Outline.h"
 #include "Corkboard.h"
 #include "Release.h"
+#include "SwitchCtrl.h"
 
 #include "ChapterCreator.h"
 #include "ElementCreators.h"
@@ -88,34 +89,19 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	// These are the buttons located on the left pane.
 	m_mainButtons[0] = new wxButton(m_selPanel, BUTTON_Overview, "Overview", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	m_mainButtons[0]->SetFont(font);
-	m_mainButtons[0]->SetBackgroundColour(wxColour(130, 0, 0));
-	m_mainButtons[0]->SetForegroundColour(wxColour(245, 245, 245));
-
 	m_mainButtons[1] = new wxButton(m_selPanel, BUTTON_Elem, "Elements", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	m_mainButtons[1]->SetFont(font);
-	m_mainButtons[1]->SetBackgroundColour(wxColour(20, 20, 20));
-	m_mainButtons[1]->SetForegroundColour(wxColour(245, 245, 245));
-
 	m_mainButtons[2] = new wxButton(m_selPanel, BUTTON_Chapters, "Story", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	m_mainButtons[2]->SetFont(font);
-	m_mainButtons[2]->SetBackgroundColour(wxColour(20, 20, 20));
-	m_mainButtons[2]->SetForegroundColour(wxColour(245, 245, 245));
-
 	m_mainButtons[3] = new wxButton(m_selPanel, BUTTON_Outline, "Outline", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	m_mainButtons[3]->SetFont(font);
-	m_mainButtons[3]->SetBackgroundColour(wxColour(20, 20, 20));
-	m_mainButtons[3]->SetForegroundColour(wxColour(245, 245, 245));
-
 	m_mainButtons[4] = new wxButton(m_selPanel, BUTTON_Release, "Release", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	m_mainButtons[4]->SetFont(font);
-	m_mainButtons[4]->SetBackgroundColour(wxColour(20, 20, 20));
-	m_mainButtons[4]->SetForegroundColour(wxColour(245, 245, 245));
 
 	for (wxButton* button : m_mainButtons) {
+		button->SetFont(font);
+		button->SetBackgroundColour(wxColour(20, 20, 20));
+		button->SetForegroundColour(wxColour(245, 245, 245));
 		button->Bind(wxEVT_ENTER_WINDOW, &amMainFrame::OnMainButtonEnter, this);
 		button->Bind(wxEVT_LEAVE_WINDOW, &amMainFrame::OnMainButtonLeave, this);
 	}
+	m_mainButtons[0]->SetBackgroundColour(wxColour(130, 0, 0));
 
 	m_buttonSizer = new wxBoxSizer(wxVERTICAL);
 	m_buttonSizer->Add(m_mainButtons[0], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
@@ -240,7 +226,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	// Initialize maximized
 	Maximize();
-	m_overview->Layout();
+	m_verticalSizer->Layout();
 
 	Show();
 }

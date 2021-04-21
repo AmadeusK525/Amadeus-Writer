@@ -23,6 +23,8 @@ protected:
 public:
     amElementShowcase(wxWindow* parent);
 	virtual void SetData(Element& element);
+
+    inline void EmptyMouseEvent(wxMouseEvent& event) {}
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -46,7 +48,7 @@ private:
 		* m_height = nullptr,
 		* m_nick = nullptr;
 
-	wxTextCtrl* m_appearance = nullptr,
+    wxTextCtrl* m_appearance = nullptr,
 		* m_personality = nullptr,
 		* m_backstory = nullptr;
 

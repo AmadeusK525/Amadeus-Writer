@@ -4,10 +4,6 @@
 #include "wx/panel.h"
 #include "wx/dragimag.h"
 
-
-
-
-
 class amDragList : public wxListView {
 private:
     int m_itemDragging{};

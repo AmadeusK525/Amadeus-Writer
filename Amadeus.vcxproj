@@ -453,6 +453,7 @@
     <ClCompile Include="src\ProjectManager.cpp" />
     <ClCompile Include="src\ProjectWizard.cpp" />
     <ClCompile Include="src\Release.cpp" />
+    <ClCompile Include="src\SwitchCtrl.cpp" />
     <ClCompile Include="src\Timeline.cpp" />
     <ClCompile Include="src\TimelineDialogs.cpp" />
     <ClCompile Include="src\TimelineShapes.cpp" />
@@ -481,6 +482,7 @@
     <ClInclude Include="src\ProjectManager.h" />
     <ClInclude Include="src\ProjectWizard.h" />
     <ClInclude Include="src\Release.h" />
+    <ClInclude Include="src\SwitchCtrl.h" />
     <ClInclude Include="src\Timeline.h" />
     <ClInclude Include="src\TimelineDialogs.h" />
     <ClInclude Include="src\TimelineShapes.h" />
