@@ -5,7 +5,8 @@
 #include <wx\wxsf\wxShapeFramework.h>
 #include "CorkboardShapes.h"
 
-class amTLTimelineCard : public wxSFRoundRectShape {
+class amTLTimelineCard : public wxSFRoundRectShape
+{
 private:
 	int m_row = -1, m_col = -1;
 	int m_section = -1;

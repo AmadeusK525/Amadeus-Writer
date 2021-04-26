@@ -12,12 +12,14 @@ CompType Character::cCompType = CompRole;
 CompType Location::lCompType = CompRole;
 CompType Item::iCompType = CompRole;
 
-bool Element::operator<(const Element& other) const {
+bool Element::operator<(const Element& other) const
+{
 	int i, j;
 
-	switch (elCompType) {
+	switch ( elCompType )
+	{
 	case CompRole:
-		if (role != other.role)
+		if ( role != other.role )
 			return role < other.role;
 
 		break;
@@ -25,11 +27,11 @@ bool Element::operator<(const Element& other) const {
 		return name.Lower() > other.name.Lower();
 		break;
 
-	case CompChapters:
-		i = chapters.size();
-		j = other.chapters.size();
+	case CompDocuments:
+		i = documents.size();
+		j = other.documents.size();
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -37,17 +39,19 @@ bool Element::operator<(const Element& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position < i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position < i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position < j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position < j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i < j;
 
 		break;
@@ -55,17 +59,19 @@ bool Element::operator<(const Element& other) const {
 		i = -1;
 		j = -1;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position > i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position > i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position > j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position > j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -76,12 +82,14 @@ bool Element::operator<(const Element& other) const {
 	return name.Lower() < other.name.Lower();
 }
 
-bool Element::operator==(const Element& other) const {
+bool Element::operator==(const Element& other) const
+{
 	return name == other.name;
 
 }
 
-void Element::operator=(const Element& other) {
+void Element::operator=(const Element& other)
+{
 	name = other.name;
 	role = other.role;
 	image = other.image;
@@ -94,8 +102,10 @@ void Element::operator=(const Element& other) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void Character::Save(wxSQLite3Database* db) {
-	try {
+void Character::Save(wxSQLite3Database* db)
+{
+	try
+	{
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 		bool doImage = image.IsOk();
 
@@ -105,7 +115,7 @@ void Character::Save(wxSQLite3Database* db) {
 			"appearance, personality, backstory, role, image) VALUES (");
 		insert << "'%q', '%q', '%q', '%q', '%q', '%q', '%q', '%q', '%q', " << role;
 
-		if (doImage)
+		if ( doImage )
 			insert << ", ?";
 		else
 			insert << ", NULL";
@@ -118,7 +128,8 @@ void Character::Save(wxSQLite3Database* db) {
 
 		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
-		if (doImage) {
+		if ( doImage )
+		{
 			wxMemoryOutputStream stream;
 
 			image.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -132,9 +143,10 @@ void Character::Save(wxSQLite3Database* db) {
 		}
 
 		statement.ExecuteUpdate();
-		SetId(storage->GetDocumentId(GenerateDocumentForId()));
+		SetId(storage->GetSQLEntryId(GenerateSQLEntryForId()));
 
-		for (pair<wxString, wxString>& it : custom) {
+		for ( pair<wxString, wxString>& it : custom )
+		{
 			insert = "INSERT INTO characters_custom (name, content, character_id) VALUES ('%q', '%q', ";
 			insert << id << ");";
 
@@ -142,13 +154,16 @@ void Character::Save(wxSQLite3Database* db) {
 
 			storage->ExecuteUpdate(buffer);
 		}
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 }
 
-bool Character::Update(wxSQLite3Database* db) {
-	if (id == -1)
+bool Character::Update(wxSQLite3Database* db)
+{
+	if ( id == -1 )
 		return false;
 
 	amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
@@ -158,7 +173,7 @@ bool Character::Update(wxSQLite3Database* db) {
 		"height = '%q', nickname = '%q', appearance = '%q', personality = '%q', backstory = '%q', role = ");
 	update << role << ", image = ";
 
-	if (doImage)
+	if ( doImage )
 		update << "?";
 	else
 		update << "NULL";
@@ -172,7 +187,8 @@ bool Character::Update(wxSQLite3Database* db) {
 
 	wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
-	if (doImage) {
+	if ( doImage )
+	{
 		wxMemoryOutputStream stream;
 
 		image.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -186,15 +202,18 @@ bool Character::Update(wxSQLite3Database* db) {
 	}
 
 	statement.ExecuteUpdate();
-	try {
+	try
+	{
 		wxSQLite3Table customTable = storage->GetTable("SELECT * FROM characters_custom WHERE character_id = " + std::to_string(id));
 
 		int prevSize = customTable.GetRowCount();
 		int newSize = custom.size();
 
-		if (newSize > prevSize) {
+		if ( newSize > prevSize )
+		{
 			int i = 0;
-			for (i; i < prevSize; i++) {
+			for ( i; i < prevSize; i++ )
+			{
 				customTable.SetRow(i);
 				update = "UPDATE characters_custom SET name = '%q', content = '%q' WHERE rowid = ";
 				update << customTable.GetInt("id") << ";";
@@ -203,16 +222,20 @@ bool Character::Update(wxSQLite3Database* db) {
 				storage->ExecuteUpdate(buffer);
 			}
 
-			for (i; i < newSize; i++) {
+			for ( i; i < newSize; i++ )
+			{
 				update = "INSERT INTO characters_custom (name, content, character_id) VALUES ('%q', '%q', "
 					+ std::to_string(id) + ");";
 				buffer.Format((const char*)update, (const char*)custom[i].first.ToUTF8(), (const char*)custom[i].second.ToUTF8());
 
 				storage->ExecuteUpdate(buffer);
 			}
-		} else {
+		}
+		else
+		{
 			int i = 0;
-			for (i; i < newSize; i++) {
+			for ( i; i < newSize; i++ )
+			{
 				customTable.SetRow(i);
 				update = "UPDATE characters_custom SET name = '%q', content = '%q' WHERE rowid = ";
 				update << customTable.GetInt("id") << ";";
@@ -221,8 +244,9 @@ bool Character::Update(wxSQLite3Database* db) {
 				storage->ExecuteUpdate(buffer);
 			}
 
-			if (newSize < prevSize)
-				for (i; i < prevSize; i++) {
+			if ( newSize < prevSize )
+				for ( i; i < prevSize; i++ )
+				{
 					customTable.SetRow(i);
 					update = "DELETE FROM characters_custom WHERE rowid = ";
 					update << customTable.GetInt("id") << ";";
@@ -231,48 +255,54 @@ bool Character::Update(wxSQLite3Database* db) {
 				}
 		}
 
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 
 	return true;
 }
 
-amDocument Character::GenerateDocumentSimple() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "characters";
+amSQLEntry Character::GenerateSQLEntrySimple()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = name;
+	sqlEntry.tableName = "characters";
 
-	document.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
 
-	document.strings.reserve(8);
-	document.strings.push_back(pair<wxString, wxString>("sex", sex));
-	document.strings.push_back(pair<wxString, wxString>("age", age));
-	document.strings.push_back(pair<wxString, wxString>("nationality", nat));
-	document.strings.push_back(pair<wxString, wxString>("height", height));
-	document.strings.push_back(pair<wxString, wxString>("nickname", nick));
-	document.strings.push_back(pair<wxString, wxString>("appearance", appearance));
-	document.strings.push_back(pair<wxString, wxString>("personality", personality));
-	document.strings.push_back(pair<wxString, wxString>("backstory", backstory));
+	sqlEntry.strings.reserve(8);
+	sqlEntry.strings.push_back(pair<wxString, wxString>("sex", sex));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("age", age));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("nationality", nat));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("height", height));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("nickname", nick));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("appearance", appearance));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("personality", personality));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("backstory", backstory));
 
-	if (image.IsOk()) {
+	if ( image.IsOk() )
+	{
 		wxMemoryOutputStream stream;
 		image.SaveFile(stream, image.GetType());
 
 		wxMemoryBuffer buffer;
 		stream.CopyTo(buffer.GetWriteBuf(stream.GetLength()), stream.GetLength());
 
-		document.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
+		sqlEntry.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Character::GenerateDocument() {
-	amDocument document = GenerateDocumentSimple();
+amSQLEntry Character::GenerateSQLEntry()
+{
+	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
 
-	for (pair<wxString, wxString>& it : custom) {
-		amDocument customDoc;
+	for ( pair<wxString, wxString>& it : custom )
+	{
+		amSQLEntry customDoc;
 		customDoc.tableName = "characters_custom";
 
 		customDoc.name = it.first;
@@ -281,28 +311,31 @@ amDocument Character::GenerateDocument() {
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "character_id";
 
-		document.documents.push_back(customDoc);
+		sqlEntry.childEntries.push_back(customDoc);
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Character::GenerateDocumentForId() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "characters";
+amSQLEntry Character::GenerateSQLEntryForId()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = name;
+	sqlEntry.tableName = "characters";
 
-	document.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
 
-	return document;
+	return sqlEntry;
 }
 
-bool Character::operator<(const Character& other) const {
+bool Character::operator<(const Character& other) const
+{
 	int i, j;
 
-	switch (cCompType) {
+	switch ( cCompType )
+	{
 	case CompRole:
-		if (role != other.role)
+		if ( role != other.role )
 			return role < other.role;
 
 		break;
@@ -311,11 +344,11 @@ bool Character::operator<(const Character& other) const {
 		return name.Lower() > other.name.Lower();
 		break;
 
-	case CompChapters:
-		i = chapters.size();
-		j = other.chapters.size();
+	case CompDocuments:
+		i = documents.size();
+		j = other.documents.size();
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -323,17 +356,19 @@ bool Character::operator<(const Character& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position < i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position < i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position < j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position < j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i < j;
 
 		break;
@@ -341,17 +376,19 @@ bool Character::operator<(const Character& other) const {
 		i = -1;
 		j = -1;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position > i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position > i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position > j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position > j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -362,7 +399,8 @@ bool Character::operator<(const Character& other) const {
 	return name.Lower() < other.name.Lower();
 }
 
-void Character::operator=(const Character& other) {
+void Character::operator=(const Character& other)
+{
 	name = other.name;
 	role = other.role;
 	image = other.image;
@@ -385,8 +423,10 @@ void Character::operator=(const Character& other) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-void Location::Save(wxSQLite3Database* db) {
-	try {
+void Location::Save(wxSQLite3Database* db)
+{
+	try
+	{
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 		bool doImage = image.IsOk();
 
@@ -396,7 +436,7 @@ void Location::Save(wxSQLite3Database* db) {
 			"economy, culture, role, image) VALUES (");
 		insert << "'%q', '%q', '%q', '%q', '%q', '%q', '%q', " << role;
 
-		if (doImage)
+		if ( doImage )
 			insert << ", ?";
 		else
 			insert << ", NULL";
@@ -408,7 +448,8 @@ void Location::Save(wxSQLite3Database* db) {
 			(const char*)economy.ToUTF8(), (const char*)culture.ToUTF8());
 		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
-		if (doImage) {
+		if ( doImage )
+		{
 			wxMemoryOutputStream stream;
 
 			image.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -422,9 +463,10 @@ void Location::Save(wxSQLite3Database* db) {
 		}
 
 		statement.ExecuteUpdate();
-		SetId(storage->GetDocumentId(GenerateDocumentForId()));
+		SetId(storage->GetSQLEntryId(GenerateSQLEntryForId()));
 
-		for (pair<wxString, wxString>& it : custom) {
+		for ( pair<wxString, wxString>& it : custom )
+		{
 			insert = "INSERT INTO locations_custom (name, content, location_id) VALUES ('%q', '%q', ";
 			insert << id << ");";
 
@@ -432,13 +474,16 @@ void Location::Save(wxSQLite3Database* db) {
 
 			storage->ExecuteUpdate(buffer);
 		}
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 }
 
-bool Location::Update(wxSQLite3Database* db) {
-	if (id == -1)
+bool Location::Update(wxSQLite3Database* db)
+{
+	if ( id == -1 )
 		return false;
 
 	amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
@@ -448,7 +493,7 @@ bool Location::Update(wxSQLite3Database* db) {
 		"politics = '%q', economy = '%q', culture = '%q', role = ");
 	update << role << ", image = ";
 
-	if (doImage)
+	if ( doImage )
 		update << "?";
 	else
 		update << "NULL";
@@ -462,7 +507,8 @@ bool Location::Update(wxSQLite3Database* db) {
 
 	wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
-	if (doImage) {
+	if ( doImage )
+	{
 		wxMemoryOutputStream stream;
 
 		image.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -476,15 +522,18 @@ bool Location::Update(wxSQLite3Database* db) {
 	}
 
 	statement.ExecuteUpdate();
-	try {
+	try
+	{
 		wxSQLite3Table customTable = storage->GetTable("SELECT * FROM locations_custom WHERE location_id = " + std::to_string(id));
 
 		int prevSize = customTable.GetRowCount();
 		int newSize = custom.size();
 
-		if (newSize > prevSize) {
+		if ( newSize > prevSize )
+		{
 			int i = 0;
-			for (i; i < prevSize; i++) {
+			for ( i; i < prevSize; i++ )
+			{
 				customTable.SetRow(i);
 				update = "UPDATE locations_custom SET name = '%q', content = '%q' WHERE rowid = ";
 				update << customTable.GetInt("id") << ";";
@@ -493,16 +542,20 @@ bool Location::Update(wxSQLite3Database* db) {
 				storage->ExecuteUpdate(buffer);
 			}
 
-			for (i; i < newSize; i++) {
+			for ( i; i < newSize; i++ )
+			{
 				update = "INSERT INTO locations_custom (name, content, location_id) VALUES ('%q', '%q', "
 					+ std::to_string(id) + ");";
 				buffer.Format((const char*)update, (const char*)custom[i].first.ToUTF8(), (const char*)custom[i].second.ToUTF8());
 
 				storage->ExecuteUpdate(buffer);
 			}
-		} else {
+		}
+		else
+		{
 			int i = 0;
-			for (i; i < newSize; i++) {
+			for ( i; i < newSize; i++ )
+			{
 				customTable.SetRow(i);
 				update = "UPDATE locations_custom SET name = '%q', content = '%q' WHERE rowid = ";
 				update << customTable.GetInt("id") << ";";
@@ -511,8 +564,9 @@ bool Location::Update(wxSQLite3Database* db) {
 				storage->ExecuteUpdate(buffer);
 			}
 
-			if (newSize < prevSize)
-				for (i; i < prevSize; i++) {
+			if ( newSize < prevSize )
+				for ( i; i < prevSize; i++ )
+				{
 					customTable.SetRow(i);
 					update = "DELETE FROM locations_custom WHERE rowid = ";
 					update << customTable.GetInt("id") << ";";
@@ -521,48 +575,54 @@ bool Location::Update(wxSQLite3Database* db) {
 				}
 		}
 
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 
 	return true;
 }
 
-amDocument Location::GenerateDocumentSimple() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "locations";
+amSQLEntry Location::GenerateSQLEntrySimple()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = name;
+	sqlEntry.tableName = "locations";
 
-	document.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
 
-	document.strings.reserve(6);
-	document.strings.push_back(pair<wxString, wxString>("general", general));
-	document.strings.push_back(pair<wxString, wxString>("natural", natural));
-	document.strings.push_back(pair<wxString, wxString>("architecture", architecture));
-	document.strings.push_back(pair<wxString, wxString>("politics", politics));
-	document.strings.push_back(pair<wxString, wxString>("economy", economy));
-	document.strings.push_back(pair<wxString, wxString>("culture", culture));
+	sqlEntry.strings.reserve(6);
+	sqlEntry.strings.push_back(pair<wxString, wxString>("general", general));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("natural", natural));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("architecture", architecture));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("politics", politics));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("economy", economy));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("culture", culture));
 
-	if (image.IsOk()) {
+	if ( image.IsOk() )
+	{
 		wxMemoryOutputStream stream;
 		image.SaveFile(stream, image.GetType());
 
 		wxMemoryBuffer buffer;
 		stream.CopyTo(buffer.GetWriteBuf(stream.GetLength()), stream.GetLength());
 
-		document.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
+		sqlEntry.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Location::GenerateDocument() {
-	amDocument document = GenerateDocumentSimple();
+amSQLEntry Location::GenerateSQLEntry()
+{
+	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
 
-	document.documents.reserve(custom.size());
+	sqlEntry.childEntries.reserve(custom.size());
 
-	for (pair<wxString, wxString>& it : custom) {
-		amDocument customDoc;
+	for ( pair<wxString, wxString>& it : custom )
+	{
+		amSQLEntry customDoc;
 		customDoc.tableName = "locations_custom";
 
 		customDoc.name = it.first;
@@ -571,28 +631,31 @@ amDocument Location::GenerateDocument() {
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "location_id";
 
-		document.documents.push_back(customDoc);
+		sqlEntry.childEntries.push_back(customDoc);
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Location::GenerateDocumentForId() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "locations";
+amSQLEntry Location::GenerateSQLEntryForId()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = name;
+	sqlEntry.tableName = "locations";
 
-	document.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
 
-	return document;
+	return sqlEntry;
 }
 
-bool Location::operator<(const Location& other) const {
+bool Location::operator<(const Location& other) const
+{
 	int i, j;
 
-	switch (lCompType) {
+	switch ( lCompType )
+	{
 	case CompRole:
-		if (role != other.role)
+		if ( role != other.role )
 			return role < other.role;
 
 		break;
@@ -601,11 +664,11 @@ bool Location::operator<(const Location& other) const {
 		return name.Lower() > other.name.Lower();
 		break;
 
-	case CompChapters:
-		i = chapters.size();
-		j = other.chapters.size();
+	case CompDocuments:
+		i = documents.size();
+		j = other.documents.size();
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -613,17 +676,19 @@ bool Location::operator<(const Location& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position < i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position < i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position < j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position < j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i < j;
 
 		break;
@@ -631,17 +696,19 @@ bool Location::operator<(const Location& other) const {
 		i = -1;
 		j = -1;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position > i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position > i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position > j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position > j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -652,7 +719,8 @@ bool Location::operator<(const Location& other) const {
 	return name.Lower() < other.name.Lower();
 }
 
-void Location::operator=(const Location& other) {
+void Location::operator=(const Location& other)
+{
 	name = other.name;
 	role = other.role;
 	image = other.image;
@@ -673,8 +741,10 @@ void Location::operator=(const Location& other) {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void Item::Save(wxSQLite3Database* db) {
-	try {
+void Item::Save(wxSQLite3Database* db)
+{
+	try
+	{
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 		bool doImage = image.IsOk();
 
@@ -685,7 +755,7 @@ void Item::Save(wxSQLite3Database* db) {
 		insert << "'%q', '%q', '%q', '%q', '%q', '%q', '%q', '%q', '%q', " << role << ", " << isManMade <<
 			", " << isMagic;
 
-		if (doImage)
+		if ( doImage )
 			insert << ", ?";
 		else
 			insert << ", NULL";
@@ -698,7 +768,8 @@ void Item::Save(wxSQLite3Database* db) {
 
 		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
-		if (doImage) {
+		if ( doImage )
+		{
 			wxMemoryOutputStream stream;
 
 			image.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -712,9 +783,10 @@ void Item::Save(wxSQLite3Database* db) {
 		}
 
 		statement.ExecuteUpdate();
-		SetId(storage->GetDocumentId(GenerateDocumentForId()));
+		SetId(storage->GetSQLEntryId(GenerateSQLEntryForId()));
 
-		for (pair<wxString, wxString>& it : custom) {
+		for ( pair<wxString, wxString>& it : custom )
+		{
 			insert = "INSERT INTO items_custom (name, content, item_id) VALUES ('%q', '%q', ";
 			insert << id << ");";
 
@@ -722,13 +794,16 @@ void Item::Save(wxSQLite3Database* db) {
 
 			storage->ExecuteUpdate(buffer);
 		}
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 }
 
-bool Item::Update(wxSQLite3Database* db) {
-	if (id == -1)
+bool Item::Update(wxSQLite3Database* db)
+{
+	if ( id == -1 )
 		return false;
 
 	amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
@@ -738,7 +813,7 @@ bool Item::Update(wxSQLite3Database* db) {
 		"appearance = '%q', usage = '%q', width = '%q', height = '%q', depth = '%q', role = ");
 	update << role << ", isManMade = " << isManMade << ", isMagic = " << isMagic << ", image = ";
 
-	if (doImage)
+	if ( doImage )
 		update << "?";
 	else
 		update << "NULL";
@@ -752,7 +827,8 @@ bool Item::Update(wxSQLite3Database* db) {
 
 	wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
-	if (doImage) {
+	if ( doImage )
+	{
 		wxMemoryOutputStream stream;
 
 		image.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -766,15 +842,18 @@ bool Item::Update(wxSQLite3Database* db) {
 	}
 
 	statement.ExecuteUpdate();
-	try {
+	try
+	{
 		wxSQLite3Table customTable = storage->GetTable("SELECT * FROM items_custom WHERE item_id = " + std::to_string(id));
 
 		int prevSize = customTable.GetRowCount();
 		int newSize = custom.size();
 
-		if (newSize > prevSize) {
+		if ( newSize > prevSize )
+		{
 			int i = 0;
-			for (i; i < prevSize; i++) {
+			for ( i; i < prevSize; i++ )
+			{
 				customTable.SetRow(i);
 				update = "UPDATE items_custom SET name = '%q', content = '%q' WHERE rowid = ";
 				update << customTable.GetInt("id") << ";";
@@ -783,16 +862,20 @@ bool Item::Update(wxSQLite3Database* db) {
 				storage->ExecuteUpdate(buffer);
 			}
 
-			for (i; i < newSize; i++) {
+			for ( i; i < newSize; i++ )
+			{
 				update = "INSERT INTO items_custom (name, content, item_id) VALUES ('%q', '%q', "
 					+ std::to_string(id) + ");";
 				buffer.Format((const char*)update, (const char*)custom[i].first.ToUTF8(), (const char*)custom[i].second.ToUTF8());
 
 				storage->ExecuteUpdate(buffer);
 			}
-		} else {
+		}
+		else
+		{
 			int i = 0;
-			for (i; i < newSize; i++) {
+			for ( i; i < newSize; i++ )
+			{
 				customTable.SetRow(i);
 				update = "UPDATE items_custom SET name = '%q', content = '%q' WHERE rowid = ";
 				update << customTable.GetInt("id") << ";";
@@ -801,8 +884,9 @@ bool Item::Update(wxSQLite3Database* db) {
 				storage->ExecuteUpdate(buffer);
 			}
 
-			if (newSize < prevSize)
-				for (i; i < prevSize; i++) {
+			if ( newSize < prevSize )
+				for ( i; i < prevSize; i++ )
+				{
 					customTable.SetRow(i);
 					update = "DELETE FROM items_custom WHERE rowid = ";
 					update << customTable.GetInt("id") << ";";
@@ -811,52 +895,58 @@ bool Item::Update(wxSQLite3Database* db) {
 				}
 		}
 
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 
 	return true;
 }
 
-amDocument Item::GenerateDocumentSimple() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "items";
+amSQLEntry Item::GenerateSQLEntrySimple()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = name;
+	sqlEntry.tableName = "items";
 
-	document.integers.reserve(3);
-	document.integers.push_back(pair<wxString, int>("role", role));
-	document.integers.push_back(pair<wxString, int>("isMagic", isMagic));
-	document.integers.push_back(pair<wxString, int>("isManMade", isManMade));
+	sqlEntry.integers.reserve(3);
+	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers.push_back(pair<wxString, int>("isMagic", isMagic));
+	sqlEntry.integers.push_back(pair<wxString, int>("isManMade", isManMade));
 
-	document.strings.reserve(8);
-	document.strings.push_back(pair<wxString, wxString>("general", general));
-	document.strings.push_back(pair<wxString, wxString>("origin", origin));
-	document.strings.push_back(pair<wxString, wxString>("backstory", backstory));
-	document.strings.push_back(pair<wxString, wxString>("appearance", appearance));
-	document.strings.push_back(pair<wxString, wxString>("usage", usage));
-	document.strings.push_back(pair<wxString, wxString>("width", width));
-	document.strings.push_back(pair<wxString, wxString>("height", height));
-	document.strings.push_back(pair<wxString, wxString>("depth", depth));
+	sqlEntry.strings.reserve(8);
+	sqlEntry.strings.push_back(pair<wxString, wxString>("general", general));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("origin", origin));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("backstory", backstory));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("appearance", appearance));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("usage", usage));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("width", width));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("height", height));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("depth", depth));
 
-	if (image.IsOk()) {
+	if ( image.IsOk() )
+	{
 		wxMemoryOutputStream stream;
 		image.SaveFile(stream, image.GetType());
 
 		wxMemoryBuffer buffer;
 		stream.CopyTo(buffer.GetWriteBuf(stream.GetLength()), stream.GetLength());
 
-		document.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
+		sqlEntry.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Item::GenerateDocument() {
-	amDocument document = GenerateDocumentSimple();
+amSQLEntry Item::GenerateSQLEntry()
+{
+	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
 
-	document.documents.reserve(custom.size());
-	for (pair<wxString, wxString>& it : custom) {
-		amDocument customDoc;
+	sqlEntry.childEntries.reserve(custom.size());
+	for ( pair<wxString, wxString>& it : custom )
+	{
+		amSQLEntry customDoc;
 		customDoc.tableName = "items_custom";
 
 		customDoc.name = it.first;
@@ -865,28 +955,31 @@ amDocument Item::GenerateDocument() {
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "item_id";
 
-		document.documents.push_back(customDoc);
+		sqlEntry.childEntries.push_back(customDoc);
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Item::GenerateDocumentForId() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "items";
+amSQLEntry Item::GenerateSQLEntryForId()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = name;
+	sqlEntry.tableName = "items";
 
-	document.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
 
-	return document;
+	return sqlEntry;
 }
 
-bool Item::operator<(const Item& other) const {
+bool Item::operator<(const Item& other) const
+{
 	int i, j;
 
-	switch (iCompType) {
+	switch ( iCompType )
+	{
 	case CompRole:
-		if (role != other.role)
+		if ( role != other.role )
 			return role < other.role;
 
 		break;
@@ -895,11 +988,11 @@ bool Item::operator<(const Item& other) const {
 		return name.Lower() > other.name.Lower();
 		break;
 
-	case CompChapters:
-		i = chapters.size();
-		j = other.chapters.size();
+	case CompDocuments:
+		i = documents.size();
+		j = other.documents.size();
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -907,17 +1000,19 @@ bool Item::operator<(const Item& other) const {
 		i = 9999;
 		j = 9999;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position < i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position < i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position < j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position < j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i < j;
 
 		break;
@@ -925,17 +1020,19 @@ bool Item::operator<(const Item& other) const {
 		i = -1;
 		j = -1;
 
-		for (Chapter* chapter : chapters) {
-			if (chapter->position > i)
-				i = chapter->position;
+		for ( Document* document : documents )
+		{
+			if ( document->position > i )
+				i = document->position;
 		}
 
-		for (Chapter* chapter : other.chapters) {
-			if (chapter->position > j)
-				j = chapter->position;
+		for ( Document* document : other.documents )
+		{
+			if ( document->position > j )
+				j = document->position;
 		}
 
-		if (i != j)
+		if ( i != j )
 			return i > j;
 
 		break;
@@ -946,7 +1043,8 @@ bool Item::operator<(const Item& other) const {
 	return name.Lower() < other.name.Lower();
 }
 
-void Item::operator=(const Item& other) {
+void Item::operator=(const Item& other)
+{
 	name = other.name;
 	role = other.role;
 	image = other.image;

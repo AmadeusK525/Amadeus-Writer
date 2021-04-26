@@ -12,7 +12,8 @@
 class amOverview;
 class amBookPicker;
 
-class amBookPicker : public wxScrolledWindow {
+class amBookPicker : public wxScrolledWindow
+{
 private:
 	wxSize m_bookCoverSize{};
 	wxSize m_buttonSize{};
@@ -25,7 +26,7 @@ private:
 public:
 	amBookPicker(amOverview* parent);
 
-	void AddButton(Book& book, int index);
+	void AddButton(Book* book, int index);
 	void OnButtonPress(wxCommandEvent& event);
 
 	void SetSelection(int bookPos);
@@ -37,7 +38,8 @@ public:
 /////////////////////////////////////////////////////////////////
 
 
-class amOverview : public wxPanel {
+class amOverview : public wxPanel
+{
 private:
 	amProjectManager* m_manager = nullptr;
 	amBookPicker* m_bookPicker = nullptr;

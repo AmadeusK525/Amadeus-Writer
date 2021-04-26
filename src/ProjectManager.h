@@ -10,14 +10,15 @@
 
 #include "ProjectWizard.h"
 #include "BookElements.h"
-#include "Document.h"
+#include "SQLEntry.h"
 
 ///////////////////////////////////////////////////////////////////
 //////////////////////////// SQLStorage ///////////////////////////
 ///////////////////////////////////////////////////////////////////
 
 
-class amProjectSQLDatabase : public wxSQLite3Database {
+class amProjectSQLDatabase : public wxSQLite3Database
+{
 public:
 	amProjectSQLDatabase() = default;
 	amProjectSQLDatabase(wxFileName& path);
@@ -25,35 +26,35 @@ public:
 	bool Init();
 	void CreateAllTables();
 
-	int GetDocumentId(amDocument& document);
+	int GetSQLEntryId(amSQLEntry& sqlEntry);
 
 	bool CreateTable(const wxString& tableName, const wxArrayString& arguments, bool ifNotExists = true);
 
-	bool InsertDocument(amDocument& document);
-	bool UpdateDocument(amDocument& original, amDocument& edit);
-	
+	bool InsertDocument(amSQLEntry& sqlEntry);
+	bool UpdateSQLEntry(amSQLEntry& original, amSQLEntry& edit);
+
 	bool InsertManyToMany(const wxString& tableName,
+		int sqlID1, const wxString& arg1,
+		int sqlID2, const wxString& arg2);
+
+	bool InsertManyToMany(const wxString& tableName,
+		amSQLEntry& sqlEntry1, const wxString& arg1,
+		amSQLEntry& sqlEntry2, const wxString& arg2);
+
+	bool DeleteSQLEntry(amSQLEntry& sqlEntry);
+
+	bool DeleteManyToMany(const wxString& tableName,
 		int docID1, const wxString& arg1,
 		int docID2, const wxString& arg2);
 
-	bool InsertManyToMany(const wxString& tableName,
-		amDocument& doc1, const wxString& arg1,
-		amDocument& doc2, const wxString& arg2);
-
-	bool DeleteDocument(amDocument& document);
-	
 	bool DeleteManyToMany(const wxString& tableName,
-		int docID1, const wxString& arg1,
-		int docID2,	const wxString& arg2);
+		amSQLEntry& doc1, const wxString& arg1,
+		amSQLEntry& doc2, const wxString& arg2);
 
-	bool DeleteManyToMany(const wxString& tableName,
-		amDocument& doc1, const wxString& arg1,
-		amDocument& doc2, const wxString& arg2);
+	wxSQLite3Statement ConstructInsertStatement(amSQLEntry& sqlEntry);
+	wxSQLite3Statement ConstructUpdateStatement(amSQLEntry& sqlEntry, int id);
 
-	wxSQLite3Statement ConstructInsertStatement(amDocument& document);
-	wxSQLite3Statement ConstructUpdateStatement(amDocument& document, int id);
-
-	bool RowExists(amDocument& document);
+	bool RowExists(amSQLEntry& sqlEntry);
 };
 
 
@@ -71,7 +72,8 @@ class amRelease;
 
 class amStoryWriter;
 
-class amProjectManager {
+class amProjectManager
+{
 private:
 	amProject m_project{};
 	amProjectSQLDatabase m_storage;
@@ -102,16 +104,15 @@ public:
 	bool SaveProject();
 	bool LoadProject();
 
-	void SaveDocument(amDocument& original, amDocument& edit);
+	void SaveSQLEntry(amSQLEntry& original, amSQLEntry& edit);
 
 	bool DoSaveProject(const wxString& path);
 	bool DoLoadProject(const wxString& path);
 
 	void LoadBooks();
-	void LoadBookContent(Book& book);
-	void LoadSections(wxVector<Section>& sections, int bookId);
-	void LoadChapters(wxVector<Chapter>& chapters, int sectionId);
-	void LoadScenes(wxVector<Scene>& scenes, int chapterId, bool loadBuffers);
+	void LoadBookContent(Book* book);
+	void LoadDocuments(wxVector<Document*>& documents, int bookId);
+	void SetupDocumentHierarchy(Book* book);
 
 	void LoadCharacters();
 	void LoadLocations();
@@ -139,47 +140,46 @@ public:
 	// with no need to load it. Makes things more convenient.
 	void SetLastSave();
 	bool GetLastSave();
-	
-	int GetDocumentId(amDocument& document);
-	inline void InsertDocument(amDocument& document) { m_storage.InsertDocument(document); }
 
-	void OpenChapter(int chapterIndex, int sectionIndex);
+	int GetSQLEntryId(amSQLEntry& sqlEntry);
+	inline void InsertDocument(amSQLEntry& sqlEntry) { m_storage.InsertDocument(sqlEntry); }
+
+	void OpenDocument(int documentIndex);
+	bool ScanForDocumentLinear(int toFind, int& current, Document* scanBegin, Document*& emptyPointer);
 	void NullifyStoryWriter() { m_storyWriter = nullptr; }
 
-	void AddCharacter(Character& character, bool refreshElements);
-	void AddLocation(Location& location, bool refreshElements);
-	void AddItem(Item& item, bool refreshElements);
-	void AddChapter(Chapter& chapter, Book& book, int section = 1, int pos = -1);
+	void AddCharacter(Character* character, bool refreshElements);
+	void AddLocation(Location* location, bool refreshElements);
+	void AddItem(Item* item, bool refreshElements);
+	void AddDocument(Document* document, Book* book, int pos = -1);
 
-	void EditCharacter(Character& original, Character& edit, bool sort = false);
-	void EditLocation(Location& original, Location& edit, bool sort = false);
-	void EditItem(Item& original, Item& edit, bool sort = false);
+	void EditCharacter(Character* original, Character& edit, bool sort = false);
+	void EditLocation(Location* original, Location& edit, bool sort = false);
+	void EditItem(Item* original, Item& edit, bool sort = false);
 
-	void AddChapterToCharacter(const wxString& characterName, Chapter& chapter, bool addToDb = true);
-	void AddChapterToLocation(const wxString& locationName, Chapter& chapter, bool addToDb = true);
-	void AddChapterToItem(const wxString& itemName, Chapter& chapter, bool addToDb = true);
+	void AddDocumentToCharacter(const wxString& characterName, Document* document, bool addToDb = true);
+	void AddDocumentToLocation(const wxString& locationName, Document* document, bool addToDb = true);
+	void AddDocumentToItem(const wxString& itemName, Document* document, bool addToDb = true);
 
-	void RemoveChapterFromCharacter(const wxString& characterName, Chapter& chapter);
-	void RemoveChapterFromLocation(const wxString& locationName, Chapter& chapter);
-	void RemoveChapterFromItem(const wxString& itemName, Chapter& chapter);
+	void RemoveDocumentFromCharacter(const wxString& characterName, Document* document);
+	void RemoveDocumentFromLocation(const wxString& locationName, Document* document);
+	void RemoveDocumentFromItem(const wxString& itemName, Document* document);
 
-	void RedeclareChapsInElements(Book& book);
-
-	void DeleteCharacter(Character& character);
-	void DeleteLocation(Location& location);
-	void DeleteItem(Item& item);
-	void DeleteChapter(Chapter& chapter, Section& section);
+	void DeleteCharacter(Character* character);
+	void DeleteLocation(Location* location);
+	void DeleteItem(Item* item);
+	void DeleteDocument(Document* document);
 
 	inline int GetCurrentBookPos() { return m_currentBook; }
-	inline Book& GetCurrentBook() { return m_project.books[m_currentBook - 1]; }
+	inline Book* GetCurrentBook() { return m_project.books[m_currentBook - 1]; }
 
-	inline wxVector<Book>& GetBooks() { return m_project.books; }
-	wxVector<Character>& GetCharacters();
-	wxVector<Location>& GetLocations();
-	wxVector<Item>& GetItems();
-	wxVector<Chapter>& GetChapters(int bookPos, int sectionPos);
+	inline wxVector<Book*>& GetBooks() { return m_project.books; }
+	wxVector<Character*>& GetCharacters();
+	wxVector<Location*>& GetLocations();
+	wxVector<Item*>& GetItems();
 
-	wxVector<Chapter> GetChapters(int bookPos);
+	wxVector<Document*>& GetDocumentsInCurrentBook();
+	Document* GetDocumentById(int id);
 
 	wxArrayString GetCharacterNames();
 	wxArrayString GetLocationNames();
@@ -188,7 +188,7 @@ public:
 	wxArrayString GetBookTitles();
 
 	inline unsigned int GetBookCount() { return m_project.books.size(); }
-	inline unsigned int GetChapterCount(int book) { return m_project.GetChapters(book).size(); }
+	inline unsigned int GetDocumentCount(int book) { return m_project.GetDocuments(book).size(); }
 	inline unsigned int GetCharacterCount() { return m_project.characters.size(); }
 	inline unsigned int GetLocationCount() { return m_project.locations.size(); }
 	inline unsigned int GetItemCount() { return m_project.items.size(); }

@@ -4,7 +4,8 @@
 
 #include "wxmemdbg.h"
 
-amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id) {
+amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id)
+{
 	SetExtraStyle(wxWIZARD_EX_HELPBUTTON);
 	Create(parent, id, "Project Wizard", wxNullBitmap, wxDefaultPosition,
 		wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -72,10 +73,12 @@ amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id) {
 	SetBackgroundColour(wxColour(40, 40, 40));
 }
 
-wxFileName amProjectWizard::GetFileName() {
-	if (IsLoading())
+wxFileName amProjectWizard::GetFileName()
+{
+	if ( IsLoading() )
 		return m_filePicker->GetFileName();
-	else {
+	else
+	{
 		wxFileName fileName(m_dirPicker->GetPath() << wxFileName::GetPathSeparator());
 		fileName.SetFullName(m_title->GetValue() + ".amp");
 
@@ -90,7 +93,8 @@ wxFileName amProjectWizard::GetFileName() {
 
 
 amFirstWizardPage::amFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, wxWizardPage* doNew) :
-	wxWizardPage(parent) {
+	wxWizardPage(parent)
+{
 
 	m_load = doLoad;
 	m_new = doNew;
@@ -110,7 +114,7 @@ amFirstWizardPage::amFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, wxW
 	m_newBtn->SetForegroundColour(wxColour(255, 255, 255));
 	m_newBtn->SetFont(wxFontInfo(9).Bold());
 
-	wxBoxSizer* btnSizer= new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
 	btnSizer->Add(m_loadBtn, wxSizerFlags(0));
 	btnSizer->AddSpacer(10);
 	btnSizer->Add(m_newBtn, wxSizerFlags(0));
@@ -125,6 +129,7 @@ amFirstWizardPage::amFirstWizardPage(wxWizard* parent, wxWizardPage* doLoad, wxW
 	SetSizerAndFit(siz1);
 }
 
-wxWizardPage* amFirstWizardPage::GetNext() const {
+wxWizardPage* amFirstWizardPage::GetNext() const
+{
 	return m_loadBtn->GetValue() ? m_new : m_load;
 }

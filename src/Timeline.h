@@ -31,7 +31,8 @@ class amTLSectionThumbnail;
 /////////////////////////////////////////////////////////////////////
 
 
-class amTLThread : public xsSerializable {
+class amTLThread : public xsSerializable
+{
 private:
 	amTLTimelineCanvas* m_canvas = nullptr;
 	wxRect m_boundingRect{ -1,-1,-1,-1 };
@@ -45,7 +46,6 @@ private:
 	static wxPen m_selectedPen;
 
 	wxString m_character{ "" };
-	wxString m_titleToDraw{ "" };
 	int m_titleHeight = -1;
 	int m_titleWidth = -1;
 
@@ -59,9 +59,9 @@ public:
 
 	inline amTLThread() { MarkSerializableDataMembers(); }
 	inline amTLThread(const wxString& character, int index, int y, const wxColour& colour, amTLTimelineCanvas* canvas) :
-		m_character(character), m_index(index), m_y(y), m_colour(colour), m_canvas(canvas) {
+		m_character(character), m_index(index), m_y(y), m_colour(colour), m_canvas(canvas)
+	{
 		MarkSerializableDataMembers();
-		CalculateTitleWrap();
 	}
 
 	void Draw(wxDC& dc, float titleOffset = 0.0);
@@ -71,7 +71,8 @@ public:
 
 	void DrawTitle(wxDC& dc, float titleOffset = 0.0);
 
-	inline bool Contains(wxPoint& pos) {
+	inline bool Contains(wxPoint& pos)
+	{
 		m_boundingRect.width = m_width;
 		return m_boundingRect.Contains(pos);
 	}
@@ -93,10 +94,7 @@ public:
 	inline void SetColour(wxColour& colour) { m_colour = colour; }
 
 	inline wxString& GetCharacter() { return m_character; }
-	inline void SetCharacter(const wxString& newCharacter) { 
-		m_character = newCharacter;
-		CalculateTitleWrap();
-	}
+	inline void SetCharacter(const wxString& newCharacter) { m_character = newCharacter; }
 
 	inline wxRect& GetRect() { return m_boundingRect; }
 	inline void SetRect(wxRect& rect) { m_boundingRect = rect; }
@@ -112,19 +110,18 @@ public:
 	void OnMouseMove(const wxPoint& pos);
 	void OnMouseLeave();
 
-	void CalculateTitleWrap();
 	void RecalculatePosition();
 
 	inline void SetCanvas(amTLTimelineCanvas* canvas) { m_canvas = canvas; }
 
-	inline void MarkSerializableDataMembers() {
+	inline void MarkSerializableDataMembers()
+	{
 		XS_SERIALIZE_INT_EX(m_y, "y", -1);
 		XS_SERIALIZE_INT_EX(m_index, "index", -1);
 		XS_SERIALIZE_INT_EX(m_height, "height", 10);
 		XS_SERIALIZE_INT_EX(m_width, "width", -1);
 		XS_SERIALIZE_STRING_EX(m_character, "character", "");
 		XS_SERIALIZE_FONT_EX(m_titleFont, "font", wxFontInfo(15).Bold().AntiAliased());
-		XS_SERIALIZE_STRING_EX(m_titleToDraw, "titleToDraw", "");
 		XS_SERIALIZE_INT_EX(m_titleOffset, "titleOffset", 150);
 		XS_SERIALIZE_INT_EX(m_titleHeight, "titleHeight", 10);
 		XS_SERIALIZE_COLOUR_EX(m_colour, "colour", wxColour(200, 200, 255));
@@ -137,7 +134,8 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 
-class amTLSection : public xsSerializable {
+class amTLSection : public xsSerializable
+{
 private:
 	amTLTimelineCanvas* m_canvas = nullptr;
 
@@ -169,7 +167,8 @@ public:
 
 	inline amTLSection() { MarkSerializableDataMembers(); }
 	inline amTLSection(int index, int first, int last, amTLTimelineCanvas* canvas,
-		const wxString& title = wxEmptyString, const wxColour& colour = { 255,255,255 }) {
+		const wxString& title = wxEmptyString, const wxColour& colour = { 255,255,255 })
+	{
 		m_index = index;
 
 		m_first = first;
@@ -177,7 +176,7 @@ public:
 
 		m_canvas = canvas;
 
-		if (title == wxEmptyString)
+		if ( title == wxEmptyString )
 			m_title = "Section " + std::to_string(index + 1);
 		else
 			m_title = title;
@@ -189,7 +188,8 @@ public:
 	}
 
 	inline const wxString& GetTitle() const { return m_title; }
-	inline void SetTitle(const wxString& newTitle) { 
+	inline void SetTitle(const wxString& newTitle)
+	{
 		m_title = newTitle;
 		CalculateTitleWrap();
 	}
@@ -235,7 +235,8 @@ public:
 
 	inline void SetCanvas(amTLTimelineCanvas* canvas) { m_canvas = canvas; }
 
-	inline void MarkSerializableDataMembers() {
+	inline void MarkSerializableDataMembers()
+	{
 		XS_SERIALIZE_STRING_EX(m_title, "title", "");
 		XS_SERIALIZE_STRING_EX(m_titleToDraw, "titleToDraw", "");
 		XS_SERIALIZE_INT_EX(m_titleHeight, "titleHeight", -1);
@@ -253,13 +254,15 @@ public:
 //////////////////////////// TimelineCanvas ///////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-enum {
+enum
+{
 	MENU_DeleteTimelineCard,
 	MENU_DeleteTimelineThread,
 	MENU_DeleteTimelineSection
 };
 
-struct amTLCell {
+struct amTLCell
+{
 	wxPoint pos{ -1,-1 };
 	int xCell = -1, yCell = -1;
 
@@ -267,7 +270,8 @@ struct amTLCell {
 	amTLCell(int xCell, int yCell, const wxPoint& pos) : xCell(xCell), yCell(yCell), pos(pos) {}
 };
 
-class amTLTimelineCanvas : public amSFShapeCanvas {
+class amTLTimelineCanvas : public amSFShapeCanvas
+{
 private:
 	amTLTimeline* m_parent = nullptr;
 
@@ -302,7 +306,8 @@ public:
 	inline bool CanAddCards() { return !m_threads.empty() && !m_sections.empty(); }
 
 	void AddThread(int pos, const wxString& character, const wxColour& colour, bool refresh = true);
-	inline void AppendThread(const wxString& character, const wxColour& colour, bool refresh = true) {
+	inline void AppendThread(const wxString& character, const wxColour& colour, bool refresh = true)
+	{
 		AddThread(m_threads.size(), character, colour, refresh);
 	}
 	amTLTimelineCard* AddCard(int rowIndex, int colIndex, int sectionIndex);
@@ -313,7 +318,7 @@ public:
 	pair<int, int> SetCardToSection(int section, amTLTimelineCard* shape);
 	bool SetCardToColumn(int column, amTLTimelineCard* shape);
 	bool SetCardToRow(int row, amTLTimelineCard* shape, bool recalculatePos = false);
-	
+
 	bool CalculateCellDrag(wxPoint& pos);
 
 	void MoveThread(amTLThread* thread, bool moveUp, bool repositionAll = true);
@@ -383,7 +388,8 @@ private:
 ////////////////////////////////////////////////////////////////////
 
 
-class amTLTimeline : public amSplitterWindow {
+class amTLTimeline : public amSplitterWindow
+{
 private:
 	amProjectManager* m_manager = nullptr;
 	amOutline* m_outline = nullptr;
@@ -443,7 +449,8 @@ public:
 ////////////////////////////////////////////////////////////////////
 
 
-enum {
+enum
+{
 	BUTTON_AddThread,
 	BUTTON_AddSection,
 	BUTTON_AddCardToThread,
@@ -491,11 +498,12 @@ enum {
 };
 
 
-class amTLTimelineSidebar : public wxPanel {
+class amTLTimelineSidebar : public wxPanel
+{
 	amTLTimeline* m_parent = nullptr;
 
 	wxNotebook* m_notebook = nullptr;
-	
+
 	wxScrolledWindow* m_threadPanel = nullptr;
 	amTLThreadThumbnail* m_threadThumbnail = nullptr;
 	wxStaticText* m_threadName = nullptr;
@@ -587,7 +595,8 @@ public:
 ////////////////////////////////////////////////////////////////////
 
 
-class amTLThumbnail : public wxSFThumbnail {
+class amTLThumbnail : public wxSFThumbnail
+{
 protected:
 	ShapeList m_shapes;
 
@@ -596,14 +605,15 @@ public:
 
 	void OnPaint(wxPaintEvent& event);
 };
- 
-class amTLThreadThumbnail : public amTLThumbnail {
-private: 
+
+class amTLThreadThumbnail : public amTLThumbnail
+{
+private:
 	amTLThread* m_thread = nullptr;
 
 public:
 	amTLThreadThumbnail(wxWindow* parent);
-	
+
 	virtual void DrawContent(wxDC& dc);
 
 	void SetData(amTLThread* thread, ShapeList& shapes);
@@ -611,7 +621,8 @@ public:
 	inline ShapeList& GetCards() { return m_shapes; }
 };
 
-class amTLCardThumbnail : public wxSFThumbnail {
+class amTLCardThumbnail : public wxSFThumbnail
+{
 private:
 	amTLTimelineCard* m_card = nullptr;
 
@@ -625,7 +636,8 @@ public:
 	virtual void DrawContent(wxDC& dc);
 };
 
-class amTLSectionThumbnail : public amTLThumbnail {
+class amTLSectionThumbnail : public amTLThumbnail
+{
 private:
 	amTLSection* m_section = nullptr;
 

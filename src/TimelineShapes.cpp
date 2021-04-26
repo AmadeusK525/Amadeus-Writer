@@ -11,7 +11,8 @@ int amTLTimelineCard::m_horSpacing = 40;
 int amTLTimelineCard::m_width = 250;
 int amTLTimelineCard::m_height = 150;
 
-amTLTimelineCard::amTLTimelineCard() {
+amTLTimelineCard::amTLTimelineCard()
+{
 	SetRadius(0.3);
 	SetRectSize(m_width, m_height);
 
@@ -25,7 +26,8 @@ amTLTimelineCard::amTLTimelineCard() {
 
 	m_title = new AutoWrapTextShape();
 
-	if (m_title) {
+	if ( m_title )
+	{
 		m_title->SetVAlign(wxSFShapeBase::valignTOP);
 		m_title->SetHAlign(wxSFShapeBase::halignCENTER);
 
@@ -53,7 +55,8 @@ amTLTimelineCard::amTLTimelineCard() {
 
 	m_content = new AutoWrapTextShape();
 
-	if (m_content) {
+	if ( m_content )
+	{
 		m_content->SetVAlign(wxSFShapeBase::valignBOTTOM);
 		m_content->SetHAlign(wxSFShapeBase::halignCENTER);
 
@@ -79,16 +82,19 @@ amTLTimelineCard::amTLTimelineCard() {
 	MarkSerializableDataMembers();
 }
 
-amTLTimelineCard::amTLTimelineCard(int row, int col) : amTLTimelineCard() {
+amTLTimelineCard::amTLTimelineCard(int row, int col) : amTLTimelineCard()
+{
 	m_row = row;
 	m_col = col;
 }
 
-amTLTimelineCard::amTLTimelineCard(const amTLTimelineCard& other) : wxSFRoundRectShape(other) {
+amTLTimelineCard::amTLTimelineCard(const amTLTimelineCard& other) : wxSFRoundRectShape(other)
+{
 
 }
 
-void amTLTimelineCard::RecalculatePosition() {
+void amTLTimelineCard::RecalculatePosition()
+{
 	SetRectSize(m_width, m_height);
 	m_title->UpdateRectSize();
 	m_content->UpdateRectSize();
@@ -100,7 +106,7 @@ void amTLTimelineCard::RecalculatePosition() {
 		+ (sectionMarkerWidth + (m_horSpacing / 2))
 		+ (m_section * (sectionHorSpacing + (sectionMarkerWidth * 2))
 		+ amTLThread::GetTitleOffset());
-	
+
 	int y = (m_verSpacing * (m_row + 1)) +
 		(m_height * m_row) +
 		amTLSection::GetTitleOffset();
@@ -108,7 +114,8 @@ void amTLTimelineCard::RecalculatePosition() {
 	MoveTo(x, y);
 }
 
-void amTLTimelineCard::DrawOnOrigin(wxDC& dc, bool children) {
+void amTLTimelineCard::DrawOnOrigin(wxDC& dc, bool children)
+{
 	double tempx = m_nRelativePosition.x, tempy = m_nRelativePosition.y;
 	m_nRelativePosition = { 0, 0 };
 
@@ -117,34 +124,37 @@ void amTLTimelineCard::DrawOnOrigin(wxDC& dc, bool children) {
 	m_nRelativePosition = { tempx, tempy };
 }
 
-void amTLTimelineCard::SetTitle(const wxString& title) {
+void amTLTimelineCard::SetTitle(const wxString& title)
+{
 	m_title->SetText(title);
 	m_title->CalcWrappedText();
 }
 
-void amTLTimelineCard::SetContent(const wxString& content) {
+void amTLTimelineCard::SetContent(const wxString& content)
+{
 	m_content->SetText(content);
 	m_content->CalcWrappedText();
 }
 
-void amTLTimelineCard::SetColour(const wxColour& colour) {
+void amTLTimelineCard::SetColour(const wxColour& colour)
+{
 	SetFill(colour);
 
 	unsigned char r = colour.Red();
 	unsigned char g = colour.Green();
 	unsigned char b = colour.Blue();
 
-	if (r >= 215)
+	if ( r >= 215 )
 		r = 255;
 	else
 		r += 40;
 
-	if (g >= 215)
+	if ( g >= 215 )
 		g = 255;
 	else
 		g += 40;
 
-	if (b >= 215)
+	if ( b >= 215 )
 		b = 255;
 	else
 		b += 40;
@@ -152,17 +162,20 @@ void amTLTimelineCard::SetColour(const wxColour& colour) {
 	m_content->SetFill(wxColour(r, g, b));
 }
 
-void amTLTimelineCard::SetTextColour(const wxColour& colour) {
+void amTLTimelineCard::SetTextColour(const wxColour& colour)
+{
 	m_title->SetTextColour(colour);
 	m_content->SetTextColour(colour);
 }
 
-void amTLTimelineCard::MarkSerializableDataMembers() {
+void amTLTimelineCard::MarkSerializableDataMembers()
+{
 	XS_SERIALIZE_EX(m_row, wxT("row"), -1);
 	XS_SERIALIZE_EX(m_col, wxT("column"), -1);
 	XS_SERIALIZE_EX(m_section, wxT("section"), -1);
 }
 
-bool amTLTimelineCard::operator<(const amTLTimelineCard& other) {
+bool amTLTimelineCard::operator<(const amTLTimelineCard& other)
+{
 	return m_col < other.m_col;
 }

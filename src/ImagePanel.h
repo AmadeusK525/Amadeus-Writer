@@ -4,28 +4,29 @@
 #include "wx/bitmap.h"
 #include "wx/custombgwin.h"
 
-class ImagePanel : public wxCustomBackgroundWindow<wxPanel> {
+class ImagePanel : public wxCustomBackgroundWindow<wxPanel>
+{
 private:
-    wxImage image{};
+	wxImage image{};
 
 public:
-    wxColour colour{150, 150, 150};
-    wxSize size{};
+	wxColour colour{ 150, 150, 150 };
+	wxSize size{};
 
 public:
-    ImagePanel(wxWindow* parent,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize);
+	ImagePanel(wxWindow* parent,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize);
 
-    void AdjustSize(const wxSize& size);
-    void SetBorderColour(const wxColour& colour);
+	void AdjustSize(const wxSize& size);
+	void SetBorderColour(const wxColour& colour);
 
-    bool SetImage(const wxImage& image);
-    void NewScale();
+	bool SetImage(const wxImage& image);
+	void NewScale();
 
-    void SetImageAsIs(wxImage& image);
+	void SetImageAsIs(wxImage& image);
 
-    void Clear();
-    wxImage& GetImage() { return image; }
+	void Clear();
+	wxImage& GetImage() { return image; }
 };
 

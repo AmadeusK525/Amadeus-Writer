@@ -1,5 +1,5 @@
 #include "amUtility.h"
- 
+
 #include "MyApp.h"
 #include "MainFrame.h"
 
@@ -8,33 +8,37 @@ wxDataViewItemAttr amTreeModelNode::m_hoverAttr{};
 #endif
 
 void amDoSubWindowFullscreen(wxWindow* window, wxWindow* originalParent, bool fs,
-    wxBoxSizer* originalSizer, wxSizerFlags flags, int sizerIndex) {
-    amMainFrame* mainFrame = amGetManager()->GetMainFrame();
-    wxPanel* mainPanel = mainFrame->GetMainPanel();
-    wxBoxSizer* holderSizer = mainFrame->GetHolderSizer();
+	wxBoxSizer* originalSizer, wxSizerFlags flags, int sizerIndex)
+{
+	amMainFrame* mainFrame = amGetManager()->GetMainFrame();
+	wxPanel* mainPanel = mainFrame->GetMainPanel();
+	wxBoxSizer* holderSizer = mainFrame->GetHolderSizer();
 
-    if (fs) {
-        if (originalSizer)
-            originalSizer->Detach(window);
+	if ( fs )
+	{
+		if ( originalSizer )
+			originalSizer->Detach(window);
 
-        window->Reparent(mainFrame);
+		window->Reparent(mainFrame);
 
-        holderSizer->Replace(mainPanel, window);
-        mainFrame->ShowFullScreen(true);
+		holderSizer->Replace(mainPanel, window);
+		mainFrame->ShowFullScreen(true);
 
-    } else {
-        holderSizer->Replace(window, mainPanel);
-        window->Reparent(originalParent);
+	}
+	else
+	{
+		holderSizer->Replace(window, mainPanel);
+		window->Reparent(originalParent);
 
-        if (originalSizer)
-            originalSizer->Insert(sizerIndex, window, flags);
+		if ( originalSizer )
+			originalSizer->Insert(sizerIndex, window, flags);
 
-        if (!mainFrame->IsFrameFullScreen())
-            mainFrame->ShowFullScreen(false);
-    }
+		if ( !mainFrame->IsFrameFullScreen() )
+			mainFrame->ShowFullScreen(false);
+	}
 
-    mainPanel->Show(!fs);
-    mainFrame->Layout();
-    if (originalSizer)
-        originalSizer->Layout();
+	mainPanel->Show(!fs);
+	mainFrame->Layout();
+	if ( originalSizer )
+		originalSizer->Layout();
 }

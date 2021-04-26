@@ -8,28 +8,30 @@
 #include "ProjectManager.h"
 
 
-class amRelease : public wxPanel {
+class amRelease : public wxPanel
+{
 private:
-    amProjectManager* m_manager = nullptr;
+	amProjectManager* m_manager = nullptr;
 
-    //wxRichTextPrinting* print = nullptr;
-    wxPanel* m_panel = nullptr;
-    wxBoxSizer* m_pagesSizer = nullptr;
+	//wxRichTextPrinting* print = nullptr;
+	wxPanel* m_panel = nullptr;
+	wxBoxSizer* m_pagesSizer = nullptr;
 
 public:
-    amRelease(wxWindow* parent);
-    ~amRelease();
+	amRelease(wxWindow* parent);
+	~amRelease();
 
-    void UpdateContent();
+	void UpdateContent();
 
-    void OnNext(wxCommandEvent& event);
-    void OnPrevious(wxCommandEvent& event);
-    void OnKeyPressed(wxKeyEvent& event);
+	void OnNext(wxCommandEvent& event);
+	void OnPrevious(wxCommandEvent& event);
+	void OnKeyPressed(wxKeyEvent& event);
 
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
-enum {
-    BUTTON_NextPage,
-    BUTTON_PreviousPage
+enum
+{
+	BUTTON_NextPage,
+	BUTTON_PreviousPage
 };

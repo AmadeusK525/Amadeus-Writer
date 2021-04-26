@@ -3,7 +3,8 @@
 #include "wxmemdbg.h"
 
 amElementShowcase::amElementShowcase(wxWindow* parent) :
-	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL) {
+	wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL)
+{
 	wxFont font(wxFontInfo(12).Bold());
 
 	m_role = new wxStaticText(this, -1, "", wxDefaultPosition, wxSize(150, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
@@ -32,9 +33,16 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	this->SetScrollRate(20, 20);
 }
 
-void amElementShowcase::SetData(Element& element) {
+void amElementShowcase::SetData(Element* element)
+{
 	Freeze();
-	m_name->SetLabel(element.name);
+	m_name->SetLabel(element->name);
+	Thaw();
+}
+
+void amElementShowcase::ClearAll()
+{
+
 }
 
 
@@ -43,7 +51,8 @@ void amElementShowcase::SetData(Element& element) {
 ///////////////////////////////////////////////////////////////////
 
 
-amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(parent) {
+amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(parent)
+{
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(11));
 
@@ -133,6 +142,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_appearance->SetFont(wxFontInfo(9));
 	m_appearance->Show(false);
 	m_appearance->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
+	m_appearance->Bind(wxEVT_MOUSEWHEEL, &amCharacterShowcase::HandleOnMouseWheel, this);
 
 	m_perLabel = new wxStaticText(this, -1, _("Personality"), wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
 	m_perLabel->SetFont(font);
@@ -147,6 +157,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_personality->SetFont(wxFontInfo(9));
 	m_personality->Show(false);
 	m_personality->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
+	m_personality->Bind(wxEVT_MOUSEWHEEL, &amCharacterShowcase::HandleOnMouseWheel, this);
 
 	m_bsLabel = new wxStaticText(this, -1, _("Backstory"), wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
 	m_bsLabel->SetFont(font);
@@ -161,6 +172,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_backstory->SetFont(wxFontInfo(9));
 	m_backstory->Show(false);
 	m_backstory->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
+	m_backstory->Bind(wxEVT_MOUSEWHEEL, &amCharacterShowcase::HandleOnMouseWheel, this);
 
 	m_vertical->Add(firstLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM | wxLEFT | wxRIGHT, 10));
 	m_vertical->Add(secondLine, wxSizerFlags(0).CenterHorizontal().Border(wxBOTTOM | wxLEFT | wxRIGHT, 10));
@@ -176,12 +188,11 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_backstory->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amCharacterShowcase::SetData(Element& charToSet) {
-	Character* character = dynamic_cast<Character*>(&charToSet);
-
-	if (!character) {
-		wxMessageBox("There was an unexpected problem when loading the Character to the panel.");
-		SetData(Character());
+void amCharacterShowcase::SetData(Character* character)
+{
+	if ( !character )
+	{
+		ClearAll();
 		return;
 	}
 
@@ -191,12 +202,13 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	bool isNotEmpty = !character->sex.IsEmpty();
 	m_sex->Show(isNotEmpty);
 	m_sexLabel->Show(isNotEmpty);
-	if (isNotEmpty) {
+	if ( isNotEmpty )
+	{
 		m_sex->SetLabel(character->sex);
 
-		if (character->sex == "Female")
+		if ( character->sex == "Female" )
 			m_sex->SetBackgroundColour(wxColour(255, 182, 193));
-		else if (character->sex == "Male")
+		else if ( character->sex == "Male" )
 			m_sex->SetBackgroundColour(wxColour(139, 186, 255));
 		else
 			m_sex->SetBackgroundColour(wxColour(220, 220, 220));
@@ -205,32 +217,33 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	isNotEmpty = !character->age.IsEmpty();
 	m_age->Show(isNotEmpty);
 	m_ageLabel->Show(isNotEmpty);
-	if (isNotEmpty)
+	if ( isNotEmpty )
 		m_age->SetLabel(character->age);
 
 	isNotEmpty = !character->height.IsEmpty();
 	m_height->Show(isNotEmpty);
 	m_heightLabel->Show(isNotEmpty);
-	if (isNotEmpty)
+	if ( isNotEmpty )
 		m_height->SetLabel(character->height);
 
 	isNotEmpty = !character->nat.IsEmpty();
 	m_nat->Show(isNotEmpty);
 	m_natLabel->Show(isNotEmpty);
-	if (isNotEmpty)
+	if ( isNotEmpty )
 		m_nat->SetLabel(character->nat);
 
 	isNotEmpty = !character->nick.IsEmpty();
 	m_nick->Show(isNotEmpty);
 	m_nickLabel->Show(isNotEmpty);
-	if (isNotEmpty)
+	if ( isNotEmpty )
 		m_nick->SetLabel(character->nick);
 
 	wxString role;
 	wxColour rolebg;
 	wxColour rolefg;
 
-	switch (character->role) {
+	switch ( character->role )
+	{
 	case cProtagonist:
 		role = "Protagonist";
 		rolebg = { 230, 60, 60 };
@@ -271,7 +284,8 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	isNotEmpty = !character->appearance.IsEmpty();
 	m_appearance->Show(isNotEmpty);
 	m_appLabel->Show(isNotEmpty);
-	if (isNotEmpty) {
+	if ( isNotEmpty )
+	{
 		m_appearance->SetValue(character->appearance);
 		list.Append(m_appearance);
 	}
@@ -279,7 +293,8 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	isNotEmpty = !character->personality.IsEmpty();
 	m_personality->Show(isNotEmpty);
 	m_perLabel->Show(isNotEmpty);
-	if (isNotEmpty) {
+	if ( isNotEmpty )
+	{
 		m_personality->SetValue(character->personality);
 		list.Append(m_personality);
 	}
@@ -287,7 +302,8 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	isNotEmpty = !character->backstory.IsEmpty();
 	m_backstory->Show(isNotEmpty);
 	m_bsLabel->Show(isNotEmpty);
-	if (isNotEmpty) {
+	if ( isNotEmpty )
+	{
 		m_backstory->SetValue(character->backstory);
 		list.Append(m_backstory);
 	}
@@ -297,12 +313,14 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	int tcsize = m_custom.size();
 	int ccsize = character->custom.size();
 
-	if (tcsize > ccsize) {
+	if ( tcsize > ccsize )
+	{
 		pair<wxStaticText*, wxTextCtrl*>* it = m_custom.end() - 1;
 
-		for (int i = (tcsize - 1); i > (ccsize - 1); i--) {
-			m_custom[i].first->Destroy();
-			m_custom[i].second->Destroy();
+		for ( int i = (tcsize - 1); i > (ccsize - 1); i-- )
+		{
+			it->first->Destroy();
+			it->second->Destroy();
 			m_custom.erase(it--);
 		}
 	}
@@ -310,11 +328,13 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	wxSize size(-1, 80);
 	wxBusyCursor cursor;
 
-	for (int i = 0; i < character->custom.size(); i++) {
-		if (character->custom[i].second.IsEmpty())
+	for ( int i = 0; i < character->custom.size(); i++ )
+	{
+		if ( character->custom[i].second.IsEmpty() )
 			continue;
 
-		if (i >= tcsize) {
+		if ( i >= tcsize )
+		{
 			wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
 				wxDefaultSize, wxBORDER_SIMPLE);
 			label->SetFont(wxFontInfo(12).Bold());
@@ -324,11 +344,12 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 			wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
 				size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
 			content->SetBackgroundStyle(wxBG_STYLE_PAINT);
-			content->SetBackgroundColour(wxColour(10,10,10));
+			content->SetBackgroundColour(wxColour(10, 10, 10));
 			content->SetForegroundColour(wxColour(255, 255, 255));
 			content->SetFont(wxFontInfo(9));
 			content->SetCursor(wxCURSOR_DEFAULT);
 			content->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
+			content->Bind(wxEVT_MOUSEWHEEL, &amCharacterShowcase::HandleOnMouseWheel, this);
 
 			m_vertical->Add(label, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
 			m_vertical->Add(content, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
@@ -344,16 +365,53 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 	m_vertical->FitInside(this);
 
 	int nol;
-	for (auto& it : list) {
+	for ( auto& it : list )
+	{
 		nol = ((wxTextCtrl*)it)->GetNumberOfLines();
 
-		if (nol > 5)
+		if ( nol > 5 )
 			it->SetMinSize(wxSize(-1, nol * it->GetCharHeight() + 5));
 		else
 			it->SetMinSize(size);
 	}
-	
+
 	m_vertical->FitInside(this);
+	Thaw();
+}
+
+void amCharacterShowcase::ClearAll()
+{
+	Freeze();
+	m_name->SetLabel("");
+
+	m_role->SetLabel("");
+	m_role->SetBackgroundColour(wxColour(220, 220, 220));
+
+	m_image->SetImage(wxImage());
+
+	m_sex->Show(false);
+	m_sexLabel->Show(false);
+	m_age->Show(false);
+	m_ageLabel->Show(false);
+	m_height->Show(false);
+	m_heightLabel->Show(false);
+	m_nat->Show(false);
+	m_natLabel->Show(false);
+	m_nick->Show(false);
+	m_nickLabel->Show(false);
+	m_appearance->Show(false);
+	m_appLabel->Show(false);
+	m_personality->Show(false);
+	m_perLabel->Show(false);
+	m_backstory->Show(false);
+	m_bsLabel->Show(false);
+
+	for ( pair<wxStaticText*, wxTextCtrl*>& custom : m_custom )
+	{
+		custom.first->Show(false);
+		custom.second->Show(false);
+	}
+
 	Thaw();
 }
 
@@ -363,7 +421,8 @@ void amCharacterShowcase::SetData(Element& charToSet) {
 ///////////////////////////////////////////////////////////////////
 
 
-amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(parent) {
+amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(parent)
+{
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(9));
 
@@ -380,6 +439,7 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_general->SetFont(font2);
 	m_general->Show(false);
 	m_general->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
+	m_general->Bind(wxEVT_MOUSEWHEEL, &amLocationShowcase::HandleOnMouseWheel, this);
 
 	m_natLabel = new wxStaticText(this, -1, _("Natural Aspects"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_natLabel->SetFont(font);
@@ -394,6 +454,7 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_natural->SetFont(font2);
 	m_natural->Show(false);
 	m_natural->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
+	m_natural->Bind(wxEVT_MOUSEWHEEL, &amLocationShowcase::HandleOnMouseWheel, this);
 
 	m_archLabel = new wxStaticText(this, -1, _("Architecture"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_archLabel->SetFont(font);
@@ -408,6 +469,7 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_architecture->SetFont(font2);
 	m_architecture->Show(false);
 	m_architecture->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
+	m_architecture->Bind(wxEVT_MOUSEWHEEL, &amLocationShowcase::HandleOnMouseWheel, this);
 
 	m_ecoLabel = new wxStaticText(this, -1, _("Economy"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_ecoLabel->SetFont(font);
@@ -422,6 +484,7 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_economy->SetFont(font2);
 	m_economy->Show(false);
 	m_economy->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
+	m_economy->Bind(wxEVT_MOUSEWHEEL, &amLocationShowcase::HandleOnMouseWheel, this);
 
 	m_culLabel = new wxStaticText(this, -1, _("Culture"), wxDefaultPosition, wxDefaultSize, 0L | wxBORDER_SIMPLE);
 	m_culLabel->SetFont(font);
@@ -436,6 +499,7 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_culture->SetFont(font2);
 	m_culture->Show(false);
 	m_culture->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
+	m_culture->Bind(wxEVT_MOUSEWHEEL, &amLocationShowcase::HandleOnMouseWheel, this);
 
 	m_poliLabel = new wxStaticText(this, -1, _("Politics"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_SIMPLE);
 	m_poliLabel->SetFont(font);
@@ -450,6 +514,7 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_politics->SetFont(font2);
 	m_politics->Show(false);
 	m_politics->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
+	m_politics->Bind(wxEVT_MOUSEWHEEL, &amLocationShowcase::HandleOnMouseWheel, this);
 
 	m_firstColumn = new wxBoxSizer(wxVERTICAL);
 	m_firstColumn->Add(m_generalLabel, wxSizerFlags(0));
@@ -481,20 +546,19 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_politics->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amLocationShowcase::SetData(Element& locToSet) {
-	Location* location = dynamic_cast<Location*>(&locToSet);
-
-	if (!location) {
-		wxMessageBox("There was an unexpected problem when loading the Location to the panel.");
-		SetData(Location());
+void amLocationShowcase::SetData(Location* location)
+{
+	if ( !location )
+	{
+		ClearAll();
 		return;
 	}
 
 	Freeze();
 	m_name->SetLabel(location->name);
 
-	
-	switch (location->role) {
+	switch ( location->role )
+	{
 	case lHigh:
 		m_role->SetBackgroundColour(wxColour(230, 60, 60));
 		m_role->SetLabel("Main");
@@ -536,12 +600,14 @@ void amLocationShowcase::SetData(Element& locToSet) {
 	int tcsize = m_custom.size();
 	int ccsize = location->custom.size();
 
-	if (tcsize > ccsize) {
-		auto it = m_custom.end() - 1;
+	if ( tcsize > ccsize )
+	{
+		pair<wxStaticText*, wxTextCtrl*>* it = m_custom.end() - 1;
 
-		for (int i = (tcsize - 1); i > (ccsize - 1); i--) {
-			m_custom[i].first->Destroy();
-			m_custom[i].second->Destroy();
+		for ( int i = (tcsize - 1); i > (ccsize - 1); i-- )
+		{
+			it->first->Destroy();
+			it->second->Destroy();
 			m_custom.erase(it--);
 
 			m_first = !m_first;
@@ -557,20 +623,25 @@ void amLocationShowcase::SetData(Element& locToSet) {
 	list.Append(m_economy);
 	list.Append(m_culture);
 
-	for (int i = 0; i < location->custom.size(); i++) {
-		if (location->custom[i].second.IsEmpty())
+	for ( int i = 0; i < location->custom.size(); i++ )
+	{
+		if ( location->custom[i].second.IsEmpty() )
 			continue;
 
-		if (i >= tcsize) {
+		if ( i >= tcsize )
+		{
 			wxStaticText* label = new wxStaticText(this, -1, "", wxDefaultPosition,
 				wxDefaultSize, wxBORDER_SIMPLE);
 			wxTextCtrl* content = new wxTextCtrl(this, -1, "", wxDefaultPosition,
 				size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
 
-			if (m_first) {
+			if ( m_first )
+			{
 				m_firstColumn->Add(label, wxSizerFlags(0).Left());
 				m_firstColumn->Add(content, wxSizerFlags(0).Border(wxBOTTOM, 20).Expand());
-			} else {
+			}
+			else
+			{
 				m_secondColumn->Add(label, wxSizerFlags(0).Left());
 				m_secondColumn->Add(content, wxSizerFlags(0).Border(wxBOTTOM, 20).Expand());
 			}
@@ -585,6 +656,7 @@ void amLocationShowcase::SetData(Element& locToSet) {
 			content->SetFont(wxFontInfo(9));
 			content->SetCursor(wxCURSOR_DEFAULT);
 			content->Bind(wxEVT_LEFT_DOWN, &amLocationShowcase::EmptyMouseEvent, this);
+			content->Bind(wxEVT_MOUSEWHEEL, &amLocationShowcase::HandleOnMouseWheel, this);
 
 			m_first = !m_first;
 			m_custom.push_back(pair<wxStaticText*, wxTextCtrl*>(label, content));
@@ -602,11 +674,13 @@ void amLocationShowcase::SetData(Element& locToSet) {
 	m_vertical->FitInside(this);
 
 	int nol;
-	for (auto& it : list) {
-		if (it->IsShown()) {
+	for ( auto& it : list )
+	{
+		if ( it->IsShown() )
+		{
 			nol = ((wxTextCtrl*)it)->GetNumberOfLines();
 
-			if (nol > 5)
+			if ( nol > 5 )
 				it->SetMinSize(wxSize(-1, nol * it->GetCharHeight() + 5));
 			else
 				it->SetMinSize(size);
@@ -617,6 +691,41 @@ void amLocationShowcase::SetData(Element& locToSet) {
 	Thaw();
 }
 
+void amLocationShowcase::ClearAll()
+{
+	Freeze();
+	m_name->SetLabel("");
+
+	m_role->SetLabel("");
+	m_role->SetBackgroundColour(wxColour(220, 220, 220));
+
+	m_image->SetImage(wxImage());
+
+	m_general->Show(false);
+	m_generalLabel->Show(false);
+	m_natural->Show(false);
+	m_natLabel->Show(false);
+	m_architecture->Show(false);
+	m_archLabel->Show(false);
+	m_politics->Show(false);
+	m_poliLabel->Show(false);
+	m_economy->Show(false);
+	m_ecoLabel->Show(false);
+	m_culture->Show(false);
+	m_culLabel->Show(false);
+
+	for ( pair<wxStaticText*, wxTextCtrl*>& custom : m_custom )
+	{
+		custom.first->Show(false);
+		custom.second->Show(false);
+	}
+
+	Thaw();
+}
+
 amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent) {}
 
-void amItemShowcase::SetData(Element& itemToSet) {}
+void amItemShowcase::SetData(Item* item) {}
+
+void amItemShowcase::ClearAll()
+{}

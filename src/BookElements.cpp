@@ -7,213 +7,166 @@
 
 #include "wxmemdbg.h"
 
+
 /////////////////////////////////////////////////////////////////
-///////////////////////////// Scene /////////////////////////////
+/////////////////////////// Document ////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 
-amDocument Scene::GenerateDocument() {
-	amDocument document;
-	document.tableName = "scenes";
-	document.name = name;
+Document::~Document()
+{
+	for ( Note*& pNote : notes )
+		delete pNote;
 
-	document.integers.reserve(2);
-	document.integers.push_back(pair<wxString, int>("position", pos));
-	document.integers.push_back(pair<wxString, int>("chapter_id", chapterID));
-
-	document.strings.push_back(pair<wxString, wxString>("content", wxString()));
-
-	wxStringOutputStream stream(&document.strings.front().second);
-	content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
-
-	return document;
+	if ( buffer )
+		delete buffer;
 }
 
-amDocument Scene::GenerateDocumentForId() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "scenes";
-
-	document.specialForeign = true;
-	document.foreignKey.first = "chapter_id";
-	document.foreignKey.second = chapterID;
-
-	document.integers.push_back(pair<wxString, int>("position", pos));
-	return document;
-}
-
-
-/////////////////////////////////////////////////////////////////
-/////////////////////////// Chapter /////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-
-bool Chapter::Init() {
-	if (id == -1)
-		return false;
-
-	if (scenes.empty())
-		scenes.push_back(Scene(id, 1));
-
-	return true;
-}
-
-bool Chapter::HasRedNote() {
-	for (unsigned int i = 0; i < notes.size(); i++) {
-		if (notes[i].isDone == false)
+bool Document::HasRedNote()
+{
+	for ( Note*& pNote : notes )
+	{
+		if ( pNote->isDone == false )
 			return true;
 	}
 
 	return false;
 }
 
-void Chapter::Save(wxSQLite3Database* db) {
-	try {
+void Document::Save(wxSQLite3Database* db)
+{
+	try
+	{
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 
 		wxSQLite3StatementBuffer buffer;
 
-		wxString insert("INSERT INTO chapters (name, synopsys, position, section_id) VALUES (");
-		insert << "'%q', '%q', " << position << ", " << sectionID << ");";
+		wxString insert("INSERT INTO documents (name, synopsys, content, position, type, book_id, isInTrash"
+			", parent_document_id, character_pov_id) VALUES (");
+		insert << "'%q', '%q', '%q', " << position << ", " << type << ", " << bookID << ", " << isInTrash << ", '%q', '%q');";
 
-		buffer.Format((const char*)insert, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8());
+		wxString content;
+		if ( this->buffer )
+		{
+			wxStringOutputStream sstream(&content);
+			this->buffer->SaveFile(sstream, wxRICHTEXT_TYPE_XML);
+		}
+		else
+			content = "NULL";
+
+		wxString parentId;
+		if ( parent )
+			parentId = std::to_string(parent->id);
+		else
+			parentId = "NULL";
+
+		buffer.Format((const char*)insert, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8(),
+			(const char*)content.ToUTF8(), (const char*)parentId, "NULL");
 
 		storage->ExecuteUpdate(buffer);
-		SetId(storage->GetDocumentId(GenerateDocumentForId()));
-
-		Init();
-		for (Scene& scene : scenes) {
-			insert = "INSERT INTO scenes (name, content, position, chapter_id) VALUES ('%q', '%q', ";
-			insert << scene.pos << ", " << id << ");";
-
-			wxStringOutputStream stream;
-			scene.content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
-
-			buffer.Format((const char*)insert, (const char*)scene.name.ToUTF8(), (const char*)stream.GetString());
-			storage->ExecuteUpdate(buffer);
-		}
-	} catch (wxSQLite3Exception& e) {
+		SetId(storage->GetSQLEntryId(GenerateSQLEntryForId()));
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 }
 
-bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes) {
-	if (id == -1)
+bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNotes)
+{
+	if ( id == -1 )
 		return false;
 
-	try {
+	try
+	{
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 
 		wxSQLite3StatementBuffer buffer;
 
-		wxString update("UPDATE chapters SET name = '%q', synopsys = '%q', position = ");
+		wxString update("UPDATE documents SET name = '%q', synopsys = '%q', position = ");
 
-		update << position << ", isInTrash = " << isInTrash << ", section_id = " << sectionID << " WHERE id = " << id << ";";
+		update << position << ", type = " << (int)type << ", isInTrash = " << isInTrash << ", book_id = " << bookID
+			<< ", parent_document_id = ";
+		if ( parent )
+			update << parent->id;
+		else
+			update << "NULL";
 
-		buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8());
-		storage->ExecuteUpdate(buffer);
+		if ( updateContent )
+		{
+			wxString content;
+			update << ", content = '%q' WHERE id = " << id << ";";
 
-		if (updateScenes) {
-			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM scenes WHERE chapter_id = " + std::to_string(id) + ";");
-
-			int prevSize = customTable.GetRowCount();
-			int newSize = scenes.size();
-
-			if (newSize > prevSize) {
-				int i = 0;
-				for (i; i < prevSize; i++) {
-					customTable.SetRow(i);
-
-					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
-					update << scenes[i].pos << ", isInTrash = " << scenes[i].isInTrash << ", chapter_id = " << id << " WHERE id = " <<
-						customTable.GetInt("id") << ";";
-
-					wxStringOutputStream stream;
-					scenes[i].content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
-
-					buffer.Format((const char*)update, (const char*)scenes[i].name.ToUTF8(), (const char*)stream.GetString());
-					storage->ExecuteUpdate(buffer);
-				}
-
-				for (i; i < newSize; i++) {
-					update = "INSERT INTO scenes (name, content, position, isInTrash chapter_id) VALUES ('%q', '%q', ";
-					update << scenes[i].pos << ", " << isInTrash << ", " << id << ");";
-
-					wxStringOutputStream stream;
-					scenes[i].content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
-
-					buffer.Format((const char*)update, (const char*)scenes[i].name.ToUTF8(), (const char*)stream.GetString());
-					storage->ExecuteUpdate(buffer);
-				}
-			} else {
-				int i = 0;
-				for (i; i < newSize; i++) {
-					customTable.SetRow(i);
-
-					update = "UPDATE scenes SET name = '%q', content = '%q', position = ";
-					update << scenes[i].pos << ", isInTrash = " << scenes[i].isInTrash << ", chapter_id = " << id << " WHERE id = " <<
-						customTable.GetInt("id") << ";";
-
-					wxStringOutputStream stream;
-					scenes[i].content.SaveFile(stream, wxRICHTEXT_TYPE_XML);
-
-					buffer.Format((const char*)update, (const char*)scenes[i].name.ToUTF8(), (const char*)stream.GetString());
-					storage->ExecuteUpdate(buffer);
-				}
-
-				if (newSize < prevSize)
-					for (i; i < prevSize; i++) {
-						customTable.SetRow(i);
-
-						update = "DELETE FROM scenes WHERE id = ";
-						update << customTable.GetInt("id") << ";";
-
-						storage->ExecuteUpdate(update);
-					}
+			if ( this->buffer )
+			{
+				wxStringOutputStream sstream(&content);
+				this->buffer->SaveFile(sstream, wxRICHTEXT_TYPE_XML);
 			}
+			else
+			{
+				content = "NULL";
+			}
+
+			buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8(),
+				(const char*)content.ToUTF8());
+		}
+		else
+		{
+			update << " WHERE id = " << id << ";";
+			buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8());
 		}
 
-		if (updateNotes) {
-			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM chapter_notes WHERE chapter_id = " + std::to_string(id) + ";");
+		storage->ExecuteUpdate(buffer);
+
+		if ( updateNotes )
+		{
+			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM document_notes WHERE document_id = " + std::to_string(id) + ";");
 
 			int prevSize = customTable.GetRowCount();
 			int newSize = notes.size();
 
-			if (newSize > prevSize) {
+			if ( newSize > prevSize )
+			{
 				int i = 0;
-				for (i; i < prevSize; i++) {
+				for ( i; i < prevSize; i++ )
+				{
 					customTable.SetRow(i);
 
-					update = "UPDATE chapter_notes SET name = '%q', content = '%q', isDone = ";
-					update << notes[i].isDone << ", chapter_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
+					update = "UPDATE document_notes SET name = '%q', content = '%q', isDone = ";
+					update << notes[i]->isDone << ", document_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
 
-					buffer.Format((const char*)update, (const char*)notes[i].name.ToUTF8(), (const char*)notes[i].content.ToUTF8());
+					buffer.Format((const char*)update, (const char*)notes[i]->name.ToUTF8(), (const char*)notes[i]->content.ToUTF8());
 					storage->ExecuteUpdate(buffer);
 				}
 
-				for (i; i < newSize; i++) {
-					update = "INSERT INTO chapter_notes (name, content, isDone, chapter_id) VALUES ('%q', '%q', ";
-					update << notes[i].isDone << ", " << id << ");";
+				for ( i; i < newSize; i++ )
+				{
+					update = "INSERT INTO document_notes (name, content, isDone, document_id) VALUES ('%q', '%q', ";
+					update << notes[i]->isDone << ", " << id << ");";
 
-					buffer.Format((const char*)update, (const char*)notes[i].name.ToUTF8(), (const char*)notes[i].content.ToUTF8());
+					buffer.Format((const char*)update, (const char*)notes[i]->name.ToUTF8(), (const char*)notes[i]->content.ToUTF8());
 					storage->ExecuteUpdate(buffer);
 				}
-			} else {
+			}
+			else
+			{
 				int i = 0;
-				for (i; i < newSize; i++) {
+				for ( i; i < newSize; i++ )
+				{
 					customTable.SetRow(i);
 
-					update = "UPDATE chapter_notes SET name = '%q', content = '%q', isDone = ";
-					update << notes[i].isDone << ", chapter_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
+					update = "UPDATE document_notes SET name = '%q', content = '%q', isDone = ";
+					update << notes[i]->isDone << ", document_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
 
-					buffer.Format((const char*)update, (const char*)notes[i].name.ToUTF8(), (const char*)notes[i].content.ToUTF8());
+					buffer.Format((const char*)update, (const char*)notes[i]->name.ToUTF8(), (const char*)notes[i]->content.ToUTF8());
 					storage->ExecuteUpdate(buffer);
 				}
 
-				if (newSize < prevSize)
-					for (i; i < prevSize; i++) {
+				if ( newSize < prevSize )
+					for ( i; i < prevSize; i++ )
+					{
 						customTable.SetRow(i);
-						update = "DELETE FROM chapter_notes WHERE id = ";
+						update = "DELETE FROM document_notes WHERE id = ";
 						update << customTable.GetInt("id") << ";";
 
 						storage->ExecuteUpdate(update);
@@ -221,189 +174,91 @@ bool Chapter::Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes)
 			}
 		}
 
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 
 	return true;
 }
 
-void Chapter::LoadSceneBuffers(wxSQLite3Database* db) {
-	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT content FROM scenes WHERE chapter_id = " +
-		std::to_string(id) + " ORDER BY position ASC;");
+amSQLEntry Document::GenerateSQLEntrySimple()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.tableName = "documents";
+	sqlEntry.name = name;
 
-	int i = 0;
-	int size = scenes.size();
+	sqlEntry.integers.reserve(2);
+	sqlEntry.integers.push_back(pair<wxString, int>("position", position));
+	sqlEntry.integers.push_back(pair<wxString, int>("book_id", bookID));
 
-	while (result.NextRow()) {
-		if (i >= size)
-			break;
+	sqlEntry.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
 
-		wxStringInputStream sstream(result.GetAsString("content"));
-		scenes[i].content.LoadFile(sstream, wxRICHTEXT_TYPE_XML);
-		i++;
-	}
+	return sqlEntry;
 }
 
-void Chapter::ClearSceneBuffers() {
-	for (Scene& scene : scenes)
-		scene.content.Clear();
-}
+amSQLEntry Document::GenerateSQLEntry()
+{
+	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
 
-amDocument Chapter::GenerateDocumentSimple() {
-	amDocument document;
-	document.tableName = "chapters";
-	document.name = name;
+	sqlEntry.strings.push_back(pair<wxString, wxString>("content", wxString()));
 
-	document.integers.reserve(2);
-	document.integers.push_back(pair<wxString, int>("position", position));
-	document.integers.push_back(pair<wxString, int>("section_id", sectionID));
 
-	document.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
+	for ( Note*& pNote : notes )
+	{
+		amSQLEntry noteDoc;
+		noteDoc.tableName = "document_notes";
 
-	return document;
-}
+		noteDoc.name = pNote->name;
+		noteDoc.strings.push_back(pair<wxString, wxString>("content", pNote->content));
 
-amDocument Chapter::GenerateDocument() {
-	amDocument document = GenerateDocumentSimple();
-
-	document.documents.reserve(scenes.size() + notes.size());
-
-	for (auto& it : scenes)
-		document.documents.push_back(it.GenerateDocument());
-
-	for (auto& it : notes) {
-		amDocument noteDoc;
-		noteDoc.tableName = "chapter_notes";
-
-		noteDoc.name = it.name;
-		noteDoc.strings.push_back(pair<wxString, wxString>("content", it.content));
-
-		noteDoc.integers.push_back(pair<wxString, int>("isDone", it.isDone));
+		noteDoc.integers.push_back(pair<wxString, int>("isDone", pNote->isDone));
 
 		noteDoc.specialForeign = true;
-		noteDoc.foreignKey.first = "chapter_id";
+		noteDoc.foreignKey.first = "document_id";
 
-		document.documents.push_back(noteDoc);
+		sqlEntry.childEntries.push_back(noteDoc);
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Chapter::GenerateDocumentForId() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "chapters";
+amSQLEntry Document::GenerateSQLEntryForId()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = name;
+	sqlEntry.tableName = "documents";
 
-	document.specialForeign = true;
-	document.foreignKey.first = "section_id";
-	document.foreignKey.second = sectionID;
+	sqlEntry.specialForeign = true;
+	sqlEntry.foreignKey.first = "book_id";
+	sqlEntry.foreignKey.second = bookID;
 
-	document.integers.push_back(pair<wxString, int>("position", position));
+	sqlEntry.integers.push_back(pair<wxString, int>("position", position));
 
-	return document;
+	return sqlEntry;
 }
 
-bool Chapter::operator<(const Chapter& other) const {
+bool Document::operator<(const Document& other) const
+{
 	return position < other.position;
 }
 
-bool Chapter::operator==(const Chapter& other) const {
-	return sectionID == other.sectionID && position == other.position;
+bool Document::operator==(const Document& other) const
+{
+	return bookID == other.bookID && position == other.position;
 }
 
-Note::Note(wxString content, wxString name) {
+Note::Note(wxString content, wxString name)
+{
 	this->content = content;
 	this->name = name;
 }
 
-amDocument Note::GenerateDocument() {
+amSQLEntry Note::GenerateSQLEntry()
+{
 
-	return amDocument();
-}
-
-
-/////////////////////////////////////////////////////////////////
-//////////////////////////// Section //////////////////////////// 
-/////////////////////////////////////////////////////////////////
-
-
-void Section::Save(wxSQLite3Database* db) {
-	try {
-		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
-
-		wxSQLite3StatementBuffer buffer;
-
-		wxString insert("INSERT INTO sections (name, description, position, type, book_id) VALUES ('%q', '%q', ");
-		insert << pos << ", " << type << ", " << bookID << ");";
-
-		buffer.Format((const char*)insert, (const char*)name.ToUTF8(), (const char*)description.ToUTF8());
-
-		storage->ExecuteUpdate(buffer);
-		SetId(storage->GetDocumentId(GenerateDocumentForId()));
-	} catch (wxSQLite3Exception& e) {
-		wxMessageBox(e.GetMessage());
-	}
-}
-
-bool Section::Update(wxSQLite3Database* db, bool updateChapters) {
-
-	amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
-
-	wxSQLite3StatementBuffer buffer;
-
-	wxString update("UPDATE sections SET name = '%q', description = '%q', position = ");
-	update << pos << ", type = " << type << ", isInTrash = " << isInTrash <<
-		", book_id = " << bookID << " WHERE id = " << id << ";";
-
-	buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)description.ToUTF8());
-	storage->ExecuteUpdate(buffer); 
-
-	if (updateChapters) {
-		for (Chapter& chapter : chapters)
-			chapter.Update(db, false, false);
-	}
-
-	return false;
-}
-
-amDocument Section::GenerateDocumentSimple() {
-	amDocument document;
-	document.tableName = "sections";
-	document.name = name;
-
-	document.integers.reserve(3);
-	document.integers.push_back(pair<wxString, int>("book_id", bookID));
-	document.integers.push_back(pair<wxString, int>("position", pos));
-	document.integers.push_back(pair<wxString, int>("type", type));
-
-	document.strings.push_back(pair<wxString, wxString>("description", description));
-
-	return document;
-}
-
-amDocument Section::GenerateDocument() {
-	amDocument document = GenerateDocumentSimple();
-
-	document.documents.reserve(chapters.size());
-	for (auto& it : chapters)
-		document.documents.push_back(it.GenerateDocument());
-
-	return document;
-}
-
-amDocument Section::GenerateDocumentForId() {
-	amDocument document;
-	document.name = name;
-	document.tableName = "sections";
-
-	document.specialForeign = true;
-	document.foreignKey.first = "book_id";
-	document.foreignKey.second = bookID;
-
-	document.integers.push_back(pair<wxString, int>("position", pos));
-
-	return document;
+	return amSQLEntry();
 }
 
 
@@ -414,19 +269,25 @@ amDocument Section::GenerateDocumentForId() {
 
 wxSize Book::coverSize{ 660, 900 };
 
-bool Book::Init() {
-	if (id == -1)
+Book::~Book()
+{
+	for ( Document*& pDocument : documents )
+	{
+		delete pDocument;
+	}
+}
+
+bool Book::Init()
+{
+	if ( id == -1 )
 		return false;
 
-	if (sections.empty())
-		sections.push_back(Section(id, 1));
-
 	InitCover();
-
 	return true;
 }
 
-void Book::InitCover() {
+void Book::InitCover()
+{
 	wxBitmap bitmapCover(cover);
 	wxMemoryDC dc(bitmapCover);
 	dc.SetFont(wxFontInfo(64).Bold());
@@ -442,35 +303,45 @@ void Book::InitCover() {
 	bool first = true;
 	int maxChar = 0;
 
-	while (end < strLen) {
-		if (end >= begin + maxChar || first) {
+	while ( end < strLen )
+	{
+		if ( end >= begin + maxChar || first )
+		{
 			end += 2;
-		} else
+		}
+		else
 			end += maxChar;
 
-		if (end > strLen)
+		if ( end > strLen )
 			end = strLen;
 
 		dc.GetMultiLineTextExtent(textToDraw.SubString(begin, end), &textSize.x, &textSize.y);
 
-		if (textSize.x >= coverSize.x - 20) {
-			if (first) {
+		if ( textSize.x >= coverSize.x - 20 )
+		{
+			if ( first )
+			{
 				maxChar = end - 1;
 				first = false;
 			}
 
 			size_t found = textToDraw.rfind(" ", end);
 
-			if (found != std::string::npos) {
+			if ( found != std::string::npos )
+			{
 				textToDraw.replace(found, 1, "\n");
 				begin = found;
-			} else {
+			}
+			else
+			{
 				textToDraw.replace(begin + maxChar, 2, "-\n");
 				begin += maxChar + 1;
 			}
 
 			end = begin;
-		} else if (end >= strLen) {
+		}
+		else if ( end >= strLen )
+		{
 			textToDraw.Remove(end);
 			dc.GetMultiLineTextExtent(textToDraw, &textSize.x, &textSize.y);
 			break;
@@ -481,8 +352,10 @@ void Book::InitCover() {
 	cover = bitmapCover.ConvertToImage();
 }
 
-void Book::Save(wxSQLite3Database* db) {
-	try {
+void Book::Save(wxSQLite3Database* db)
+{
+	try
+	{
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 
 		wxSQLite3StatementBuffer buffer;
@@ -492,7 +365,7 @@ void Book::Save(wxSQLite3Database* db) {
 			"'%q', '%q',  '%q', '%q', '%q', ");
 		insert << pos;
 
-		if (doCover)
+		if ( doCover )
 			insert << ", ?);";
 		else
 			insert << ", NULL);";
@@ -502,7 +375,8 @@ void Book::Save(wxSQLite3Database* db) {
 
 		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
-		if (doCover) {
+		if ( doCover )
+		{
 			wxMemoryOutputStream stream;
 
 			cover.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -516,22 +390,23 @@ void Book::Save(wxSQLite3Database* db) {
 		}
 
 		statement.ExecuteUpdate();
-		SetId(storage->GetDocumentId(GenerateDocumentForId()));
+		SetId(storage->GetSQLEntryId(GenerateSQLEntryForId()));
 
 		Init();
-		for (Section& it : sections)
-			it.Save(storage);
-
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 }
 
-bool Book::Update(wxSQLite3Database* db, bool updateSections, bool updateChapters) {
-	if (id == -1)
+bool Book::Update(wxSQLite3Database* db, bool updateDocuments)
+{
+	if ( id == -1 )
 		return false;
 
-	try {
+	try
+	{
 		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
 
 		wxSQLite3StatementBuffer buffer;
@@ -540,12 +415,12 @@ bool Book::Update(wxSQLite3Database* db, bool updateSections, bool updateChapter
 		wxString update("UPDATE books SET name = '%q', author = '%q', genre = '%q', description = '&q', synopsys = '%q', position = ");
 		update << pos << ", cover = ";
 
-		if (doCover)
+		if ( doCover )
 			update << "?";
 		else
 			update << "NULL";
 
-		update <<	"WHERE id = " << id;
+		update << "WHERE id = " << id;
 
 		buffer.Format((const char*)update, (const char*)title.ToUTF8(), (const char*)author.ToUTF8(),
 			(const char*)genre.ToUTF8(), (const char*)description.ToUTF8(), (const char*)synopsys.ToUTF8());
@@ -553,7 +428,8 @@ bool Book::Update(wxSQLite3Database* db, bool updateSections, bool updateChapter
 		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
 
 
-		if (doCover) {
+		if ( doCover )
+		{
 			wxMemoryOutputStream stream;
 
 			cover.SaveFile(stream, wxBITMAP_TYPE_PNG);
@@ -568,85 +444,72 @@ bool Book::Update(wxSQLite3Database* db, bool updateSections, bool updateChapter
 
 		statement.ExecuteUpdate();
 
-		if (updateSections) {
-			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM sections WHERE book_id = " + std::to_string(id));
-
-			int prevSize = customTable.GetRowCount();
-			int newSize = sections.size();
-
-			if (newSize > prevSize) {
-				int i = 0;
-				for (i; i < prevSize; i++)
-					sections[i].Update(storage, updateChapters);
-
-				for (i; i < newSize; i++)
-					sections[i].Save(storage);
-			} else {
-				int i = 0;
-				for (i; i < newSize; i++)
-					sections[i].Update(storage, updateChapters);
-
-				if (newSize < prevSize)
-					for (i; i < prevSize; i++) {
-						customTable.SetRow(i);
-
-						update = "DELETE FROM sections WHERE id = ";
-						update << customTable.GetInt("id") << ";";
-
-						storage->ExecuteUpdate(update);
-					}
+		if ( updateDocuments )
+		{
+			for ( Document*& pDocument : documents )
+			{
+				pDocument->Update(db, true, true);
 			}
 		}
-	} catch (wxSQLite3Exception& e) {
+	}
+	catch ( wxSQLite3Exception& e )
+	{
 		wxMessageBox(e.GetMessage());
 	}
 
 	return true;
 }
 
-amDocument Book::GenerateDocumentSimple() {
-	amDocument document;
-	document.name = title;
-	document.tableName = "books";
+amSQLEntry Book::GenerateSQLEntrySimple()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = title;
+	sqlEntry.tableName = "books";
 
-	document.integers.push_back(pair<wxString, int>("position", pos));
+	sqlEntry.integers.push_back(pair<wxString, int>("position", pos));
 
-	document.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
-	document.strings.push_back(pair<wxString, wxString>("author", author));
-	document.strings.push_back(pair<wxString, wxString>("genre", genre));
-	document.strings.push_back(pair<wxString, wxString>("description", description));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("author", author));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("genre", genre));
+	sqlEntry.strings.push_back(pair<wxString, wxString>("description", description));
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Book::GenerateDocument(wxVector<int>& sectionsToGen) {
-	amDocument document = GenerateDocumentSimple();
+amSQLEntry Book::GenerateSQLEntry(wxVector<int>* documentsToInclude)
+{
+	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
 
-	if (sectionsToGen.empty()) {
-		document.documents.reserve(sections.size());
-		for (Section& section : sections)
-			document.documents.push_back(section.GenerateDocument());
+	if ( !documentsToInclude )
+	{
+		sqlEntry.childEntries.reserve(documents.size());
+		for ( Document*& pDocument : documents )
+			sqlEntry.childEntries.push_back(pDocument->GenerateSQLEntry());
 
-	} else {
-		int size = sectionsToGen.size();
-		document.documents.reserve(size);
+	}
+	else
+	{
+		int size = documentsToInclude->size();
+		sqlEntry.childEntries.reserve(size);
 
-		for (int& it : sectionsToGen) {
-			if (it < size)
-				document.documents.push_back(sections[it].GenerateDocument());
+		for ( int& it : *documentsToInclude )
+		{
+			if ( it < size )
+				sqlEntry.childEntries.push_back(documents[it]->GenerateSQLEntry());
 
 		}
 	}
 
-	return document;
+	return sqlEntry;
 }
 
-amDocument Book::GenerateDocumentForId() {
-	amDocument document;
-	document.name = title;
-	document.tableName = "books";
+amSQLEntry Book::GenerateSQLEntryForId()
+{
+	amSQLEntry sqlEntry;
+	sqlEntry.name = title;
+	sqlEntry.tableName = "books";
 
-	return document;
+	return sqlEntry;
 }
 
 
@@ -655,23 +518,22 @@ amDocument Book::GenerateDocumentForId() {
 /////////////////////////////////////////////////////////////////
 
 
-wxVector<Chapter>& amProject::GetChapters(int bookPos, int sectionPos) {
-	return books[bookPos - 1].sections[sectionPos - 1].chapters;
+amProject::~amProject()
+{
+	for ( Character*& pCharacter : characters )
+		delete pCharacter;
+
+	for ( Location*& pLocations : locations )
+		delete pLocations;
+
+	for ( Item*& pItem : items )
+		delete pItem;
+
+	for ( Book*& pBook : books )
+		delete pBook;
 }
 
-wxVector<Chapter> amProject::GetChapters(int bookPos) {
-	Book& book = books[bookPos - 1];
-	int totalSize = 0;
-
-	for (Section& section : book.sections)
-		totalSize += section.chapters.size();
-
-	wxVector<Chapter> grouped;
-	grouped.reserve(totalSize);
-
-	for (Section& section : book.sections)
-		for (Chapter& chapter : section.chapters)
-			grouped.push_back(chapter);
-
-	return grouped;
+wxVector<Document*>& amProject::GetDocuments(int bookPos)
+{
+	return books[bookPos - 1]->documents;
 }

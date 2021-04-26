@@ -12,30 +12,31 @@
 #include <list>
 
 class StoryGrid;
-struct Chapter;
+struct Document;
 
-class amStoryNotebook : public wxNotebook {
+class amStoryNotebook : public wxNotebook
+{
 private:
-    amProjectManager* m_manager = nullptr;
-    
-    StoryGrid* m_grid = nullptr;
-    wxListView* m_list = nullptr;
+	amProjectManager* m_manager = nullptr;
+
+	StoryGrid* m_grid = nullptr;
+	wxListView* m_list = nullptr;
 
 public:
-    amStoryNotebook(wxWindow* parent, amProjectManager* manager);
+	amStoryNotebook(wxWindow* parent, amProjectManager* manager);
 
-    void AddChapter(Chapter& chapter, int pos = -1);
-    void AddToList(Chapter& chapter, int pos = -1);
+	void AddDocument(Document* document, int pos = -1);
+	void AddToList(Document* document, int pos = -1);
 
-    void DeleteChapter(Chapter& chapter);
-    void RemoveFromList(Chapter& chapter);
+	void DeleteDocument(Document* document);
+	void RemoveFromList(Document* document);
 
-    void LayoutGrid();
+	void LayoutGrid();
 
-    StoryGrid* GetGrid() { return m_grid; }
-    wxListView* GetList() { return m_list; }
+	StoryGrid* GetGrid() { return m_grid; }
+	wxListView* GetList() { return m_list; }
 
-    void ClearAll();
+	void ClearAll();
 };
 
 
@@ -44,24 +45,25 @@ public:
 //////////////////////////////////////////////////////////////////
 
 
-class StoryGrid : public wxScrolledWindow {
+class StoryGrid : public wxScrolledWindow
+{
 private:
-    amProjectManager* m_manager = nullptr;
+	amProjectManager* m_manager = nullptr;
 
-    wxVector<wxButton*> m_buttons{};
-    wxWrapSizer* m_btnSizer = nullptr;
+	wxVector<wxButton*> m_buttons{};
+	wxWrapSizer* m_btnSizer = nullptr;
 
 public:
-    StoryGrid(wxWindow* parent, amProjectManager* manager);
+	StoryGrid(wxWindow* parent, amProjectManager* manager);
 
-    void AddButton();
-    void DeleteButton();
+	void AddButton();
+	void DeleteButton();
 
-    void OpenChapter(unsigned int chapterNumber);
+	void OpenDocument(unsigned int documentNumber);
 
-    void OnButtonPressed(wxCommandEvent& event);
+	void OnButtonPressed(wxCommandEvent& event);
 
-    void ClearAll();
+	void ClearAll();
 };
 
 #endif

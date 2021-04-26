@@ -5,7 +5,7 @@
 
 amadeus ICON "Assets\\favicon.ico"
 
-chapterIcon ICON "Assets\\AddChapter.ico"
+documentIcon ICON "Assets\\AddDocument.ico"
 sceneIcon ICON "Assets\\AddScene.ico"
 characterIcon ICON "Assets\\AddCharacter.ico"
 locationIcon ICON "Assets\\AddLocation.ico"
@@ -21,7 +21,7 @@ bookIcon ICON "Assets\\Book.ico"
 sectionIcon ICON "Assets\\Section.ico"
 trashIcon ICON "Assets\\Trash.ico"
 
-chapterPng RCDATA "Assets\\AddChapter.png"
+documentPng RCDATA "Assets\\AddDocument.png"
 scenePng RCDATA "Assets\\AddScene.png"
 characterPng RCDATA "Assets\\AddCharacter.png"
 locationPng RCDATA "Assets\\AddLocation.png"

@@ -12,32 +12,39 @@ EVT_KEY_UP(amRelease::OnKeyPressed)
 END_EVENT_TABLE()
 
 amRelease::amRelease(wxWindow* parent) :
-    wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN) {
-    SetBackgroundColour(wxColour(20, 20, 20));
+	wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN)
+{
+	SetBackgroundColour(wxColour(20, 20, 20));
 }
 
-amRelease::~amRelease() {
-
-}
-
-void amRelease::UpdateContent() {
-
-}
-
-void amRelease::OnNext(wxCommandEvent& event) {
-    
-}
-
-void amRelease::OnPrevious(wxCommandEvent& event) {
+amRelease::~amRelease()
+{
 
 }
 
-void amRelease::OnKeyPressed(wxKeyEvent& event) {
-    if (event.GetKeyCode() == WXK_LEFT) {
-        OnNext(wxCommandEvent());
-        return;
-    }
+void amRelease::UpdateContent()
+{
 
-    if (event.GetKeyCode() == WXK_RIGHT)
-        OnPrevious(wxCommandEvent());
+}
+
+void amRelease::OnNext(wxCommandEvent& event)
+{
+
+}
+
+void amRelease::OnPrevious(wxCommandEvent& event)
+{
+
+}
+
+void amRelease::OnKeyPressed(wxKeyEvent& event)
+{
+	if ( event.GetKeyCode() == WXK_LEFT )
+	{
+		OnNext(wxCommandEvent());
+		return;
+	}
+
+	if ( event.GetKeyCode() == WXK_RIGHT )
+		OnPrevious(wxCommandEvent());
 }

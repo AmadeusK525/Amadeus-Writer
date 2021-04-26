@@ -10,23 +10,25 @@ IMPLEMENT_DYNAMIC_CLASS(amWPCommentTag, wxRichTextFieldType)
 amWPCommentTag::amWPCommentTag(const wxString& name) : wxRichTextFieldType(name) {}
 
 bool amWPCommentTag::GetRangeSize(wxRichTextField* obj, const wxRichTextRange& range, wxSize& size, int& descent, wxDC& dc,
-	wxRichTextDrawingContext& context, int flags,	const wxPoint& position, const wxSize& parentSize, wxArrayInt* partialExtents) const {
-	
-	if (!range.IsWithin(obj->GetRange()))
+	wxRichTextDrawingContext& context, int flags, const wxPoint& position, const wxSize& parentSize, wxArrayInt* partialExtents) const
+{
+
+	if ( !range.IsWithin(obj->GetRange()) )
 		return false;
 
 	int width = 50;
 
 	size = wxSize(width, width);
 
-	if (partialExtents)
+	if ( partialExtents )
 		partialExtents->Add(width);
 
 	return true;
 }
 
 bool amWPCommentTag::Layout(wxRichTextField* obj, wxDC& dc, wxRichTextDrawingContext& context, const wxRect& rect,
-	const wxRect& parentRect, int style) {
+	const wxRect& parentRect, int style)
+{
 
 	wxSize size(50, 50);
 
@@ -37,7 +39,8 @@ bool amWPCommentTag::Layout(wxRichTextField* obj, wxDC& dc, wxRichTextDrawingCon
 }
 
 bool amWPCommentTag::Draw(wxRichTextField* obj, wxDC& dc, wxRichTextDrawingContext& context, const wxRichTextRange& range,
-	const wxRichTextSelection& selection, const wxRect& rect, int descent, int style) {
+	const wxRichTextSelection& selection, const wxRect& rect, int descent, int style)
+{
 	wxColour red(200, 0, 0);
 
 	dc.SetPen(wxPen(red, 1));
@@ -58,15 +61,19 @@ END_EVENT_TABLE()
 
 
 amWordProcessor::amWordProcessor(wxWindow* parent, wxWindowID id, const wxString& value, const wxPoint& pos,
-	const wxSize& size, long style, const wxValidator& validator, const wxString& name) : 
-	wxRichTextCtrl(parent, id, value, pos, size, style, validator, name) {
+	const wxSize& size, long style, const wxValidator& validator, const wxString& name) :
+	wxRichTextCtrl(parent, id, value, pos, size, style, validator, name)
+{
 
 }
 
-void amWordProcessor::OnChar(wxKeyEvent& event) {
-	if (event.CmdDown() || event.ControlDown()) {
+void amWordProcessor::OnChar(wxKeyEvent& event)
+{
+	if ( event.CmdDown() || event.ControlDown() )
+	{
 
-		switch (event.GetKeyCode()) {
+		switch ( event.GetKeyCode() )
+		{
 		case 110:
 		case 78:
 		case 98:
@@ -98,6 +105,7 @@ void amWordProcessor::OnChar(wxKeyEvent& event) {
 
 void amWordProcessor::ApplyCommentToSelection() {}
 
-void amWordProcessor::SetupScrollbars(bool atTop, bool fromOnPaint) {
+void amWordProcessor::SetupScrollbars(bool atTop, bool fromOnPaint)
+{
 
 }

@@ -22,8 +22,8 @@ END_EVENT_TABLE()
 
 amElementCreator::amElementCreator(wxWindow* parent, amProjectManager* manager,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	wxFrame(parent, id, label, pos, size, style) {
-
+	wxFrame(parent, id, label, pos, size, style)
+{
 	m_manager = manager;
 	CenterOnParent();
 
@@ -114,10 +114,12 @@ amElementCreator::amElementCreator(wxWindow* parent, amProjectManager* manager,
 	SetSizer(m_mainSizer);
 }
 
-wxVector<pair<wxString, wxString>> amElementCreator::GetCustom() {
+wxVector<pair<wxString, wxString>> amElementCreator::GetCustom()
+{
 	wxVector<pair<wxString, wxString>> vec;
 
-	for (auto& it : m_custom) {
+	for ( auto& it : m_custom )
+	{
 		pair<wxString, wxString> pair(it.first->GetValue(), it.second->GetValue());
 		vec.push_back(pair);
 	}
@@ -125,15 +127,17 @@ wxVector<pair<wxString, wxString>> amElementCreator::GetCustom() {
 	return vec;
 }
 
-void amElementCreator::RemoveCustomAttr(wxCommandEvent& event) {
+void amElementCreator::RemoveCustomAttr(wxCommandEvent& event)
+{
 	Freeze();
 	wxButton* minus = (wxButton*)event.GetEventObject();
 
 	auto it1 = m_custom.begin();
 	auto it2 = m_minusButtons.begin();
 
-	for (it2 = m_minusButtons.begin(); it2 != m_minusButtons.end(); it2++) {
-		if (*it2 == minus)
+	for ( it2 = m_minusButtons.begin(); it2 != m_minusButtons.end(); it2++ )
+	{
+		if ( *it2 == minus )
 			break;
 
 		it1++;
@@ -151,16 +155,19 @@ void amElementCreator::RemoveCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amElementCreator::Cancel(wxCommandEvent& event) {
+void amElementCreator::Cancel(wxCommandEvent& event)
+{
 	m_manager->GetMainFrame()->Enable();
 	this->Destroy();
 	event.Skip();
 }
 
-void amElementCreator::Next(wxCommandEvent& event) {
+void amElementCreator::Next(wxCommandEvent& event)
+{
 	bool show1 = false, show2 = false, show3 = false;
 
-	switch (event.GetId()) {
+	switch ( event.GetId() )
+	{
 	case BUTTON_Next1:
 		m_next->SetId(BUTTON_Next2);
 		m_back->Show();
@@ -204,10 +211,12 @@ void amElementCreator::Next(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amElementCreator::Back(wxCommandEvent& event) {
+void amElementCreator::Back(wxCommandEvent& event)
+{
 	bool show1 = false, show2 = false, show3 = false;
 
-	switch (event.GetId()) {
+	switch ( event.GetId() )
+	{
 	case BUTTON_Back1:
 		m_next->SetId(BUTTON_Next1);
 		m_back->Hide();
@@ -243,12 +252,14 @@ void amElementCreator::Back(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amElementCreator::SetImage(wxCommandEvent& event) {
+void amElementCreator::SetImage(wxCommandEvent& event)
+{
 	wxFileDialog choose(this, "Select an image", wxEmptyString, wxEmptyString,
 		"JPG, JPEG and PNG(*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
 		wxFD_OPEN, wxDefaultPosition);
 
-	if (choose.ShowModal() == wxID_OK) {
+	if ( choose.ShowModal() == wxID_OK )
+	{
 		wxImage image;
 		image.LoadFile(choose.GetPath(), wxBITMAP_TYPE_ANY);
 		m_imagePanel->SetImage(image);
@@ -259,7 +270,8 @@ void amElementCreator::SetImage(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amElementCreator::RemoveImage(wxCommandEvent& event) {
+void amElementCreator::RemoveImage(wxCommandEvent& event)
+{
 	m_imagePanel->SetImage(wxImage());
 	m_removeImage->Hide();
 	m_mainSizer->Layout();
@@ -275,7 +287,8 @@ void amElementCreator::RemoveImage(wxCommandEvent& event) {
 
 amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manager,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	amElementCreator(parent, manager, id, label, pos, size, style) {
+	amElementCreator(parent, manager, id, label, pos, size, style)
+{
 
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
@@ -453,7 +466,8 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 	Show();
 }
 
-wxVector<wxString> amCharacterCreator::GetValues() {
+wxVector<wxString> amCharacterCreator::GetValues()
+{
 	wxVector<wxString> vec;
 
 	vec.push_back(ncFullName->GetValue());
@@ -464,13 +478,13 @@ wxVector<wxString> amCharacterCreator::GetValues() {
 	vec.push_back(ncHeight->GetValue());
 	vec.push_back(ncNickname->GetValue());
 
-	if (ncMain->GetValue())
+	if ( ncMain->GetValue() )
 		vec.push_back("Protagonist");
-	else if (ncSupp->GetValue())
+	else if ( ncSupp->GetValue() )
 		vec.push_back("Supporting");
-	else if (ncVillian->GetValue())
+	else if ( ncVillian->GetValue() )
 		vec.push_back("Villian");
-	else if (ncSecon->GetValue())
+	else if ( ncSecon->GetValue() )
 		vec.push_back("Secondary");
 
 	vec.push_back(ncAppearance->GetValue());
@@ -480,9 +494,11 @@ wxVector<wxString> amCharacterCreator::GetValues() {
 	return vec;
 }
 
-void amCharacterCreator::SetEdit(Element* editChar) {
+void amCharacterCreator::SetEdit(Element* editChar)
+{
 	Character* character = dynamic_cast<Character*>(editChar);
-	if (!character) {
+	if ( !character )
+	{
 		wxMessageBox("There was an unexpected error. Editing could not be start.");
 		Destroy();
 		return;
@@ -498,7 +514,8 @@ void amCharacterCreator::SetEdit(Element* editChar) {
 	ncHeight->SetValue(character->height);
 	ncNickname->SetValue(character->nick);
 
-	switch (character->role) {
+	switch ( character->role )
+	{
 	case cProtagonist:
 		ncMain->SetValue(true);
 		break;
@@ -520,7 +537,8 @@ void amCharacterCreator::SetEdit(Element* editChar) {
 	ncBackstory->SetValue(character->backstory);
 
 	int i = 0;
-	for (auto& it : character->custom) {
+	for ( auto& it : character->custom )
+	{
 		AddCustomAttr(wxCommandEvent());
 		m_custom[i].first->SetValue(it.first);
 		m_custom[i].second->SetValue(it.second);
@@ -537,20 +555,19 @@ void amCharacterCreator::SetEdit(Element* editChar) {
 	SetTitle("Edit character - '" + m_elementEdit->name + "'");
 }
 
-void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
+void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
+{
 	wxVector<wxString> vec = GetValues();
 
 	Role newRole;
-	if (vec[6] == "Protagonist")
+	if ( vec[6] == "Protagonist" )
 		newRole = cProtagonist;
-	else if (vec[6] == "Supporting")
+	else if ( vec[6] == "Supporting" )
 		newRole = cSupporting;
-	else if (vec[6] == "Secondary")
+	else if ( vec[6] == "Secondary" )
 		newRole = cSecondary;
-	else if (vec[6] == "Villian")
+	else if ( vec[6] == "Villian" )
 		newRole = cVillian;
-
-	bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != newRole;
 
 	Character character;
 
@@ -568,19 +585,21 @@ void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 	character.image = m_imagePanel->GetImage();
 	character.custom = GetCustom();
 
-	character.chapters = m_elementEdit->chapters;
+	character.documents = m_elementEdit->documents;
 	character.id = m_elementEdit->id;
 
 	Character* pCharacterToEdit = (Character*)m_elementEdit;
+	bool dif = pCharacterToEdit->name != vec[0] || pCharacterToEdit->role != newRole;
 
 	Hide();
-	m_manager->GetMainFrame()->Enable(); 
-	m_manager->EditCharacter(*pCharacterToEdit, character, dif);
+	m_manager->GetMainFrame()->Enable();
+	m_manager->EditCharacter(pCharacterToEdit, character, dif);
 
 	Destroy();
 }
 
-void amCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
+void amCharacterCreator::AddCustomAttr(wxCommandEvent& event)
+{
 	Freeze();
 	wxSize size(label8->GetSize());
 
@@ -616,39 +635,43 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amCharacterCreator::Create(wxCommandEvent& event) {
-	if (!ncFullName->IsEmpty()) {
+void amCharacterCreator::Create(wxCommandEvent& event)
+{
+	if ( !ncFullName->IsEmpty() )
+	{
 		wxVector<wxString> vec = GetValues();
 
-		Character character;
-		character.name = vec[0];
-		character.sex = vec[1];
-		character.age = vec[2];
-		character.nat = vec[3];
-		character.height = vec[4];
-		character.nick = vec[5];
+		Character* pCharacter = new Character;
+		pCharacter->name = vec[0];
+		pCharacter->sex = vec[1];
+		pCharacter->age = vec[2];
+		pCharacter->nat = vec[3];
+		pCharacter->height = vec[4];
+		pCharacter->nick = vec[5];
 
-		if (vec[6] == "Protagonist")
-			character.role = cProtagonist;
-		else if (vec[6] == "Supporting")
-			character.role = cSupporting;
-		else if (vec[6] == "Villian")
-			character.role = cVillian;
-		else if (vec[6] == "Secondary")
-			character.role = cSecondary;
+		if ( vec[6] == "Protagonist" )
+			pCharacter->role = cProtagonist;
+		else if ( vec[6] == "Supporting" )
+			pCharacter->role = cSupporting;
+		else if ( vec[6] == "Villian" )
+			pCharacter->role = cVillian;
+		else if ( vec[6] == "Secondary" )
+			pCharacter->role = cSecondary;
 
-		character.appearance = vec[7];
-		character.personality = vec[8];
-		character.backstory = vec[9];
+		pCharacter->appearance = vec[7];
+		pCharacter->personality = vec[8];
+		pCharacter->backstory = vec[9];
 
-		character.image = m_imagePanel->GetImage();
+		pCharacter->image = m_imagePanel->GetImage();
 
-		character.custom = GetCustom();
+		pCharacter->custom = GetCustom();
 
 		Hide();
 		m_manager->GetMainFrame()->Enable();
-		m_manager->AddCharacter(character, true);
-	} else {
+		m_manager->AddCharacter(pCharacter, true);
+	}
+	else
+	{
 		wxMessageBox("You can't create a character without a name.");
 		return;
 	}
@@ -657,16 +680,19 @@ void amCharacterCreator::Create(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amCharacterCreator::CheckClose(wxCloseEvent& event) {
+void amCharacterCreator::CheckClose(wxCloseEvent& event)
+{
 
-	if (ncFullName->IsModified() || ncAge->IsModified() || ncNationality->IsModified() ||
+	if ( ncFullName->IsModified() || ncAge->IsModified() || ncNationality->IsModified() ||
 		ncHeight->IsModified() || ncNickname->IsModified() ||
-		ncAppearance->IsModified() || ncPersonality->IsModified() || ncBackstory->IsModified()) {
+		ncAppearance->IsModified() || ncPersonality->IsModified() || ncBackstory->IsModified() )
+	{
 
 		wxMessageDialog check(this, "Are you sure you want to close?",
 			"Close window", wxYES_NO | wxNO_DEFAULT);
 
-		switch (check.ShowModal()) {
+		switch ( check.ShowModal() )
+		{
 		case wxID_YES:
 			m_manager->GetMainFrame()->Enable();
 			this->Destroy();
@@ -678,7 +704,9 @@ void amCharacterCreator::CheckClose(wxCloseEvent& event) {
 			check.Destroy();
 		}
 
-	} else {
+	}
+	else
+	{
 		m_manager->GetMainFrame()->Enable();
 		this->Destroy();
 	}
@@ -693,7 +721,8 @@ void amCharacterCreator::CheckClose(wxCloseEvent& event) {
 
 amLocationCreator::amLocationCreator(wxWindow* parent, amProjectManager* manager,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	amElementCreator(parent, manager, id, label, pos, size, style) {
+	amElementCreator(parent, manager, id, label, pos, size, style)
+{
 
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
@@ -856,7 +885,8 @@ amLocationCreator::amLocationCreator(wxWindow* parent, amProjectManager* manager
 	this->Show();
 }
 
-wxVector<wxString> amLocationCreator::GetValues() {
+wxVector<wxString> amLocationCreator::GetValues()
+{
 	wxVector<wxString> vec;
 
 	vec.push_back((wxString)nlName->GetValue());
@@ -868,9 +898,12 @@ wxVector<wxString> amLocationCreator::GetValues() {
 	vec.push_back((wxString)nlCulture->GetValue());
 
 	wxString importance;
-	if (nlHigh->GetValue()) {
+	if ( nlHigh->GetValue() )
+	{
 		importance = nlHigh->GetLabel();
-	} else {
+	}
+	else
+	{
 		importance = nlLow->GetLabel();
 	}
 
@@ -879,9 +912,11 @@ wxVector<wxString> amLocationCreator::GetValues() {
 	return vec;
 }
 
-void amLocationCreator::SetEdit(Element* editLoc) {
+void amLocationCreator::SetEdit(Element* editLoc)
+{
 	Location* location = dynamic_cast<Location*>(editLoc);
-	if (!location) {
+	if ( !location )
+	{
 		wxMessageBox("There was an unexpected error. Editing could not start.");
 		Destroy();
 		return;
@@ -898,7 +933,8 @@ void amLocationCreator::SetEdit(Element* editLoc) {
 	nlEconomy->SetValue(location->economy);
 	nlCulture->SetValue(location->culture);
 
-	switch (location->role) {
+	switch ( location->role )
+	{
 	case lHigh:
 		nlHigh->SetValue(true);
 		break;
@@ -912,7 +948,8 @@ void amLocationCreator::SetEdit(Element* editLoc) {
 	}
 
 	int i = 0;
-	for (auto& it : location->custom) {
+	for ( auto& it : location->custom )
+	{
 		AddCustomAttr(wxCommandEvent());
 		m_custom[i].first->SetValue(it.first);
 		m_custom[i].second->SetValue(it.second);
@@ -929,7 +966,8 @@ void amLocationCreator::SetEdit(Element* editLoc) {
 	SetTitle("Edit location - '" + m_elementEdit->name + "'");
 }
 
-void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
+void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
+{
 	wxVector<wxString> vec = GetValues();
 
 	Location location;
@@ -942,9 +980,9 @@ void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 	location.economy = vec[5];
 	location.culture = vec[6];
 
-	if (vec[7] == "High")
+	if ( vec[7] == "High" )
 		location.role = lHigh;
-	else if (vec[7] == "Low")
+	else if ( vec[7] == "Low" )
 		location.role = lLow;
 	else
 		location.role = None;
@@ -952,20 +990,20 @@ void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event)) {
 	location.image = m_imagePanel->GetImage();
 	location.custom = GetCustom();
 
-	location.chapters = m_elementEdit->chapters;
+	location.documents = m_elementEdit->documents;
 	location.id = m_elementEdit->id;
 
 	Location* pLocationToEdit = (Location*)m_elementEdit;
-
-	bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != location.role;
+	bool dif = pLocationToEdit->name != vec[0] || pLocationToEdit->role != location.role;
 
 	Hide();
 	m_manager->GetMainFrame()->Enable();
-	m_manager->EditLocation(*pLocationToEdit, location, dif);
+	m_manager->EditLocation(pLocationToEdit, location, dif);
 	Destroy();
 }
 
-void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
+void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event))
+{
 	Freeze();
 	wxPanel* panel = new wxPanel(m_panel2);
 	wxSize size(label6->GetSize());
@@ -1007,15 +1045,17 @@ void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event)) {
 	Thaw();
 }
 
-void amLocationCreator::RemoveCustomAttr(wxCommandEvent& event) {
+void amLocationCreator::RemoveCustomAttr(wxCommandEvent& event)
+{
 	Freeze();
 	wxButton* minus = (wxButton*)event.GetEventObject();
 
 	auto it1 = m_custom.begin();
 	auto it2 = m_minusButtons.begin();
 
-	for (it2 = m_minusButtons.begin(); it2 != m_minusButtons.end(); it2++) {
-		if (*it2 == minus)
+	for ( it2 = m_minusButtons.begin(); it2 != m_minusButtons.end(); it2++ )
+	{
+		if ( *it2 == minus )
 			break;
 
 		it1++;
@@ -1031,13 +1071,15 @@ void amLocationCreator::RemoveCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amLocationCreator::RecolorCustoms() {
+void amLocationCreator::RecolorCustoms()
+{
 	wxColour red(230, 0, 20);
 	wxColour grey(200, 200, 200);
 
 	bool doRed = true;
-	for (auto& it : m_custom) {
-		if (doRed)
+	for ( auto& it : m_custom )
+	{
+		if ( doRed )
 			it.first->SetBackgroundColour(red);
 		else
 			it.first->SetBackgroundColour(grey);
@@ -1046,35 +1088,39 @@ void amLocationCreator::RecolorCustoms() {
 	}
 }
 
-void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
-	if (!nlName->IsEmpty()) {
+void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event))
+{
+	if ( !nlName->IsEmpty() )
+	{
 		wxVector<wxString> vec = GetValues();
 
-		Location location;
+		Location* pLocation = new Location;
 
-		location.name = vec[0];
-		location.general = vec[1];
-		location.natural = vec[2];
-		location.architecture = vec[3];
-		location.politics = vec[4];
-		location.economy = vec[5];
-		location.culture = vec[6];
+		pLocation->name = vec[0];
+		pLocation->general = vec[1];
+		pLocation->natural = vec[2];
+		pLocation->architecture = vec[3];
+		pLocation->politics = vec[4];
+		pLocation->economy = vec[5];
+		pLocation->culture = vec[6];
 
-		if (vec[7] == "High")
-			location.role = lHigh;
-		else if (vec[7] == "Low")
-			location.role = lLow;
+		if ( vec[7] == "High" )
+			pLocation->role = lHigh;
+		else if ( vec[7] == "Low" )
+			pLocation->role = lLow;
 		else
-			location.role = None;
+			pLocation->role = None;
 
-		location.image = m_imagePanel->GetImage();
+		pLocation->image = m_imagePanel->GetImage();
 
-		location.custom = GetCustom();
+		pLocation->custom = GetCustom();
 
 		Hide();
 		m_manager->GetMainFrame()->Enable();
-		m_manager->AddLocation(location, true);
-	} else {
+		m_manager->AddLocation(pLocation, true);
+	}
+	else
+	{
 		wxMessageBox("You can't create a location with no name!");
 		return;
 	}
@@ -1082,20 +1128,27 @@ void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event)) {
 	Destroy();
 }
 
-void amLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
+void amLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event))
+{
 
-	if (nlArchitecture->IsModified() || nlName->IsModified() || nlGeneral->IsModified() ||
-		nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified()) {
+	if ( nlArchitecture->IsModified() || nlName->IsModified() || nlGeneral->IsModified() ||
+		nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified() )
+	{
 
 		wxMessageDialog check(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
 
-		if (check.ShowModal() == wxID_YES) {
+		if ( check.ShowModal() == wxID_YES )
+		{
 			m_manager->GetMainFrame()->Enable();
 			this->Destroy();
-		} else {
+		}
+		else
+		{
 			check.Destroy();
 		}
-	} else {
+	}
+	else
+	{
 		m_manager->GetMainFrame()->Enable();
 		this->Destroy();
 	}
@@ -1108,7 +1161,8 @@ void amLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event)) {
 
 amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	amElementCreator(parent, manager, id, label, pos, size, style) {
+	amElementCreator(parent, manager, id, label, pos, size, style)
+{
 
 	wxColour dark(40, 40, 40);
 	wxColour darker(30, 30, 30);
@@ -1349,23 +1403,24 @@ amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
 	SetIcon(wxICON(itemIcon));
 }
 
-wxVector<wxString> amItemCreator::GetValues() {
+wxVector<wxString> amItemCreator::GetValues()
+{
 	wxVector<wxString> vec;
 
 	vec.push_back(niName->GetValue().ToStdString());
 
-	if (niNatural->GetValue())
+	if ( niNatural->GetValue() )
 		vec.push_back(niNatural->GetLabel().ToStdString());
 	else
 		vec.push_back(niManMade->GetLabel().ToStdString());
 
 
-	if (niMagic->GetValue())
+	if ( niMagic->GetValue() )
 		vec.push_back(niMagic->GetLabel().ToStdString());
 	else
 		vec.push_back(niNonMagic->GetLabel().ToStdString());
 
-	if (niHigh->GetValue())
+	if ( niHigh->GetValue() )
 		vec.push_back(niHigh->GetLabel().ToStdString());
 	else
 		vec.push_back(niLow->GetLabel().ToStdString());
@@ -1383,9 +1438,11 @@ wxVector<wxString> amItemCreator::GetValues() {
 	return vec;
 }
 
-void amItemCreator::SetEdit(Element* editItem) {
+void amItemCreator::SetEdit(Element* editItem)
+{
 	Item* item = dynamic_cast<Item*>(editItem);
-	if (!item) {
+	if ( !item )
+	{
 		wxMessageBox("There was an unexpected error. Editing could not start.");
 		Destroy();
 		return;
@@ -1396,13 +1453,13 @@ void amItemCreator::SetEdit(Element* editItem) {
 
 	niName->SetValue(item->name);
 
-	if (item->isManMade)
+	if ( item->isManMade )
 		niManMade->SetValue(true);
 
-	if (!item->isMagic)
+	if ( !item->isMagic )
 		niNonMagic->SetValue(true);
 
-	if (item->role == iLow)
+	if ( item->role == iLow )
 		niLow->SetValue(true);
 
 	niWidth->SetValue(item->width);
@@ -1416,7 +1473,8 @@ void amItemCreator::SetEdit(Element* editItem) {
 	niGeneral->SetValue(item->general);
 
 	int i = 0;
-	for (auto& it : item->custom) {
+	for ( auto& it : item->custom )
+	{
 		AddCustomAttr(wxCommandEvent());
 		m_custom[i].first->SetValue(it.first);
 		m_custom[i].second->SetValue(it.second);
@@ -1430,23 +1488,24 @@ void amItemCreator::SetEdit(Element* editItem) {
 	SetTitle("Edit item - '" + m_elementEdit->name + "'");
 }
 
-void amItemCreator::DoEdit(wxCommandEvent& event) {
+void amItemCreator::DoEdit(wxCommandEvent& event)
+{
 	wxVector<wxString> vec = GetValues();
 
 	Item item;
 	item.name = vec[0];
 
-	if (vec[1] == "Natural")
+	if ( vec[1] == "Natural" )
 		item.isManMade = false;
 	else
 		item.isManMade = true;
 
-	if (vec[2] == "Yes")
+	if ( vec[2] == "Yes" )
 		item.isMagic = true;
 	else
 		item.isMagic = false;
 
-	if (vec[3] == "High")
+	if ( vec[3] == "High" )
 		item.role = iHigh;
 	else
 		item.role = iLow;
@@ -1463,21 +1522,21 @@ void amItemCreator::DoEdit(wxCommandEvent& event) {
 	item.image = m_imagePanel->GetImage();
 	item.custom = GetCustom();
 
-	item.chapters = m_elementEdit->chapters;
+	item.documents = m_elementEdit->documents;
 	item.id = m_elementEdit->id;
 
 	Item* pItemToEdit = (Item*)m_elementEdit;
+	bool dif = pItemToEdit->name != vec[0] || pItemToEdit->role != item.role;
 
-	bool dif = m_elementEdit->name != vec[0] || m_elementEdit->role != item.role;
-	
 	Hide();
 	m_manager->GetMainFrame()->Enable();
-	m_manager->EditItem(*pItemToEdit, item, dif);
+	m_manager->EditItem(pItemToEdit, item, dif);
 
 	Destroy();
 }
 
-void amItemCreator::AddCustomAttr(wxCommandEvent& event) {
+void amItemCreator::AddCustomAttr(wxCommandEvent& event)
+{
 	Freeze();
 	wxSize size(meaLabel->GetSize());
 
@@ -1510,44 +1569,48 @@ void amItemCreator::AddCustomAttr(wxCommandEvent& event) {
 	Thaw();
 }
 
-void amItemCreator::Create(wxCommandEvent& event) {
-	if (!niName->IsEmpty()) {
+void amItemCreator::Create(wxCommandEvent& event)
+{
+	if ( !niName->IsEmpty() )
+	{
 		wxVector<wxString> vec = GetValues();
 
-		Item item;
-		item.name = vec[0];
+		Item* pItem = new Item;
+		pItem->name = vec[0];
 
-		if (vec[1] == "Natural")
-			item.isManMade = false;
+		if ( vec[1] == "Natural" )
+			pItem->isManMade = false;
 		else
-			item.isManMade = true;
+			pItem->isManMade = true;
 
-		if (vec[2] == "Yes")
-			item.isMagic = true;
+		if ( vec[2] == "Yes" )
+			pItem->isMagic = true;
 		else
-			item.isMagic = false;
+			pItem->isMagic = false;
 
-		if (vec[3] == "High")
-			item.role = iHigh;
+		if ( vec[3] == "High" )
+			pItem->role = iHigh;
 		else
-			item.role = iLow;
+			pItem->role = iLow;
 
-		item.width = vec[4];
-		item.height = vec[5];
-		item.depth = vec[6];
-		item.appearance = vec[7];
-		item.origin = vec[8];
-		item.backstory = vec[9];
-		item.usage = vec[10];
-		item.general = vec[11];
+		pItem->width = vec[4];
+		pItem->height = vec[5];
+		pItem->depth = vec[6];
+		pItem->appearance = vec[7];
+		pItem->origin = vec[8];
+		pItem->backstory = vec[9];
+		pItem->usage = vec[10];
+		pItem->general = vec[11];
 
-		item.image = m_imagePanel->GetImage();
-		item.custom = GetCustom();
+		pItem->image = m_imagePanel->GetImage();
+		pItem->custom = GetCustom();
 
 		Hide();
 		m_manager->GetMainFrame()->Enable();
-		m_manager->AddItem(item, true);
-	} else {
+		m_manager->AddItem(pItem, true);
+	}
+	else
+	{
 		wxMessageBox("You can't create an item with no name!");
 		return;
 	}
@@ -1555,25 +1618,33 @@ void amItemCreator::Create(wxCommandEvent& event) {
 	Destroy();
 }
 
-void amItemCreator::CheckClose(wxCloseEvent& event) {
-	if (niGeneral->IsModified() || niName->IsModified() || niAppearance->IsModified() ||
-		niBackstory->IsModified() || niOrigin->IsModified() || niUsage->IsModified()) {
+void amItemCreator::CheckClose(wxCloseEvent& event)
+{
+	if ( niGeneral->IsModified() || niName->IsModified() || niAppearance->IsModified() ||
+		niBackstory->IsModified() || niOrigin->IsModified() || niUsage->IsModified() )
+	{
 
 		wxMessageDialog check(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
 
-		if (check.ShowModal() == wxID_YES) {
+		if ( check.ShowModal() == wxID_YES )
+		{
 			m_manager->GetMainFrame()->Enable();
 			this->Destroy();
-		} else {
+		}
+		else
+		{
 			check.Destroy();
 		}
-	} else {
+	}
+	else
+	{
 		m_manager->GetMainFrame()->Enable();
 		this->Destroy();
 	}
 }
 
-void amItemCreator::OnPaint(wxPaintEvent& event) {
+void amItemCreator::OnPaint(wxPaintEvent& event)
+{
 	wxPaintDC dc(m_panel1);
 
 	wxRect rect;

@@ -10,133 +10,81 @@
 
 
 /////////////////////////////////////////////////////////////////
-///////////////////////////// Scene /////////////////////////////
+/////////////////////////// Document ////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 
-struct Scene {
-    wxString name{ "" };
-    wxRichTextBuffer content{};
+struct Note
+{
+	wxString name{ "" };
+	wxString content{ "" };
 
-    wxString pointOfView{ "" };
+	bool isDone = false;
 
-    int pos = -1;
-    int id = -1;
-    int chapterID = -1;
+	Note(wxString content, wxString name);
 
-    bool isInTrash = false;
-
-    Scene(int chapterID, int pos) : chapterID(chapterID), pos(pos) {}
-
-    void SetId(int id) { this->id = id; }
-
-    amDocument GenerateDocument();
-    amDocument GenerateDocumentForId();
-
-    void operator=(const Scene& other);
+	amSQLEntry GenerateSQLEntry();
 };
 
+enum DocumentType
+{
+	Section_Part,
+	Section_FrontMatter,
+	Section_BackMatter,
 
-/////////////////////////////////////////////////////////////////
-/////////////////////////// Chapter /////////////////////////////
-/////////////////////////////////////////////////////////////////
+	Document_FrontMatter,
+	Document_BackMatter,
 
-
-struct Note {
-    wxString name{ "" };
-    wxString content{ "" };
-
-    bool isDone = false;
-
-    Note(wxString content, wxString name);
-
-    amDocument GenerateDocument();
+	Document_Chapter,
+	Document_Scene,
+	Document_Other
 };
 
-struct Chapter {
-    wxString name{ "" };
-    wxString synopsys{ "" };
+struct Document
+{
+	Document* parent = nullptr;
+	wxVector<Document*> children{};
 
-    wxVector<Scene> scenes{};
+	wxString name{ "" };
+	wxString synopsys{ "" };
 
-    wxArrayString characters{};
-    wxArrayString locations{};
-    wxArrayString items{};
+	DocumentType type = Document_Other;
 
-    wxVector<Note> notes{};
+	wxRichTextBuffer* buffer = nullptr;
 
-    int position = -1;
-    int id = -1;
-    int sectionID = -1;
+	wxVector<Character*> characters{};
+	wxVector<Location*> locations{};
+	wxVector<Item*> items{};
 
-    bool isInTrash = false;
+	wxVector<Note*> notes{};
 
-    Chapter() : characters(true),
-        locations(true),
-        items(true) {}
+	int position = -1;
+	int id = -1;
+	int bookID = -1;
 
-    Chapter(int sectionID, int position) :
-        sectionID(sectionID),
-        position(position),
-        characters(true),
-        locations(true),
-        items(true) {}
+	bool isInTrash = false;
 
-    bool Init();
-    void SetId(int id) { this->id = id; }
+	Document(Document* parent, int position, int bookId, DocumentType documentType) :
+		parent(parent),
+		position(position),
+		bookID(bookId),
+		type(documentType)
+	{}
+	virtual ~Document();
 
-    bool HasRedNote();
+	void SetId(int id) { this->id = id; }
 
-    void Save(wxSQLite3Database* db);
-    bool Update(wxSQLite3Database* db, bool updateScenes, bool updateNotes);
+	bool HasRedNote();
 
-    void LoadSceneBuffers(wxSQLite3Database* db);
-    void ClearSceneBuffers();
+	void Save(wxSQLite3Database* db);
+	bool Update(wxSQLite3Database* db, bool updateContent, bool updateNotes);
 
-    amDocument GenerateDocumentSimple();
-    amDocument GenerateDocument();
-    amDocument GenerateDocumentForId();
+	amSQLEntry GenerateSQLEntrySimple();
+	amSQLEntry GenerateSQLEntry();
+	amSQLEntry GenerateSQLEntryForId();
 
-    bool operator<(const Chapter& other) const;
-    bool operator==(const Chapter& other) const;
-};
-WX_DEFINE_ARRAY_PTR(Chapter*, ChapterPtrArray);
-
-
-/////////////////////////////////////////////////////////////////
-//////////////////////////// Section ////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-
-enum SectionType {
-    Section_Part,
-    Section_FrontMatter,
-    Section_BackMatter
-};
-
-struct Section {
-    wxString name{ "" };
-    wxString description{ "" };
-
-    int pos = -1;
-    int id = -1;
-    int bookID = -1;
-
-    bool isInTrash = false;
-
-    wxVector<Chapter> chapters{};
-    SectionType type{ Section_Part };
-
-    Section(int bookID, int pos) : bookID(bookID), pos(pos) {}
-
-    void SetId(int id) { this->id = id; }
-
-    void Save(wxSQLite3Database* db);
-    bool Update(wxSQLite3Database* db, bool updateChapters);
-
-    amDocument GenerateDocumentSimple();
-    amDocument GenerateDocument();
-    amDocument GenerateDocumentForId();
+	bool operator<(const Document& other) const;
+	bool operator==(const Document& other) const;
 };
 
 
@@ -145,42 +93,49 @@ struct Section {
 /////////////////////////////////////////////////////////////////
 
 
-struct Book {
-    static wxSize coverSize;
-    wxImage cover;
+struct Book
+{
+	static wxSize coverSize;
+	wxImage cover;
 
 	wxString title{ "" };
-    wxString publisher{ "" };
+	wxString publisher{ "" };
 
 	wxString author{ "" },
-        genre{ "" },
-        description{ "" },
-        synopsys{ "" };
+		genre{ "" },
+		description{ "" },
+		synopsys{ "" };
 
-    int pos = -1;
-    int id = -1;
+	int pos = -1;
+	int id = -1;
 
-    wxVector<Section> sections{};
+	wxVector<Document*> documents{};
 
-    Book() : cover(coverSize.x, coverSize.y) {}
-    Book(const wxString& title, int pos) :
-        title(title), pos(pos), cover(coverSize.x, coverSize.y) {
-        InitCover();
-    }
+	wxVector<Character*> characters{};
+	wxVector<Location*> locations{};
+	wxVector<Item*> items{};
 
-    bool Init();
-    void InitCover();
+	Book() : cover(coverSize.x, coverSize.y) {}
+	Book(const wxString& title, int pos) :
+		title(title), pos(pos), cover(coverSize.x, coverSize.y)
+	{
+		InitCover();
+	}
+	virtual ~Book();
 
-    void SetId(int id) { this->id = id; }
+	bool Init();
+	void InitCover();
 
-    void Save(wxSQLite3Database* db);
-    bool Update(wxSQLite3Database* db, bool updateSections, bool updateChapters);
+	void SetId(int id) { this->id = id; }
 
-    amDocument GenerateDocumentSimple();
-    amDocument GenerateDocument(wxVector<int>& sectionsToGen = wxVector<int>());
-    amDocument GenerateDocumentForId();
+	void Save(wxSQLite3Database* db);
+	bool Update(wxSQLite3Database* db, bool updateDocuments);
 
-    inline static wxSize GetCoverSize() { return coverSize; }
+	amSQLEntry GenerateSQLEntrySimple();
+	amSQLEntry GenerateSQLEntry(wxVector<int>* documentsToInclude = nullptr);
+	amSQLEntry GenerateSQLEntryForId();
+
+	inline static wxSize GetCoverSize() { return coverSize; }
 };
 
 
@@ -189,21 +144,23 @@ struct Book {
 /////////////////////////////////////////////////////////////////
 
 
-struct amProject {
-	wxVector<Book> books{};
+struct amProject
+{
+	wxVector<Book*> books{};
 
-    wxVector<Character> characters{};
-    wxVector<Location> locations{};
-    wxVector<Item> items{};
+	wxVector<Character*> characters{};
+	wxVector<Location*> locations{};
+	wxVector<Item*> items{};
 
-    wxFileName amFile{};
+	virtual ~amProject();
 
-    inline wxVector<Character>& GetCharacters() { return characters; }
-    inline wxVector<Location>& GetLocations() { return locations; }
-    inline wxVector<Item>& GetItems() { return items; }
-    wxVector<Chapter>& GetChapters(int bookPos, int sectionPos);
+	wxFileName amFile{};
 
-    wxVector<Chapter> GetChapters(int bookPos);
+	inline wxVector<Character*>& GetCharacters() { return characters; }
+	inline wxVector<Location*>& GetLocations() { return locations; }
+	inline wxVector<Item*>& GetItems() { return items; }
+
+	wxVector<Document*>& GetDocuments(int bookPos);
 };
 
 #endif

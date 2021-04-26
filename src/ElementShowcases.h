@@ -10,28 +10,31 @@
 
 using std::pair;
 
-class amElementShowcase: public wxScrolledWindow {
+class amElementShowcase : public wxScrolledWindow
+{
 protected:
-    ImagePanel* m_image = nullptr;
+	ImagePanel* m_image = nullptr;
 
-    wxStaticText* m_name = nullptr,
-        * m_role = nullptr;
+	wxStaticText* m_name = nullptr,
+		* m_role = nullptr;
 
-    wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
+	wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 	wxBoxSizer* m_vertical = nullptr;
 
 public:
-    amElementShowcase(wxWindow* parent);
-	virtual void SetData(Element& element);
+	amElementShowcase(wxWindow* parent);
+	virtual void SetData(Element* element);
+	virtual void ClearAll();
 
-    inline void EmptyMouseEvent(wxMouseEvent& event) {}
+	inline void EmptyMouseEvent(wxMouseEvent& event) {}
 };
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////// CharacterShowcase ///////////////////////
 ///////////////////////////////////////////////////////////////////
 
-class amCharacterShowcase : public amElementShowcase {
+class amCharacterShowcase : public amElementShowcase
+{
 private:
 	wxStaticText* m_ageLabel = nullptr,
 		* m_sexLabel = nullptr,
@@ -48,7 +51,7 @@ private:
 		* m_height = nullptr,
 		* m_nick = nullptr;
 
-    wxTextCtrl* m_appearance = nullptr,
+	wxTextCtrl* m_appearance = nullptr,
 		* m_personality = nullptr,
 		* m_backstory = nullptr;
 
@@ -56,7 +59,8 @@ private:
 
 public:
 	amCharacterShowcase(wxWindow* parent);
-	virtual void SetData(Element& charToSet);
+	virtual void SetData(Character* character);
+	virtual void ClearAll() override;
 };
 
 
@@ -65,31 +69,32 @@ public:
 ///////////////////////////////////////////////////////////////////
 
 
-class amLocationShowcase : public amElementShowcase {
+class amLocationShowcase : public amElementShowcase
+{
 private:
-    wxStaticText* m_generalLabel = nullptr,
-        * m_natLabel = nullptr,
-        * m_archLabel = nullptr,
-        * m_poliLabel = nullptr,
-        * m_ecoLabel = nullptr,
-        * m_culLabel = nullptr;
+	wxStaticText* m_generalLabel = nullptr,
+		* m_natLabel = nullptr,
+		* m_archLabel = nullptr,
+		* m_poliLabel = nullptr,
+		* m_ecoLabel = nullptr,
+		* m_culLabel = nullptr;
 
-    wxTextCtrl* m_general = nullptr,
-        * m_natural = nullptr,
-        * m_architecture = nullptr,
-        * m_politics = nullptr,
-        * m_economy = nullptr,
-        * m_culture = nullptr;
+	wxTextCtrl* m_general = nullptr,
+		* m_natural = nullptr,
+		* m_architecture = nullptr,
+		* m_politics = nullptr,
+		* m_economy = nullptr,
+		* m_culture = nullptr;
 
-    wxBoxSizer* m_firstColumn = nullptr,
-        * m_secondColumn = nullptr;
+	wxBoxSizer* m_firstColumn = nullptr,
+		* m_secondColumn = nullptr;
 
-    bool m_first = true;
+	bool m_first = true;
 
 public:
-    amLocationShowcase(wxWindow* parent);
-
-    virtual void SetData(Element& locToSet);
+	amLocationShowcase(wxWindow* parent);
+	virtual void SetData(Location* location);
+	virtual void ClearAll() override;
 };
 
 
@@ -98,13 +103,14 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 
-class amItemShowcase : public amElementShowcase {
+class amItemShowcase : public amElementShowcase
+{
 private:
 
 public:
-    amItemShowcase(wxWindow* parent);
-
-    virtual void SetData(Element& itemToSet);
+	amItemShowcase(wxWindow* parent);
+	virtual void SetData(Item* item);
+	virtual void ClearAll() override;
 };
 
 #endif

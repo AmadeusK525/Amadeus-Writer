@@ -10,7 +10,8 @@
 using std::map;
 using std::pair;
 
-struct amDocument {
+struct amSQLEntry
+{
 	wxString tableName{ "" };
 	wxString name{ "" };
 
@@ -21,7 +22,7 @@ struct amDocument {
 	bool specialForeign = false;
 	pair<wxString, int> foreignKey{ "", -1 };
 
-	wxVector<amDocument> documents{};
+	wxVector<amSQLEntry> childEntries{};
 };
 
 #endif

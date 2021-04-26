@@ -8,7 +8,7 @@
 #include "Release.h"
 #include "SwitchCtrl.h"
 
-#include "ChapterCreator.h"
+#include "DocumentCreator.h"
 #include "ElementCreators.h"
 
 #include "amUtility.h"
@@ -32,12 +32,12 @@ EVT_MENU(MENU_Quit, amMainFrame::OnQuit)
 EVT_MENU(MENU_Update, amMainFrame::UpdateElements)
 EVT_MENU(MENU_ProjectName, amMainFrame::EditTitle)
 
-EVT_MENU(MENU_NewChapter, amMainFrame::OnNewChapter)
+EVT_MENU(MENU_NewDocument, amMainFrame::OnNewDocument)
 EVT_MENU(MENU_NewCharacter, amMainFrame::OnNewCharacter)
 EVT_MENU(MENU_NewLocation, amMainFrame::OnNewLocation)
 EVT_MENU(MENU_NewItem, amMainFrame::OnNewItem)
 
-EVT_TOOL(TOOL_NewChapter, amMainFrame::OnNewChapter)
+EVT_TOOL(TOOL_NewDocument, amMainFrame::OnNewDocument)
 EVT_TOOL(TOOL_NewCharacter, amMainFrame::OnNewCharacter)
 EVT_TOOL(TOOL_NewLocation, amMainFrame::OnNewLocation)
 EVT_TOOL(TOOL_NewItem, amMainFrame::OnNewItem)
@@ -49,7 +49,7 @@ EVT_MENU(wxID_ABOUT, amMainFrame::OnAbout)
 
 EVT_BUTTON(BUTTON_Overview, amMainFrame::OnMainButtons)
 EVT_BUTTON(BUTTON_Elem, amMainFrame::OnMainButtons)
-EVT_BUTTON(BUTTON_Chapters, amMainFrame::OnMainButtons)
+EVT_BUTTON(BUTTON_Documents, amMainFrame::OnMainButtons)
 EVT_BUTTON(BUTTON_Release, amMainFrame::OnMainButtons)
 EVT_BUTTON(BUTTON_Outline, amMainFrame::OnMainButtons)
 
@@ -60,8 +60,8 @@ EVT_CLOSE(amMainFrame::OnClose)
 END_EVENT_TABLE()
 
 amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const wxPoint& pos, const wxSize& size) :
-	wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE) {
-
+	wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE)
+{
 	m_manager = manager;
 	Hide();
 
@@ -84,17 +84,18 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	wxFont font(wxFontInfo(16).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
 
-	for (int i = 0; i < 5; i++)
+	for ( int i = 0; i < 5; i++ )
 		m_mainButtons.push_back(nullptr);
 
 	// These are the buttons located on the left pane.
 	m_mainButtons[0] = new wxButton(m_selPanel, BUTTON_Overview, "Overview", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[1] = new wxButton(m_selPanel, BUTTON_Elem, "Elements", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-	m_mainButtons[2] = new wxButton(m_selPanel, BUTTON_Chapters, "Story", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	m_mainButtons[2] = new wxButton(m_selPanel, BUTTON_Documents, "Story", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[3] = new wxButton(m_selPanel, BUTTON_Outline, "Outline", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[4] = new wxButton(m_selPanel, BUTTON_Release, "Release", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 
-	for (wxButton* button : m_mainButtons) {
+	for ( wxButton* button : m_mainButtons )
+	{
 		button->SetFont(font);
 		button->SetBackgroundColour(wxColour(20, 20, 20));
 		button->SetForegroundColour(wxColour(245, 245, 245));
@@ -118,7 +119,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_overview = new amOverview(m_mainBook, m_manager);
 	m_overview->Show();
-	
+
 	//Setting up notebook Elements page
 	m_elements = new amElementsNotebook(m_mainBook);
 	m_elements->Hide();
@@ -150,14 +151,14 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	fileMenu->Append(MENU_New, "&New project", "Create a new project");
 	fileMenu->Append(MENU_Open, "&Open project", "Open an existing project");
-	fileMenu->Append(MENU_Save, "&Save", "Save the current document project");
+	fileMenu->Append(MENU_Save, "&Save", "Save the current sqlEntry project");
 	fileMenu->Append(MENU_SaveAs, "Save &As");
 	fileMenu->AppendSubMenu(exportCanvas, "Export corkboard to...");
 	fileMenu->Append(MENU_Quit, "&Quit", "Quit the editor");
 
 	wxMenu* projectMenu = new wxMenu();
 
-	projectMenu->Append(MENU_NewChapter, "New &Chapter", "Create a new chapter");
+	projectMenu->Append(MENU_NewDocument, "New &Document", "Create a new document");
 	projectMenu->AppendSeparator();
 	projectMenu->Append(MENU_NewCharacter, "New Character", "Create a new character");
 	projectMenu->Append(MENU_NewLocation, "New &Location", "Create a new location");
@@ -183,10 +184,10 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	// Creating toolbar and setting tools
 
-	m_toolBar = new wxToolBar(m_mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT);	
+	m_toolBar = new wxToolBar(m_mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT);
 	m_toolBar->SetBackgroundColour(wxColour(100, 100, 100));
 
-	m_toolBar->AddTool(TOOL_NewChapter, wxEmptyString, wxBITMAP_PNG(chapterPng), "Add new chapter", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewDocument, wxEmptyString, wxBITMAP_PNG(documentPng), "Add new document", wxITEM_NORMAL);
 	m_toolBar->AddTool(TOOL_NewCharacter, wxEmptyString, wxBITMAP_PNG(characterPng), "Add new character", wxITEM_NORMAL);
 	m_toolBar->AddTool(TOOL_NewLocation, wxEmptyString, wxBITMAP_PNG(locationPng), "Add new location", wxITEM_NORMAL);
 	m_toolBar->AddTool(TOOL_NewItem, wxEmptyString, wxBITMAP_PNG(itemPng), "Add new item", wxITEM_NORMAL);
@@ -202,7 +203,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_elements->m_searchBar = new wxSearchCtrl(m_toolBar, TOOL_Search,
 		wxEmptyString, wxDefaultPosition, FromDIP(wxSize(250, -1)), wxTE_CAPITALIZE | wxBORDER_SIMPLE);
-	m_elements->m_searchBar->SetBackgroundColour(wxColour(30,30,30));
+	m_elements->m_searchBar->SetBackgroundColour(wxColour(30, 30, 30));
 	m_elements->m_searchBar->SetForegroundColour(wxColour(255, 255, 255));
 	m_elements->m_searchBar->ShowCancelButton(true);
 
@@ -231,7 +232,8 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	Show();
 }
 
-void amMainFrame::OnNewFile(wxCommandEvent& event) {
+void amMainFrame::OnNewFile(wxCommandEvent& event)
+{
 	// Updating everything that needs to be reset.
 	m_elements->ClearAll();
 	m_storyNotebook->ClearAll();
@@ -241,33 +243,40 @@ void amMainFrame::OnNewFile(wxCommandEvent& event) {
 	SetTitle("New Amadeus project");
 }
 
-void amMainFrame::OnOpenFile(wxCommandEvent& event) {
+void amMainFrame::OnOpenFile(wxCommandEvent& event)
+{
 	wxFileDialog openDialog(this, "Choose a file to open", wxEmptyString, wxEmptyString,
 		"Amadeus Project files (*.amp)|*.amp",
 		wxFD_OPEN, wxDefaultPosition);
 
-	if (openDialog.ShowModal() == wxID_OK)
+	if ( openDialog.ShowModal() == wxID_OK )
 		m_manager->DoLoadProject(openDialog.GetPath());
 }
 
-void amMainFrame::OnSaveFile(wxCommandEvent& event) {
+void amMainFrame::OnSaveFile(wxCommandEvent& event)
+{
 	// First, check whether the current path of the project exists. If it doesn't,
 	// the "OnSaveFileAs" is called, which calls back the "saveAs" function.
-	if (!wxFileName::Exists(m_manager->GetPath(false).ToStdString())) {
+	if ( !wxFileName::Exists(m_manager->GetPath(false).ToStdString()) )
+	{
 		amMainFrame::OnSaveFileAs(event);
-	} else {
+	}
+	else
+	{
 		m_manager->SaveProject();
 		SetFocus();
 	}
 	event.Skip();
 }
 
-void amMainFrame::OnSaveFileAs(wxCommandEvent& event) {
+void amMainFrame::OnSaveFileAs(wxCommandEvent& event)
+{
 	wxFileDialog saveDialog(this, "Save file as...", wxEmptyString, wxEmptyString,
 		"Amadeus Project files (*.amp)|*.amp",
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
-	if (saveDialog.ShowModal() == wxID_OK) {
+	if ( saveDialog.ShowModal() == wxID_OK )
+	{
 		m_manager->SetProjectFileName(saveDialog.GetPath());
 		OnSaveFile(event);
 	}
@@ -275,9 +284,11 @@ void amMainFrame::OnSaveFileAs(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amMainFrame::OnExportCorkboard(wxCommandEvent& event) {
+void amMainFrame::OnExportCorkboard(wxCommandEvent& event)
+{
 	wxBitmapType type;
-	switch (event.GetId()) {
+	switch ( event.GetId() )
+	{
 	case MENU_ExportCorkboardPNG:
 		type = wxBITMAP_TYPE_PNG;
 		break;
@@ -289,7 +300,8 @@ void amMainFrame::OnExportCorkboard(wxCommandEvent& event) {
 	m_outline->GetCorkboard()->ExportToImage(type);
 }
 
-void amMainFrame::OnClose(wxCloseEvent& event) {
+void amMainFrame::OnClose(wxCloseEvent& event)
+{
 
 	/*if (event.CanVeto()) {
 		wxMessageDialog saveBefore(this, "Project has been modified and not saved.\nDo you want to save before quitting?",
@@ -321,11 +333,13 @@ void amMainFrame::OnClose(wxCloseEvent& event) {
 	event.Skip();
 }
 
-void amMainFrame::OnQuit(wxCommandEvent& event) {
+void amMainFrame::OnQuit(wxCommandEvent& event)
+{
 	Close(true);
 }
 
-void amMainFrame::EditTitle(wxCommandEvent& event) {
+void amMainFrame::EditTitle(wxCommandEvent& event)
+{
 	/*wxString temp(m_manager->GetTitle());
 	temp.erase(m_manager->GetTitle().size() - 4, wxString::npos);
 
@@ -356,12 +370,14 @@ void amMainFrame::EditTitle(wxCommandEvent& event) {
 	Show();*/
 }
 
-void amMainFrame::FullScreen(wxCommandEvent& event) {
+void amMainFrame::FullScreen(wxCommandEvent& event)
+{
 	ShowFullScreen(!IsFullScreen());
 	m_isFrameFullScreen = !m_isFrameFullScreen;
 }
 
-void amMainFrame::OnAbout(wxCommandEvent& event) {
+void amMainFrame::OnAbout(wxCommandEvent& event)
+{
 	wxAboutDialogInfo info;
 	info.SetName("AmadeusWriter");
 	info.SetVersion("0.5.2");
@@ -375,20 +391,24 @@ void amMainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutBox(info, this);
 }
 
-void amMainFrame::OnMainButtonEnter(wxMouseEvent& event) {
+void amMainFrame::OnMainButtonEnter(wxMouseEvent& event)
+{
 	((wxButton*)event.GetEventObject())->SetForegroundColour(wxColour(145, 145, 145));
 }
 
-void amMainFrame::OnMainButtonLeave(wxMouseEvent& event) {
+void amMainFrame::OnMainButtonLeave(wxMouseEvent& event)
+{
 	((wxButton*)event.GetEventObject())->SetForegroundColour(wxColour(245, 245, 245));
 }
 
-void amMainFrame::OnMainButtons(wxCommandEvent& event) {
+void amMainFrame::OnMainButtons(wxCommandEvent& event)
+{
 	int page;
 	bool showToolBar;
 	bool showSearch;
 
-	switch (event.GetId()) {
+	switch ( event.GetId() )
+	{
 	case BUTTON_Overview:
 		page = 0;
 		showToolBar = true;
@@ -399,7 +419,7 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event) {
 		showToolBar = true;
 		showSearch = true;
 		break;
-	case BUTTON_Chapters:
+	case BUTTON_Documents:
 		page = 2;
 		showToolBar = true;
 		showSearch = false;
@@ -421,8 +441,9 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event) {
 		break;
 	}
 
-	for (int i = 0; i < 5; i++) {
-		if (i == page)
+	for ( int i = 0; i < 5; i++ )
+	{
+		if ( i == page )
 			m_mainButtons[i]->SetBackgroundColour(wxColour(130, 0, 0));
 		else
 			m_mainButtons[i]->SetBackgroundColour(wxColour(20, 20, 20));
@@ -434,16 +455,18 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event) {
 	m_verticalSizer->Layout();
 }
 
-// These next 3 functions are for opening up the frames used on creating characters, locations and chapters.
-void amMainFrame::OnNewChapter(wxCommandEvent& event) {
-	ChapterCreator* create = new ChapterCreator(this, m_manager);
+// These next 3 functions are for opening up the frames used on creating characters, locations and documents.
+void amMainFrame::OnNewDocument(wxCommandEvent& event)
+{
+	DocumentCreator* create = new DocumentCreator(this, m_manager);
 	create->Show();
 	create->SetFocus();
 	Enable(false);
 	event.Skip();
 }
 
-void amMainFrame::OnNewCharacter(wxCommandEvent& event) {
+void amMainFrame::OnNewCharacter(wxCommandEvent& event)
+{
 	amCharacterCreator* create = new amCharacterCreator(this, m_manager, -1,
 		"Create character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
 	create->Show();
@@ -452,7 +475,8 @@ void amMainFrame::OnNewCharacter(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amMainFrame::OnNewLocation(wxCommandEvent& event) {
+void amMainFrame::OnNewLocation(wxCommandEvent& event)
+{
 	amLocationCreator* create = new amLocationCreator(this, m_manager, -1, "Create location",
 		wxDefaultPosition, FromDIP(wxSize(900, 650)));
 	create->Show();
@@ -461,7 +485,8 @@ void amMainFrame::OnNewLocation(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amMainFrame::OnNewItem(wxCommandEvent& event) {
+void amMainFrame::OnNewItem(wxCommandEvent& event)
+{
 	amItemCreator* create = new amItemCreator(this, m_manager, -1, "Create item",
 		wxDefaultPosition, FromDIP(wxSize(900, 720)));
 	create->Show();
@@ -470,12 +495,14 @@ void amMainFrame::OnNewItem(wxCommandEvent& event) {
 	event.Skip();
 }
 
-void amMainFrame::OnSashChanged(wxSplitterEvent& event) {
-	if (m_storyNotebook->IsShown())
+void amMainFrame::OnSashChanged(wxSplitterEvent& event)
+{
+	if ( m_storyNotebook->IsShown() )
 		m_storyNotebook->LayoutGrid();
 }
 
-void amMainFrame::Search(wxCommandEvent& event) {
+void amMainFrame::Search(wxCommandEvent& event)
+{
 	// Get which page (Characters, Locations or Items) is currently displayed.
 	int sel = m_elements->GetSelection();
 	int item;
@@ -486,14 +513,18 @@ void amMainFrame::Search(wxCommandEvent& event) {
 
 	// Switch accordingly to current page being displayed, then either display a message
 	// saying that it couldn't be found or select it on the list and make it visible.
-	switch (sel) {
+	switch ( sel )
+	{
 	case 0:
 		item = m_elements->m_charList->FindItem(-1, nameSearch, true);
 
-		if (item == -1) {
+		if ( item == -1 )
+		{
 			wxMessageBox("Character """ + nameSearch + """ could not be found", "Not found!",
 				wxOK | wxICON_INFORMATION | wxCENTER);
-		} else {
+		}
+		else
+		{
 			m_elements->m_charList->Select(item, true);
 			m_elements->m_charList->EnsureVisible(item);
 			m_elements->m_charList->SetFocus();
@@ -504,10 +535,13 @@ void amMainFrame::Search(wxCommandEvent& event) {
 	case 1:
 		item = m_elements->m_locList->FindItem(-1, event.GetString(), true);
 
-		if (item == -1) {
+		if ( item == -1 )
+		{
 			wxMessageBox("Location """ + nameSearch + """ could not be found", "Not found!",
 				wxOK | wxICON_INFORMATION | wxCENTER);
-		} else {
+		}
+		else
+		{
 			m_elements->m_locList->Select(item, true);
 			m_elements->m_locList->EnsureVisible(item);
 			m_elements->m_locList->SetFocus();
@@ -523,28 +557,34 @@ void amMainFrame::Search(wxCommandEvent& event) {
 	}
 }
 
-amOverview* amMainFrame::GetOverview() {
+amOverview* amMainFrame::GetOverview()
+{
 	return m_overview;
 }
 
-amElementsNotebook* amMainFrame::GetElementsNotebook() {
+amElementsNotebook* amMainFrame::GetElementsNotebook()
+{
 	return m_elements;
 }
 
-amStoryNotebook* amMainFrame::GetStoryNotebook() {
+amStoryNotebook* amMainFrame::GetStoryNotebook()
+{
 	return m_storyNotebook;
 }
 
-amOutline* amMainFrame::GetOutline() {
+amOutline* amMainFrame::GetOutline()
+{
 	return m_outline;
 }
 
-amRelease* amMainFrame::GetRelease() {
+amRelease* amMainFrame::GetRelease()
+{
 	return m_release;
 }
 
 // I don't think I actually use this function since I made "UpdateAll" static,
 // will probably get rid of it after further investigating.
-void amMainFrame::UpdateElements(wxCommandEvent& event) {
+void amMainFrame::UpdateElements(wxCommandEvent& event)
+{
 	m_elements->UpdateAll();
 }

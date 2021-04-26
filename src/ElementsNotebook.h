@@ -12,7 +12,8 @@
 #include "ProjectManager.h"
 #include "ElementShowcases.h"
 
-class amElementsNotebook : public wxNotebook {
+class amElementsNotebook : public wxNotebook
+{
 private:
 	amProjectManager* m_manager = nullptr;
 
@@ -70,9 +71,9 @@ public:
 
 	void ClearAll();
 
-	void UpdateCharacter(int n, Character& character);
-	void UpdateLocation(int n, Location& location);
-	void UpdateItem(int n, Item& item);
+	void UpdateCharacter(int n, Character* character);
+	void UpdateLocation(int n, Location* location);
+	void UpdateItem(int n, Item* item);
 
 	void UpdateCharacterList();
 	void UpdateLocationList();
@@ -82,7 +83,8 @@ public:
 	DECLARE_EVENT_TABLE()
 };
 
-enum {
+enum
+{
 	NOTEBOOK_THIS,
 
 	PANEL_Char,
@@ -90,7 +92,6 @@ enum {
 	LIST_CharList,
 	LIST_LocList,
 	LIST_ItemsList,
-	LIST_ScenesList,
 
 	LISTMENU_EditChar,
 	LISTMENU_EditLoc,
@@ -101,32 +102,38 @@ enum {
 };
 
 
-class amCheckListBox : public wxCheckListBox, public wxComboPopup {
+class amCheckListBox : public wxCheckListBox, public wxComboPopup
+{
 public:
-	virtual void Init() {
+	virtual void Init()
+	{
 		Bind(wxEVT_LEFT_UP, &amCheckListBox::OnMouseClick, this);
 	}
 
-	virtual bool Create(wxWindow* parent) {
+	virtual bool Create(wxWindow* parent)
+	{
 		return wxCheckListBox::Create(parent, -1);
 	}
-	
+
 	virtual wxWindow* GetControl() { return this; }
 
-	virtual void SetStringValue(const wxString& s) {
+	virtual void SetStringValue(const wxString& s)
+	{
 		int n = FindString(s);
 		Check(n);
 	}
 
-	virtual wxString GetStringValue() const {
+	virtual wxString GetStringValue() const
+	{
 		wxString string("");
 		wxArrayInt selections;
 		GetCheckedItems(selections);
 
 		bool first = true;
 
-		for (auto& it: selections) {
-			if (!first)
+		for ( auto& it : selections )
+		{
+			if ( !first )
 				string << ", ";
 
 			string << GetString(it);
@@ -135,13 +142,15 @@ public:
 		return string;
 	}
 
-	virtual wxSize GetAdjustedSize(int minWidth, int prefHeight, int maxHeight) {
+	virtual wxSize GetAdjustedSize(int minWidth, int prefHeight, int maxHeight)
+	{
 		return wxSize(minWidth, GetBestSize().y);
 	}
 
-	void OnMouseClick(wxMouseEvent& event) {
+	void OnMouseClick(wxMouseEvent& event)
+	{
 		int n = HitTest(event.GetPosition());
-		
+
 		Check(n, !IsChecked(n));
 		GetComboCtrl()->SetText(GetStringValue());
 	}

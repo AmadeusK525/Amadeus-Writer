@@ -17,60 +17,63 @@
 
 class amCorkboard;
 
-enum ToolMode {
-    modeDESIGN,
-    modeNOTE,
-    modeIMAGE,
-    modeTEXT,
-    modeCONNECTION
+enum ToolMode
+{
+	modeDESIGN,
+	modeNOTE,
+	modeIMAGE,
+	modeTEXT,
+	modeCONNECTION
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Corkboard ///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class amCorkboard : public wxPanel {
+class amCorkboard : public wxPanel
+{
 public:
 	friend class CorkboardCanvas;
 
 private:
 	amProjectManager* m_manager = nullptr;
-    amOutline* m_outline = nullptr;
-    wxToolBar* m_toolBar = nullptr;
+	amOutline* m_outline = nullptr;
+	wxToolBar* m_toolBar = nullptr;
 
-    wxBoxSizer* m_corkboardSizer = nullptr;
+	wxBoxSizer* m_corkboardSizer = nullptr;
 
-    CorkboardCanvas* m_canvas = nullptr;
-    wxSFDiagramManager m_canvasManager;
+	CorkboardCanvas* m_canvas = nullptr;
+	wxSFDiagramManager m_canvasManager;
 
-    ToolMode m_toolMode = modeDESIGN;
-    bool m_isDraggingRight = false;
+	ToolMode m_toolMode = modeDESIGN;
+	bool m_isDraggingRight = false;
 
-    int m_currentImage = 1;
+	int m_currentImage = 1;
 
 	bool m_isSaving = false;
 
 public:
-    amCorkboard(wxWindow* parent);
+	amCorkboard(wxWindow* parent);
 
-    void OnTool(wxCommandEvent& event);
+	void OnTool(wxCommandEvent& event);
 
-    void CallFullScreen(wxCommandEvent& event);
-    void LayoutAll();
+	void CallFullScreen(wxCommandEvent& event);
+	void LayoutAll();
 	inline amOutline* GetOutline() { return m_outline; }
 
-    void SetToolMode(ToolMode mode);
-    ToolMode getToolMode() { return m_toolMode; }
-    wxToolBar* GetToolbar() { return m_toolBar; }
+	void SetToolMode(ToolMode mode);
+	ToolMode getToolMode() { return m_toolMode; }
+	wxToolBar* GetToolbar() { return m_toolBar; }
 
-    void ExportToImage(wxBitmapType type);
+	void ExportToImage(wxBitmapType type);
 
-    void Save();
-    void Load(wxStringInputStream& stream);
-    
-    CorkboardCanvas* getCanvas() { return m_canvas; }
+	void Save();
+	void Load(wxStringInputStream& stream);
 
-	enum {
+	CorkboardCanvas* getCanvas() { return m_canvas; }
+
+	enum
+	{
 		TOOL_Cursor,
 		TOOL_NewNote,
 		TOOL_NewImage,
@@ -79,14 +82,15 @@ public:
 		TOOL_CorkboardFullScreen
 	};
 
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// Corkboard Canvas ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-class CorkboardCanvas : public amSFShapeCanvas {
+class CorkboardCanvas : public amSFShapeCanvas
+{
 private:
 	amCorkboard* m_parent = nullptr;
 	amProjectManager* m_manager = nullptr;
@@ -113,7 +117,8 @@ public:
 	virtual void OnTextChange(wxSFEditTextShape* shape);
 	virtual void OnConnectionFinished(wxSFLineShape* connection);
 
-	enum {
+	enum
+	{
 		MENU_DeleteNote,
 		MENU_DeleteImage,
 

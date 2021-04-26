@@ -20,7 +20,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ChapterCreator.cpp">
+    <ClCompile Include="src\DocumentCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Corkboard.cpp">
@@ -100,7 +100,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ChapterCreator.h">
+    <ClInclude Include="src\DocumentCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Corkboard.h">
@@ -154,7 +154,7 @@
     <ClInclude Include="src\StoryElements.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Document.h">
+    <ClInclude Include="src\SQLEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CorkboardShapes.h">
@@ -185,6 +185,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SwitchCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SortFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

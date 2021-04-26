@@ -16,132 +16,161 @@ EVT_MOTION(amDragList::OnMouseMotion)
 END_EVENT_TABLE()
 
 amDragList::amDragList(wxWindow* parent, const wxSize& size) :
-    wxListView(parent, -1, wxDefaultPosition, size, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxBORDER_SIMPLE) {
+	wxListView(parent, -1, wxDefaultPosition, size, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxBORDER_SIMPLE)
+{
+	m_posMarker = new wxPanel(this, -1, wxPoint(0, GetSize().y / 2));
+	m_posMarker->Hide();
+	m_posMarker->Enable(false);
+	m_posMarker->SetBackgroundColour(wxColour(10, 10, 10, 100));
 
-    m_posMarker = new wxPanel(this, -1, wxPoint(0, GetSize().y / 2));
-    m_posMarker->Hide();
-    m_posMarker->Enable(false);
-    m_posMarker->SetBackgroundColour(wxColour(10, 10, 10, 100));
-
-    SetDoubleBuffered(true);
+	SetDoubleBuffered(true);
 }
 
-void amDragList::OnLeftDown(wxMouseEvent& evt) {
-    state = DRAG_START;
+void amDragList::OnLeftDown(wxMouseEvent& evt)
+{
+	state = DRAG_START;
 }
 
-void amDragList::OnLeftUp(wxMouseEvent& evt) {
-    wxPoint evtPos = evt.GetPosition();
-    int listFlags = wxLIST_HITTEST_ONITEM;
-    int itemUnderMouse = HitTest(evtPos, listFlags), insert;
+void amDragList::OnLeftUp(wxMouseEvent& evt)
+{
+	wxPoint evtPos = evt.GetPosition();
+	int listFlags = wxLIST_HITTEST_ONITEM;
+	int itemUnderMouse = HitTest(evtPos, listFlags), insert;
 
-    if (state == DRAGGING) {
-        if (itemUnderMouse == -1) {
-            if (evtPos.y > GetPosition().y) {
-                insert = GetItemCount();
-            } else {
-                insert = 0;
-            }
+	if ( state == DRAGGING )
+	{
+		if ( itemUnderMouse == -1 )
+		{
+			if ( evtPos.y > GetPosition().y )
+			{
+				insert = GetItemCount();
+			}
+			else
+			{
+				insert = 0;
+			}
 
-        } else {
-            wxRect rect;
-            GetItemRect(itemUnderMouse, rect, wxLIST_RECT_BOUNDS);
+		}
+		else
+		{
+			wxRect rect;
+			GetItemRect(itemUnderMouse, rect, wxLIST_RECT_BOUNDS);
 
-            if (evtPos.y > (rect.GetTop() + rect.GetHeight() / 2)) {
-                // below
-                insert = itemUnderMouse + 1;
-            } else {
-                // above
-                insert = itemUnderMouse;
-            }
-        }
-        InsertItem(insert, m_tempName);
-        SelectItem(evt);
-    }
+			if ( evtPos.y > (rect.GetTop() + rect.GetHeight() / 2) )
+			{
+				// below
+				insert = itemUnderMouse + 1;
+			}
+			else
+			{
+				// above
+				insert = itemUnderMouse;
+			}
+		}
+		InsertItem(insert, m_tempName);
+		SelectItem(evt);
+	}
 
-    EndDragging();
+	EndDragging();
 }
 
-void amDragList::OnLeaveWindow(wxMouseEvent& evt) {
-    if (state == DRAGGING) {
-        EndDragging();
-        InsertItem(m_previous, m_tempName);
-        SelectItem(evt);
-    }
+void amDragList::OnLeaveWindow(wxMouseEvent& evt)
+{
+	if ( state == DRAGGING )
+	{
+		EndDragging();
+		InsertItem(m_previous, m_tempName);
+		SelectItem(evt);
+	}
 }
 
-void amDragList::OnMouseMotion(wxMouseEvent& evt) {
-    wxPoint evtPos = evt.GetPosition();
-    int listFlags = wxLIST_HITTEST_ONITEMICON | wxLIST_HITTEST_ONITEMLABEL | wxLIST_HITTEST_ONITEMSTATEICON;
+void amDragList::OnMouseMotion(wxMouseEvent& evt)
+{
+	wxPoint evtPos = evt.GetPosition();
+	int listFlags = wxLIST_HITTEST_ONITEMICON | wxLIST_HITTEST_ONITEMLABEL | wxLIST_HITTEST_ONITEMSTATEICON;
 
-    // switch to dragging mode if mouseDown was on item
-    if (state == DRAG_START) {
-        m_itemDragging = HitTest(evtPos, listFlags);
-        if (m_itemDragging == FindItem(-1, m_tempName)) {
-            m_previous = m_itemDragging;
-            
-            wxRect rect;
-            GetItemRect(m_previous, rect, wxLIST_RECT_BOUNDS);
+	// switch to dragging mode if mouseDown was on item
+	if ( state == DRAG_START )
+	{
+		m_itemDragging = HitTest(evtPos, listFlags);
+		if ( m_itemDragging == FindItem(-1, m_tempName) )
+		{
+			m_previous = m_itemDragging;
 
-            m_posMarker->SetPosition(rect.GetTopLeft());
-            m_posMarker->SetSize(GetSize().x, 2);
+			wxRect rect;
+			GetItemRect(m_previous, rect, wxLIST_RECT_BOUNDS);
 
-            state = DRAGGING;
-            SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
-            DeleteItem(m_previous);
-        } else {
-            state = DRAG_NONE;
-        }
-    }
+			m_posMarker->SetPosition(rect.GetTopLeft());
+			m_posMarker->SetSize(GetSize().x, 2);
 
-    // show markers only when dragging over an item
-    bool showMarkers = state == DRAGGING;
+			state = DRAGGING;
+			SetCursor(wxCursor(wxCURSOR_CLOSED_HAND));
+			DeleteItem(m_previous);
+		}
+		else
+		{
+			state = DRAG_NONE;
+		}
+	}
 
-    if (showMarkers) {
-        wxRect rect;
-        int itemHovered = HitTest(evtPos, listFlags);
+	// show markers only when dragging over an item
+	bool showMarkers = state == DRAGGING;
 
-        if (itemHovered != -1)
-            GetItemRect(itemHovered, rect, wxLIST_RECT_BOUNDS);
+	if ( showMarkers )
+	{
+		wxRect rect;
+		int itemHovered = HitTest(evtPos, listFlags);
 
-        if (evtPos.y > rect.GetTop() + rect.GetHeight() / 2) {
-            // below
-            m_posMarker->SetPosition(rect.GetBottomLeft());
-        } else {
-            // above
-            m_posMarker->SetPosition(rect.GetTopLeft());
-        }
+		if ( itemHovered != -1 )
+			GetItemRect(itemHovered, rect, wxLIST_RECT_BOUNDS);
 
-        if (m_posMarker->GetPosition().y > 20) {
-            m_posMarker->Show();
-        } else {
-            m_posMarker->Hide();
-        }
+		if ( evtPos.y > rect.GetTop() + rect.GetHeight() / 2 )
+		{
+			// below
+			m_posMarker->SetPosition(rect.GetBottomLeft());
+		}
+		else
+		{
+			// above
+			m_posMarker->SetPosition(rect.GetTopLeft());
+		}
 
-        Refresh(false);
-        Update();
-    }
+		if ( m_posMarker->GetPosition().y > 20 )
+		{
+			m_posMarker->Show();
+		}
+		else
+		{
+			m_posMarker->Hide();
+		}
+
+		Refresh(false);
+		Update();
+	}
 }
 
-void amDragList::EndDragging() {
-    state = DRAG_NONE;
+void amDragList::EndDragging()
+{
+	state = DRAG_NONE;
 
-    m_posMarker->Hide();
-    m_posMarker->SetPosition(wxPoint(0, GetSize().y / 2));
-    SetCursor(wxCursor(wxCURSOR_DEFAULT));
+	m_posMarker->Hide();
+	m_posMarker->SetPosition(wxPoint(0, GetSize().y / 2));
+	SetCursor(wxCursor(wxCURSOR_DEFAULT));
 
-    Refresh(false);
-    Update();
+	Refresh(false);
+	Update();
 
-    SelectItem(wxMouseEvent());
-    SetFocus();
+	SelectItem(wxMouseEvent());
+	SetFocus();
 }
 
-void amDragList::SelectItem(wxMouseEvent& evt) {
-    for (int i = 0; i < GetItemCount(); i++) {
-        Select(i, false);
-    }
+void amDragList::SelectItem(wxMouseEvent& evt)
+{
+	for ( int i = 0; i < GetItemCount(); i++ )
+	{
+		Select(i, false);
+	}
 
-    Select(FindItem(-1, m_tempName));
-    EnsureVisible(FindItem(-1, m_tempName));
+	Select(FindItem(-1, m_tempName));
+	EnsureVisible(FindItem(-1, m_tempName));
 }

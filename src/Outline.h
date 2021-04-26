@@ -14,39 +14,40 @@ class amCorkboard;
 class amTLTimeline;
 class amOutlineFilesPanel;
 
-class amOutline : public wxNotebook {
+class amOutline : public wxNotebook
+{
 private:
-    amCorkboard* m_corkboard = nullptr;
-    amTLTimeline* m_timeline = nullptr;
-    amOutlineFilesPanel* m_files = nullptr;
+	amCorkboard* m_corkboard = nullptr;
+	amTLTimeline* m_timeline = nullptr;
+	amOutlineFilesPanel* m_files = nullptr;
 
 public:
-    // Hack for doing corkboard fullscreen
-    wxPanel* m_corkboardHolder = nullptr,
-        * m_timelineHolder = nullptr;
+	// Hack for doing corkboard fullscreen
+	wxPanel* m_corkboardHolder = nullptr,
+		* m_timelineHolder = nullptr;
 
-    wxBoxSizer* m_corkHolderSizer = nullptr,
-        * m_timelineHolderSizer = nullptr;
+	wxBoxSizer* m_corkHolderSizer = nullptr,
+		* m_timelineHolderSizer = nullptr;
 
 public:
-    amOutline(wxWindow* parent);
+	amOutline(wxWindow* parent);
 
-    void SaveOutline();
-    void LoadOutline(wxStringInputStream& corkboard,
-        wxStringInputStream& timelineCanvas,
-        wxStringInputStream& timelineElements,
-        wxStringInputStream& files);
+	void SaveOutline();
+	void LoadOutline(wxStringInputStream& corkboard,
+		wxStringInputStream& timelineCanvas,
+		wxStringInputStream& timelineElements,
+		wxStringInputStream& files);
 
-    inline amCorkboard* GetCorkboard() { return m_corkboard; }
-    inline amTLTimeline* GetTimeline() { return m_timeline; }
-    inline amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
+	inline amCorkboard* GetCorkboard() { return m_corkboard; }
+	inline amTLTimeline* GetTimeline() { return m_timeline; }
+	inline amOutlineFilesPanel* GetOutlineFiles() { return m_files; }
 
-    inline wxPanel* GetCorkboardHolder() { return m_corkboardHolder; }
-    inline wxBoxSizer* GetCorkHolderSizer() { return m_corkHolderSizer; }
-    inline wxPanel* GetTimelineHolder() { return m_timelineHolder; }
-    inline wxBoxSizer* GetTimelineHolderSizer() { return m_timelineHolderSizer; }
+	inline wxPanel* GetCorkboardHolder() { return m_corkboardHolder; }
+	inline wxBoxSizer* GetCorkHolderSizer() { return m_corkHolderSizer; }
+	inline wxPanel* GetTimelineHolder() { return m_timelineHolder; }
+	inline wxBoxSizer* GetTimelineHolderSizer() { return m_timelineHolderSizer; }
 
-    void ClearAll();
+	void ClearAll();
 };
 
 #endif

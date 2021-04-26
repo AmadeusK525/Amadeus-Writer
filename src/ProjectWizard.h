@@ -6,7 +6,8 @@
 #include <wx\filepicker.h>
 #include <wx\radiobut.h>
 
-class amFirstWizardPage : public wxWizardPage {
+class amFirstWizardPage : public wxWizardPage
+{
 private:
 	wxRadioButton* m_loadBtn = nullptr,
 		* m_newBtn = nullptr;
@@ -24,7 +25,8 @@ public:
 };
 
 
-class amProjectWizard : public wxWizard {
+class amProjectWizard : public wxWizard
+{
 private:
 	amFirstWizardPage* m_page1 = nullptr;
 

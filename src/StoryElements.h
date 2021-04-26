@@ -5,25 +5,27 @@
 #include <wx/bitmap.h>
 #include <wx\wxsqlite3.h>
 
-#include "Document.h"
+#include "SQLEntry.h"
 
 struct Element;
-struct Chapter;
+struct Document;
 struct Location;
 struct Item;
 
 using std::pair;
 
-enum CompType {
+enum CompType
+{
 	CompRole,
 	CompName,
 	CompNameInverse,
-	CompChapters,
+	CompDocuments,
 	CompFirst,
 	CompLast
 };
 
-enum Role {
+enum Role
+{
 	cProtagonist,
 	cVillian,
 	cSupporting,
@@ -38,7 +40,8 @@ enum Role {
 	None
 };
 
-struct Element {
+struct Element
+{
 	wxString name{ "" };
 	Role role{ None };
 
@@ -46,7 +49,7 @@ struct Element {
 
 	wxVector<wxString> aliases{};
 
-	wxVector<Chapter*> chapters{};
+	wxVector<Document*> documents{};
 	wxImage image{};
 
 	static CompType elCompType;
@@ -57,9 +60,9 @@ struct Element {
 	virtual void Save(wxSQLite3Database* db) = 0;
 	virtual bool Update(wxSQLite3Database* db) = 0;
 
-	virtual amDocument GenerateDocumentSimple() = 0;
-	virtual amDocument GenerateDocument() = 0;
-	virtual amDocument GenerateDocumentForId() = 0;
+	virtual amSQLEntry GenerateSQLEntrySimple() = 0;
+	virtual amSQLEntry GenerateSQLEntry() = 0;
+	virtual amSQLEntry GenerateSQLEntryForId() = 0;
 
 	void SetId(int id) { this->id = id; }
 
@@ -90,7 +93,8 @@ enum CharacterRelation
 	CR_Other
 };
 
-struct Character : public Element {
+struct Character : public Element
+{
 	wxString sex{ "" }, age{ "" }, nat{ "" },
 		height{ "" }, nick{ "" }, appearance{ "" },
 		personality{ "" }, backstory{ "" };
@@ -106,9 +110,9 @@ struct Character : public Element {
 	virtual void Save(wxSQLite3Database* db);
 	virtual bool Update(wxSQLite3Database* db);
 
-	virtual amDocument GenerateDocumentSimple();
-	virtual amDocument GenerateDocument();
-	virtual amDocument GenerateDocumentForId();
+	virtual amSQLEntry GenerateSQLEntrySimple();
+	virtual amSQLEntry GenerateSQLEntry();
+	virtual amSQLEntry GenerateSQLEntryForId();
 
 	bool operator<(const Character& other) const;
 	void operator=(const Character& other);
@@ -119,7 +123,8 @@ struct Character : public Element {
 ////////////////////////////////// Location ////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-enum LocationType {
+enum LocationType
+{
 	LOCATION_Continent,
 	LOCATION_Country,
 	LOCATION_State,
@@ -134,7 +139,8 @@ enum LocationType {
 	LOCATION_Other
 };
 
-struct Location : public Element {
+struct Location : public Element
+{
 	wxString general{ "" }, natural{ "" }, architecture{ "" },
 		politics{ "" }, economy{ "" }, culture{ "" };
 
@@ -148,9 +154,9 @@ struct Location : public Element {
 	virtual void Save(wxSQLite3Database* db);
 	virtual bool Update(wxSQLite3Database* db);
 
-	virtual amDocument GenerateDocumentSimple();
-	virtual amDocument GenerateDocument();
-	virtual amDocument GenerateDocumentForId();
+	virtual amSQLEntry GenerateSQLEntrySimple();
+	virtual amSQLEntry GenerateSQLEntry();
+	virtual amSQLEntry GenerateSQLEntryForId();
 
 	bool operator<(const Location& other) const;
 	void operator=(const Location& other);
@@ -162,12 +168,13 @@ struct Location : public Element {
 //////////////////////////////////////////////////////////////////////////
 
 
-struct Item : public Element {
+struct Item : public Element
+{
 	wxString origin{ "" }, backstory{ "" }, appearance{ "" },
 		usage{ "" }, general{ "" };
 
 	wxString width{ "" }, height{ "" }, depth{ "" };
-	
+
 	wxVector<Character*> relatedCharacters;
 	wxVector<Location*> relatedLocations;
 	wxVector<Item*> relatedItems;
@@ -180,9 +187,9 @@ struct Item : public Element {
 	virtual void Save(wxSQLite3Database* db);
 	virtual bool Update(wxSQLite3Database* db);
 
-	virtual amDocument GenerateDocumentSimple();
-	virtual amDocument GenerateDocument();
-	virtual amDocument GenerateDocumentForId();
+	virtual amSQLEntry GenerateSQLEntrySimple();
+	virtual amSQLEntry GenerateSQLEntry();
+	virtual amSQLEntry GenerateSQLEntryForId();
 
 	bool operator<(const Item& other) const;
 	void operator=(const Item& other);

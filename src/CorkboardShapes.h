@@ -4,9 +4,10 @@
 
 #include <wx\wxsf\wxShapeFramework.h>
 
-class AutoWrapTextShape : public wxSFEditTextShape {
+class AutoWrapTextShape : public wxSFEditTextShape
+{
 private:
-	wxString m_textToDraw{""};
+	wxString m_textToDraw{ "" };
 
 	double m_topSpace = 0.0;
 	int m_height = -1;
@@ -32,7 +33,7 @@ public:
 	virtual void OnLeftDoubleClick(const wxPoint& pos);
 
 	inline void EmtpyDrawText() { m_textToDraw.Empty(); }
-	
+
 	void CalcWrappedText();
 	void DoCalcWrappedText(int length, int height);
 
@@ -45,7 +46,8 @@ public:
 ////////////////////////////////////////////////////////////////////
 
 
-class NoteShape : public wxSFRoundRectShape {
+class NoteShape : public wxSFRoundRectShape
+{
 protected:
 	AutoWrapTextShape* m_content = nullptr;
 
@@ -77,7 +79,8 @@ public:
 ////////////////////////////////////////////////////////////////////
 
 
-class ImageShape : public wxSFBitmapShape {
+class ImageShape : public wxSFBitmapShape
+{
 private:
 	double ratio = 99999.9;
 
@@ -103,7 +106,8 @@ public:
 ////////////////////////////////////////////////////////////////////
 
 
-class TextShape : public wxSFEditTextShape {
+class TextShape : public wxSFEditTextShape
+{
 public:
 	TextShape();
 	TextShape(const TextShape& other);

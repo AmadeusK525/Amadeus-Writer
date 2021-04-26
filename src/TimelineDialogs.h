@@ -8,18 +8,21 @@
 
 #include "Timeline.h"
 
-enum {
+enum
+{
 	BUTTON_AddThreadDone,
 	BUTTON_CardDone,
 	BUTTON_AddSectionDone
 };
 
-enum amTLThreadDlgMode {
+enum amTLThreadDlgMode
+{
 	MODE_THREAD_Add,
 	MODE_THREAD_Change
 };
 
-class amTLAddThreadDlg : public wxFrame {
+class amTLAddThreadDlg : public wxFrame
+{
 private:
 	amTLTimeline* m_timeline = nullptr;
 	amProjectManager* m_manager = nullptr;
@@ -34,11 +37,11 @@ private:
 public:
 	amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amProjectManager* manager,
 		amTLThreadDlgMode mode = MODE_THREAD_Add, const wxSize& size = wxDefaultSize);
-	
+
 	void OnDone(wxCommandEvent& event);
 	void OnUpdateDone(wxUpdateUIEvent& event);
 
-	void SetCharacters(wxVector<Character>& characters);
+	void SetCharacters(wxVector<Character*>& characters);
 	void OnListResize(wxSizeEvent& event);
 
 	void OnClose(wxCloseEvent& event);
@@ -47,12 +50,14 @@ public:
 };
 
 
-enum amTLCardDlgMode {
+enum amTLCardDlgMode
+{
 	MODE_CARD_Title,
 	MODE_CARD_Content
 };
 
-class amTLCardDlg : public wxFrame {
+class amTLCardDlg : public wxFrame
+{
 private:
 	amTLTimeline* m_timeline = nullptr;
 
@@ -73,12 +78,14 @@ public:
 	DECLARE_EVENT_TABLE()
 };
 
-enum amTLSectionDlgMode {
+enum amTLSectionDlgMode
+{
 	MODE_SECTION_Add,
 	MODE_SECTION_Change
 };
 
-class amTLAddSectionDlg : public wxFrame {
+class amTLAddSectionDlg : public wxFrame
+{
 private:
 	amTLTimeline* m_timeline = nullptr;
 

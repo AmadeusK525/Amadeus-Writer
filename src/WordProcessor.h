@@ -10,7 +10,8 @@
 /////////////////////////////////////////////////////////////////////
 
 
-class amWPCommentTag : public wxRichTextFieldType {
+class amWPCommentTag : public wxRichTextFieldType
+{
 	DECLARE_DYNAMIC_CLASS(amWPCommentTag)
 
 public:
@@ -57,7 +58,8 @@ protected:
 /////////////////////////////////////////////////////////////////////
 
 
-class amWordProcessor : public wxRichTextCtrl {
+class amWordProcessor : public wxRichTextCtrl
+{
 private:
 
 
@@ -80,7 +82,8 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 
-class amSpecialDrawingHandler : public wxRichTextDrawingHandler {
+class amSpecialDrawingHandler : public wxRichTextDrawingHandler
+{
 
 };
 
