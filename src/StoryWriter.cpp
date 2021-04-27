@@ -58,13 +58,20 @@ void StoryTreeModel::CreateFromScratch(Book* book)
 wxDataViewItem StoryTreeModel::AddDocument(Document* document, const wxDataViewItem& parentItem)
 {
 	StoryTreeModelNode* node;
+	wxDataViewItem parent;
 	if ( document->isInTrash )
+	{
 		node = new StoryTreeModelNode((StoryTreeModelNode*)parentItem.GetID(), m_trash, document);
+		parent = wxDataViewItem(m_trash);
+	}
 	else
+	{
 		node = new StoryTreeModelNode((StoryTreeModelNode*)parentItem.GetID(), nullptr, document);
+		parent = parentItem;
+	}
 
 	wxDataViewItem item(node);
-	ItemAdded(parentItem, item);
+	ItemAdded(parent, item);
 
 	for ( Document*& pChild : document->children )
 	{
@@ -1134,6 +1141,7 @@ void amStoryWriter::LoadFocusDocument()
 	SetTitle(m_pFocusDocument->name);
 
 	m_swNotebook->Freeze();
+	m_synopsys->SetValue(m_pFocusDocument->synopsys);
 
 	bool isOpen = false;
 
@@ -1219,7 +1227,6 @@ void amStoryWriter::LoadFocusDocument()
 		notePage->Thaw();
 	}
 
-	m_synopsys->SetValue(m_pFocusDocument->synopsys);
 	m_storyView->Select(m_storyTreeModel->GetDocumentItem(m_pFocusDocument));
 
 	m_swNotebook->GetCorkboard()->Layout();
@@ -1238,13 +1245,16 @@ void amStoryWriter::LoadFocusDocument()
 void amStoryWriter::SaveFocusDocument()
 {
 	CheckDocumentValidity();
+
 	wxRichTextCtrl* rtc = m_swNotebook->GetTextCtrl();
+	bool saveBuffer = false;
 	if ( m_pFocusDocument->buffer )
 	{
 		if ( rtc )
 		{
 			*m_pFocusDocument->buffer = rtc->GetBuffer();
 			m_pFocusDocument->buffer->SetBasicStyle(rtc->GetBasicStyle());
+			saveBuffer = true;
 		}
 	}
 	else
@@ -1252,11 +1262,12 @@ void amStoryWriter::SaveFocusDocument()
 		if ( rtc && !rtc->IsEmpty() )
 		{
 			m_pFocusDocument->buffer = new wxRichTextBuffer(rtc->GetBuffer());
+			saveBuffer = true;
 		}
 	}
 
 	m_pFocusDocument->synopsys = m_synopsys->GetValue();
-	m_pFocusDocument->Update(m_manager->GetStorage(), true, true);
+	m_pFocusDocument->Update(m_manager->GetStorage(), saveBuffer, true);
 }
 
 void amStoryWriter::CountWords()
@@ -1758,10 +1769,14 @@ void amStoryWriterNotebook::OnPageClosing(wxAuiNotebookEvent& event)
 		{
 			if ( page.rtc == window || page.notePanel == window )
 			{
-				if ( !page.rtc->IsShown() )
-					page.rtc->Destroy();
-				else if ( !page.notePanel->IsShown() )
-					page.notePanel->Destroy();
+
+				if ( page.rtc->IsShownOnScreen() || page.notePanel->IsShown() )
+				{
+					if ( !page.rtc->IsShown() )
+						page.rtc->Destroy();
+					else if ( !page.notePanel->IsShown() )
+						page.notePanel->Destroy();
+				}
 
 				m_writerPages.erase(&page);
 				break;

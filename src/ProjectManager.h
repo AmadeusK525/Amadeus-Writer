@@ -165,9 +165,9 @@ public:
 	void RemoveDocumentFromLocation(const wxString& locationName, Document* document);
 	void RemoveDocumentFromItem(const wxString& itemName, Document* document);
 
-	void DeleteCharacter(Character* character);
-	void DeleteLocation(Location* location);
-	void DeleteItem(Item* item);
+	void DeleteCharacter(Character* character, bool clearShowcase);
+	void DeleteLocation(Location* location, bool clearShowcase);
+	void DeleteItem(Item* item, bool clearShowcase);
 	void DeleteDocument(Document* document);
 
 	inline int GetCurrentBookPos() { return m_currentBook; }

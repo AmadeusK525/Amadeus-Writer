@@ -240,13 +240,14 @@ void amElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event))
 {
 	long sel = m_charList->GetFirstSelected();
 
-	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_charList->GetItemText(sel) + "'?",
+	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_charList->GetItemText(sel) + "'?"
+		"\nIf you have a thread bound to this character in the Timeline, it will be permantely deleted as well.",
 		"Delete character", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
 
 	if ( deleteCheck.ShowModal() == wxID_YES )
 	{
 		m_charList->DeleteItem(sel);
-		m_manager->DeleteCharacter(m_manager->GetCharacters()[sel]);
+		m_manager->DeleteCharacter(m_manager->GetCharacters()[sel], true);
 	}
 }
 
@@ -279,13 +280,14 @@ void amElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event))
 {
 	long sel = m_locList->GetFirstSelected();
 
-	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_locList->GetItemText(sel) + "'?",
+	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_locList->GetItemText(sel) + "'?"
+		"\nIf you have a thread bound to this location in the Timeline, it will be permantely deleted as well.",
 		"Delete location", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
 
 	if ( deleteCheck.ShowModal() == wxID_YES )
 	{
 		m_locList->DeleteItem(sel);
-		m_manager->DeleteLocation(m_manager->GetLocations()[sel]);
+		m_manager->DeleteLocation(m_manager->GetLocations()[sel], true);
 	}
 }
 
@@ -318,13 +320,14 @@ void amElementsNotebook::OnDeleteItem(wxCommandEvent& event)
 {
 	long sel = m_itemsList->GetFirstSelected();
 
-	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_itemsList->GetItemText(sel) + "'?",
+	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_itemsList->GetItemText(sel) + "'?"
+		"\nIf you have a thread bound to this item in the Timeline, it will be permantely deleted as well.",
 		"Delete item", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
 
 	if ( deleteCheck.ShowModal() == wxID_YES )
 	{
 		m_itemsList->DeleteItem(sel);
-		m_manager->DeleteItem(m_manager->GetItems()[sel]);
+		m_manager->DeleteItem(m_manager->GetItems()[sel], true);
 	}
 }
 

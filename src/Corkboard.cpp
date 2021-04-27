@@ -177,10 +177,21 @@ void amCorkboard::Save()
 	}
 }
 
-void amCorkboard::Load(wxStringInputStream& stream)
+void amCorkboard::Load(amProjectSQLDatabase* db)
 {
-	if ( stream.CanRead() )
-		m_canvas->LoadCanvas(stream);
+	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM outline_corkboards;");
+	while ( result.NextRow() )
+	{
+		if ( !result.IsNull("content") )
+		{
+			wxString str = result.GetAsString("content");
+			wxStringInputStream sstream(str);
+
+			if ( sstream.CanRead() )
+				m_canvas->LoadCanvas(sstream);
+		}
+	}
+
 }
 
 

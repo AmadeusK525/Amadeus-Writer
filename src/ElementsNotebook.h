@@ -38,8 +38,9 @@ public:
 
 	void InitShowChoices();
 
-	amCharacterShowcase* GetCharacterShowcase() { return m_charShow; }
-	amLocationShowcase* GetLocationShowcase() { return m_locShow; }
+	inline amCharacterShowcase* GetCharacterShowcase() { return m_charShow; }
+	inline amLocationShowcase* GetLocationShowcase() { return m_locShow; }
+	inline amItemShowcase* GetItemShowcase() { return m_itemShow; }
 
 	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 

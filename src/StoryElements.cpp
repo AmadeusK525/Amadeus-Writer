@@ -310,6 +310,7 @@ amSQLEntry Character::GenerateSQLEntry()
 
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "character_id";
+		customDoc.foreignKey.second = this->id;
 
 		sqlEntry.childEntries.push_back(customDoc);
 	}
@@ -630,6 +631,7 @@ amSQLEntry Location::GenerateSQLEntry()
 
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "location_id";
+		customDoc.foreignKey.second = this->id;
 
 		sqlEntry.childEntries.push_back(customDoc);
 	}
@@ -954,6 +956,7 @@ amSQLEntry Item::GenerateSQLEntry()
 
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "item_id";
+		customDoc.foreignKey.second = this->id;
 
 		sqlEntry.childEntries.push_back(customDoc);
 	}

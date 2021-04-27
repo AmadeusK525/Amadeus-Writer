@@ -82,6 +82,18 @@ void amTLThread::Refresh(bool delayed)
 		m_canvas->RefreshCanvas(true, rect);
 }
 
+void amTLThread::SetCharacter(const wxString& newCharacter)
+{
+	m_character = newCharacter;
+	
+	if ( m_canvas )
+	{
+		wxClientDC dc(m_canvas);
+		dc.SetFont(m_titleFont);
+		m_titleHeight = dc.GetMultiLineTextExtent(m_character).y;
+	}
+}
+
 void amTLThread::OnLeftDown(const wxPoint& pos)
 {
 	m_isSelected = true;
@@ -861,7 +873,7 @@ void amTLTimelineCanvas::OnDeleteSection(wxCommandEvent& event)
 	}
 }
 
-void amTLTimelineCanvas::DeleteCard(amTLTimelineCard* card, bool refresh, bool UpdateThumbnails)
+void amTLTimelineCanvas::DeleteCard(amTLTimelineCard* card, bool refresh, bool UpdateThumbnails, bool save)
 {
 	if ( !card )
 		return;
@@ -885,60 +897,75 @@ void amTLTimelineCanvas::DeleteCard(amTLTimelineCard* card, bool refresh, bool U
 		UpdateSelectedSectionSBData();
 	}
 
-	m_parent->Save();
+	if ( save )
+		m_parent->Save();
 }
 
-void amTLTimelineCanvas::DeleteSelectedThread()
+void amTLTimelineCanvas::DeleteThread(amTLThread* thread, bool refresh, bool updateThumbnails, bool save)
 {
-	if ( !m_selectedThread )
+	if ( !thread )
 		return;
 
 	ShapeList cards;
 	GetDiagramManager()->GetShapes(CLASSINFO(amTLTimelineCard), cards);
 	ShapeList::compatibility_iterator node = cards.GetFirst();
 
-	int threadIndex = m_selectedThread->GetIndex();
+	bool isSelected = m_selectedThread == thread;
+	int threadIndex = thread->GetIndex();
 	amTLTimelineCard* card = nullptr;
 
 	while ( node )
 	{
 		card = (amTLTimelineCard*)node->GetData();
 		if ( card->GetThreadIndex() == threadIndex )
-			DeleteCard(card, false, false);
+			DeleteCard(card, false, false, false);
 
 		node = node->GetNext();
 	}
 
-	for ( amTLThread*& thread : m_threads )
+	for ( amTLThread*& pThread : m_threads )
 	{
-		if ( thread == m_selectedThread )
-			m_threads.erase(&thread);
+		if ( pThread == thread )
+			m_threads.erase(&pThread);
 	}
 
 	int newBottom = 0;
 	int curBottom = 0;
-	for ( amTLThread*& thread : m_threads )
+	for ( amTLThread*& pThread : m_threads )
 	{
-		if ( thread->GetIndex() > threadIndex )
-			MoveThread(thread, true);
+		if ( pThread->GetIndex() > threadIndex )
+			MoveThread(pThread, true);
 
-		curBottom = thread->GetRect().GetBottom();
+		curBottom = pThread->GetRect().GetBottom();
 		if ( curBottom > newBottom )
 			newBottom = curBottom;
 	}
+
+	if ( !newBottom )
+		newBottom = 250;
 
 	SetBottom(newBottom);
 	for ( amTLSection*& section : m_sections )
 		section->SetHeight(newBottom);
 
-	delete m_selectedThread;
-	m_selectedThread = nullptr;
+	delete thread;
+	if ( isSelected )
+	{
+		m_selectedThread = nullptr;
+		m_parent->SetThreadData(nullptr, ShapeList());
+	}
 
-	UpdateSelectedThreadSBData();
-	UpdateSelectedSectionSBData();
+	if ( updateThumbnails )
+	{
+		UpdateSelectedThreadSBData();
+		UpdateSelectedSectionSBData();
+	}
+	
+	if ( refresh )
+		Refresh(true);
 
-	Refresh(true);
-	m_parent->Save();
+	if ( save )
+		m_parent->Save();
 }
 
 void amTLTimelineCanvas::DeleteSelectedSection()
@@ -1452,7 +1479,7 @@ void amTLTimelineCanvas::RepositionThreads()
 {
 	amTLThread::SetWidth((double)GetVirtualSize().x / GetScale());
 
-	int bottom = -1;
+	int bottom = 0;
 	for ( amTLThread*& thread : m_threads )
 	{
 		thread->RecalculatePosition();
@@ -1461,6 +1488,9 @@ void amTLTimelineCanvas::RepositionThreads()
 		if ( current > bottom )
 			bottom = current;
 	}
+
+	if ( !bottom )
+		bottom = 250;
 
 	SetBottom(bottom);
 	for ( amTLSection*& section : m_sections )
@@ -1708,14 +1738,14 @@ void amTLTimeline::Save(bool doCanvas, bool doElements)
 
 				if ( doCanvas )
 				{
-					sqlEntry.strings.push_back(pair<wxString, wxString>("content", wxString()));
-					wxStringOutputStream sstream(&sqlEntry.strings.front().second);
+					sqlEntry.strings.push_back(std::make_pair("content", wxString()));
+					wxStringOutputStream sstream(&sqlEntry.strings.back().second);
 					m_canvas->SaveCanvas(sstream);
 				}
 
 				if ( doElements )
 				{
-					sqlEntry.strings.push_back(pair<wxString, wxString>("timeline_elements", wxString()));
+					sqlEntry.strings.push_back(std::make_pair("timeline_elements", wxString()));
 					wxStringOutputStream sstream2(&sqlEntry.strings.back().second);
 					SaveTimelineElements(sstream2);
 				}
@@ -1728,13 +1758,25 @@ void amTLTimeline::Save(bool doCanvas, bool doElements)
 	}
 }
 
-void amTLTimeline::Load(wxStringInputStream& canvas, wxStringInputStream& elements)
+void amTLTimeline::Load(amProjectSQLDatabase* db)
 {
-	if ( canvas.GetLength() < 5 || elements.GetLength() < 5 )
-		return;
+	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM outline_timelines;");
 
-	m_canvas->LoadCanvas(canvas);
-	LoadTimelineElements(elements);
+	while ( result.NextRow() )
+	{
+		if ( !result.IsNull("content") && !result.IsNull("timeline_elements") )
+		{
+			wxString str;
+			
+			str = result.GetAsString("content");
+			wxStringInputStream scanvas(str);
+			m_canvas->LoadCanvas(scanvas);
+
+			str = result.GetAsString("timeline_elements");
+			wxStringInputStream selements(str);
+			LoadTimelineElements(selements);
+		}
+	}
 }
 
 void amTLTimeline::SaveTimelineElements(wxStringOutputStream& stream)

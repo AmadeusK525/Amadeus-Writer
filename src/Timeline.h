@@ -47,7 +47,6 @@ private:
 
 	wxString m_character{ "" };
 	int m_titleHeight = -1;
-	int m_titleWidth = -1;
 
 	static int m_height, m_width;
 	static int m_titleOffset;
@@ -59,8 +58,9 @@ public:
 
 	inline amTLThread() { MarkSerializableDataMembers(); }
 	inline amTLThread(const wxString& character, int index, int y, const wxColour& colour, amTLTimelineCanvas* canvas) :
-		m_character(character), m_index(index), m_y(y), m_colour(colour), m_canvas(canvas)
+		m_index(index), m_y(y), m_colour(colour), m_canvas(canvas)
 	{
+		SetCharacter(character);
 		MarkSerializableDataMembers();
 	}
 
@@ -94,7 +94,7 @@ public:
 	inline void SetColour(wxColour& colour) { m_colour = colour; }
 
 	inline wxString& GetCharacter() { return m_character; }
-	inline void SetCharacter(const wxString& newCharacter) { m_character = newCharacter; }
+	void SetCharacter(const wxString& newCharacter);
 
 	inline wxRect& GetRect() { return m_boundingRect; }
 	inline void SetRect(wxRect& rect) { m_boundingRect = rect; }
@@ -159,7 +159,7 @@ private:
 	static int m_markerWidth, m_horSpacing;
 	static int m_titleOffset;
 
-	wxRect m_insideRect{ -1,0,-1,-1 };
+	wxRect m_insideRect{ -1,0,-1,250 };
 	wxVector<int> m_separators{};
 
 public:
@@ -240,6 +240,7 @@ public:
 		XS_SERIALIZE_STRING_EX(m_title, "title", "");
 		XS_SERIALIZE_STRING_EX(m_titleToDraw, "titleToDraw", "");
 		XS_SERIALIZE_INT_EX(m_titleHeight, "titleHeight", -1);
+		XS_SERIALIZE_INT_EX(m_insideRect.height, "height", 250);
 		XS_SERIALIZE_INT_EX(m_index, "index", -1);
 		XS_SERIALIZE_INT_EX(m_first, "first", -1);
 		XS_SERIALIZE_INT_EX(m_last, "last", -1);
@@ -327,9 +328,11 @@ public:
 	void OnDeleteThread(wxCommandEvent& event);
 	void OnDeleteSection(wxCommandEvent& event);
 
-	void DeleteCard(amTLTimelineCard* card, bool refresh = true, bool updateThumbnails = true);
+	void DeleteCard(amTLTimelineCard* card, bool refresh = true, bool updateThumbnails = true, bool save = true);
+	void DeleteThread(amTLThread* thread, bool refresh = true, bool updateThumbnails = true, bool save = true);
+
 	inline void DeleteSelectedCard() { DeleteCard(m_selectedCard); }
-	void DeleteSelectedThread();
+	inline void DeleteSelectedThread() { DeleteThread(m_selectedThread); };
 	void DeleteSelectedSection();
 
 	inline wxVector<amTLSection*>& GetSections() { return m_sections; }
@@ -423,6 +426,8 @@ public:
 	void EditCurrentCardContent(const wxString& newContent);
 	void EditCurrentSection(const wxString& newTitle);
 
+	void DeleteThread(amTLThread* thread, bool refresh) { m_canvas->DeleteThread(thread, refresh); }
+
 	void DeleteCurrentThread() { m_canvas->OnDeleteThread(wxCommandEvent()); }
 	void DeleteCurrentCard() { m_canvas->OnDeleteCard(wxCommandEvent()); }
 	void DeleteCurrentSection() { m_canvas->OnDeleteSection(wxCommandEvent()); }
@@ -433,11 +438,13 @@ public:
 	void SetSectionData(amTLSection* section, ShapeList& shapes);
 	void SetCardData(amTLTimelineCard* card);
 
+	inline wxVector<amTLThread*>& GetThreads() { return m_canvas->GetThreads(); }
+
 	inline amTLTimelineCanvas* GetCanvas() { return m_canvas; }
 	inline amOutline* GetOutline() { return m_outline; }
 
 	void Save(bool doCanvas = true, bool doElements = true);
-	void Load(wxStringInputStream& canvas, wxStringInputStream& elements);
+	void Load(amProjectSQLDatabase* db);
 
 	void SaveTimelineElements(wxStringOutputStream& stream);
 	void LoadTimelineElements(wxStringInputStream& stream);

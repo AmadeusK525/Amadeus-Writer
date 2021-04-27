@@ -68,7 +68,7 @@ public:
 	void ExportToImage(wxBitmapType type);
 
 	void Save();
-	void Load(wxStringInputStream& stream);
+	void Load(amProjectSQLDatabase* db);
 
 	CorkboardCanvas* getCanvas() { return m_canvas; }
 

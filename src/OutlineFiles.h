@@ -10,6 +10,7 @@
 
 #include "StoryElements.h"
 #include "amUtility.h"
+#include "ProjectManager.h"
 
 class OutlineTreeModelNode : public amTreeModelNode
 {
@@ -260,7 +261,7 @@ public:
 	wxXmlNode* SerializeFile(wxDataViewItem& item);
 	void DeserializeNode(wxXmlNode* node, wxDataViewItem& parent);
 	bool Save();
-	bool Load(wxStringInputStream& stream);
+	bool Load(amProjectSQLDatabase* db);
 
 	void ClearAll();
 

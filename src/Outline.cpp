@@ -39,15 +39,12 @@ void amOutline::SaveOutline()
 	m_files->Save();
 }
 
-void amOutline::LoadOutline(wxStringInputStream& corkboard,
-	wxStringInputStream& timelineCanvas,
-	wxStringInputStream& timelineElements,
-	wxStringInputStream& files)
+void amOutline::LoadOutline(amProjectSQLDatabase* db)
 {
 
-	m_corkboard->Load(corkboard);
-	m_timeline->Load(timelineCanvas, timelineElements);
-	m_files->Load(files);
+	m_corkboard->Load(db);
+	m_timeline->Load(db);
+	m_files->Load(db);
 }
 
 void amOutline::ClearAll()

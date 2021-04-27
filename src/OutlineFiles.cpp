@@ -1227,41 +1227,48 @@ bool amOutlineFilesPanel::Save()
 	return succeeded;
 }
 
-bool amOutlineFilesPanel::Load(wxStringInputStream& stream)
+bool amOutlineFilesPanel::Load(amProjectSQLDatabase* db)
 {
-	if ( !stream.CanRead() )
-		return false;
-
-	ClearAll();
-	Init();
-
-	wxXmlDocument doc;
-	if ( !doc.Load(stream) )
-		return false;
-
-	wxDataViewItemArray array;
-	array.Add(wxDataViewItem(m_outlineTreeModel->GetResearchNode()));
-	//array.Add(wxDataViewItem(m_outlineTreeModel->GetCharactersNode()));
-	//array.Add(wxDataViewItem(m_outlineTreeModel->GetLocationsNode()));
-
-	wxXmlNode* child = doc.GetRoot()->GetChildren();
-	wxXmlNode* child2 = child->GetChildren();
-
-	while ( child2 )
+	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM outline_files;");
+	while ( result.NextRow() )
 	{
-		DeserializeNode(child2, wxDataViewItem(m_outlineTreeModel->GetResearchNode()));
-		child2 = child2->GetNext();
+		if ( !result.IsNull("content") )
+		{
+			wxString str = result.GetAsString("content");
+			wxStringInputStream sstream(str);
+
+			ClearAll();
+			Init();
+
+			wxXmlDocument doc;
+			if ( !doc.Load(sstream) )
+				return false;
+
+			wxDataViewItemArray array;
+			array.Add(wxDataViewItem(m_outlineTreeModel->GetResearchNode()));
+			//array.Add(wxDataViewItem(m_outlineTreeModel->GetCharactersNode()));
+			//array.Add(wxDataViewItem(m_outlineTreeModel->GetLocationsNode()));
+
+			wxXmlNode* child = doc.GetRoot()->GetChildren();
+			wxXmlNode* child2 = child->GetChildren();
+
+			while ( child2 )
+			{
+				DeserializeNode(child2, wxDataViewItem(m_outlineTreeModel->GetResearchNode()));
+				child2 = child2->GetNext();
+			}
+
+			child = child->GetNext()->GetNext()->GetNext()->GetNext();
+
+			while ( child )
+			{
+				DeserializeNode(child, wxDataViewItem(nullptr));
+				child = child->GetNext();
+			}
+
+			return true;
+		}
 	}
-
-	child = child->GetNext()->GetNext()->GetNext()->GetNext();
-
-	while ( child )
-	{
-		DeserializeNode(child, wxDataViewItem(nullptr));
-		child = child->GetNext();
-	}
-
-	return true;
 }
 
 void amOutlineFilesPanel::ClearAll()

@@ -8,6 +8,7 @@
 #include "Outline.h"
 #include "Release.h"
 #include "OutlineFiles.h"
+#include "Timeline.h"
 #include "ElementShowcases.h"
 #include "StoryWriter.h"
 #include "SortFunctions.h"
@@ -220,7 +221,7 @@ int amProjectSQLDatabase::GetSQLEntryId(amSQLEntry& sqlEntry)
 	query << sqlEntry.tableName;
 	query << " WHERE ";
 
-	bool nameEmpty = sqlEntry.name == "";
+	bool nameEmpty = sqlEntry.name.IsEmpty();
 
 	if ( !nameEmpty )
 		query << "name = '" << sqlEntry.name << "'";
@@ -398,7 +399,6 @@ bool amProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
 	int sqlID1, const wxString& arg1,
 	int sqlID2, const wxString& arg2)
 {
-
 	wxString statement("DELETE FROM ");
 	statement << tableName << " WHERE " << arg1 << " = " << sqlID1;
 	statement << " AND " << arg2 << " = " << sqlID2 << ";";
@@ -410,7 +410,6 @@ bool amProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
 	amSQLEntry& sqlEntry1, const wxString& arg1,
 	amSQLEntry& sqlEntry2, const wxString& arg2)
 {
-
 	return DeleteManyToMany(tableName, GetSQLEntryId(sqlEntry1), arg1, GetSQLEntryId(sqlEntry2), arg2);
 }
 
@@ -696,30 +695,11 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 
 		LoadBooks();
 
-		wxString str1, str2, str3, str4;
-
-		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT content FROM outline_corkboards;");
-		while ( result.NextRow() )
-			str1 = result.GetAsString("content");
-
-		result = m_storage.ExecuteQuery("SELECT content, timeline_elements FROM outline_timelines;");
-		while ( result.NextRow() )
-		{
-			str2 = result.GetAsString("content");
-			str3 = result.GetAsString("timeline_elements");
-		}
-
-		result = m_storage.ExecuteQuery("SELECT content FROM outline_files;");
-		while ( result.NextRow() )
-			str4 = result.GetAsString("content");
-
-		wxStringInputStream corkboard(str1), timelineCanvas(str2), timelineElements(str3), files(str4);
-
 		m_storage.Commit();
 
 		m_overview->LoadOverview();
 		m_elements->UpdateAll();
-		m_outline->LoadOutline(corkboard, timelineCanvas, timelineElements, files);
+		m_outline->LoadOutline(&m_storage);
 
 		m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
 		SetLastSave();
@@ -1652,13 +1632,30 @@ void amProjectManager::RemoveDocumentFromItem(const wxString& itemName, Document
 	wxLogMessage("Could not remove item '%s' from document '%s'", itemName, document->name);
 }
 
-void amProjectManager::DeleteCharacter(Character* character)
+void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)
 {
+	wxBusyCursor cursor;
 	for ( Document*& pDocument : character->documents )
 		RemoveDocumentFromCharacter(character->name, pDocument);
 
-	m_storage.DeleteSQLEntry(character->GenerateSQLEntryForId());
+	if ( clearShowcase )
+		m_elements->GetCharacterShowcase()->SetData(nullptr);
 
+	for ( amTLThread*& thread : m_outline->GetTimeline()->GetThreads() )
+	{
+		if ( thread->GetCharacter() == character->name )
+		{
+			m_outline->GetTimeline()->DeleteThread(thread, false);
+		}
+	}
+
+	amSQLEntry sqlEntry = character->GenerateSQLEntry();
+	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
+	{
+		m_storage.DeleteSQLEntry(childEntry);
+	}
+
+	m_storage.DeleteSQLEntry(sqlEntry);
 	for ( Character*& pCharacter : m_project.characters )
 	{
 		if ( pCharacter == character )
@@ -1670,13 +1667,21 @@ void amProjectManager::DeleteCharacter(Character* character)
 	}
 }
 
-void amProjectManager::DeleteLocation(Location* location)
+void amProjectManager::DeleteLocation(Location* location, bool clearShowcase)
 {
 	for ( Document*& pDocument : location->documents )
 		RemoveDocumentFromLocation(location->name, pDocument);
 
-	m_storage.DeleteSQLEntry(location->GenerateSQLEntryForId());
+	if ( clearShowcase )
+		m_elements->GetLocationShowcase()->SetData(nullptr);
 
+	amSQLEntry sqlEntry = location->GenerateSQLEntry();
+	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
+	{
+		m_storage.DeleteSQLEntry(childEntry);
+	}
+
+	m_storage.DeleteSQLEntry(sqlEntry);
 	for ( Location*& pLocation : m_project.locations )
 	{
 		if ( pLocation == location )
@@ -1688,12 +1693,21 @@ void amProjectManager::DeleteLocation(Location* location)
 	}
 }
 
-void amProjectManager::DeleteItem(Item* item)
+void amProjectManager::DeleteItem(Item* item, bool clearShowcase)
 {
 	for ( Document*& pDocument : item->documents )
 		RemoveDocumentFromItem(item->name, pDocument);
 
-	m_storage.DeleteSQLEntry(item->GenerateSQLEntryForId());
+	if ( clearShowcase )
+		m_elements->GetItemShowcase()->SetData(nullptr);
+
+	amSQLEntry sqlEntry = item->GenerateSQLEntry();
+	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
+	{
+		m_storage.DeleteSQLEntry(childEntry);
+	}
+
+	m_storage.DeleteSQLEntry(sqlEntry);
 
 	for ( Item*& pItem : m_project.items )
 	{
