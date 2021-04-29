@@ -118,6 +118,9 @@ public:
 	void LoadLocations();
 	void LoadItems();
 
+	void LoadStandardRelations();
+	void LoadCharacterRelations();
+
 	void SetExecutablePath(const wxString& path);
 	void SetProjectFileName(const wxFileName& fileName);
 
@@ -177,6 +180,7 @@ public:
 	wxVector<Character*>& GetCharacters();
 	wxVector<Location*>& GetLocations();
 	wxVector<Item*>& GetItems();
+	wxVector<Element*> GetAllElements();
 
 	wxVector<Document*>& GetDocumentsInCurrentBook();
 	Document* GetDocumentById(int id);

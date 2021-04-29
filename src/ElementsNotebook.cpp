@@ -211,6 +211,64 @@ void amElementsNotebook::InitShowChoices()
 	m_cShow->SetText(m_manager->GetBookTitles()[0]);
 }
 
+void amElementsNotebook::GoToElement(Element* element)
+{
+	Character* pCharacterToSet = dynamic_cast<Character*>(element);
+	if ( pCharacterToSet )
+	{
+		SetSelection(0);
+
+		int n = m_charList->FindItem(-1, pCharacterToSet->name);
+		if ( n != -1 )
+		{
+			m_charShow->Freeze();
+			m_charList->EnsureVisible(n);
+			m_charList->Select(n);
+			m_charList->Focus(n);
+			m_charShow->ShowPage(0);
+			m_charShow->SetData(pCharacterToSet);
+			m_charShow->Thaw();
+		}
+	}
+
+
+	Location* pLocationToSet = dynamic_cast<Location*>(element);
+	if ( pLocationToSet )
+	{
+		SetSelection(1);
+
+		int n = m_locList->FindItem(-1, pLocationToSet->name);
+		if ( n != -1 )
+		{
+			m_locShow->Freeze();
+			m_locList->EnsureVisible(n);
+			m_locList->Select(n);
+			m_locList->Focus(n);
+			m_locShow->ShowPage(0);
+			m_locShow->SetData(pLocationToSet);
+			m_locShow->Thaw();
+		}
+	}
+
+	Item* pItemToSet = dynamic_cast<Item*>(element);
+	if ( pItemToSet )
+	{
+		SetSelection(2);
+
+		int n = m_itemsList->FindItem(-1, pItemToSet->name);
+		if ( n != -1 )
+		{
+			m_itemShow->Freeze();
+			m_itemsList->EnsureVisible(n);
+			m_itemsList->Select(n);
+			m_itemsList->Focus(n);
+			m_itemShow->ShowPage(0);
+			m_itemShow->SetData(pItemToSet);
+			m_itemShow->Thaw();
+		}
+	}
+}
+
 void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event))
 {
 	wxMenu menu;

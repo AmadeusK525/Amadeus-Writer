@@ -44,6 +44,8 @@ public:
 
 	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 
+	void GoToElement(Element* element);
+
 	void OnCharRightClick(wxListEvent& event);
 	void OnEditCharName(wxListEvent& event);
 	void OnEditCharacter(wxCommandEvent& event);

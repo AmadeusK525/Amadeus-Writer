@@ -182,6 +182,43 @@ void amProjectSQLDatabase::CreateAllTables()
 	tItemsInDocuments.Add("FOREIGN KEY(item_id) REFERENCES item(id)");
 	tItemsInDocuments.Add("FOREIGN KEY(document_id) REFERENCES documents(id)");
 
+	wxArrayString tCharactersToCharacters;
+	tCharactersToCharacters.Add("element_id INTEGER");
+	tCharactersToCharacters.Add("related_id INTEGER");
+	tCharactersToCharacters.Add("relation INTEGER");
+	tCharactersToCharacters.Add("FOREIGN KEY(element_id) REFERENCES characters(id)");
+	tCharactersToCharacters.Add("FOREIGN KEY(related_id) REFERENCES characters(id)");
+
+	wxArrayString tCharactersToLocations;
+	tCharactersToLocations.Add("element_id INTEGER");
+	tCharactersToLocations.Add("related_id INTEGER");
+	tCharactersToLocations.Add("FOREIGN KEY(element_id) REFERENCES characters(id)");
+	tCharactersToLocations.Add("FOREIGN KEY(related_id) REFERENCES locations(id)");
+
+	wxArrayString tCharactersToItems;
+	tCharactersToItems.Add("element_id INTEGER");
+	tCharactersToItems.Add("related_id INTEGER");
+	tCharactersToItems.Add("FOREIGN KEY(element_id) REFERENCES characters(id)");
+	tCharactersToItems.Add("FOREIGN KEY(related_id) REFERENCES items(id)");
+
+	wxArrayString tLocationsToLocations;
+	tLocationsToLocations.Add("element_id INTEGER");
+	tLocationsToLocations.Add("related_id INTEGER");
+	tLocationsToLocations.Add("FOREIGN KEY(element_id) REFERENCES locations(id)");
+	tLocationsToLocations.Add("FOREIGN KEY(related_id) REFERENCES locations(id)");
+
+	wxArrayString tLocationsToItems;
+	tLocationsToItems.Add("element_id INTEGER");
+	tLocationsToItems.Add("related_id INTEGER");
+	tLocationsToItems.Add("FOREIGN KEY(element_id) REFERENCES locations(id)");
+	tLocationsToItems.Add("FOREIGN KEY(related_id) REFERENCES items(id)");
+
+	wxArrayString tItemsToItems;
+	tItemsToItems.Add("element_id INTEGER");
+	tItemsToItems.Add("related_id INTEGER");
+	tItemsToItems.Add("FOREIGN KEY(element_id) REFERENCES items(id)");
+	tItemsToItems.Add("FOREIGN KEY(related_id) REFERENCES items(id)");
+
 	try
 	{
 		Begin();
@@ -206,6 +243,13 @@ void amProjectSQLDatabase::CreateAllTables()
 		CreateTable("characters_documents", tCharactersInDocuments);
 		CreateTable("locations_documents", tLocationsInDocuments);
 		CreateTable("items_documents", tItemsInDocuments);
+
+		CreateTable("characters_characters", tCharactersToCharacters);
+		CreateTable("characters_locations", tCharactersToLocations);
+		CreateTable("characters_items", tCharactersToItems);
+		CreateTable("locations_locations", tLocationsToLocations);
+		CreateTable("locations_items", tLocationsToItems);
+		CreateTable("items_items", tItemsToItems);
 
 		Commit();
 	}
@@ -695,6 +739,8 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 
 		LoadBooks();
 
+		LoadStandardRelations();
+
 		m_storage.Commit();
 
 		m_overview->LoadOverview();
@@ -1007,6 +1053,135 @@ void amProjectManager::LoadItems()
 		m_project.items.push_back(pItem);
 	}
 }
+
+void amProjectManager::LoadStandardRelations()
+{
+	wxVector<std::pair<wxString, wxString>> tableNames;
+	tableNames.push_back(std::make_pair("characters", "characters"));
+	tableNames.push_back(std::make_pair("characters", "locations"));
+	tableNames.push_back(std::make_pair("characters", "items"));
+	tableNames.push_back(std::make_pair("locations", "locations"));
+	tableNames.push_back(std::make_pair("locations", "items"));
+	tableNames.push_back(std::make_pair("items", "items"));
+
+	for ( std::pair<wxString, wxString>& table : tableNames )
+	{
+		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM " + table.first + "_" + table.second + ";");
+		int elementType, relatedType;
+		
+		if ( table.first == "characters" )
+			elementType = 0;
+		else if ( table.first == "locations" )
+			elementType = 1;
+		else
+			elementType = 2;
+
+		if ( table.second == "characters" )
+			relatedType = 0;
+		else if ( table.second == "locations" )
+			relatedType = 1;
+		else
+			relatedType = 2;
+
+		while ( result.NextRow() )
+		{
+			int elementID = result.GetInt("element_id");
+			int relatedID = result.GetInt("related_id");
+
+			wxVector<Element*> elements;
+			switch ( elementType )
+			{
+			case 0:
+				for ( Character*& pCharacter : GetCharacters() )
+					elements.push_back(pCharacter); 
+				
+				break;
+
+			case 1:
+				for ( Location*& pLocation : GetLocations() )
+					elements.push_back(pLocation);
+
+				break;
+
+			case 2:
+				for ( Item*& pItem : GetItems() )
+					elements.push_back(pItem);
+
+				break;
+			}
+
+			for ( Element*& pElement : elements )
+			{
+				if ( pElement->id == elementID )
+				{
+					wxVector<Element*> related;
+					switch ( relatedType )
+					{
+					case 0:
+						for ( Character*& pCharacter : GetCharacters() )
+							related.push_back(pCharacter);
+
+						break;
+
+					case 1:
+						for ( Location*& pLocation : GetLocations() )
+							related.push_back(pLocation);
+
+						break;
+
+					case 2:
+						for ( Item*& pItem : GetItems() )
+							related.push_back(pItem);
+
+						break;
+					}
+
+					for ( Element*& pRelated : related )
+					{
+						if ( pRelated->id == relatedID )
+						{
+							bool has = false;
+							for ( Element*& pPresent : pElement->relatedElements )
+							{
+								if ( pPresent == pRelated )
+									has = true;
+							}
+							
+							if ( !has )
+								pElement->relatedElements.push_back(pRelated);
+
+							has = false;
+							for ( Element*& pRelatedRelated : pRelated->relatedElements )
+							{
+								if ( pRelatedRelated == pElement )
+								{
+									has = true;
+									break;
+								}
+							}
+
+							if ( !has )
+								pRelated->relatedElements.push_back(pElement);
+
+							break;
+						}
+					}
+
+					break;
+				}
+			}
+		}
+	}
+
+	for ( Element*& pElement : GetAllElements() )
+	{
+		if ( !pElement->relatedElements.empty() )
+			std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
+	}
+}
+
+void amProjectManager::LoadCharacterRelations()
+{}
 
 void amProjectManager::SetExecutablePath(const wxString& path)
 {
@@ -1772,6 +1947,22 @@ wxVector<Location*>& amProjectManager::GetLocations()
 wxVector<Item*>& amProjectManager::GetItems()
 {
 	return m_project.GetItems();
+}
+
+wxVector<Element*> amProjectManager::GetAllElements()
+{
+	wxVector<Element*> elements;
+
+	for ( Character*& pCharacter : GetCharacters() )
+		elements.push_back(pCharacter);
+
+	for ( Location*& pLocation: GetLocations() )
+		elements.push_back(pLocation);
+
+	for ( Item*& pItem : GetItems() )
+		elements.push_back(pItem);
+
+	return elements;
 }
 
 wxVector<Document*>& amProjectManager::GetDocumentsInCurrentBook()

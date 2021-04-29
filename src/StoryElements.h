@@ -52,6 +52,8 @@ struct Element
 	wxVector<Document*> documents{};
 	wxImage image{};
 
+	wxVector<Element*> relatedElements{};
+
 	static CompType elCompType;
 	int id = -1;
 
@@ -82,7 +84,7 @@ enum CharacterRelation
 	CR_Grandparent,
 
 	CR_Sibling,
-	CR_Cousing,
+	CR_Cousin,
 
 	CR_Child,
 	CR_Grandchild,
@@ -99,11 +101,9 @@ struct Character : public Element
 		height{ "" }, nick{ "" }, appearance{ "" },
 		personality{ "" }, backstory{ "" };
 
-	static CompType cCompType;
+	bool isAlive = true;
 
-	wxVector<pair<Character*, CharacterRelation>> relatedCharacters;
-	wxVector<Location*> relatedLocations;
-	wxVector<Item*> relatedItems;
+	static CompType cCompType;
 
 	Character() = default;
 
@@ -144,9 +144,6 @@ struct Location : public Element
 	wxString general{ "" }, natural{ "" }, architecture{ "" },
 		politics{ "" }, economy{ "" }, culture{ "" };
 
-	wxVector<Character*> relatedCharacters;
-	wxVector<Location*> relatedLocations;
-
 	static CompType lCompType;
 
 	Location() = default;
@@ -174,10 +171,6 @@ struct Item : public Element
 		usage{ "" }, general{ "" };
 
 	wxString width{ "" }, height{ "" }, depth{ "" };
-
-	wxVector<Character*> relatedCharacters;
-	wxVector<Location*> relatedLocations;
-	wxVector<Item*> relatedItems;
 
 	bool isMagic{ false };
 	bool isManMade{ true };

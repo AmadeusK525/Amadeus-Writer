@@ -25,7 +25,7 @@ private:
 	int m_yOrigin = 0;
 
 	int m_units = 10;
-	double m_radius = 2.0;
+	double m_radius = 5.0;
 
 	wxTimer m_animationTimer;
 	wxSize m_cacheSize;

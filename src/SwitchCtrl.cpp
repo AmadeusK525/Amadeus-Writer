@@ -44,6 +44,9 @@ wxSwitchCtrl::wxSwitchCtrl(wxWindow* parent,
 	const wxValidator& validator,
 	const wxString& name) : wxControl(parent, id, pos, size, style, validator, name), m_animationTimer(this, 12345)
 {
+	SetBackgroundColour(m_parent->GetBackgroundColour());
+	SetDoubleBuffered(true);
+
 	m_sizer = new wxBoxSizer(wxVERTICAL);
 	m_sizer->AddStretchSpacer(1);
 	SetSizer(m_sizer);
