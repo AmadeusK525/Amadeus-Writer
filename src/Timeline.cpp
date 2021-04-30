@@ -1738,15 +1738,15 @@ void amTLTimeline::Save(bool doCanvas, bool doElements)
 
 				if ( doCanvas )
 				{
-					sqlEntry.strings.push_back(std::make_pair("content", wxString()));
-					wxStringOutputStream sstream(&sqlEntry.strings.back().second);
+					sqlEntry.strings["content"] = wxString();
+					wxStringOutputStream sstream(&sqlEntry.strings["content"]);
 					m_canvas->SaveCanvas(sstream);
 				}
 
 				if ( doElements )
 				{
-					sqlEntry.strings.push_back(std::make_pair("timeline_elements", wxString()));
-					wxStringOutputStream sstream2(&sqlEntry.strings.back().second);
+					sqlEntry.strings["timeline_elements"] = wxString();
+					wxStringOutputStream sstream2(&sqlEntry.strings["timeline_elements"]);
 					SaveTimelineElements(sstream2);
 				}
 

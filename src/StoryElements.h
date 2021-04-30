@@ -40,8 +40,10 @@ enum Role
 	None
 };
 
-struct Element
+struct Element : public wxObject
 {
+	wxDECLARE_DYNAMIC_CLASS(Element);
+
 	wxString name{ "" };
 	Role role{ None };
 
@@ -97,6 +99,8 @@ enum CharacterRelation
 
 struct Character : public Element
 {
+	wxDECLARE_DYNAMIC_CLASS(Character);
+
 	wxString sex{ "" }, age{ "" }, nat{ "" },
 		height{ "" }, nick{ "" }, appearance{ "" },
 		personality{ "" }, backstory{ "" };
@@ -141,6 +145,8 @@ enum LocationType
 
 struct Location : public Element
 {
+	wxDECLARE_DYNAMIC_CLASS(Location);
+
 	wxString general{ "" }, natural{ "" }, architecture{ "" },
 		politics{ "" }, economy{ "" }, culture{ "" };
 
@@ -167,6 +173,8 @@ struct Location : public Element
 
 struct Item : public Element
 {
+	wxDECLARE_DYNAMIC_CLASS(Item);
+
 	wxString origin{ "" }, backstory{ "" }, appearance{ "" },
 		usage{ "" }, general{ "" };
 

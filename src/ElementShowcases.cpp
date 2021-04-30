@@ -6,8 +6,14 @@
 
 #include "wxmemdbg.h"
 
+
+///////////////////////////////////////////////////////////////////
+///////////////////// RelatedElementsContainer ////////////////////
+///////////////////////////////////////////////////////////////////
+
+
 amRelatedElementsContainer::amRelatedElementsContainer(wxWindow* parent, amElementShowcase* showcase) :
-	wxScrolledWindow(parent, -1, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxBORDER_SIMPLE), m_showcase(showcase)
+	wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE), m_showcase(showcase)
 {
 	SetBackgroundColour(wxColour(10, 10, 10));
 
@@ -15,24 +21,48 @@ amRelatedElementsContainer::amRelatedElementsContainer(wxWindow* parent, amEleme
 	m_label->SetForegroundColour(wxColour(255, 255, 255));
 	m_label->SetFont(wxFontInfo(12).Bold());
 
-	m_addRelated = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
-	m_addRelated->SetBitmap(wxBITMAP_PNG(plus));
+	wxButton* addRelated = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
+	addRelated->SetBitmap(wxBITMAP_PNG(plus));
+	addRelated->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnAddElement, this);
+	addRelated->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_owner); });
+	wxButton* removeRelated = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
+	removeRelated->SetBitmap(wxBITMAP_PNG(minus));
+	removeRelated->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnRemoveElement, this);
+	removeRelated->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_owner && !m_owner->relatedElements.empty()); });
 
 	wxBoxSizer* firstLine = new wxBoxSizer(wxHORIZONTAL);
 	firstLine->Add(m_label, wxSizerFlags().CenterVertical());
 	firstLine->AddStretchSpacer(1);
-	firstLine->Add(m_addRelated);
+	firstLine->Add(removeRelated);
+	firstLine->AddSpacer(2);
+	firstLine->Add(addRelated);
 
-	m_grid = new wxWrapSizer(wxVERTICAL);
+	m_grid = new wxWrapSizer(wxHORIZONTAL);
 
 	m_vertical = new wxBoxSizer(wxVERTICAL);
 	m_vertical->Add(firstLine, wxSizerFlags(0).Expand().Border(wxALL, 2));
-	m_vertical->Add(m_grid, wxSizerFlags(1).Expand());
+	m_vertical->Add(m_grid, wxSizerFlags(1));
 
 	SetSizer(m_vertical);
 }
 
-void amRelatedElementsContainer::OnElementButtonsClicked(wxCommandEvent& event)
+void amRelatedElementsContainer::OnAddElement(wxCommandEvent& event)
+{
+	amRelatedElementsDialog* addDialog = new amRelatedElementsDialog((wxWindow*)amGetManager()->GetMainFrame(),
+		m_owner, this, amRelatedElementsDialog::MODE::ADD);
+	addDialog->CenterOnScreen();
+	addDialog->Show();
+}
+
+void amRelatedElementsContainer::OnRemoveElement(wxCommandEvent & event)
+{
+	amRelatedElementsDialog* addDialog = new amRelatedElementsDialog((wxWindow*)amGetManager()->GetMainFrame(),
+		m_owner, this, amRelatedElementsDialog::MODE::REMOVE);
+	addDialog->CenterOnScreen();
+	addDialog->Show();
+}
+
+void amRelatedElementsContainer::OnElementButtons(wxCommandEvent& event)
 {
 	amElementButton* button = (amElementButton*)event.GetEventObject();
 	amGetManager()->GetElementsNotebook()->GoToElement(button->element);
@@ -63,6 +93,8 @@ void amRelatedElementsContainer::LoadItems(Element* element)
 
 void amRelatedElementsContainer::DoLoad(Element* element, bool(*ShouldAdd)(Element*))
 {
+	m_owner = element;
+
 	int buttonCount = m_grid->GetItemCount();
 	int relatedCount = element->relatedElements.size();
 
@@ -84,7 +116,7 @@ void amRelatedElementsContainer::DoLoad(Element* element, bool(*ShouldAdd)(Eleme
 			if ( i >= buttonCount )
 			{
 				button = new amElementButton(this, pRelated, "");
-				button->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnElementButtonsClicked, this);
+				button->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnElementButtons, this);
 				m_grid->Add(button, wxSizerFlags(0).Border(wxALL, 2));
 			}
 			else
@@ -101,6 +133,439 @@ void amRelatedElementsContainer::DoLoad(Element* element, bool(*ShouldAdd)(Eleme
 	SendSizeEventToParent();
 	Refresh();
 }
+
+
+///////////////////////////////////////////////////////////////////
+////////////////////// RelatedElementsDialog  /////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+amRelatedElementsDialog::amRelatedElementsDialog(wxWindow* parent, Element* element, amRelatedElementsContainer* container, MODE mode) :
+	wxFrame(parent, -1, "", wxDefaultPosition, wxSize(500, 500), wxCAPTION | wxSYSTEM_MENU | wxFRAME_FLOAT_ON_PARENT)
+{
+	m_element = element;
+	m_container = container;
+	m_mode = mode;
+
+	wxPanel* panel = new wxPanel(this);
+	panel->SetBackgroundColour(wxColour(20, 20, 20));
+
+	wxStaticText* label = new wxStaticText(panel, -1, element->name);
+	label->SetFont(wxFontInfo(14).Bold());
+	label->SetForegroundColour(wxColour(255, 255, 255));
+
+	m_notebook = new wxNotebook(panel, -1);
+
+	m_characters = new wxListView(m_notebook, -1, wxDefaultPosition, wxDefaultSize,
+		wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE | wxLC_NO_HEADER);
+	m_characters->AppendColumn("");
+	m_characters->SetBackgroundColour(wxColour(20, 20, 20));
+	m_characters->SetForegroundColour(wxColour(255, 255, 255));
+
+	m_locations = new wxListView(m_notebook, -1, wxDefaultPosition, wxDefaultSize,
+		wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE | wxLC_NO_HEADER);
+	m_locations->AppendColumn("");
+	m_locations->SetBackgroundColour(wxColour(20, 20, 20));
+	m_locations->SetForegroundColour(wxColour(255, 255, 255));
+
+	m_items = new wxListView(m_notebook, -1, wxDefaultPosition, wxDefaultSize,
+		wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE | wxLC_NO_HEADER);
+	m_items->AppendColumn("");
+	m_items->SetBackgroundColour(wxColour(20, 20, 20));
+	m_items->SetForegroundColour(wxColour(255, 255, 255));
+
+	m_characterImages = new wxImageList(24, 24);
+	m_locationImages = new wxImageList(24, 24);
+	m_itemImages = new wxImageList(24, 24);
+
+	m_characters->AssignImageList(m_characterImages, wxIMAGE_LIST_SMALL);
+	m_locations->AssignImageList(m_locationImages, wxIMAGE_LIST_SMALL);
+	m_items->AssignImageList(m_itemImages, wxIMAGE_LIST_SMALL);
+
+	m_characters->Bind(wxEVT_SIZE, &amRelatedElementsDialog::OnListResize, this);
+	m_locations->Bind(wxEVT_SIZE, &amRelatedElementsDialog::OnListResize, this);
+	m_items->Bind(wxEVT_SIZE, &amRelatedElementsDialog::OnListResize, this);
+
+	m_notebook->AddPage(m_characters, "Characters");
+	m_notebook->AddPage(m_locations, "Locations");
+	m_notebook->AddPage(m_items, "Items");
+
+	auto lightenBG = [](wxMouseEvent& event) 
+	{
+		((wxWindow*)event.GetEventObject())->SetBackgroundColour(wxColour(60, 60, 60));
+	};
+
+	auto darkenBG = [](wxMouseEvent& event)
+	{
+		((wxWindow*)event.GetEventObject())->SetBackgroundColour(wxColour(45, 45, 45));
+	};
+
+	wxButton* mainButton = new wxButton(panel, -1, "", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	mainButton->SetBackgroundColour(wxColour(45, 45, 45));
+	mainButton->SetForegroundColour(wxColour(255, 255, 255));
+	mainButton->Bind(wxEVT_ENTER_WINDOW, lightenBG);
+	mainButton->Bind(wxEVT_LEAVE_WINDOW, darkenBG);
+	mainButton->Bind(wxEVT_BUTTON, &amRelatedElementsDialog::OnMainButton, this);
+	if ( mode == ADD )
+		mainButton->SetLabel("Add");
+	
+	else
+		mainButton->SetLabel("Remove");
+
+	wxButton* done = new wxButton(panel, -1, "Done", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	done->SetBackgroundColour(wxColour(45, 45, 45));
+	done->SetForegroundColour(wxColour(255, 255, 255));
+	done->Bind(wxEVT_LEAVE_WINDOW, darkenBG);
+	done->Bind(wxEVT_ENTER_WINDOW, lightenBG);
+	done->Bind(wxEVT_BUTTON, [&](wxCommandEvent& event)
+		{
+			m_container->LoadAllElements(m_element);
+			Close();
+		}
+	);
+
+	wxBoxSizer* vertical = new wxBoxSizer(wxVERTICAL);
+	vertical->Add(label, wxSizerFlags(0).CenterHorizontal().Border(wxALL, 5));
+	vertical->Add(m_notebook, wxSizerFlags(1).Expand());
+	vertical->Add(mainButton, wxSizerFlags(0).Expand().Border(wxALL, 5));
+	vertical->AddSpacer(10);
+	vertical->Add(done, wxSizerFlags(0).Right().Border(wxALL, 5));
+
+	panel->SetSizer(vertical);
+
+	LoadPossibleCharacters();
+	LoadPossibleLocations();
+	LoadPossibleItems();
+
+	wxString title;
+	if ( m_mode == ADD )
+		title = "Add related elements";
+	else
+		title = "Remove related elements";
+
+	SetTitle(title);
+	SetIcon(wxICON(amadeus));
+}
+
+void amRelatedElementsDialog::LoadPossibleCharacters()
+{
+	if ( m_mode == ADD )
+	{
+		amProjectManager* manager = amGetManager();
+
+		int i = 0;
+		for ( Character*& pCharacter : manager->GetCharacters() )
+		{
+			if ( pCharacter == m_element )
+				continue;
+
+			bool has = false;
+			for ( Element*& pPresent : m_element->relatedElements )
+			{
+				if ( pPresent == pCharacter )
+				{
+					has = true;
+					break;
+				}
+			}
+
+			if ( !has )
+			{
+				m_characters->InsertItem(i, pCharacter->name);
+				if ( pCharacter->image.IsOk() )
+					m_characters->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(amGetScaledImage(24, 24, pCharacter->image))));
+				else
+					m_characters->SetItemColumnImage(i, 0, -1);
+
+				i++;
+			}
+		}
+	}
+	else
+	{
+		int i = 0;
+		for ( Element*& pPresent : m_element->relatedElements )
+		{
+			Character* pCharacter = dynamic_cast<Character*>(pPresent);
+			if ( pCharacter )
+			{
+				m_characters->InsertItem(i, pCharacter->name);
+				if ( pCharacter->image.IsOk() )
+					m_characters->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(amGetScaledImage(24, 24, pCharacter->image))));
+				else
+					m_characters->SetItemColumnImage(i, 0, -1);
+
+				i++;
+			}
+		}
+	}
+}
+
+void amRelatedElementsDialog::LoadPossibleLocations()
+{
+	if ( m_mode == ADD )
+	{
+		amProjectManager* manager = amGetManager();
+
+		int i = 0;
+		for ( Location*& pLocation : manager->GetLocations() )
+		{
+			if ( pLocation == m_element )
+				continue;
+
+			bool has = false;
+			for ( Element*& pPresent : m_element->relatedElements )
+			{
+				if ( pPresent == pLocation )
+				{
+					has = true;
+					break;
+				}
+			}
+
+			if ( !has )
+			{
+				m_locations->InsertItem(i, pLocation->name);
+				if ( pLocation->image.IsOk() )
+					m_locations->SetItemColumnImage(i, 0, m_locationImages->Add(wxBitmap(amGetScaledImage(24, 24, pLocation->image))));
+				else
+					m_locations->SetItemColumnImage(i, 0, -1);
+
+				i++;
+			}
+		}
+	}
+	else
+	{
+		int i = 0;
+		for ( Element*& pPresent : m_element->relatedElements )
+		{
+			Location* pLocation = dynamic_cast<Location*>(pPresent);
+			if ( pLocation )
+			{
+				m_locations->InsertItem(i, pLocation->name);
+				if ( pLocation->image.IsOk() )
+					m_locations->SetItemColumnImage(i, 0, m_locationImages->Add(wxBitmap(amGetScaledImage(24, 24, pLocation->image))));
+				else
+					m_locations->SetItemColumnImage(i, 0, -1);
+
+				i++;
+			}
+		}
+	}
+}
+
+void amRelatedElementsDialog::LoadPossibleItems()
+{
+	if ( m_mode == ADD )
+	{
+		amProjectManager* manager = amGetManager();
+
+		int i = 0;
+		for ( Item*& pItem : manager->GetItems() )
+		{
+			if ( pItem == m_element )
+				continue;
+
+			bool has = false;
+			for ( Element*& pPresent : m_element->relatedElements )
+			{
+				if ( pPresent == pItem )
+				{
+					has = true;
+					break;
+				}
+			}
+
+			if ( !has )
+			{
+				m_items->InsertItem(i, pItem->name);
+				if ( pItem->image.IsOk() )
+					m_items->SetItemColumnImage(i, 0, m_itemImages->Add(wxBitmap(amGetScaledImage(24, 24, pItem->image))));
+				else
+					m_items->SetItemColumnImage(i, 0, -1);
+
+				i++;
+			}
+		}
+	}
+	else
+	{
+		int i = 0;
+		for ( Element*& pPresent : m_element->relatedElements )
+		{
+			Item* pItem = dynamic_cast<Item*>(pPresent);
+			if ( pItem )
+			{
+				m_items->InsertItem(i, pItem->name);
+				if ( pItem->image.IsOk() )
+					m_items->SetItemColumnImage(i, 0, m_itemImages->Add(wxBitmap(amGetScaledImage(24, 24, pItem->image))));
+				else
+					m_items->SetItemColumnImage(i, 0, -1);
+
+				i++;
+			}
+		}
+	}
+}
+
+void amRelatedElementsDialog::OnMainButton(wxCommandEvent& event)
+{
+	wxBusyCursor cursor;
+	amProjectManager* manager = amGetManager();
+
+	int n;
+	wxString name;
+	Element* toApply = nullptr;
+
+	switch ( m_notebook->GetSelection() )
+	{
+	case 0:
+		n = m_characters->GetFirstSelected();
+
+		if ( n != -1 )
+		{
+			name = m_characters->GetItemText(n);
+			for ( Character*& pCharacter : manager->GetCharacters() )
+			{
+				if ( pCharacter->name == name )
+				{
+					toApply = pCharacter;
+					m_characters->DeleteItem(n);
+					break;
+				}
+			}
+		}
+
+		break;
+
+	case 1:
+		n = m_locations->GetFirstSelected();
+
+		if ( n != -1 )
+		{
+			name = m_locations->GetItemText(n);
+			for ( Location*& pLocation : manager->GetLocations() )
+			{
+				if ( pLocation->name == name )
+				{
+					toApply = pLocation;
+					m_locations->DeleteItem(n);
+					break;
+				}
+			}
+		}
+		break;
+
+	case 2:
+		n = m_items->GetFirstSelected();
+
+		if ( n != -1 )
+		{
+			name = m_items->GetItemText(n);
+			for ( Item*& pItem : manager->GetItems() )
+			{
+				if ( pItem->name == name )
+				{
+					toApply = pItem;
+					m_items->DeleteItem(n);
+					break;
+				}
+			}
+		}
+		break;
+	}
+
+	if ( toApply )
+	{
+		if ( m_mode == ADD )
+			manager->RelateElements(m_element, toApply);
+		else
+			manager->UnrelateElements(m_element, toApply);
+	}
+}
+
+void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent & event)
+{
+	wxBusyCursor cursor;
+	amProjectManager* manager = amGetManager();
+
+	int n;
+	wxString name;
+	Element* toAdd = nullptr;
+
+	switch ( m_notebook->GetSelection() )
+	{
+	case 0:
+		n = m_characters->GetFirstSelected();
+
+		if ( n != -1 )
+		{
+			name = m_characters->GetItemText(n);
+			for ( Character*& pCharacter : manager->GetCharacters() )
+			{
+				if ( pCharacter->name == name )
+				{
+					toAdd = pCharacter;
+					m_characters->DeleteItem(n);
+					break;
+				}
+			}
+		}
+
+		break;
+
+	case 1:
+		n = m_locations->GetFirstSelected();
+
+		if ( n != -1 )
+		{
+			name = m_locations->GetItemText(n);
+			for ( Location*& pLocation : manager->GetLocations() )
+			{
+				if ( pLocation->name == name )
+				{
+					toAdd = pLocation;
+					m_locations->DeleteItem(n);
+					break;
+				}
+			}
+		}
+		break;
+
+	case 2:
+		n = m_items->GetFirstSelected();
+
+		if ( n != -1 )
+		{
+			name = m_items->GetItemText(n);
+			for ( Item*& pItem : manager->GetItems() )
+			{
+				if ( pItem->name == name )
+				{
+					toAdd = pItem;
+					m_items->DeleteItem(n);
+					break;
+				}
+			}
+		}
+		break;
+	}
+
+	if ( toAdd )
+		manager->UnrelateElements(m_element, toAdd);
+}
+
+void amRelatedElementsDialog::OnListResize(wxSizeEvent& event)
+{
+	wxListView* list = (wxListView*)event.GetEventObject();
+	list->SetColumnWidth(0, event.GetSize().x);
+}
+
+
+///////////////////////////////////////////////////////////////////
+////////////////////////// ElementShowcase ////////////////////////
+///////////////////////////////////////////////////////////////////
 
 
 amElementShowcase::amElementShowcase(wxWindow* parent) :
@@ -121,7 +586,7 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	SetSizer(m_mainSizer);
 
 	//////////////////////////////// First panel ///////////////////////////////
-
+	
 	m_nextPanel = new wxButton(m_mainPanel, -1, "", wxDefaultPosition, wxSize(25, 25));
 	m_nextPanel->SetBitmap(wxBITMAP_PNG(arrowRight));
 	m_nextPanel->Bind(wxEVT_BUTTON, &amElementShowcase::OnNextPanel, this);
@@ -167,7 +632,7 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 
 	m_secondPanel->SetSizer(m_secondVerSizer);
 	m_secondVerSizer->FitInside(m_secondPanel);
-	m_secondPanel->SetScrollRate(20, 20);
+	m_secondPanel->SetScrollRate(0, 20);
 }
 
 void amElementShowcase::SetData(Element* element)
@@ -569,6 +1034,7 @@ void amCharacterShowcase::SetData(Character* character)
 	m_mainVerSizer->FitInside(m_mainPanel);
 
 	m_relatedCharacters->LoadAllElements(character);
+	m_secondVerSizer->FitInside(m_secondPanel);
 
 	Thaw();
 }
@@ -914,7 +1380,8 @@ void amLocationShowcase::SetData(Location* location)
 	m_mainVerSizer->FitInside(m_mainPanel);
 	
 	m_relatedCharacters->LoadAllElements(location);
-	
+	m_secondVerSizer->FitInside(m_secondPanel);
+
 	Thaw();
 }
 

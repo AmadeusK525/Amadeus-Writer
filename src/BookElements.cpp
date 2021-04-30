@@ -190,10 +190,10 @@ amSQLEntry Document::GenerateSQLEntrySimple()
 	sqlEntry.name = name;
 
 	sqlEntry.integers.reserve(2);
-	sqlEntry.integers.push_back(pair<wxString, int>("position", position));
-	sqlEntry.integers.push_back(pair<wxString, int>("book_id", bookID));
+	sqlEntry.integers["position"] = position;
+	sqlEntry.integers["book_id"] = bookID;
 
-	sqlEntry.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
+	sqlEntry.strings["synopsys"] = synopsys;
 
 	return sqlEntry;
 }
@@ -202,7 +202,7 @@ amSQLEntry Document::GenerateSQLEntry()
 {
 	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
 
-	sqlEntry.strings.push_back(pair<wxString, wxString>("content", wxString()));
+	sqlEntry.strings["content"] = wxString();
 
 
 	for ( Note*& pNote : notes )
@@ -211,9 +211,9 @@ amSQLEntry Document::GenerateSQLEntry()
 		noteDoc.tableName = "document_notes";
 
 		noteDoc.name = pNote->name;
-		noteDoc.strings.push_back(pair<wxString, wxString>("content", pNote->content));
+		noteDoc.strings["content"] = pNote->content;
 
-		noteDoc.integers.push_back(pair<wxString, int>("isDone", pNote->isDone));
+		noteDoc.integers["isDone"] = pNote->isDone;
 
 		noteDoc.specialForeign = true;
 		noteDoc.foreignKey.first = "document_id";
@@ -234,7 +234,7 @@ amSQLEntry Document::GenerateSQLEntryForId()
 	sqlEntry.foreignKey.first = "book_id";
 	sqlEntry.foreignKey.second = bookID;
 
-	sqlEntry.integers.push_back(pair<wxString, int>("position", position));
+	sqlEntry.integers["position"] = position;
 
 	return sqlEntry;
 }
@@ -466,12 +466,12 @@ amSQLEntry Book::GenerateSQLEntrySimple()
 	sqlEntry.name = title;
 	sqlEntry.tableName = "books";
 
-	sqlEntry.integers.push_back(pair<wxString, int>("position", pos));
+	sqlEntry.integers["position"] = pos;
 
-	sqlEntry.strings.push_back(pair<wxString, wxString>("synopsys", synopsys));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("author", author));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("genre", genre));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("description", description));
+	sqlEntry.strings["synopsys"] = synopsys;
+	sqlEntry.strings["author"] = author;
+	sqlEntry.strings["genre"] = genre;
+	sqlEntry.strings["description"] = description;
 
 	return sqlEntry;
 }

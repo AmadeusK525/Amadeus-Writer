@@ -73,7 +73,7 @@ void amStoryNotebook::ClearAll()
 
 
 StoryGrid::StoryGrid(wxWindow* parent, amProjectManager* manager) : wxScrolledWindow(parent, wxID_ANY,
-	wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL)
+	wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL)
 {
 	m_manager = manager;
 

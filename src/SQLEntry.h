@@ -5,22 +5,19 @@
 #include <wx\wx.h>
 #include <wx\memory.h>
 
-#include <map>
-
-using std::map;
-using std::pair;
+#include <unordered_map>
 
 struct amSQLEntry
 {
 	wxString tableName{ "" };
 	wxString name{ "" };
 
-	wxVector<pair<wxString, int>> integers{};
-	wxVector<pair<wxString, wxString>> strings{};
-	wxVector<pair<wxString, wxMemoryBuffer>> memBuffers{};
+	std::unordered_map<wxString, int> integers{};
+	std::unordered_map<wxString, wxString> strings{};
+	std::unordered_map<wxString, wxMemoryBuffer> memBuffers{};
 
 	bool specialForeign = false;
-	pair<wxString, int> foreignKey{ "", -1 };
+	std::pair<wxString, int> foreignKey{ "", -1 };
 
 	wxVector<amSQLEntry> childEntries{};
 };

@@ -283,10 +283,19 @@ int amProjectSQLDatabase::GetSQLEntryId(amSQLEntry& sqlEntry)
 		if ( !nameEmpty || sqlEntry.specialForeign )
 			query << " AND ";
 
-		pair<wxString, int>* it = sqlEntry.integers.begin();
-		query << it->first << " = " << it->second << ";";
+		int i = 0;
+		for ( std::pair<const wxString, int>& it : sqlEntry.integers )
+		{
+			if ( i != 0 )
+				query << " AND ";
+
+			query << it.first << " = " << it.second;
+			i++;
+		}
+
 	}
 
+	query << ";";
 	wxSQLite3ResultSet result = ExecuteQuery(query);
 
 	int id = -1;
@@ -335,7 +344,7 @@ bool amProjectSQLDatabase::CreateTable(const wxString& tableName, const wxArrayS
 	return true;
 }
 
-bool amProjectSQLDatabase::InsertDocument(amSQLEntry& sqlEntry)
+bool amProjectSQLDatabase::InsertSQLEntry(amSQLEntry& sqlEntry)
 {
 	wxSQLite3Statement statement = ConstructInsertStatement(sqlEntry);
 
@@ -346,7 +355,7 @@ bool amProjectSQLDatabase::InsertDocument(amSQLEntry& sqlEntry)
 		if ( documentIt.specialForeign )
 			documentIt.foreignKey.second = GetSQLEntryId(sqlEntry);
 
-		InsertDocument(documentIt);
+		InsertSQLEntry(documentIt);
 	}
 	return true;
 }
@@ -385,7 +394,7 @@ bool amProjectSQLDatabase::UpdateSQLEntry(amSQLEntry& original, amSQLEntry& edit
 		for ( i; i < newSize; i++ )
 		{
 			edit.childEntries[i].foreignKey.second = id;
-			InsertDocument(edit.childEntries[i]);
+			InsertSQLEntry(edit.childEntries[i]);
 		}
 
 	}
@@ -483,7 +492,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amSQLEntry& sq
 		valueNames << "'" << buffer.Format("%q", (const char*)sqlEntry.name) << "'";
 	}
 
-	for ( pair<wxString, int>& it : sqlEntry.integers )
+	for ( pair<const wxString, int>& it : sqlEntry.integers )
 	{
 		if ( !first )
 		{
@@ -497,7 +506,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amSQLEntry& sq
 		valueNames << it.second;
 	}
 
-	for ( pair<wxString, wxString>& it : sqlEntry.strings )
+	for ( pair<const wxString, wxString>& it : sqlEntry.strings )
 	{
 		if ( !first )
 		{
@@ -511,7 +520,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amSQLEntry& sq
 		valueNames << "'" << buffer.Format("%q", (const char*)it.second) << "'";
 	}
 
-	for ( pair<wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
+	for ( pair<const wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
 	{
 		if ( !first )
 		{
@@ -545,7 +554,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amSQLEntry& sq
 
 		int i = 1;
 
-		for ( pair<wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
+		for ( pair<const wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
 			statement.Bind(i++, it.second);
 
 		return statement;
@@ -574,7 +583,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amSQLEntry& sq
 		first = false;
 	}
 
-	for ( pair<wxString, int>& it : sqlEntry.integers )
+	for ( pair<const wxString, int>& it : sqlEntry.integers )
 	{
 		if ( !first )
 			update << ", ";
@@ -583,7 +592,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amSQLEntry& sq
 		first = false;
 	}
 
-	for ( pair<wxString, wxString>& it : sqlEntry.strings )
+	for ( pair<const wxString, wxString>& it : sqlEntry.strings )
 	{
 		if ( !first )
 			update << ", ";
@@ -592,7 +601,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amSQLEntry& sq
 		first = false;
 	}
 
-	for ( pair<wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
+	for ( pair<const wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
 	{
 		if ( !first )
 			update << ", ";
@@ -618,7 +627,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amSQLEntry& sq
 
 		int i = 1;
 
-		for ( pair<wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
+		for ( pair<const wxString, wxMemoryBuffer>& it : sqlEntry.memBuffers )
 			statement.Bind(i++, it.second);
 
 		return statement;
@@ -710,7 +719,7 @@ void amProjectManager::SaveSQLEntry(amSQLEntry& original, amSQLEntry& edit)
 	if ( m_storage.RowExists(original) )
 		m_storage.UpdateSQLEntry(original, edit);
 	else
-		m_storage.InsertDocument(edit);
+		m_storage.InsertSQLEntry(edit);
 }
 
 bool amProjectManager::DoSaveProject(const wxString& path)
@@ -811,9 +820,14 @@ void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
 
 		if ( !result.IsNull("content") )
 		{
-			pDocument->buffer = new wxRichTextBuffer();
-			wxStringInputStream sstream(result.GetAsString("content"));
-			pDocument->buffer->LoadFile(sstream, wxRICHTEXT_TYPE_XML);
+			wxString content = result.GetAsString("content");
+
+			if ( content != "NULL" )
+			{
+				pDocument->buffer = new wxRichTextBuffer;
+				wxStringInputStream sstream(content);
+				pDocument->buffer->LoadFile(sstream, wxRICHTEXT_TYPE_XML);
+			}
 		}
 
 		pDocument->SetId(documentId);
@@ -950,6 +964,8 @@ void amProjectManager::LoadCharacters()
 
 		m_project.characters.push_back(pCharacter);
 	}
+
+	std::sort(m_project.characters.begin(), m_project.characters.end(), amSortCharacters);
 }
 
 void amProjectManager::LoadLocations()
@@ -999,6 +1015,8 @@ void amProjectManager::LoadLocations()
 
 		m_project.locations.push_back(pLocation);
 	}
+
+	std::sort(m_project.locations.begin(), m_project.locations.end(), amSortLocations);
 }
 
 void amProjectManager::LoadItems()
@@ -1052,6 +1070,8 @@ void amProjectManager::LoadItems()
 
 		m_project.items.push_back(pItem);
 	}
+
+	std::sort(m_project.items.begin(), m_project.items.end(), amSortItems);
 }
 
 void amProjectManager::LoadStandardRelations()
@@ -1140,29 +1160,7 @@ void amProjectManager::LoadStandardRelations()
 					{
 						if ( pRelated->id == relatedID )
 						{
-							bool has = false;
-							for ( Element*& pPresent : pElement->relatedElements )
-							{
-								if ( pPresent == pRelated )
-									has = true;
-							}
-							
-							if ( !has )
-								pElement->relatedElements.push_back(pRelated);
-
-							has = false;
-							for ( Element*& pRelatedRelated : pRelated->relatedElements )
-							{
-								if ( pRelatedRelated == pElement )
-								{
-									has = true;
-									break;
-								}
-							}
-
-							if ( !has )
-								pRelated->relatedElements.push_back(pElement);
-
+							RelateElements(pElement, pRelated, false);
 							break;
 						}
 					}
@@ -1805,6 +1803,124 @@ void amProjectManager::RemoveDocumentFromItem(const wxString& itemName, Document
 	}
 
 	wxLogMessage("Could not remove item '%s' from document '%s'", itemName, document->name);
+}
+
+void amProjectManager::RelateElements(Element* element1, Element* element2, bool addToDb)
+{
+	bool had1 = false;
+	for ( Element*& pPresent : element1->relatedElements )
+	{
+		if ( pPresent == element2 )
+		{
+			had1 = true;
+			break;
+		}
+	}
+
+	if ( !had1 )
+	{
+		element1->relatedElements.push_back(element2);
+		std::sort(element1->relatedElements.begin(), element1->relatedElements.end(), amSortElements);
+	}
+
+	bool had2 = false;
+	for ( Element*& pPresent : element2->relatedElements )
+	{
+		if ( pPresent == element1 )
+		{
+			had2 = true;
+			break;
+		}
+	}
+
+	if ( !had2 )
+	{
+		element2->relatedElements.push_back(element1);
+		std::sort(element2->relatedElements.begin(), element2->relatedElements.end(), amSortElements);
+	}
+
+	if ( addToDb )
+	{
+		amSQLEntry sqlEntry1 = element1->GenerateSQLEntryForId();
+		amSQLEntry sqlEntry2 = element2->GenerateSQLEntryForId();
+
+		if ( had1 )
+		{
+			wxString table1 = sqlEntry1.tableName + "_" + sqlEntry2.tableName;
+			if ( m_storage.TableExists(table1) )
+			{
+				m_storage.InsertManyToMany(table1,
+					sqlEntry1, "element_id",
+					sqlEntry2, "related_id");
+			}
+		}
+
+		if ( had2 )
+		{
+			wxString table2 = sqlEntry2.tableName + "_" + sqlEntry1.tableName;
+			if ( m_storage.TableExists(table2) )
+			{
+				m_storage.InsertManyToMany(table2,
+					sqlEntry2, "element_id",
+					sqlEntry1, "related_id");
+			}
+		}
+	}
+}
+
+void amProjectManager::UnrelateElements(Element* element1, Element* element2, bool removeFromDb)
+{
+	bool had1 = false;
+	for ( Element*& pPresent : element1->relatedElements )
+	{
+		if ( pPresent == element2 )
+		{
+			element1->relatedElements.erase(&pPresent);
+			had1 = true;
+			break;
+		}
+	}
+
+	bool had2 = false;
+	for ( Element*& pPresent : element2->relatedElements )
+	{
+		if ( pPresent == element1 )
+		{
+			element2->relatedElements.erase(&pPresent);
+			had2 = true;
+			break;
+		}
+	}
+
+	if ( removeFromDb )
+	{
+		amSQLEntry sqlEntry1 = element1->GenerateSQLEntryForId();
+		amSQLEntry sqlEntry2 = element2->GenerateSQLEntryForId();
+
+		if ( had1 )
+		{
+			wxString table1 = sqlEntry1.tableName + "_" + sqlEntry2.tableName;
+
+			if ( m_storage.TableExists(table1) )
+			{
+				m_storage.DeleteManyToMany(table1,
+					sqlEntry1, "element_id",
+					sqlEntry2, "related_id");
+			}
+		}
+
+		if ( had2 )
+		{
+			wxString table2 = sqlEntry2.tableName + "_" + sqlEntry1.tableName;
+
+			if ( m_storage.TableExists(table2) )
+			{
+				m_storage.DeleteManyToMany(table2,
+					sqlEntry2, "element_id",
+					sqlEntry1, "related_id");
+			}
+		}
+	}
 }
 
 void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)

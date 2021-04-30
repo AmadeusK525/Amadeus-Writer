@@ -12,6 +12,8 @@ CompType Character::cCompType = CompRole;
 CompType Location::lCompType = CompRole;
 CompType Item::iCompType = CompRole;
 
+wxIMPLEMENT_CLASS(Element, wxObject);
+
 bool Element::operator<(const Element& other) const
 {
 	int i, j;
@@ -101,6 +103,8 @@ void Element::operator=(const Element& other)
 ////////////////////////////////// Character ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
+wxIMPLEMENT_CLASS(Character, Element);
 
 void Character::Save(wxSQLite3Database* db)
 {
@@ -270,17 +274,17 @@ amSQLEntry Character::GenerateSQLEntrySimple()
 	sqlEntry.name = name;
 	sqlEntry.tableName = "characters";
 
-	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers["role"] = role;
 
 	sqlEntry.strings.reserve(8);
-	sqlEntry.strings.push_back(pair<wxString, wxString>("sex", sex));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("age", age));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("nationality", nat));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("height", height));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("nickname", nick));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("appearance", appearance));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("personality", personality));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("backstory", backstory));
+	sqlEntry.strings["sex"] = sex;
+	sqlEntry.strings["age"] = age;
+	sqlEntry.strings["nationality"] = nat;
+	sqlEntry.strings["height"] = height;
+	sqlEntry.strings["nickname"] = nick;
+	sqlEntry.strings["appearance"] = appearance;
+	sqlEntry.strings["personality"] = personality;
+	sqlEntry.strings["backstory"] = backstory;
 
 	if ( image.IsOk() )
 	{
@@ -290,7 +294,7 @@ amSQLEntry Character::GenerateSQLEntrySimple()
 		wxMemoryBuffer buffer;
 		stream.CopyTo(buffer.GetWriteBuf(stream.GetLength()), stream.GetLength());
 
-		sqlEntry.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
+		sqlEntry.memBuffers["image"] = buffer;
 	}
 
 	return sqlEntry;
@@ -306,7 +310,7 @@ amSQLEntry Character::GenerateSQLEntry()
 		customDoc.tableName = "characters_custom";
 
 		customDoc.name = it.first;
-		customDoc.strings.push_back(pair<wxString, wxString>("content", it.second));
+		customDoc.strings["content"] = it.second;
 
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "character_id";
@@ -324,7 +328,7 @@ amSQLEntry Character::GenerateSQLEntryForId()
 	sqlEntry.name = name;
 	sqlEntry.tableName = "characters";
 
-	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers["role"] = role;
 
 	return sqlEntry;
 }
@@ -423,6 +427,8 @@ void Character::operator=(const Character& other)
 ////////////////////////////////// Location ////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
+wxIMPLEMENT_CLASS(Location, Element);
 
 void Location::Save(wxSQLite3Database* db)
 {
@@ -591,15 +597,15 @@ amSQLEntry Location::GenerateSQLEntrySimple()
 	sqlEntry.name = name;
 	sqlEntry.tableName = "locations";
 
-	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers["role"] = role;
 
 	sqlEntry.strings.reserve(6);
-	sqlEntry.strings.push_back(pair<wxString, wxString>("general", general));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("natural", natural));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("architecture", architecture));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("politics", politics));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("economy", economy));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("culture", culture));
+	sqlEntry.strings["general"] = general;
+	sqlEntry.strings["natural"] = natural;
+	sqlEntry.strings["architecture"] = architecture;
+	sqlEntry.strings["politics"] = politics;
+	sqlEntry.strings["economy"] = economy;
+	sqlEntry.strings["culture"] = culture;
 
 	if ( image.IsOk() )
 	{
@@ -609,7 +615,7 @@ amSQLEntry Location::GenerateSQLEntrySimple()
 		wxMemoryBuffer buffer;
 		stream.CopyTo(buffer.GetWriteBuf(stream.GetLength()), stream.GetLength());
 
-		sqlEntry.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
+		sqlEntry.memBuffers["image"] = buffer;
 	}
 
 	return sqlEntry;
@@ -627,7 +633,7 @@ amSQLEntry Location::GenerateSQLEntry()
 		customDoc.tableName = "locations_custom";
 
 		customDoc.name = it.first;
-		customDoc.strings.push_back(pair<wxString, wxString>("content", it.second));
+		customDoc.strings["content"] = it.second;
 
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "location_id";
@@ -645,7 +651,7 @@ amSQLEntry Location::GenerateSQLEntryForId()
 	sqlEntry.name = name;
 	sqlEntry.tableName = "locations";
 
-	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers["role"] = role;
 
 	return sqlEntry;
 }
@@ -742,6 +748,8 @@ void Location::operator=(const Location& other)
 //////////////////////////////////// Item /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+wxIMPLEMENT_CLASS(Item, Element);
 
 void Item::Save(wxSQLite3Database* db)
 {
@@ -913,19 +921,19 @@ amSQLEntry Item::GenerateSQLEntrySimple()
 	sqlEntry.tableName = "items";
 
 	sqlEntry.integers.reserve(3);
-	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
-	sqlEntry.integers.push_back(pair<wxString, int>("isMagic", isMagic));
-	sqlEntry.integers.push_back(pair<wxString, int>("isManMade", isManMade));
+	sqlEntry.integers["role"] = role;
+	sqlEntry.integers["isMagic"] = isMagic;
+	sqlEntry.integers["isManMade"] = isManMade;
 
 	sqlEntry.strings.reserve(8);
-	sqlEntry.strings.push_back(pair<wxString, wxString>("general", general));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("origin", origin));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("backstory", backstory));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("appearance", appearance));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("usage", usage));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("width", width));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("height", height));
-	sqlEntry.strings.push_back(pair<wxString, wxString>("depth", depth));
+	sqlEntry.strings["general"] = general;
+	sqlEntry.strings["origin"] = origin;
+	sqlEntry.strings["backstory"] = backstory;
+	sqlEntry.strings["appearance"] = appearance;
+	sqlEntry.strings["usage"] = usage;
+	sqlEntry.strings["width"] =  width;
+	sqlEntry.strings["height"] = height;
+	sqlEntry.strings["depth"] = depth;
 
 	if ( image.IsOk() )
 	{
@@ -935,7 +943,7 @@ amSQLEntry Item::GenerateSQLEntrySimple()
 		wxMemoryBuffer buffer;
 		stream.CopyTo(buffer.GetWriteBuf(stream.GetLength()), stream.GetLength());
 
-		sqlEntry.memBuffers.push_back(pair<wxString, wxMemoryBuffer>("image", buffer));
+		sqlEntry.memBuffers["image"] = buffer;
 	}
 
 	return sqlEntry;
@@ -952,7 +960,7 @@ amSQLEntry Item::GenerateSQLEntry()
 		customDoc.tableName = "items_custom";
 
 		customDoc.name = it.first;
-		customDoc.strings.push_back(pair<wxString, wxString>("content", it.second));
+		customDoc.strings["content"] = it.second;
 
 		customDoc.specialForeign = true;
 		customDoc.foreignKey.first = "item_id";
@@ -970,7 +978,7 @@ amSQLEntry Item::GenerateSQLEntryForId()
 	sqlEntry.name = name;
 	sqlEntry.tableName = "items";
 
-	sqlEntry.integers.push_back(pair<wxString, int>("role", role));
+	sqlEntry.integers["role"] = role;
 
 	return sqlEntry;
 }

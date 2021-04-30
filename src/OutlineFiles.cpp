@@ -1201,9 +1201,9 @@ bool amOutlineFilesPanel::Save()
 				}
 
 				amSQLEntry sqlEntry;
-				sqlEntry.strings.push_back(pair<wxString, wxString>("content", wxString()));
+				sqlEntry.strings["content"] = wxString();
 
-				wxStringOutputStream stream(&sqlEntry.strings.begin()->second);
+				wxStringOutputStream stream(&sqlEntry.strings["content"]);
 
 				if ( doc.Save(stream) )
 				{

@@ -163,9 +163,9 @@ void amCorkboard::Save()
 				sqlEntry.tableName = "outline_corkboards";
 				sqlEntry.name = "Corkboard Canvas";
 
-				sqlEntry.strings.push_back(pair<wxString, wxString>("content", wxString()));
+				sqlEntry.strings["content"] = wxString();
 
-				wxStringOutputStream sstream(&sqlEntry.strings[0].second);
+				wxStringOutputStream sstream(&sqlEntry.strings["content"]);
 				m_canvas->SaveCanvas(sstream);
 
 				m_manager->SaveSQLEntry(sqlEntry, sqlEntry);

@@ -159,21 +159,21 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	//Setting up third notebook tab
 	wxPanel* itemsFrame = new wxPanel(this, wxID_ANY);
 	itemsFrame->SetBackgroundColour(wxColour(20, 20, 20));
-	m_itemsList = new wxListView(itemsFrame, LIST_ItemsList, wxDefaultPosition, wxDefaultSize,
+	m_itemList = new wxListView(itemsFrame, LIST_ItemsList, wxDefaultPosition, wxDefaultSize,
 		wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
-	m_itemsList->InsertColumn(0, "Name of item", wxLIST_FORMAT_CENTER, 120);
-	m_itemsList->InsertColumn(1, "Is Magic", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-	m_itemsList->InsertColumn(2, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-	m_itemsList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_itemsList->InsertColumn(4, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_itemsList->InsertColumn(5, "Documents", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+	m_itemList->InsertColumn(0, "Name of item", wxLIST_FORMAT_CENTER, 120);
+	m_itemList->InsertColumn(1, "Is Magic", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+	m_itemList->InsertColumn(2, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+	m_itemList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+	m_itemList->InsertColumn(4, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
+	m_itemList->InsertColumn(5, "Documents", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
-	m_itemsList->SetBackgroundColour(wxColour(45, 45, 45));
-	m_itemsList->SetForegroundColour(wxColour(245, 245, 245));
-	m_itemsList->SetMinSize(wxSize(300, 400));
+	m_itemList->SetBackgroundColour(wxColour(45, 45, 45));
+	m_itemList->SetForegroundColour(wxColour(245, 245, 245));
+	m_itemList->SetMinSize(wxSize(300, 400));
 
 	m_itemsImageList = new wxImageList(24, 24);
-	m_itemsList->AssignImageList(m_itemsImageList, wxIMAGE_LIST_SMALL);
+	m_itemList->AssignImageList(m_itemsImageList, wxIMAGE_LIST_SMALL);
 
 	wxStaticText* iSortByLabel = new wxStaticText(itemsFrame, -1, "Sort by:");
 	iSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
@@ -189,7 +189,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	iSortBySizer->Add(m_iSortBy, wxSizerFlags(0).CenterVertical());
 
 	wxBoxSizer* iLeftSizer = new wxBoxSizer(wxVERTICAL);
-	iLeftSizer->Add(m_itemsList, wxSizerFlags(1).Expand());
+	iLeftSizer->Add(m_itemList, wxSizerFlags(1).Expand());
 	iLeftSizer->AddSpacer(10);
 	iLeftSizer->Add(iSortBySizer, wxSizerFlags(0).Left());
 
@@ -222,12 +222,12 @@ void amElementsNotebook::GoToElement(Element* element)
 		if ( n != -1 )
 		{
 			m_charShow->Freeze();
-			m_charList->EnsureVisible(n);
 			m_charList->Select(n);
 			m_charList->Focus(n);
 			m_charShow->ShowPage(0);
-			m_charShow->SetData(pCharacterToSet);
 			m_charShow->Thaw();
+
+			m_charList->SetFocus();
 		}
 	}
 
@@ -241,12 +241,12 @@ void amElementsNotebook::GoToElement(Element* element)
 		if ( n != -1 )
 		{
 			m_locShow->Freeze();
-			m_locList->EnsureVisible(n);
 			m_locList->Select(n);
 			m_locList->Focus(n);
 			m_locShow->ShowPage(0);
-			m_locShow->SetData(pLocationToSet);
 			m_locShow->Thaw();
+
+			m_locList->SetFocus();
 		}
 	}
 
@@ -255,16 +255,16 @@ void amElementsNotebook::GoToElement(Element* element)
 	{
 		SetSelection(2);
 
-		int n = m_itemsList->FindItem(-1, pItemToSet->name);
+		int n = m_itemList->FindItem(-1, pItemToSet->name);
 		if ( n != -1 )
 		{
 			m_itemShow->Freeze();
-			m_itemsList->EnsureVisible(n);
-			m_itemsList->Select(n);
-			m_itemsList->Focus(n);
+			m_itemList->Select(n);
+			m_itemList->Focus(n);
 			m_itemShow->ShowPage(0);
-			m_itemShow->SetData(pItemToSet);
 			m_itemShow->Thaw();
+
+			m_itemList->SetFocus();
 		}
 	}
 }
@@ -368,7 +368,7 @@ void amElementsNotebook::OnEditItem(wxCommandEvent& event)
 		"Edit item - ''", wxDefaultPosition, FromDIP(wxSize(900, 720)));
 
 	edit->CenterOnParent();
-	edit->SetEdit(m_manager->GetItems()[m_itemsList->GetFirstSelected()]);
+	edit->SetEdit(m_manager->GetItems()[m_itemList->GetFirstSelected()]);
 	edit->Show(true);
 
 	m_manager->GetMainFrame()->Enable(false);
@@ -376,15 +376,15 @@ void amElementsNotebook::OnEditItem(wxCommandEvent& event)
 
 void amElementsNotebook::OnDeleteItem(wxCommandEvent& event)
 {
-	long sel = m_itemsList->GetFirstSelected();
+	long sel = m_itemList->GetFirstSelected();
 
-	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_itemsList->GetItemText(sel) + "'?"
+	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_itemList->GetItemText(sel) + "'?"
 		"\nIf you have a thread bound to this item in the Timeline, it will be permantely deleted as well.",
 		"Delete item", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
 
 	if ( deleteCheck.ShowModal() == wxID_YES )
 	{
-		m_itemsList->DeleteItem(sel);
+		m_itemList->DeleteItem(sel);
 		m_manager->DeleteItem(m_manager->GetItems()[sel], true);
 	}
 }
@@ -416,7 +416,7 @@ void amElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event))
 
 void amElementsNotebook::OnItemSelected(wxListEvent& event)
 {
-	long sel = m_itemsList->GetFirstSelected();
+	long sel = m_itemList->GetFirstSelected();
 
 	if ( sel != -1 )
 		m_itemShow->SetData(m_manager->GetItems()[sel]);
@@ -429,9 +429,38 @@ void amElementsNotebook::OnCharactersSortBy(wxCommandEvent& event)
 	m_cSortBy->SetSelection(event.GetInt());
 	Character::cCompType = (CompType)event.GetInt();
 
+	int currentSelection = m_charList->GetFirstSelected();
+
 	wxVector<Character*>& vCharacters = m_manager->GetCharacters();
 	std::sort(vCharacters.begin(), vCharacters.end(), amSortCharacters);
+
+	for ( Element*& pElement : m_manager->GetAllElements() )
+	{
+		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
+	}
+	
+	int toSet = -1;
+	if ( currentSelection != -1 )
+	{
+		wxString name = m_charList->GetItemText(currentSelection);
+		int i = 0;
+
+		for ( Character*& pCharacter : m_manager->GetCharacters() )
+		{
+			if ( pCharacter->name == name )
+			{
+				toSet = i;
+				break;
+			}
+
+			i++;
+		}
+	}
+	
 	UpdateCharacterList();
+	m_charList->SetFocus();
+	m_charList->Select(toSet);
+	m_charList->Focus(toSet);
 }
 
 void amElementsNotebook::OnLocationsSortBy(wxCommandEvent& event)
@@ -441,7 +470,36 @@ void amElementsNotebook::OnLocationsSortBy(wxCommandEvent& event)
 
 	wxVector<Location*>& vLocations = m_manager->GetLocations();
 	std::sort(vLocations.begin(), vLocations.end(), amSortLocations);
+
+	for ( Element*& pElement : m_manager->GetAllElements() )
+	{
+		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
+	}
+
+	int currentSelection = m_locList->GetFirstSelected();
+	int toSet = -1;
+
+	if ( currentSelection != -1 )
+	{
+		wxString name = m_locList->GetItemText(currentSelection);
+		int i = 0;
+
+		for ( Location*& pLocation : m_manager->GetLocations() )
+		{
+			if ( pLocation->name == name )
+			{
+				toSet = i;
+				break;
+			}
+
+			i++;
+		}
+	}
+
 	UpdateLocationList();
+	m_locList->SetFocus();
+	m_locList->Select(toSet);
+	m_locList->Focus(toSet);
 }
 
 void amElementsNotebook::OnItemsSortBy(wxCommandEvent& event)
@@ -451,14 +509,38 @@ void amElementsNotebook::OnItemsSortBy(wxCommandEvent& event)
 
 	wxVector<Item*>& vItems = m_manager->GetItems();
 	std::sort(vItems.begin(), vItems.end(), amSortItems);
+
+	int currentSelection = m_itemList->GetFirstSelected();
+	int toSet = -1;
+
+	if ( currentSelection != -1 )
+	{
+		wxString name = m_itemList->GetItemText(currentSelection);
+		int i = 0;
+
+		for ( Item*& pItem: m_manager->GetItems() )
+		{
+			if ( pItem->name == name )
+			{
+				toSet = i;
+				break;
+			}
+
+			i++;
+		}
+	}
+
 	UpdateItemList();
+	m_itemList->SetFocus();
+	m_itemList->Select(toSet);
+	m_itemList->Focus(toSet);
 }
 
 void amElementsNotebook::ClearAll()
 {
 	m_charList->DeleteAllItems();
 	m_locList->DeleteAllItems();
-	m_itemsList->DeleteAllItems();
+	m_itemList->DeleteAllItems();
 	m_charShow->SetData(nullptr);
 	m_locShow->SetData(nullptr);
 	m_itemShow->SetData(nullptr);
@@ -576,12 +658,12 @@ void amElementsNotebook::UpdateLocation(int n, Location* location)
 
 void amElementsNotebook::UpdateItem(int n, Item* item)
 {
-	m_itemsList->SetItem(n, 0, item->name);
+	m_itemList->SetItem(n, 0, item->name);
 
 	if ( item->isMagic )
-		m_itemsList->SetItem(n, 1, "Yes");
+		m_itemList->SetItem(n, 1, "Yes");
 	else
-		m_itemsList->SetItem(n, 1, "No");
+		m_itemList->SetItem(n, 1, "No");
 
 	wxString role("");
 	switch ( item->role )
@@ -597,7 +679,7 @@ void amElementsNotebook::UpdateItem(int n, Item* item)
 	default:
 		role = "-";
 	}
-	m_itemsList->SetItem(n, 2, role);
+	m_itemList->SetItem(n, 2, role);
 
 	if ( !item->documents.empty() )
 	{
@@ -613,20 +695,20 @@ void amElementsNotebook::UpdateItem(int n, Item* item)
 				last = document->position;
 		}
 
-		m_itemsList->SetItem(n, 3, wxString("Document ") << first);
-		m_itemsList->SetItem(n, 4, wxString("Document ") << last);
+		m_itemList->SetItem(n, 3, wxString("Document ") << first);
+		m_itemList->SetItem(n, 4, wxString("Document ") << last);
 	}
 	else
 	{
-		m_itemsList->SetItem(n, 3, "-");
-		m_itemsList->SetItem(n, 4, "-");
+		m_itemList->SetItem(n, 3, "-");
+		m_itemList->SetItem(n, 4, "-");
 	}
-	m_itemsList->SetItem(n, 5, std::to_string(item->documents.size()));
+	m_itemList->SetItem(n, 5, std::to_string(item->documents.size()));
 
 	if ( item->image.IsOk() )
-		m_itemsList->SetItemColumnImage(n, 0, m_itemsImageList->Add(wxBitmap(amGetScaledImage(24, 24, item->image))));
+		m_itemList->SetItemColumnImage(n, 0, m_itemsImageList->Add(wxBitmap(amGetScaledImage(24, 24, item->image))));
 	else
-		m_itemsList->SetItemColumnImage(n, 0, -1);
+		m_itemList->SetItemColumnImage(n, 0, -1);
 }
 
 void amElementsNotebook::UpdateCharacterList()
@@ -689,10 +771,10 @@ void amElementsNotebook::UpdateLocationList()
 
 void amElementsNotebook::UpdateItemList()
 {
-	m_itemsList->Freeze();
+	m_itemList->Freeze();
 
 	int i = 0;
-	int tlsize = m_itemsList->GetItemCount();
+	int tlsize = m_itemList->GetItemCount();
 	int mfsize = m_manager->GetItemCount();
 	int dif;
 
@@ -700,19 +782,19 @@ void amElementsNotebook::UpdateItemList()
 	{
 		dif = tlsize - mfsize;
 		for ( int j = 0; j < dif; j++ )
-			m_itemsList->DeleteItem(mfsize - j + 1);
+			m_itemList->DeleteItem(mfsize - j + 1);
 	}
 	else if ( mfsize > tlsize )
 	{
 		dif = mfsize - tlsize;
 		for ( int j = 0; j < dif; j++ )
-			m_itemsList->InsertItem(0, "");
+			m_itemList->InsertItem(0, "");
 	}
 
 	for ( Item*& item : m_manager->GetItems() )
 		UpdateItem(i++, item);
 
-	m_itemsList->Thaw();
+	m_itemList->Thaw();
 }
 
 void amElementsNotebook::UpdateAll()

@@ -4,6 +4,8 @@
 
 #include <wx\wx.h>
 #include <wx\wrapsizer.h>
+#include <wx\listctrl.h>
+#include <wx\notebook.h>
 #include <wx\scrolwin.h>
 
 #include "ImagePanel.h"
@@ -18,14 +20,21 @@ class amCharacterShowcase;
 class amLocationShowcase;
 class amItemShowcase;
 
-class amRelatedElementsContainer : public wxScrolledWindow
+class amRelatedElementsContainer;
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////// RelatedElementsContainer ////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+class amRelatedElementsContainer : public wxPanel
 {
 protected:
 	amElementShowcase* m_showcase = nullptr;
 
 	Element* m_owner = nullptr;
 	wxStaticText* m_label = nullptr;
-	wxButton* m_addRelated = nullptr;
 
 	wxBoxSizer* m_vertical = nullptr;
 	wxWrapSizer* m_grid = nullptr;
@@ -35,18 +44,18 @@ protected:
 		Element* element = nullptr;
 
 		amElementButton(wxWindow* parent, Element* element, const wxString& label) : 
-			wxButton(parent, -1, label, wxDefaultPosition, wxSize(80, 100))
+			wxButton(parent, -1, label, wxDefaultPosition, wxSize(90, 140))
 		{
+			SetFont(wxFontInfo(8).Bold());
+			SetForegroundColour(wxColour(255, 255, 255));
+			SetBackgroundColour(wxColour(0, 0, 0));
+
 			SetElement(element);
 		}
 
 		void SetElement(Element* element)
 		{
 			this->element = element;
-
-			SetFont(wxFontInfo(9));
-			SetForegroundColour(wxColour(255, 255, 255));
-			SetBackgroundColour(wxColour(0, 0, 0));
 
 			wxString label = element->name;
 			label.Replace(" ", "\n");
@@ -57,7 +66,7 @@ protected:
 			}
 
 			if ( element->image.IsOk() )
-				SetBitmap(amGetScaledImage(70, 70, element->image), wxTOP);
+				SetBitmap(amGetScaledImage(80, 80, element->image), wxTOP);
 
 			SetLabel(label);
 			Refresh();
@@ -67,8 +76,9 @@ protected:
 public:
 	amRelatedElementsContainer(wxWindow* parent, amElementShowcase* showcase);
 
-	void OnElementButtonsClicked(wxCommandEvent& event);
-
+	void OnAddElement(wxCommandEvent& event);
+	void OnRemoveElement(wxCommandEvent& event);
+	void OnElementButtons(wxCommandEvent& event);
 	void LoadAllElements(Element* element);
 
 	virtual void LoadCharacters(Element* element);
@@ -78,6 +88,55 @@ public:
 
 	void DoLoad(Element* element, bool (*ShouldAdd)(Element*));
 };
+
+
+///////////////////////////////////////////////////////////////////
+////////////////////// RelatedElementsDialog  /////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+class amRelatedElementsDialog : public wxFrame
+{
+public:
+	enum MODE
+	{
+		ADD,
+		REMOVE
+	};
+
+private:
+	Element* m_element = nullptr;
+	amRelatedElementsContainer* m_container = nullptr;
+	MODE m_mode;
+
+	wxNotebook* m_notebook = nullptr;
+
+	wxListView* m_characters = nullptr,
+		* m_locations = nullptr,
+		* m_items = nullptr;
+
+	wxImageList* m_characterImages = nullptr,
+		* m_locationImages = nullptr,
+		* m_itemImages = nullptr;
+
+public:
+	amRelatedElementsDialog(wxWindow* parent, Element* element, amRelatedElementsContainer* container, MODE mode);
+
+	void LoadPossibleCharacters();
+	void LoadPossibleLocations();
+	void LoadPossibleItems();
+
+	void OnMainButton(wxCommandEvent& event);
+	void OnRemoveElement(wxCommandEvent& event);
+
+	void OnListResize(wxSizeEvent& event);
+};
+
+
+///////////////////////////////////////////////////////////////////
+////////////////////////// ElementShowcase ////////////////////////
+///////////////////////////////////////////////////////////////////
+
 
 class amElementShowcase : public wxWindow
 {
@@ -115,9 +174,11 @@ public:
 	inline void EmptyMouseEvent(wxMouseEvent& event) {}
 };
 
+
 ///////////////////////////////////////////////////////////////////
 ///////////////////////// CharacterShowcase ///////////////////////
 ///////////////////////////////////////////////////////////////////
+
 
 class amCharacterShowcase : public amElementShowcase
 {

@@ -33,7 +33,7 @@ inline bool amSortElements(Element* element1, Element* element2)
 	{
 		if ( pCharacter2 )
 		{
-			return pCharacter1 < pCharacter2;
+			return *pCharacter1 < *pCharacter2;
 		}
 		else
 			return true;
@@ -49,7 +49,7 @@ inline bool amSortElements(Element* element1, Element* element2)
 	{
 		if ( pLocation2 )
 		{
-			return pLocation1 < pLocation2;
+			return *pLocation1 < *pLocation2;
 		}
 		else 
 			return true;
@@ -65,7 +65,7 @@ inline bool amSortElements(Element* element1, Element* element2)
 	{
 		if ( pItem2 )
 		{
-			return pItem1 < pItem2;
+			return *pItem1 < *pItem2;
 		}
 		else
 			return true;

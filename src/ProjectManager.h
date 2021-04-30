@@ -30,7 +30,7 @@ public:
 
 	bool CreateTable(const wxString& tableName, const wxArrayString& arguments, bool ifNotExists = true);
 
-	bool InsertDocument(amSQLEntry& sqlEntry);
+	bool InsertSQLEntry(amSQLEntry& sqlEntry);
 	bool UpdateSQLEntry(amSQLEntry& original, amSQLEntry& edit);
 
 	bool InsertManyToMany(const wxString& tableName,
@@ -145,7 +145,7 @@ public:
 	bool GetLastSave();
 
 	int GetSQLEntryId(amSQLEntry& sqlEntry);
-	inline void InsertDocument(amSQLEntry& sqlEntry) { m_storage.InsertDocument(sqlEntry); }
+	inline void InsertSQLEntry(amSQLEntry& sqlEntry) { m_storage.InsertSQLEntry(sqlEntry); }
 
 	void OpenDocument(int documentIndex);
 	bool ScanForDocumentLinear(int toFind, int& current, Document* scanBegin, Document*& emptyPointer);
@@ -167,6 +167,9 @@ public:
 	void RemoveDocumentFromCharacter(const wxString& characterName, Document* document);
 	void RemoveDocumentFromLocation(const wxString& locationName, Document* document);
 	void RemoveDocumentFromItem(const wxString& itemName, Document* document);
+
+	void RelateElements(Element* element1, Element* element2, bool addToDb = true);
+	void UnrelateElements(Element* element1, Element* element2, bool removeFromDb = true);
 
 	void DeleteCharacter(Character* character, bool clearShowcase);
 	void DeleteLocation(Location* location, bool clearShowcase);

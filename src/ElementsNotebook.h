@@ -18,7 +18,7 @@ private:
 	amProjectManager* m_manager = nullptr;
 
 public:
-	wxListView* m_charList = nullptr, * m_locList = nullptr, * m_itemsList = nullptr;
+	wxListView* m_charList = nullptr, * m_locList = nullptr, * m_itemList = nullptr;
 	wxImageList* m_charImageList = nullptr, * m_locImageList = nullptr, * m_itemsImageList = nullptr;
 
 	amCharacterShowcase* m_charShow = nullptr;
