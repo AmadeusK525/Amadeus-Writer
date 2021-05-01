@@ -76,17 +76,18 @@ protected:
 public:
 	amRelatedElementsContainer(wxWindow* parent, amElementShowcase* showcase);
 
+	void LoadCharacters(Element* element);
+	void LoadLocations(Element* element);
+	void LoadLocationsByType(Element* element);
+	void LoadItems(Element* element);
+
+	void DoLoad(Element* element, bool (*ShouldAdd)(Element*));
+	void ClearAll();
+
 	void OnAddElement(wxCommandEvent& event);
 	void OnRemoveElement(wxCommandEvent& event);
 	void OnElementButtons(wxCommandEvent& event);
 	void LoadAllElements(Element* element);
-
-	virtual void LoadCharacters(Element* element);
-	virtual void LoadLocations(Element* element);
-	virtual void LoadLocationsByType(Element* element);
-	virtual void LoadItems(Element* element);
-
-	void DoLoad(Element* element, bool (*ShouldAdd)(Element*));
 };
 
 
@@ -152,6 +153,7 @@ protected:
 	ImagePanel* m_image = nullptr;
 
 	wxStaticText* m_name = nullptr,
+		* m_nameSecondPanel = nullptr,
 		* m_role = nullptr;
 
 	wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
@@ -159,12 +161,15 @@ protected:
 	wxBoxSizer* m_mainVerSizer = nullptr;
 	wxBoxSizer* m_secondVerSizer = nullptr;
 
-	amRelatedElementsContainer* m_relatedCharacters = nullptr;
+	amRelatedElementsContainer* m_relatedElements = nullptr;
 
 public:
 	amElementShowcase(wxWindow* parent);
+
 	virtual void SetData(Element* element);
-	virtual void ClearAll();
+	virtual bool LoadFirstPanel(Element* element) = 0;
+	virtual bool LoadSecondPanel(Element* element) = 0;
+	virtual void ClearAll() = 0;
 
 	void OnNextPanel(wxCommandEvent& event);
 	void OnPreviousPanel(wxCommandEvent& event);
@@ -208,7 +213,10 @@ private:
 
 public:
 	amCharacterShowcase(wxWindow* parent);
-	virtual void SetData(Character* character);
+
+	virtual bool LoadFirstPanel(Element* element) override;
+	virtual bool LoadSecondPanel(Element* element) override;
+
 	virtual void ClearAll() override;
 };
 
@@ -242,7 +250,10 @@ private:
 
 public:
 	amLocationShowcase(wxWindow* parent);
-	virtual void SetData(Location* location);
+	
+	virtual bool LoadFirstPanel(Element* element) override;
+	virtual bool LoadSecondPanel(Element* element) override;
+	
 	virtual void ClearAll() override;
 };
 
@@ -258,7 +269,10 @@ private:
 
 public:
 	amItemShowcase(wxWindow* parent);
-	virtual void SetData(Item* item);
+
+	virtual bool LoadFirstPanel(Element* element) override;
+	virtual bool LoadSecondPanel(Element* element) override;
+
 	virtual void ClearAll() override;
 };
 

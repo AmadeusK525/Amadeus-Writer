@@ -134,6 +134,13 @@ void amRelatedElementsContainer::DoLoad(Element* element, bool(*ShouldAdd)(Eleme
 	Refresh();
 }
 
+void amRelatedElementsContainer::ClearAll()
+{
+	m_grid->Clear(true);
+	m_owner = nullptr;
+	
+}
+
 
 ///////////////////////////////////////////////////////////////////
 ////////////////////// RelatedElementsDialog  /////////////////////
@@ -221,8 +228,7 @@ amRelatedElementsDialog::amRelatedElementsDialog(wxWindow* parent, Element* elem
 		{
 			m_container->LoadAllElements(m_element);
 			Close();
-		}
-	);
+		});
 
 	wxBoxSizer* vertical = new wxBoxSizer(wxVERTICAL);
 	vertical->Add(label, wxSizerFlags(0).CenterHorizontal().Border(wxALL, 5));
@@ -623,12 +629,18 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	m_prevPanel->SetBitmap(wxBITMAP_PNG(arrowLeft));
 	m_prevPanel->Bind(wxEVT_BUTTON, &amElementShowcase::OnPreviousPanel, this);
 
-	m_relatedCharacters = new amRelatedElementsContainer(m_secondPanel, this);
+	m_nameSecondPanel = new wxStaticText(m_secondPanel, -1, "");
+	m_nameSecondPanel->SetBackgroundColour(wxColour(10, 10, 10));
+	m_nameSecondPanel->SetForegroundColour(wxColour(255, 255, 255));
+	m_nameSecondPanel->SetFont(wxFontInfo(15).Bold());
+
+	m_relatedElements = new amRelatedElementsContainer(m_secondPanel, this);
 
 	m_secondVerSizer = new wxBoxSizer(wxVERTICAL);
 	m_secondVerSizer->Add(m_prevPanel, wxSizerFlags(0).Left());
+	m_secondVerSizer->Add(m_nameSecondPanel, wxSizerFlags(0).Expand().Border(wxALL, 5));
 	m_secondVerSizer->AddSpacer(20);
-	m_secondVerSizer->Add(m_relatedCharacters, wxSizerFlags(0).Expand());
+	m_secondVerSizer->Add(m_relatedElements, wxSizerFlags(0).Expand());
 
 	m_secondPanel->SetSizer(m_secondVerSizer);
 	m_secondVerSizer->FitInside(m_secondPanel);
@@ -638,13 +650,11 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 void amElementShowcase::SetData(Element* element)
 {
 	Freeze();
-	m_name->SetLabel(element->name);
+
+	if ( !LoadFirstPanel(element) || !LoadSecondPanel(element) )
+		ClearAll();
+
 	Thaw();
-}
-
-void amElementShowcase::ClearAll()
-{
-
 }
 
 void amElementShowcase::OnNextPanel(wxCommandEvent& event)
@@ -828,35 +838,32 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_backstory->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amCharacterShowcase::SetData(Character* character)
+bool amCharacterShowcase::LoadFirstPanel(Element* element)
 {
-	if ( !character )
-	{
-		ClearAll();
-		return;
-	}
+	Character* pCharacter = dynamic_cast<Character*>(element);
+	if ( !pCharacter )
+		return false;
 
-	wxBusyCursor cursor;
+	m_mainPanel->Freeze();
 
-	Freeze();
-	m_name->SetLabel(character->name);
+	m_name->SetLabel(pCharacter->name);
 	m_isAlive->Show();
 
-	bool isNotEmpty = !character->sex.IsEmpty();
+	bool isNotEmpty = !pCharacter->sex.IsEmpty();
 	m_sex->Show(isNotEmpty);
 	m_sexLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_sex->SetLabel(character->sex);
+		m_sex->SetLabel(pCharacter->sex);
 		wxColour bg;
 		wxColour fg;
 
-		if ( character->sex == "Female" )
+		if ( pCharacter->sex == "Female" )
 		{
 			bg = { 255,182,193 };
 			fg = { 0, 0, 0 };
 		}
-		else if ( character->sex == "Male" )
+		else if ( pCharacter->sex == "Male" )
 		{
 			bg = { 139,186,255 };
 			fg = { 0,0,0 };
@@ -871,35 +878,35 @@ void amCharacterShowcase::SetData(Character* character)
 		m_sex->SetForegroundColour(fg);
 	}
 
-	isNotEmpty = !character->age.IsEmpty();
+	isNotEmpty = !pCharacter->age.IsEmpty();
 	m_age->Show(isNotEmpty);
 	m_ageLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
-		m_age->SetLabel(character->age);
+		m_age->SetLabel(pCharacter->age);
 
-	isNotEmpty = !character->height.IsEmpty();
+	isNotEmpty = !pCharacter->height.IsEmpty();
 	m_height->Show(isNotEmpty);
 	m_heightLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
-		m_height->SetLabel(character->height);
+		m_height->SetLabel(pCharacter->height);
 
-	isNotEmpty = !character->nat.IsEmpty();
+	isNotEmpty = !pCharacter->nat.IsEmpty();
 	m_nat->Show(isNotEmpty);
 	m_natLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
-		m_nat->SetLabel(character->nat);
+		m_nat->SetLabel(pCharacter->nat);
 
-	isNotEmpty = !character->nick.IsEmpty();
+	isNotEmpty = !pCharacter->nick.IsEmpty();
 	m_nick->Show(isNotEmpty);
 	m_nickLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
-		m_nick->SetLabel(character->nick);
+		m_nick->SetLabel(pCharacter->nick);
 
 	wxString role;
 	wxColour rolebg;
 	wxColour rolefg;
 
-	switch ( character->role )
+	switch ( pCharacter->role )
 	{
 	case cProtagonist:
 		role = "Protagonist";
@@ -938,37 +945,37 @@ void amCharacterShowcase::SetData(Character* character)
 	wxVector<wxTextCtrl*> vTextCtrls;
 	int width = m_appearance->GetClientSize().x;
 
-	isNotEmpty = !character->appearance.IsEmpty();
+	isNotEmpty = !pCharacter->appearance.IsEmpty();
 	m_appearance->Show(isNotEmpty);
 	m_appLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_appearance->SetValue(character->appearance);
+		m_appearance->SetValue(pCharacter->appearance);
 		vTextCtrls.push_back(m_appearance);
 	}
 
-	isNotEmpty = !character->personality.IsEmpty();
+	isNotEmpty = !pCharacter->personality.IsEmpty();
 	m_personality->Show(isNotEmpty);
 	m_perLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_personality->SetValue(character->personality);
+		m_personality->SetValue(pCharacter->personality);
 		vTextCtrls.push_back(m_personality);
 	}
 
-	isNotEmpty = !character->backstory.IsEmpty();
+	isNotEmpty = !pCharacter->backstory.IsEmpty();
 	m_backstory->Show(isNotEmpty);
 	m_bsLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_backstory->SetValue(character->backstory);
+		m_backstory->SetValue(pCharacter->backstory);
 		vTextCtrls.push_back(m_backstory);
 	}
 
-	m_image->Show(m_image->SetImage(character->image));
+	m_image->Show(m_image->SetImage(pCharacter->image));
 
 	int tcsize = m_custom.size();
-	int ccsize = character->custom.size();
+	int ccsize = pCharacter->custom.size();
 
 	if ( tcsize > ccsize )
 	{
@@ -984,9 +991,9 @@ void amCharacterShowcase::SetData(Character* character)
 
 	wxSize size(-1, 80);
 
-	for ( int i = 0; i < character->custom.size(); i++ )
+	for ( int i = 0; i < pCharacter->custom.size(); i++ )
 	{
-		if ( character->custom[i].second.IsEmpty() )
+		if ( pCharacter->custom[i].second.IsEmpty() )
 			continue;
 
 		if ( i >= tcsize )
@@ -1014,8 +1021,8 @@ void amCharacterShowcase::SetData(Character* character)
 		}
 
 		vTextCtrls.push_back(m_custom[i].second);
-		m_custom[i].first->SetLabel(character->custom[i].first);
-		m_custom[i].second->SetLabel(character->custom[i].second);
+		m_custom[i].first->SetLabel(pCharacter->custom[i].first);
+		m_custom[i].second->SetLabel(pCharacter->custom[i].second);
 	}
 
 	m_mainVerSizer->FitInside(m_mainPanel);
@@ -1032,11 +1039,25 @@ void amCharacterShowcase::SetData(Character* character)
 	}
 
 	m_mainVerSizer->FitInside(m_mainPanel);
+	m_mainPanel->Thaw();
+	return true;
+}
 
-	m_relatedCharacters->LoadAllElements(character);
+bool amCharacterShowcase::LoadSecondPanel(Element* element)
+{
+	Character* pCharacter = dynamic_cast<Character*>(element);
+	if ( !pCharacter )
+		return false;
+
+	m_secondPanel->Freeze();
+
+	m_nameSecondPanel->SetLabel(element->name);
+
+	m_relatedElements->LoadAllElements(pCharacter);
 	m_secondVerSizer->FitInside(m_secondPanel);
 
-	Thaw();
+	m_secondPanel->Thaw();
+	return true;
 }
 
 void amCharacterShowcase::ClearAll()
@@ -1074,6 +1095,7 @@ void amCharacterShowcase::ClearAll()
 		custom.second->Show(false);
 	}
 
+	m_relatedElements->ClearAll();
 	Thaw();
 }
 
@@ -1208,20 +1230,16 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(pare
 	m_politics->SetCursor(wxCURSOR_DEFAULT);
 }
 
-void amLocationShowcase::SetData(Location* location)
+bool amLocationShowcase::LoadFirstPanel(Element* element)
 {
-	if ( !location )
-	{
-		ClearAll();
-		return;
-	}
+	Location* pLocation = dynamic_cast<Location*>(element);
+	if ( !pLocation )
+		return false;
+	
+	m_mainPanel->Freeze();
+	m_name->SetLabel(pLocation->name);
 
-	wxBusyCursor cursor;
-
-	Freeze();
-	m_name->SetLabel(location->name);
-
-	switch ( location->role )
+	switch ( pLocation->role )
 	{
 	case lHigh:
 		m_role->SetBackgroundColour(wxColour(230, 60, 60));
@@ -1241,64 +1259,64 @@ void amLocationShowcase::SetData(Location* location)
 
 	wxVector<wxTextCtrl*> vTextCtrls;
 
-	bool isNotEmpty = !location->general.IsEmpty();
+	bool isNotEmpty = !pLocation->general.IsEmpty();
 	m_general->Show(isNotEmpty);
 	m_generalLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_general->SetValue(location->general);
+		m_general->SetValue(pLocation->general);
 		vTextCtrls.push_back(m_general);
 	}
 
-	isNotEmpty = !location->natural.IsEmpty();
+	isNotEmpty = !pLocation->natural.IsEmpty();
 	m_natural->Show(isNotEmpty);
 	m_natLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_natural->SetValue(location->natural);
+		m_natural->SetValue(pLocation->natural);
 		vTextCtrls.push_back(m_natural);
 	}
 
-	isNotEmpty = !location->architecture.IsEmpty();
+	isNotEmpty = !pLocation->architecture.IsEmpty();
 	m_architecture->Show(isNotEmpty);
 	m_archLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_architecture->SetValue(location->architecture);
+		m_architecture->SetValue(pLocation->architecture);
 		vTextCtrls.push_back(m_architecture);
 	}
 
-	isNotEmpty = !location->politics.IsEmpty();
+	isNotEmpty = !pLocation->politics.IsEmpty();
 	m_politics->Show(isNotEmpty);
 	m_poliLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_politics->SetValue(location->politics);
+		m_politics->SetValue(pLocation->politics);
 		vTextCtrls.push_back(m_politics);
 	}
 
-	isNotEmpty = !location->economy.IsEmpty();
+	isNotEmpty = !pLocation->economy.IsEmpty();
 	m_economy->Show(isNotEmpty);
 	m_ecoLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_economy->SetValue(location->economy);
+		m_economy->SetValue(pLocation->economy);
 		vTextCtrls.push_back(m_economy);
 	}
 
-	isNotEmpty = !location->culture.IsEmpty();
+	isNotEmpty = !pLocation->culture.IsEmpty();
 	m_culture->Show(isNotEmpty);
 	m_culLabel->Show(isNotEmpty);
 	if ( isNotEmpty )
 	{
-		m_culture->SetValue(location->culture);
+		m_culture->SetValue(pLocation->culture);
 		vTextCtrls.push_back(m_culture);
 	}
 
-	m_image->Show(m_image->SetImage(location->image));
+	m_image->Show(m_image->SetImage(pLocation->image));
 
 	int tcsize = m_custom.size();
-	int ccsize = location->custom.size();
+	int ccsize = pLocation->custom.size();
 
 	if ( tcsize > ccsize )
 	{
@@ -1316,9 +1334,9 @@ void amLocationShowcase::SetData(Location* location)
 
 	wxSize size(-1, 80);
 
-	for ( int i = 0; i < location->custom.size(); i++ )
+	for ( int i = 0; i < pLocation->custom.size(); i++ )
 	{
-		if ( location->custom[i].second.IsEmpty() )
+		if ( pLocation->custom[i].second.IsEmpty() )
 			continue;
 
 		if ( i >= tcsize )
@@ -1355,11 +1373,11 @@ void amLocationShowcase::SetData(Location* location)
 			m_custom.push_back(pair<wxStaticText*, wxTextCtrl*>{label, content});
 		}
 
-		m_custom[i].first->SetLabel(location->custom[i].first);
-		m_custom[i].second->SetLabel(location->custom[i].second);
+		m_custom[i].first->SetLabel(pLocation->custom[i].first);
+		m_custom[i].second->SetLabel(pLocation->custom[i].second);
 
-		m_custom[i].first->Show(location->custom[i].second != "");
-		m_custom[i].second->Show(location->custom[i].second != "");
+		m_custom[i].first->Show(pLocation->custom[i].second != "");
+		m_custom[i].second->Show(pLocation->custom[i].second != "");
 
 		vTextCtrls.push_back(m_custom[i].second);
 	}
@@ -1378,11 +1396,23 @@ void amLocationShowcase::SetData(Location* location)
 	}
 
 	m_mainVerSizer->FitInside(m_mainPanel);
-	
-	m_relatedCharacters->LoadAllElements(location);
+	m_mainPanel->Thaw();
+
+	return true;
+}
+
+bool amLocationShowcase::LoadSecondPanel(Element * element)
+{
+	Location* pLocation = dynamic_cast<Location*>(element);
+	if ( !pLocation )
+		return false;
+
+	m_nameSecondPanel->SetLabel(element->name);
+
+	m_relatedElements->LoadAllElements(pLocation);
 	m_secondVerSizer->FitInside(m_secondPanel);
 
-	Thaw();
+	return true;
 }
 
 void amLocationShowcase::ClearAll()
@@ -1414,12 +1444,34 @@ void amLocationShowcase::ClearAll()
 		custom.second->Show(false);
 	}
 
+	m_relatedElements->ClearAll();
 	Thaw();
 }
 
 amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent) {}
 
-void amItemShowcase::SetData(Item* item) {}
+bool amItemShowcase::LoadFirstPanel(Element* element)
+{
+	Item* pItem = dynamic_cast<Item*>(element);
+	if ( !pItem )
+		return false;
+
+	return true;
+}
+
+bool amItemShowcase::LoadSecondPanel(Element * element)
+{
+	Item* pItem = dynamic_cast<Item*>(element);
+	if ( !pItem )
+		return false;
+
+
+	m_nameSecondPanel->SetLabel(element->name);
+
+	return true;
+}
 
 void amItemShowcase::ClearAll()
-{}
+{
+	m_relatedElements->ClearAll();
+}
