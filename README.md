@@ -45,4 +45,4 @@
 ![Outline files showcase](Assets/Screenshots/Outline-Files-Showcase.png)
 ![Story table showcase](Assets/Screenshots/Story-Table-Showcase.png)
 ![Story writer showcase](Assets/Screenshots/Story-Writer-Showcase.png)
-![Story notes showcase](Assets/Screenshots/Story-Notes-Showcase.png)
+![Document notes showcase](Assets/Screenshots/Document-Notes-Showcase.png)
