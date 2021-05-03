@@ -39,9 +39,10 @@
 ## Screenshots
 
 ![Characters showcase](Assets/Screenshots/Characters-Showcase.png)
+![Locations showcase](Assets/Screenshots/Locations-Showcase.png)
 ![Corkboard showcase](Assets/Screenshots/Corkboard-Showcase.png)
 ![Timeline showcase](Assets/Screenshots/Timeline-Showcase.png)
 ![Outline files showcase](Assets/Screenshots/Outline-Files-Showcase.png)
-![Chapter table showcase](Assets/Screenshots/Story-Table-Showcase.png)
-![Chapter writer showcase](Assets/Screenshots/Story-Writer-Showcase.png)
-![Chapter notes showcase](Assets/Screenshots/Chapter-Notes-Showcase.png)
+![Story table showcase](Assets/Screenshots/Story-Table-Showcase.png)
+![Story writer showcase](Assets/Screenshots/Story-Writer-Showcase.png)
+![Story notes showcase](Assets/Screenshots/Story-Notes-Showcase.png)
