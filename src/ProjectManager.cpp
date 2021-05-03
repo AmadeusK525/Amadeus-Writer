@@ -1844,7 +1844,7 @@ void amProjectManager::RelateElements(Element* element1, Element* element2, bool
 		amSQLEntry sqlEntry1 = element1->GenerateSQLEntryForId();
 		amSQLEntry sqlEntry2 = element2->GenerateSQLEntryForId();
 
-		if ( had1 )
+		if ( !had1 )
 		{
 			wxString table1 = sqlEntry1.tableName + "_" + sqlEntry2.tableName;
 			if ( m_storage.TableExists(table1) )
@@ -1855,7 +1855,7 @@ void amProjectManager::RelateElements(Element* element1, Element* element2, bool
 			}
 		}
 
-		if ( had2 )
+		if ( !had2 )
 		{
 			wxString table2 = sqlEntry2.tableName + "_" + sqlEntry1.tableName;
 			if ( m_storage.TableExists(table2) )
