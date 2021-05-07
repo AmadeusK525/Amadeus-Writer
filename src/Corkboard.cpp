@@ -391,8 +391,10 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event)
 		if ( m_shapeForMenu )
 		{
 			wxMenu menu;
-			if ( m_shapeForMenu->IsKindOf(CLASSINFO(NoteShape)) )
+			if ( m_shapeForMenu->IsKindOf(CLASSINFO(NoteShape)) || m_shapeForMenu->IsKindOf(CLASSINFO(AutoWrapTextShape)) )
 			{
+				m_shapeForMenu = m_shapeForMenu->GetGrandParentShape();
+
 				menu.AppendRadioItem(MENU_NoteDefault, "Default");
 				menu.AppendRadioItem(MENU_NoteBlack, "Black");
 				menu.AppendRadioItem(MENU_NoteWhite, "White");
@@ -406,9 +408,7 @@ void CorkboardCanvas::OnRightUp(wxMouseEvent& event)
 
 				menu.Check(((NoteShape*)m_shapeForMenu)->m_currentColour, true);
 			}
-			else if ( m_shapeForMenu->IsKindOf(CLASSINFO(ImageShape))
-				|| m_shapeForMenu->IsKindOf(CLASSINFO(wxSFLineShape))
-				|| m_shapeForMenu->IsKindOf(CLASSINFO(wxSFEditTextShape)) )
+			else
 			{
 				menu.Append(MENU_DeleteImage, "Delete");
 			}
