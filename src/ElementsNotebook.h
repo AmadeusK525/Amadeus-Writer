@@ -94,7 +94,7 @@ enum
 
 	LIST_CharList,
 	LIST_LocList,
-	LIST_ItemsList,
+	LIST_ItemList,
 
 	LISTMENU_EditChar,
 	LISTMENU_EditLoc,

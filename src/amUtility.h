@@ -16,7 +16,7 @@ public:
 		wxWindowID 	id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
-		long style = wxSP_NOBORDER | wxSP_NO_XP_THEME | wxSP_THIN_SASH,
+		long style = wxSP_NOBORDER | wxSP_NO_XP_THEME | wxSP_THIN_SASH | wxSP_LIVE_UPDATE,
 		const wxString& name = "splitterWindow") : wxSplitterWindow(parent, id, pos, size, style, name)
 	{}
 
@@ -56,6 +56,36 @@ inline wxImage amGetScaledImage(int maxWidth, int maxHeight, wxImage& image)
 
 void amDoSubWindowFullscreen(wxWindow* window, wxWindow* originalParent, bool fs,
 	wxBoxSizer* originalSizer = nullptr, wxSizerFlags flags = { 0 }, int sizerInex = -1);
+
+inline wxColour wxLightenColour(const wxColour& colour, int percent)
+{
+	int newRed = (colour.Red() * (100 + percent)) / 100;
+	int newGreen = (colour.Green() * (100 + percent)) / 100;
+	int newBlue = (colour.Blue() * (100 + percent)) / 100;
+
+	return wxColour((unsigned char)newRed, (unsigned char)newGreen, (unsigned char)newBlue);
+}
+
+inline wxColour wxDarkenColour(const wxColour& colour, int percent)
+{
+	int newRed = (colour.Red() * (100 - percent)) / 100;
+	int newGreen = (colour.Green() * (100 - percent)) / 100;
+	int newBlue = (colour.Blue() * (100 - percent)) / 100;
+
+	return wxColour((unsigned char)newRed, (unsigned char)newGreen, (unsigned char)newBlue);
+}
+
+inline void amOnEnterDarkButton(wxMouseEvent& event)
+{
+	wxButton* button = (wxButton*)event.GetEventObject();
+	button->SetBackgroundColour(wxLightenColour(button->GetBackgroundColour(), 40));
+}
+
+inline void amOnLeaveDarkButton(wxMouseEvent& event)
+{
+	wxButton* button = (wxButton*)event.GetEventObject();
+	button->SetBackgroundColour(wxDarkenColour(button->GetBackgroundColour(), 28));
+}
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// wxDVC Classes ///////////////////////////////

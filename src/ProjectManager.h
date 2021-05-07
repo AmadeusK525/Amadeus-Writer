@@ -148,6 +148,7 @@ public:
 	inline void InsertSQLEntry(amSQLEntry& sqlEntry) { m_storage.InsertSQLEntry(sqlEntry); }
 
 	void OpenDocument(int documentIndex);
+	void OpenDocument(Document* document);
 	bool ScanForDocumentLinear(int toFind, int& current, Document* scanBegin, Document*& emptyPointer);
 	void NullifyStoryWriter() { m_storyWriter = nullptr; }
 
@@ -160,16 +161,13 @@ public:
 	void EditLocation(Location* original, Location& edit, bool sort = false);
 	void EditItem(Item* original, Item& edit, bool sort = false);
 
-	void AddDocumentToCharacter(const wxString& characterName, Document* document, bool addToDb = true);
-	void AddDocumentToLocation(const wxString& locationName, Document* document, bool addToDb = true);
-	void AddDocumentToItem(const wxString& itemName, Document* document, bool addToDb = true);
-
-	void RemoveDocumentFromCharacter(const wxString& characterName, Document* document);
-	void RemoveDocumentFromLocation(const wxString& locationName, Document* document);
-	void RemoveDocumentFromItem(const wxString& itemName, Document* document);
+	void AddElementToDocument(Element* element, Document* document, bool addToDb = true);
+	void RemoveElementFromDocument(Element* element, Document* document);
 
 	void RelateElements(Element* element1, Element* element2, bool addToDb = true);
 	void UnrelateElements(Element* element1, Element* element2, bool removeFromDb = true);
+
+	Element* GetElementByName(const wxString& name);
 
 	void DeleteCharacter(Character* character, bool clearShowcase);
 	void DeleteLocation(Location* location, bool clearShowcase);

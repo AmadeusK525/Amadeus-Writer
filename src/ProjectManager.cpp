@@ -265,17 +265,19 @@ int amProjectSQLDatabase::GetSQLEntryId(amSQLEntry& sqlEntry)
 	query << sqlEntry.tableName;
 	query << " WHERE ";
 
+	wxSQLite3StatementBuffer buffer;
+	
 	bool nameEmpty = sqlEntry.name.IsEmpty();
 
 	if ( !nameEmpty )
-		query << "name = '" << sqlEntry.name << "'";
+		query << "name = '" << buffer.Format("%q", (const char*)sqlEntry.name) << "'";
 
 	if ( sqlEntry.specialForeign )
 	{
 		if ( !nameEmpty )
 			query << " AND ";
 
-		query << sqlEntry.foreignKey.first << " = " << sqlEntry.foreignKey.second;
+		query << buffer.Format("%q", (const char*)sqlEntry.foreignKey.first) << " = " << sqlEntry.foreignKey.second;
 	}
 
 	if ( !sqlEntry.integers.empty() )
@@ -289,7 +291,7 @@ int amProjectSQLDatabase::GetSQLEntryId(amSQLEntry& sqlEntry)
 			if ( i != 0 )
 				query << " AND ";
 
-			query << it.first << " = " << it.second;
+			query << buffer.Format("%q", (const char*)it.first) << " = " << it.second;
 			i++;
 		}
 
@@ -851,11 +853,7 @@ void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
 			wxSQLite3ResultSet characterResult = m_storage.ExecuteQuery("SELECT name FROM characters WHERE id = " +
 				std::to_string(results2.GetInt("character_id")));
 
-			for ( Character*& pCharacter : m_project.GetCharacters() )
-			{
-				if ( pCharacter->name == characterResult.GetAsString("name") )
-					AddDocumentToCharacter(pCharacter->name, pDocument, false);
-			}
+			AddElementToDocument(GetElementByName(characterResult.GetAsString("name")), pDocument, false);
 		}
 
 		results2 = m_storage.ExecuteQuery("SELECT * FROM locations_documents WHERE document_id = " +
@@ -866,11 +864,7 @@ void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
 			wxSQLite3ResultSet locationResult = m_storage.ExecuteQuery("SELECT name FROM locations WHERE id = " +
 				std::to_string(results2.GetInt("location_id")));
 
-			for ( Location*& pLocation : m_project.GetLocations() )
-			{
-				if ( pLocation->name == locationResult.GetAsString("name") )
-					AddDocumentToLocation(pLocation->name, pDocument, false);
-			}
+			AddElementToDocument(GetElementByName(locationResult.GetAsString("name")), pDocument, false);
 		}
 
 		results2 = m_storage.ExecuteQuery("SELECT * FROM items_documents WHERE document_id = " +
@@ -881,11 +875,7 @@ void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
 			wxSQLite3ResultSet itemResult = m_storage.ExecuteQuery("SELECT name FROM items WHERE id = " +
 				std::to_string(results2.GetInt("item_id")));
 
-			for ( Item*& pItem : m_project.GetItems() )
-			{
-				if ( pItem->name == itemResult.GetAsString("name") )
-					AddDocumentToItem(pItem->name, pDocument, false);
-			}
+			AddElementToDocument(GetElementByName(itemResult.GetAsString("name")), pDocument, false);
 		}
 
 		documents.push_back(pDocument);
@@ -1296,16 +1286,19 @@ int amProjectManager::GetSQLEntryId(amSQLEntry& sqlEntry)
 
 void amProjectManager::OpenDocument(int documentIndex)
 {
-	Document* toSet = GetCurrentBook()->documents[documentIndex];
+	OpenDocument(GetCurrentBook()->documents[documentIndex]);
+}
 
+void amProjectManager::OpenDocument(Document* document)
+{
 	if ( m_storyWriter )
 	{
-		m_storyWriter->SetCurrentDocument(toSet, true, true);
+		m_storyWriter->SetCurrentDocument(document, true, true);
 		m_storyWriter->Maximize();
 	}
 	else
 	{
-		m_storyWriter = new amStoryWriter(m_mainFrame, this, toSet);
+		m_storyWriter = new amStoryWriter(m_mainFrame, this, document);
 
 		if ( m_mainFrame->IsFullScreen() )
 			m_storyWriter->ToggleFullScreen(true);
@@ -1568,241 +1561,88 @@ void amProjectManager::EditItem(Item* original, Item& edit, bool sort)
 	}
 }
 
-void amProjectManager::AddDocumentToCharacter(const wxString& characterName, Document* document, bool addToDb)
+void amProjectManager::AddElementToDocument(Element* element, Document* document, bool addToDb)
 {
-	for ( Character*& pCharacter : m_project.characters )
+	if ( !element || !document )
+		return;
+
+	bool had = false;
+	for ( Document*& pDocInElement : element->documents )
 	{
-		if ( characterName == pCharacter->name )
+		if ( pDocInElement == document )
 		{
+			had = true;
+			break;
+		}
+	}
 
-			bool has = false;
-			for ( Document*& pDocInChar : pCharacter->documents )
+	if ( !had )
+	{
+		element->documents.push_back(document);
+		std::sort(element->documents.begin(), element->documents.end(), amSortDocuments);
+
+		if ( addToDb )
+		{
+			try
 			{
-				if ( pDocInChar == document )
-				{
-					has = true;
-					break;
-				}
+				amSQLEntry elementEntry = element->GenerateSQLEntryForId();
+				m_storage.InsertManyToMany(elementEntry.tableName + "_documents",
+					elementEntry, elementEntry.tableName.Left(elementEntry.tableName.size() - 1) + "_id",
+					document->GenerateSQLEntryForId(), "document_id");
 			}
-
-			if ( !has )
+			catch ( wxSQLite3Exception& e )
 			{
-				pCharacter->documents.push_back(document);
-
-				if ( addToDb )
-					m_storage.InsertManyToMany("characters_documents",
-					pCharacter->id, "character_id",
-					document->id, "document_id");
+				wxMessageBox(e.GetMessage());
 			}
+		}
+	}
 
-			has = false;
-			for ( Character*& pCharInDoc : document->characters )
-			{
-				if ( pCharInDoc == pCharacter )
-				{
-					has = true;
-					break;
-				}
-			}
+	had = false;
+	for ( Element*& pElementInDoc : document->elements )
+	{
+		if ( pElementInDoc == element )
+		{
+			had = true;
+			break;
+		}
+	}
 
-			if ( !has )
-				document->characters.push_back(pCharacter);
+	if ( !had )
+	{
+		std::sort(document->elements.begin(), document->elements.end(), amSortElements);
+		document->elements.push_back(element);
+	}
+}
+
+void amProjectManager::RemoveElementFromDocument(Element * element, Document * document)
+{
+	if ( !element || !document )
+		return;
+
+	for ( Document*& pDocInElement : element->documents )
+	{
+		if ( pDocInElement == document )
+		{
+			element->documents.erase(&pDocInElement);
+
+			amSQLEntry elementEntry = element->GenerateSQLEntryForId();
+			m_storage.DeleteManyToMany(elementEntry.tableName + "_documents",
+				element->id, elementEntry.tableName.Left(elementEntry.tableName.size() - 1) + "_id",
+				document->id, "document_id");
 
 			break;
 		}
 	}
-}
 
-void amProjectManager::AddDocumentToLocation(const wxString& locationName, Document* document, bool addToDb)
-{
-	for ( Location*& pLocation : m_project.locations )
+	for ( Element*& pElementInDoc : document->elements)
 	{
-		if ( locationName == pLocation->name )
+		if ( pElementInDoc == element)
 		{
-
-			bool has = false;
-			for ( Document*& pDocInLoc : pLocation->documents )
-				if ( pDocInLoc == document )
-				{
-					has = true;
-					break;
-				}
-
-			if ( !has )
-			{
-				pLocation->documents.push_back(document);
-
-				if ( addToDb )
-					m_storage.InsertManyToMany("locations_documents",
-					pLocation->id, "location_id",
-					document->id, "document_id");
-			}
-
-			has = false;
-			for ( Location*& pLocInDoc : document->locations )
-			{
-				if ( pLocInDoc == pLocation )
-				{
-					has = true;
-					break;
-				}
-			}
-
-			if ( !has )
-				document->locations.push_back(pLocation);
-
+			document->elements.erase(&pElementInDoc);
 			break;
 		}
 	}
-}
 
-void amProjectManager::AddDocumentToItem(const wxString& itemName, Document* document, bool addToDb)
-{
-	for ( Item*& pItem : m_project.items )
-	{
-		if ( itemName == pItem->name )
-		{
-			bool has = false;
-			for ( Document*& pDocInItem : pItem->documents )
-			{
-				if ( pDocInItem == document )
-				{
-					has = true;
-					break;
-				}
-			}
-
-			if ( !has )
-			{
-				pItem->documents.push_back(document);
-
-				if ( addToDb )
-					m_storage.InsertManyToMany("items_documents",
-					pItem->id, "item_id",
-					document->id, "document_id");
-			}
-
-			has = false;
-			for ( Item*& pItemInDoc : document->items )
-			{
-				if ( pItemInDoc == pItem )
-				{
-					has = true;
-					break;
-				}
-			}
-
-			if ( !has )
-				document->items.push_back(pItem);
-
-			break;
-		}
-	}
-}
-
-void amProjectManager::RemoveDocumentFromCharacter(const wxString& characterName, Document* document)
-{
-	for ( Character*& pCharacter : m_project.characters )
-	{
-		if ( characterName == pCharacter->name )
-		{
-			for ( Document*& pDocInChar : pCharacter->documents )
-			{
-				if ( pDocInChar == document )
-				{
-					pCharacter->documents.erase(&pDocInChar);
-					m_storage.DeleteManyToMany("characters_documents",
-						pCharacter->id, "character_id",
-						document->id, "document_id");
-
-					break;
-				}
-			}
-
-			for ( Character*& pCharInDoc : document->characters )
-			{
-				if ( pCharInDoc == pCharacter )
-				{
-					document->characters.erase(&pCharInDoc);
-					break;
-				}
-			}
-
-			return;
-		}
-	}
-
-	wxLogMessage("Could not remove character '%s' from document '%s'", characterName, document->name);
-}
-
-void amProjectManager::RemoveDocumentFromLocation(const wxString& locationName, Document* document)
-{
-	for ( Location*& pLocation : m_project.locations )
-	{
-		if ( locationName == pLocation->name )
-		{
-			for ( Document*& pDocInLoc : pLocation->documents )
-			{
-				if ( pDocInLoc == document )
-				{
-					pLocation->documents.erase(&pDocInLoc);
-					m_storage.DeleteManyToMany("locations_documents",
-						pLocation->id, "location_id",
-						document->id, "document_id");
-
-					break;
-				}
-			}
-
-			for ( Location*& pLocInDoc : document->locations )
-			{
-				if ( pLocInDoc == pLocation )
-				{
-					document->locations.erase(&pLocInDoc);
-					break;
-				}
-			}
-
-			return;
-		}
-	}
-
-	wxLogMessage("Could not remove location '%s' from document '%s'", locationName, document->name);
-}
-
-void amProjectManager::RemoveDocumentFromItem(const wxString& itemName, Document* document)
-{
-	for ( Item*& pItem : m_project.items )
-	{
-		if ( itemName == pItem->name )
-		{
-			for ( Document*& pDocInItem : pItem->documents )
-			{
-				if ( pDocInItem == document )
-				{
-					pItem->documents.erase(&pDocInItem);
-					m_storage.DeleteManyToMany("items_documents",
-						pItem->id, "item_id",
-						document->id, "document_id");
-
-					break;
-				}
-			}
-
-			for ( Item*& pItemInDoc : document->items )
-			{
-				if ( pItemInDoc == pItem )
-				{
-					document->items.erase(&pItemInDoc);
-					break;
-				}
-			}
-
-			return;
-		}
-	}
-
-	wxLogMessage("Could not remove item '%s' from document '%s'", itemName, document->name);
 }
 
 void amProjectManager::RelateElements(Element* element1, Element* element2, bool addToDb)
@@ -1923,11 +1763,22 @@ void amProjectManager::UnrelateElements(Element* element1, Element* element2, bo
 	}
 }
 
+Element* amProjectManager::GetElementByName(const wxString& name)
+{
+	for ( Element* pElement : GetAllElements() )
+	{
+		if ( pElement->name == name )
+			return pElement;
+	}
+
+	return nullptr;
+}
+
 void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)
 {
 	wxBusyCursor cursor;
 	for ( Document*& pDocument : character->documents )
-		RemoveDocumentFromCharacter(character->name, pDocument);
+		RemoveElementFromDocument(character, pDocument);
 
 	if ( clearShowcase )
 		m_elements->GetCharacterShowcase()->SetData(nullptr);
@@ -1961,7 +1812,7 @@ void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)
 void amProjectManager::DeleteLocation(Location* location, bool clearShowcase)
 {
 	for ( Document*& pDocument : location->documents )
-		RemoveDocumentFromLocation(location->name, pDocument);
+		RemoveElementFromDocument(location, pDocument);
 
 	if ( clearShowcase )
 		m_elements->GetLocationShowcase()->SetData(nullptr);
@@ -1987,7 +1838,7 @@ void amProjectManager::DeleteLocation(Location* location, bool clearShowcase)
 void amProjectManager::DeleteItem(Item* item, bool clearShowcase)
 {
 	for ( Document*& pDocument : item->documents )
-		RemoveDocumentFromItem(item->name, pDocument);
+		RemoveElementFromDocument(item, pDocument);
 
 	if ( clearShowcase )
 		m_elements->GetItemShowcase()->SetData(nullptr);
@@ -2018,14 +1869,8 @@ void amProjectManager::DeleteDocument(Document* document)
 		DeleteDocument(document);
 	}
 
-	for ( Character*& pCharacter : document->characters )
-		RemoveDocumentFromCharacter(pCharacter->name, document);
-
-	for ( Location*& pLocation : document->locations )
-		RemoveDocumentFromLocation(pLocation->name, document);
-
-	for ( Item*& pItem : document->items )
-		RemoveDocumentFromItem(pItem->name, document);
+	for ( Element*& pElement : document->elements )
+		RemoveElementFromDocument(pElement, document);
 
 	m_storyNotebook->DeleteDocument(document);
 	m_storage.DeleteSQLEntry(document->GenerateSQLEntryForId());

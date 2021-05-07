@@ -1,8 +1,10 @@
 #include "ElementShowcases.h"
 #include "MyApp.h"
 #include "ElementsNotebook.h"
+#include "amUtility.h"
+#include "MainFrame.h"
 
-#include <wx\statline.h>
+#include <wx\popupwin.h>
 
 #include "wxmemdbg.h"
 
@@ -23,10 +25,12 @@ amRelatedElementsContainer::amRelatedElementsContainer(wxWindow* parent, amEleme
 
 	wxButton* addRelated = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
 	addRelated->SetBitmap(wxBITMAP_PNG(plus));
+	addRelated->SetToolTip("Add related elements");
 	addRelated->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnAddElement, this);
 	addRelated->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_owner); });
 	wxButton* removeRelated = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
 	removeRelated->SetBitmap(wxBITMAP_PNG(minus));
+	removeRelated->SetToolTip("Remove related elements");
 	removeRelated->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnRemoveElement, this);
 	removeRelated->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_owner && !m_owner->relatedElements.empty()); });
 
@@ -54,7 +58,7 @@ void amRelatedElementsContainer::OnAddElement(wxCommandEvent& event)
 	addDialog->Show();
 }
 
-void amRelatedElementsContainer::OnRemoveElement(wxCommandEvent & event)
+void amRelatedElementsContainer::OnRemoveElement(wxCommandEvent& event)
 {
 	amRelatedElementsDialog* addDialog = new amRelatedElementsDialog((wxWindow*)amGetManager()->GetMainFrame(),
 		m_owner, this, amRelatedElementsDialog::MODE::REMOVE);
@@ -138,7 +142,7 @@ void amRelatedElementsContainer::ClearAll()
 {
 	m_grid->Clear(true);
 	m_owner = nullptr;
-	
+
 }
 
 
@@ -197,7 +201,7 @@ amRelatedElementsDialog::amRelatedElementsDialog(wxWindow* parent, Element* elem
 	m_notebook->AddPage(m_locations, "Locations");
 	m_notebook->AddPage(m_items, "Items");
 
-	auto lightenBG = [](wxMouseEvent& event) 
+	auto lightenBG = [](wxMouseEvent& event)
 	{
 		((wxWindow*)event.GetEventObject())->SetBackgroundColour(wxColour(60, 60, 60));
 	};
@@ -215,7 +219,7 @@ amRelatedElementsDialog::amRelatedElementsDialog(wxWindow* parent, Element* elem
 	mainButton->Bind(wxEVT_BUTTON, &amRelatedElementsDialog::OnMainButton, this);
 	if ( mode == ADD )
 		mainButton->SetLabel("Add");
-	
+
 	else
 		mainButton->SetLabel("Remove");
 
@@ -491,7 +495,7 @@ void amRelatedElementsDialog::OnMainButton(wxCommandEvent& event)
 	}
 }
 
-void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent & event)
+void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent& event)
 {
 	wxBusyCursor cursor;
 	amProjectManager* manager = amGetManager();
@@ -579,10 +583,13 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 {
 	wxFont font(wxFontInfo(12).Bold());
 
+	SetDoubleBuffered(true);
+	SetBackgroundColour(wxColour(20, 20, 20));
+
 	m_mainPanel = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL);
-	m_mainPanel->SetBackgroundColour(parent->GetBackgroundColour());
+	m_mainPanel->SetBackgroundColour(wxColour(20, 20, 20));
 	m_secondPanel = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL);
-	m_secondPanel->SetBackgroundColour(parent->GetBackgroundColour());
+	m_secondPanel->SetBackgroundColour(wxColour(20, 20, 20));
 
 	m_mainSizer = new wxBoxSizer(wxVERTICAL);
 	m_mainSizer->Add(m_mainPanel, wxSizerFlags(1).Expand());
@@ -592,7 +599,7 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	SetSizer(m_mainSizer);
 
 	//////////////////////////////// First panel ///////////////////////////////
-	
+
 	m_nextPanel = new wxButton(m_mainPanel, -1, "", wxDefaultPosition, wxSize(25, 25));
 	m_nextPanel->SetBitmap(wxBITMAP_PNG(arrowRight));
 	m_nextPanel->Bind(wxEVT_BUTTON, &amElementShowcase::OnNextPanel, this);
@@ -632,7 +639,60 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	m_nameSecondPanel = new wxStaticText(m_secondPanel, -1, "");
 	m_nameSecondPanel->SetBackgroundColour(wxColour(10, 10, 10));
 	m_nameSecondPanel->SetForegroundColour(wxColour(255, 255, 255));
-	m_nameSecondPanel->SetFont(wxFontInfo(15).Bold());
+	m_nameSecondPanel->SetBackgroundStyle(wxBG_STYLE_PAINT);
+	m_nameSecondPanel->SetFont(wxFontInfo(18).Bold());
+
+	wxStaticText* documentsLabel = new wxStaticText(m_secondPanel, -1, "Present in the following documents:",
+		wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
+	documentsLabel->SetBackgroundColour(wxColour(10, 10, 10));
+	documentsLabel->SetForegroundColour(wxColour(255, 255, 255));
+	documentsLabel->SetFont(wxFontInfo(11).Bold());
+
+	m_documents = new wxListView(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
+		wxBORDER_SIMPLE | wxLC_LIST | wxLC_HRULES | wxLC_NO_HEADER);
+	m_documents->SetBackgroundColour(wxColour(30, 30, 30));
+	m_documents->SetForegroundColour(wxColour(255, 255, 255));
+	m_documents->AppendColumn("Documents");
+	m_documents->Bind(wxEVT_SIZE, [&](wxSizeEvent& event)
+		{
+			m_documents->SetColumnWidth(0, m_documents->GetClientSize().x);
+			event.Skip();
+		});
+
+	auto enableBut = [&](wxUpdateUIEvent& event) { event.Enable(GetElement()); };
+
+	m_addDocumentBtn = new wxButton(m_secondPanel, -1, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	m_addDocumentBtn->SetBackgroundColour(wxColour(15, 15, 15));
+	m_addDocumentBtn->SetForegroundColour(wxColour(255, 255, 255));
+	m_addDocumentBtn->Bind(wxEVT_BUTTON, &amElementShowcase::OnAddDocument, this);
+	m_addDocumentBtn->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	m_addDocumentBtn->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+	m_addDocumentBtn->Bind(wxEVT_UPDATE_UI, enableBut);
+	wxButton* removeDocument = new wxButton(m_secondPanel, -1, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	removeDocument->SetBackgroundColour(wxColour(15, 15, 15));
+	removeDocument->SetForegroundColour(wxColour(255, 255, 255));
+	removeDocument->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	removeDocument->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+	removeDocument->Bind(wxEVT_BUTTON, &amElementShowcase::OnRemoveDocument, this);
+	removeDocument->Bind(wxEVT_UPDATE_UI, enableBut);
+	wxButton* openDocument = new wxButton(m_secondPanel, -1, "Open", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	openDocument->SetBackgroundColour(wxColour(15, 15, 15));
+	openDocument->SetForegroundColour(wxColour(255, 255, 255));
+	openDocument->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	openDocument->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+	openDocument->Bind(wxEVT_BUTTON, &amElementShowcase::OnOpenDocument, this);
+	openDocument->Bind(wxEVT_UPDATE_UI, enableBut);
+
+	wxBoxSizer* documentButtonsSizer = new wxBoxSizer(wxVERTICAL);
+	documentButtonsSizer->Add(m_addDocumentBtn, wxSizerFlags(0).Expand());
+	documentButtonsSizer->AddSpacer(2);
+	documentButtonsSizer->Add(removeDocument, wxSizerFlags(0).Expand());
+	documentButtonsSizer->AddStretchSpacer(1);
+	documentButtonsSizer->Add(openDocument, wxSizerFlags(0).Expand());
+
+	wxBoxSizer* documentsSizer = new wxBoxSizer(wxHORIZONTAL);
+	documentsSizer->Add(m_documents, wxSizerFlags(1).Expand());
+	documentsSizer->Add(documentButtonsSizer, wxSizerFlags(1).Expand());
 
 	m_relatedElements = new amRelatedElementsContainer(m_secondPanel, this);
 
@@ -640,10 +700,12 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	m_secondVerSizer->Add(m_prevPanel, wxSizerFlags(0).Left());
 	m_secondVerSizer->Add(m_nameSecondPanel, wxSizerFlags(0).Expand().Border(wxALL, 5));
 	m_secondVerSizer->AddSpacer(20);
+	m_secondVerSizer->Add(documentsLabel, wxSizerFlags(0).Expand());
+	m_secondVerSizer->Add(documentsSizer, wxSizerFlags(1).Expand());
+	m_secondVerSizer->AddSpacer(20);
 	m_secondVerSizer->Add(m_relatedElements, wxSizerFlags(0).Expand());
 
-	m_secondPanel->SetSizer(m_secondVerSizer);
-	m_secondVerSizer->FitInside(m_secondPanel);
+	m_secondPanel->SetSizerAndFit(m_secondVerSizer);
 	m_secondPanel->SetScrollRate(0, 20);
 }
 
@@ -653,8 +715,28 @@ void amElementShowcase::SetData(Element* element)
 
 	if ( !LoadFirstPanel(element) || !LoadSecondPanel(element) )
 		ClearAll();
+	else
+		m_element = element;
 
 	Thaw();
+}
+
+bool amElementShowcase::LoadSecondPanel(Element* element)
+{
+	m_secondPanel->Freeze();
+
+	m_nameSecondPanel->SetLabel(element->name);
+
+	m_documents->DeleteAllItems();
+	for ( int i = 0; i < element->documents.size(); i++ )
+		m_documents->InsertItem(i, element->documents[i]->name);
+
+	m_relatedElements->LoadAllElements(element);
+
+	m_secondVerSizer->FitInside(m_secondPanel);
+	m_secondPanel->Thaw();
+
+	return true;
 }
 
 void amElementShowcase::OnNextPanel(wxCommandEvent& event)
@@ -684,6 +766,112 @@ void amElementShowcase::ShowPage(int index)
 
 	SendSizeEvent();
 	Thaw();
+}
+
+void amElementShowcase::OnAddDocument(wxCommandEvent& event)
+{
+	wxPopupTransientWindow* win = new wxPopupTransientWindow(m_addDocumentBtn, wxBORDER_NONE | wxPU_CONTAINS_CONTROLS);
+
+	wxVector<Document*> documents = amGetManager()->GetDocumentsInCurrentBook();
+	wxArrayString documentNames;
+
+	for ( Document*& pDocument : documents )
+	{
+		if ( m_documents->FindItem(0, pDocument->name) == -1 )
+			documentNames.Add(pDocument->name);
+	}
+
+	wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize,
+		documentNames, wxBORDER_SIMPLE | wxLB_NEEDED_SB | wxLB_SINGLE);
+	list->Bind(wxEVT_LISTBOX_DCLICK, [this, list](wxCommandEvent& event)
+		{
+			wxBusyCursor cursor;
+
+			amProjectManager* manager = amGetManager();
+			for ( Document*& pDocument : manager->GetDocumentsInCurrentBook() )
+			{
+				if ( pDocument->name == event.GetString() )
+				{
+					manager->AddElementToDocument(m_element, pDocument);
+					list->Delete(list->FindString(pDocument->name));
+					LoadSecondPanel(m_element);
+					break;
+				}
+			}
+		});
+	list->SetBackgroundColour(wxColour(55, 55, 55));
+	list->SetForegroundColour(wxColour(255, 255, 255));
+
+	wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
+	siz->Add(list, wxSizerFlags(1).Expand());
+	win->SetSizer(siz);
+
+	wxSize addButtonSize(m_addDocumentBtn->GetSize());
+	win->SetPosition(m_addDocumentBtn->ClientToScreen(wxPoint(0, addButtonSize.y)));
+	win->SetSize(wxSize(addButtonSize.x, 150));
+
+	win->Popup();
+	event.Skip();
+}
+
+void amElementShowcase::OnRemoveDocument(wxCommandEvent & event)
+{
+	wxBusyCursor cursor;
+
+	amProjectManager* manager = amGetManager();
+	wxString documentName;
+	long sel = m_documents->GetFirstSelected();
+
+	while ( sel != -1 )
+	{
+		documentName = m_documents->GetItemText(sel);
+		for ( Document*& pDocument : manager->GetDocumentsInCurrentBook() )
+		{
+			if ( pDocument->name == documentName )
+			{
+				manager->RemoveElementFromDocument(GetElement(), pDocument);
+				m_documents->DeleteItem(sel);
+			}
+		}
+
+		sel = m_documents->GetNextSelected(sel - 1);
+	}
+
+	amElementsNotebook* notebook = manager->GetElementsNotebook();
+
+	long elementIndex = notebook->m_charList->FindItem(0, GetElement()->name);
+	if ( elementIndex != -1 )
+	{
+		notebook->UpdateCharacter(elementIndex, (Character*)GetElement());
+		return;
+	}
+
+	elementIndex = notebook->m_locList->FindItem(0, GetElement()->name);
+	if ( elementIndex != -1 )
+	{
+		notebook->UpdateLocation(elementIndex, (Location*)GetElement());
+		return;
+	}
+
+	elementIndex = notebook->m_itemList->FindItem(0, GetElement()->name);
+	if ( elementIndex != -1 )
+	{
+		notebook->UpdateItem(elementIndex, (Item*)GetElement());
+		return;
+	}
+}
+
+void amElementShowcase::OnOpenDocument(wxCommandEvent& event)
+{
+	amProjectManager* manager = amGetManager();
+	long sel = m_documents->GetFirstSelected();
+
+	while ( sel != -1 )
+	{
+		manager->OpenDocument(m_element->documents[sel]);
+
+		sel = m_documents->GetNextSelected(sel);
+	}
 }
 
 
@@ -1043,23 +1231,6 @@ bool amCharacterShowcase::LoadFirstPanel(Element* element)
 	return true;
 }
 
-bool amCharacterShowcase::LoadSecondPanel(Element* element)
-{
-	Character* pCharacter = dynamic_cast<Character*>(element);
-	if ( !pCharacter )
-		return false;
-
-	m_secondPanel->Freeze();
-
-	m_nameSecondPanel->SetLabel(element->name);
-
-	m_relatedElements->LoadAllElements(pCharacter);
-	m_secondVerSizer->FitInside(m_secondPanel);
-
-	m_secondPanel->Thaw();
-	return true;
-}
-
 void amCharacterShowcase::ClearAll()
 {
 	Freeze();
@@ -1235,7 +1406,7 @@ bool amLocationShowcase::LoadFirstPanel(Element* element)
 	Location* pLocation = dynamic_cast<Location*>(element);
 	if ( !pLocation )
 		return false;
-	
+
 	m_mainPanel->Freeze();
 	m_name->SetLabel(pLocation->name);
 
@@ -1401,20 +1572,6 @@ bool amLocationShowcase::LoadFirstPanel(Element* element)
 	return true;
 }
 
-bool amLocationShowcase::LoadSecondPanel(Element * element)
-{
-	Location* pLocation = dynamic_cast<Location*>(element);
-	if ( !pLocation )
-		return false;
-
-	m_nameSecondPanel->SetLabel(element->name);
-
-	m_relatedElements->LoadAllElements(pLocation);
-	m_secondVerSizer->FitInside(m_secondPanel);
-
-	return true;
-}
-
 void amLocationShowcase::ClearAll()
 {
 	Freeze();
@@ -1455,18 +1612,6 @@ bool amItemShowcase::LoadFirstPanel(Element* element)
 	Item* pItem = dynamic_cast<Item*>(element);
 	if ( !pItem )
 		return false;
-
-	return true;
-}
-
-bool amItemShowcase::LoadSecondPanel(Element * element)
-{
-	Item* pItem = dynamic_cast<Item*>(element);
-	if ( !pItem )
-		return false;
-
-
-	m_nameSecondPanel->SetLabel(element->name);
 
 	return true;
 }

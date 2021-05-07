@@ -52,10 +52,7 @@ struct Document
 
 	wxRichTextBuffer* buffer = nullptr;
 
-	wxVector<Character*> characters{};
-	wxVector<Location*> locations{};
-	wxVector<Item*> items{};
-
+	wxVector<Element*> elements{};
 	wxVector<Note*> notes{};
 
 	int position = -1;

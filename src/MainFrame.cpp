@@ -99,10 +99,10 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 		button->SetFont(font);
 		button->SetBackgroundColour(wxColour(20, 20, 20));
 		button->SetForegroundColour(wxColour(245, 245, 245));
-		button->Bind(wxEVT_ENTER_WINDOW, &amMainFrame::OnMainButtonEnter, this);
-		button->Bind(wxEVT_LEAVE_WINDOW, &amMainFrame::OnMainButtonLeave, this);
+		button->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+		button->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
 	}
-	m_mainButtons[0]->SetBackgroundColour(wxColour(130, 0, 0));
+	m_mainButtons[0]->SetBackgroundColour(wxDarkenColour(wxColour(130, 0, 0), 28));
 
 	m_buttonSizer = new wxBoxSizer(wxVERTICAL);
 	m_buttonSizer->Add(m_mainButtons[0], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));

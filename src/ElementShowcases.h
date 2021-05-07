@@ -142,6 +142,8 @@ public:
 class amElementShowcase : public wxWindow
 {
 protected:
+	Element* m_element = nullptr;
+
 	wxScrolledWindow* m_mainPanel = nullptr;
 	wxScrolledWindow* m_secondPanel = nullptr;
 
@@ -161,6 +163,9 @@ protected:
 	wxBoxSizer* m_mainVerSizer = nullptr;
 	wxBoxSizer* m_secondVerSizer = nullptr;
 
+	wxListView* m_documents = nullptr;
+	wxButton* m_addDocumentBtn = nullptr;
+
 	amRelatedElementsContainer* m_relatedElements = nullptr;
 
 public:
@@ -168,13 +173,19 @@ public:
 
 	virtual void SetData(Element* element);
 	virtual bool LoadFirstPanel(Element* element) = 0;
-	virtual bool LoadSecondPanel(Element* element) = 0;
+	virtual bool LoadSecondPanel(Element* element);
 	virtual void ClearAll() = 0;
+
+	void ShowPage(int index);
+
+	Element* GetElement() { return m_element; }
+
+	void OnAddDocument(wxCommandEvent& event);
+	void OnRemoveDocument(wxCommandEvent& event);
+	void OnOpenDocument(wxCommandEvent& event);
 
 	void OnNextPanel(wxCommandEvent& event);
 	void OnPreviousPanel(wxCommandEvent& event);
-
-	void ShowPage(int index);
 
 	inline void EmptyMouseEvent(wxMouseEvent& event) {}
 };
@@ -215,8 +226,6 @@ public:
 	amCharacterShowcase(wxWindow* parent);
 
 	virtual bool LoadFirstPanel(Element* element) override;
-	virtual bool LoadSecondPanel(Element* element) override;
-
 	virtual void ClearAll() override;
 };
 
@@ -251,9 +260,7 @@ private:
 public:
 	amLocationShowcase(wxWindow* parent);
 	
-	virtual bool LoadFirstPanel(Element* element) override;
-	virtual bool LoadSecondPanel(Element* element) override;
-	
+	virtual bool LoadFirstPanel(Element* element) override;	
 	virtual void ClearAll() override;
 };
 
@@ -271,8 +278,6 @@ public:
 	amItemShowcase(wxWindow* parent);
 
 	virtual bool LoadFirstPanel(Element* element) override;
-	virtual bool LoadSecondPanel(Element* element) override;
-
 	virtual void ClearAll() override;
 };
 

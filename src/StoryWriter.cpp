@@ -828,7 +828,7 @@ void amStoryWriter::AddCharacter(wxCommandEvent& event)
 	if ( m_charInChap->FindItem(-1, name) == -1 )
 	{
 		CheckDocumentValidity();
-		m_manager->AddDocumentToCharacter(name, m_pFocusDocument);
+		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
 		UpdateCharacterList();
 		m_manager->GetElementsNotebook()->UpdateCharacterList();
 	}
@@ -841,7 +841,7 @@ void amStoryWriter::AddLocation(wxCommandEvent& event)
 	if ( m_locInChap->FindItem(-1, name) == -1 )
 	{
 		CheckDocumentValidity();
-		m_manager->AddDocumentToLocation(name, m_pFocusDocument);
+		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
 		UpdateLocationList();
 		m_manager->GetElementsNotebook()->UpdateLocationList();
 	}
@@ -854,7 +854,7 @@ void amStoryWriter::AddItem(wxCommandEvent& event)
 	if ( m_itemsInChap->FindItem(-1, name) == -1 )
 	{
 		CheckDocumentValidity();
-		m_manager->AddDocumentToItem(name, m_pFocusDocument);
+		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
 		UpdateItemList();
 		m_manager->GetElementsNotebook()->UpdateItemList();
 	}
@@ -866,8 +866,13 @@ void amStoryWriter::UpdateCharacterList()
 	m_charInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Character*& pCharacter : m_pFocusDocument->characters )
-		m_charInChap->InsertItem(i++, pCharacter->name);
+	for ( Element*& pElement : m_pFocusDocument->elements )
+	{
+		Character* pCharacter = dynamic_cast<Character*>(pElement);
+
+		if ( pCharacter )
+			m_charInChap->InsertItem(i++, pCharacter->name);
+	}
 
 	m_charInChap->Thaw();
 }
@@ -878,9 +883,13 @@ void amStoryWriter::UpdateLocationList()
 	m_locInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Location*& pLocation : m_pFocusDocument->locations )
-		m_locInChap->InsertItem(i++, pLocation->name);
+	for ( Element*& pElement: m_pFocusDocument->elements )
+	{
+		Location* pLocation= dynamic_cast<Location*>(pElement);
 
+		if ( pLocation )
+			m_locInChap->InsertItem(i++, pLocation->name);
+	}
 	m_locInChap->Thaw();
 }
 
@@ -890,8 +899,13 @@ void amStoryWriter::UpdateItemList()
 	m_itemsInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Item*& pItem : m_pFocusDocument->items )
-		m_itemsInChap->InsertItem(i++, pItem->name);
+	for ( Element*& pElement : m_pFocusDocument->elements )
+	{
+		Item* pItem= dynamic_cast<Item*>(pElement);
+
+		if ( pItem )
+			m_itemsInChap->InsertItem(i++, pItem->name);
+	}
 
 	m_itemsInChap->Thaw();
 }
@@ -908,7 +922,7 @@ void amStoryWriter::OnRemoveCharacter(wxCommandEvent& event)
 		wxString name = m_charInChap->GetItemText(sel);
 		m_charInChap->DeleteItem(sel);
 
-		m_manager->RemoveDocumentFromCharacter(name, m_pFocusDocument);
+		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_pFocusDocument);
 
 		sel = m_charInChap->GetNextSelected(sel - 1);
 	}
@@ -929,7 +943,7 @@ void amStoryWriter::OnRemoveLocation(wxCommandEvent& event)
 		wxString name = m_locInChap->GetItemText(sel);
 		m_locInChap->DeleteItem(sel);
 
-		m_manager->RemoveDocumentFromLocation(name, m_pFocusDocument);
+		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_pFocusDocument);
 
 		sel = m_locInChap->GetNextSelected(sel + 1);
 	}
@@ -950,7 +964,7 @@ void amStoryWriter::OnRemoveItem(wxCommandEvent& event)
 		wxString name = m_itemsInChap->GetItemText(sel);
 		m_itemsInChap->DeleteItem(sel);
 
-		m_manager->RemoveDocumentFromItem(name, m_pFocusDocument);
+		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_pFocusDocument);
 
 		sel = m_itemsInChap->GetNextSelected(sel + 1);
 	}

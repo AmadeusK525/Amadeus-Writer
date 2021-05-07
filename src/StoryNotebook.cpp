@@ -17,7 +17,8 @@ amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
 	m_list->InsertColumn(0, "Name", wxLIST_FORMAT_LEFT, FromDIP(180));
 	m_list->InsertColumn(1, "Characters", wxLIST_FORMAT_CENTER);
 	m_list->InsertColumn(2, "Locations", wxLIST_FORMAT_CENTER);
-	m_list->InsertColumn(3, "Point of View", wxLIST_FORMAT_CENTER, FromDIP(180));
+	m_list->InsertColumn(3, "Items", wxLIST_FORMAT_CENTER);
+	m_list->InsertColumn(4, "Point of View", wxLIST_FORMAT_CENTER, FromDIP(180));
 
 	m_list->SetBackgroundColour(wxColour(45, 45, 45));
 	m_list->SetForegroundColour(wxColour(245, 245, 245));
@@ -37,9 +38,21 @@ void amStoryNotebook::AddToList(Document* document, int pos)
 	if ( pos == -1 )
 		pos = m_list->GetItemCount();
 
+	size_t characterCount = 0, locationCount = 0, itemCount = 0;
+	for ( Element*& pElement : document->elements )
+	{
+		if ( dynamic_cast<Character*>(pElement) )
+			characterCount++;
+		else if ( dynamic_cast<Location*>(pElement) )
+			locationCount++;
+		else if ( dynamic_cast<Item*>(pElement) )
+			itemCount++;
+	}
+
 	m_list->InsertItem(pos, document->name);
-	m_list->SetItem(pos, 1, std::to_string(document->characters.size()));
-	m_list->SetItem(pos, 2, std::to_string(document->locations.size()));
+	m_list->SetItem(pos, 1, std::to_string(characterCount));
+	m_list->SetItem(pos, 2, std::to_string(locationCount));
+	m_list->SetItem(pos, 3, std::to_string(itemCount));
 	//m_list->SetItem(pos, 3, document.pointOfView);
 }
 

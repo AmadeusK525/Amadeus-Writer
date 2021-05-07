@@ -17,6 +17,7 @@ BEGIN_EVENT_TABLE(amElementsNotebook, wxNotebook)
 
 EVT_LIST_ITEM_FOCUSED(LIST_CharList, amElementsNotebook::OnCharacterSelected)
 EVT_LIST_ITEM_SELECTED(LIST_LocList, amElementsNotebook::OnLocationSelected)
+EVT_LIST_ITEM_SELECTED(LIST_ItemList, amElementsNotebook::OnItemSelected)
 
 EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, amElementsNotebook::OnCharRightClick)
 EVT_LIST_ITEM_ACTIVATED(LIST_CharList, amElementsNotebook::OnCharacterActivated)
@@ -29,8 +30,8 @@ EVT_LIST_ITEM_ACTIVATED(LIST_LocList, amElementsNotebook::OnLocationActivated)
 EVT_MENU(LISTMENU_EditLoc, amElementsNotebook::OnEditLocation)
 EVT_MENU(LISTMENU_DeleteLoc, amElementsNotebook::OnDeleteLocation)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemsList, amElementsNotebook::OnItemRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_ItemsList, amElementsNotebook::OnItemActivated)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemList, amElementsNotebook::OnItemRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_ItemList, amElementsNotebook::OnItemActivated)
 EVT_MENU(LISTMENU_EditItem, amElementsNotebook::OnEditItem)
 EVT_MENU(LISTMENU_DeleteItem, amElementsNotebook::OnDeleteItem)
 
@@ -44,10 +45,16 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	m_manager = amGetManager();
 
 	//Setting up first notebook tab with a characters list
-	wxPanel* charFrame = new wxPanel(this, PANEL_Char);
-	charFrame->SetBackgroundColour(wxColour(20, 20, 20));
+	amSplitterWindow* charFrame = new amSplitterWindow(this, PANEL_Char);
+	charFrame->SetBackgroundColour(wxColour(10, 10, 10));
+	charFrame->SetSize(GetClientSize());
+	charFrame->SetSashGravity(1.0);
+	charFrame->SetMinimumPaneSize(20);
 
-	m_charList = new wxListView(charFrame, LIST_CharList, wxDefaultPosition, wxDefaultSize,
+	wxPanel* cLeft = new wxPanel(charFrame);
+	cLeft->SetBackgroundColour(wxColour(20, 20, 20));
+
+	m_charList = new wxListView(cLeft, LIST_CharList, wxDefaultPosition, wxDefaultSize,
 		wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
 	m_charList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, 190);
 	m_charList->InsertColumn(1, "Role", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
@@ -69,19 +76,19 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	sortBy.Add("First appearance");
 	sortBy.Add("Last appearance");
 
-	wxStaticText* cSortByLabel = new wxStaticText(charFrame, -1, "Sort by:");
+	wxStaticText* cSortByLabel = new wxStaticText(cLeft, -1, "Sort by:");
 	cSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
 	cSortByLabel->SetFont(wxFontInfo(11).Bold());
 
-	m_cSortBy = new wxChoice(charFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
+	m_cSortBy = new wxChoice(cLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
 	m_cSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnCharactersSortBy, this);
 	m_cSortBy->SetSelection(0);
 
-	wxStaticText* cShowLabel = new wxStaticText(charFrame, -1, "Show:");
+	wxStaticText* cShowLabel = new wxStaticText(cLeft, -1, "Show:");
 	cShowLabel->SetForegroundColour(wxColour(250, 250, 250));
 	cShowLabel->SetFont(wxFontInfo(11).Bold());
 
-	m_cShow = new wxComboCtrl(charFrame, -1, "", wxDefaultPosition, wxSize(200, -1), wxCB_READONLY);
+	m_cShow = new wxComboCtrl(cLeft, -1, "", wxDefaultPosition, wxSize(200, -1), wxCB_READONLY);
 	amCheckListBox* cBooks = new amCheckListBox();
 
 	m_cShow->SetPopupControl(cBooks);
@@ -96,23 +103,27 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	cFooterSizer->Add(m_cShow, wxSizerFlags(0).CenterVertical());
 
 	wxBoxSizer* cLeftSizer = new wxBoxSizer(wxVERTICAL);
-	cLeftSizer->Add(m_charList, wxSizerFlags(1).Expand());
+	cLeftSizer->Add(m_charList, wxSizerFlags(1).Expand().Border(wxLEFT | wxTOP, 5));
 	cLeftSizer->AddSpacer(10);
-	cLeftSizer->Add(cFooterSizer, wxSizerFlags(0).Expand());
+	cLeftSizer->Add(cFooterSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
+	cLeft->SetSizer(cLeftSizer);
 
 	m_charShow = new amCharacterShowcase(charFrame);
 
-	wxBoxSizer* charSizer = new wxBoxSizer(wxHORIZONTAL);
-	charSizer->Add(cLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
-	charSizer->Add(m_charShow, 3, wxGROW | wxTOP, 10);
-	charFrame->SetSizer(charSizer);
-
+	charFrame->SplitVertically(cLeft, m_charShow);
 	this->AddPage(charFrame, "Characters");
 
 	//Setting up second notebook tab with a locations list
-	wxPanel* locFrame = new wxPanel(this, wxID_ANY);
-	locFrame->SetBackgroundColour(wxColour(20, 20, 20));
-	m_locList = new wxListView(locFrame, LIST_LocList, wxDefaultPosition, wxDefaultSize,
+	amSplitterWindow* locFrame = new amSplitterWindow(this, wxID_ANY);
+	locFrame->SetBackgroundColour(wxColour(0, 0, 0));
+	locFrame->SetSize(GetClientSize());
+	locFrame->SetMinimumPaneSize(20);
+	locFrame->SetSashGravity(1.0);
+
+	wxPanel* lLeft = new wxPanel(locFrame);
+	lLeft->SetBackgroundColour(wxColour(20, 20, 20));
+
+	m_locList = new wxListView(lLeft, LIST_LocList, wxDefaultPosition, wxDefaultSize,
 		wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
 	m_locList->InsertColumn(0, "Name of location", wxLIST_FORMAT_CENTER, 125);
 	m_locList->InsertColumn(1, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
@@ -127,14 +138,14 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	m_locImageList = new wxImageList(24, 24);
 	m_locList->AssignImageList(m_locImageList, wxIMAGE_LIST_SMALL);
 
-	wxStaticText* lSortByLabel = new wxStaticText(locFrame, -1, "Sort by:");
+	wxStaticText* lSortByLabel = new wxStaticText(lLeft, -1, "Sort by:");
 	lSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
 	lSortByLabel->SetFont(wxFontInfo(11).Bold());
 
 	sortBy.Remove("Role");
 	sortBy.Insert("Importance", 0);
 
-	m_lSortBy = new wxChoice(locFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
+	m_lSortBy = new wxChoice(lLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
 	m_lSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnLocationsSortBy, this);
 	m_lSortBy->SetSelection(0);
 
@@ -144,22 +155,27 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	lSortBySizer->Add(m_lSortBy, wxSizerFlags(0).CenterVertical());
 
 	wxBoxSizer* lLeftSizer = new wxBoxSizer(wxVERTICAL);
-	lLeftSizer->Add(m_locList, wxSizerFlags(1).Expand());
+	lLeftSizer->Add(m_locList, wxSizerFlags(1).Expand().Border(wxLEFT | wxTOP, 5));
 	lLeftSizer->AddSpacer(10);
-	lLeftSizer->Add(lSortBySizer, wxSizerFlags(0).Left());
+	lLeftSizer->Add(lSortBySizer, wxSizerFlags(0).Left().Border(wxLEFT | wxBOTTOM, 5));
+	lLeft->SetSizer(lLeftSizer);
 
 	m_locShow = new amLocationShowcase(locFrame);
 
-	wxBoxSizer* locSizer = new wxBoxSizer(wxHORIZONTAL);
-	locSizer->Add(lLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
-	locSizer->Add(m_locShow, wxSizerFlags(5).Expand().Border(wxTOP | wxBOTTOM, 10));
-	locFrame->SetSizer(locSizer);
+	locFrame->SplitVertically(lLeft, m_locShow);
 	this->AddPage(locFrame, "Locations");
 
 	//Setting up third notebook tab
-	wxPanel* itemsFrame = new wxPanel(this, wxID_ANY);
-	itemsFrame->SetBackgroundColour(wxColour(20, 20, 20));
-	m_itemList = new wxListView(itemsFrame, LIST_ItemsList, wxDefaultPosition, wxDefaultSize,
+	amSplitterWindow* itemsFrame = new amSplitterWindow(this, wxID_ANY);
+	itemsFrame->SetBackgroundColour(wxColour(0, 0, 0));
+	itemsFrame->SetSize(GetClientSize());
+	itemsFrame->SetMinimumPaneSize(20);
+	itemsFrame->SetSashGravity(1.0);
+
+	wxPanel* iLeft = new wxPanel(itemsFrame);
+	iLeft->SetBackgroundColour(wxColour(20, 20, 20));
+
+	m_itemList = new wxListView(iLeft, LIST_ItemList, wxDefaultPosition, wxDefaultSize,
 		wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
 	m_itemList->InsertColumn(0, "Name of item", wxLIST_FORMAT_CENTER, 120);
 	m_itemList->InsertColumn(1, "Is Magic", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
@@ -175,11 +191,11 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	m_itemsImageList = new wxImageList(24, 24);
 	m_itemList->AssignImageList(m_itemsImageList, wxIMAGE_LIST_SMALL);
 
-	wxStaticText* iSortByLabel = new wxStaticText(itemsFrame, -1, "Sort by:");
+	wxStaticText* iSortByLabel = new wxStaticText(iLeft, -1, "Sort by:");
 	iSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
 	iSortByLabel->SetFont(wxFontInfo(11).Bold());
 
-	m_iSortBy = new wxChoice(itemsFrame, -1, wxDefaultPosition, wxDefaultSize, sortBy);
+	m_iSortBy = new wxChoice(iLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
 	m_iSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnLocationsSortBy, this);
 	m_iSortBy->SetSelection(0);
 
@@ -189,17 +205,14 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	iSortBySizer->Add(m_iSortBy, wxSizerFlags(0).CenterVertical());
 
 	wxBoxSizer* iLeftSizer = new wxBoxSizer(wxVERTICAL);
-	iLeftSizer->Add(m_itemList, wxSizerFlags(1).Expand());
+	iLeftSizer->Add(m_itemList, wxSizerFlags(1).Expand().Border(wxLEFT | wxTOP, 5));
 	iLeftSizer->AddSpacer(10);
-	iLeftSizer->Add(iSortBySizer, wxSizerFlags(0).Left());
+	iLeftSizer->Add(iSortBySizer, wxSizerFlags(0).Left().Border(wxLEFT | wxBOTTOM, 5));
+	iLeft->SetSizer(iLeftSizer);
 
 	m_itemShow = new amItemShowcase(itemsFrame);
 
-	wxBoxSizer* itemSizer = new wxBoxSizer(wxHORIZONTAL);
-	itemSizer->Add(iLeftSizer, wxSizerFlags(4).Expand().Border(wxLEFT | wxTOP | wxBOTTOM, 10));
-	itemSizer->Add(m_itemShow, wxSizerFlags(3).Expand().Border(wxTOP | wxBOTTOM, 10));
-
-	itemsFrame->SetSizer(itemSizer);
+	itemsFrame->SplitVertically(iLeft, m_itemShow);
 	this->AddPage(itemsFrame, "Items");
 }
 
@@ -229,8 +242,9 @@ void amElementsNotebook::GoToElement(Element* element)
 
 			m_charList->SetFocus();
 		}
-	}
 
+		return;
+	}
 
 	Location* pLocationToSet = dynamic_cast<Location*>(element);
 	if ( pLocationToSet )
@@ -248,6 +262,8 @@ void amElementsNotebook::GoToElement(Element* element)
 
 			m_locList->SetFocus();
 		}
+
+		return;
 	}
 
 	Item* pItemToSet = dynamic_cast<Item*>(element);
@@ -266,6 +282,8 @@ void amElementsNotebook::GoToElement(Element* element)
 
 			m_itemList->SetFocus();
 		}
+
+		return;
 	}
 }
 
@@ -438,7 +456,7 @@ void amElementsNotebook::OnCharactersSortBy(wxCommandEvent& event)
 	{
 		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
 	}
-	
+
 	int toSet = -1;
 	if ( currentSelection != -1 )
 	{
@@ -456,7 +474,7 @@ void amElementsNotebook::OnCharactersSortBy(wxCommandEvent& event)
 			i++;
 		}
 	}
-	
+
 	UpdateCharacterList();
 	m_charList->SetFocus();
 	m_charList->Select(toSet);
@@ -518,7 +536,7 @@ void amElementsNotebook::OnItemsSortBy(wxCommandEvent& event)
 		wxString name = m_itemList->GetItemText(currentSelection);
 		int i = 0;
 
-		for ( Item*& pItem: m_manager->GetItems() )
+		for ( Item*& pItem : m_manager->GetItems() )
 		{
 			if ( pItem->name == name )
 			{
