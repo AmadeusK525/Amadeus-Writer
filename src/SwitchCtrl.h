@@ -1,45 +1,16 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        wx/switchctrl.h
-// Purpose:     wxSwitchCtrl class declaration
-// Author:      Leonardo Bronstein Franceschetti <bronstein.franceschetti@protonmail.com>
-// Created:     2019-02-07
-// Copyright:   (c) 2019 wxWidgets development team
-// Licence:     wxWindows licence
-/////////////////////////////////////////////////////////////////////////////
-
 #ifndef _WX_SWITCHCTRL_H_
 #define _WX_SWITCHCTRL_H_
 #pragma once
 
-#include <wx\wx.h>
-#include <wx\control.h>
-#include <wx\timer.h>
+#include <wx/control.h>
+#include <wx/stattext.h>
+#include <wx/sizer.h>
+#include <wx/timer.h>
 
-wxColour wxMixColours(const wxColour& firstColour, const wxColour& secondColour, int percent);
+wxColour WXDLLIMPEXP_CORE wxMixColours(const wxColour& firstColour, const wxColour& secondColour, int percent);
 
-class wxSwitchCtrl : public wxControl
+class WXDLLIMPEXP_CORE wxSwitchCtrl : public wxControl
 {
-private:
-	int m_currentUnit = 0;
-	int m_currentCenterPos = 0;
-	int m_yOrigin = 0;
-
-	int m_units = 10;
-	double m_radius = 5.0;
-
-	wxTimer m_animationTimer;
-	wxSize m_cacheSize;
-
-protected:
-	wxStaticText* m_labelST = nullptr;
-	wxBoxSizer* m_sizer = nullptr;
-
-	wxColour m_enabledColour{ 50, 50, 255 };
-	wxColour m_disabledColour{ 100,100,100 };
-	wxColour m_buttonColour{ 30,30,30 };
-
-	bool m_isOn = false;
-
 public:
 	wxSwitchCtrl() = default;
 	wxSwitchCtrl(wxWindow* parent,
@@ -52,13 +23,15 @@ public:
 		const wxValidator& validator = wxDefaultValidator,
 		const wxString& name = wxControlNameStr);
 
-	virtual void SetLabel(const wxString& label) override;
-	virtual bool SetFont(const wxFont& font) override;
-	virtual bool SetForegroundColour(const wxColour& colour) override;
-	virtual wxSize DoGetBestClientSize() const override;
+	virtual void SetLabel(const wxString& label) wxOVERRIDE;
+	virtual bool SetFont(const wxFont& font) wxOVERRIDE;
+	virtual bool SetForegroundColour(const wxColour& colour) wxOVERRIDE;
+	virtual wxSize DoGetBestClientSize() const wxOVERRIDE;
+
+	inline void Switch() { DoSwitch(!m_bIsOn, true); }
 
 	inline virtual void SetValue(bool state) { DoSwitch(state, false); }
-	inline bool GetValue() { return m_isOn; }
+	inline bool GetValue() { return m_bIsOn; }
 
 	inline void SetEnabledColour(const wxColour& colour) { m_enabledColour = colour; }
 	inline void SetDisabledColour(const  wxColour& colour) { m_disabledColour = colour; }
@@ -69,17 +42,45 @@ public:
 	* will be. Default is 10.
 	* \param units Number of units
 	*/
-	inline void SetUnitsToScroll(int units) { m_units = units; }
+	inline void SetUnitsToScroll(int units) { m_nUnitCount = units; }
 
-	DECLARE_EVENT_TABLE()
+	wxDECLARE_EVENT_TABLE();
 
 protected:
 	void DoSwitch(bool state, bool sendEvent = true);
-	void OnTimer(wxTimerEvent& event);
+	void OnAnimationTimer(wxTimerEvent& event);
 
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
+
+	void OnLeftDown(wxMouseEvent& event);
 	void OnLeftUp(wxMouseEvent& event);
+	void OnMouseMove(wxMouseEvent& event);
+	void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
+
+	wxStaticText* m_labelST = nullptr;
+
+	wxBoxSizer* m_sizer = nullptr;
+
+	wxColour m_enabledColour{ 50, 50, 255 };
+	wxColour m_disabledColour{ 100,100,100 };
+	wxColour m_buttonColour{ 30,30,30 };
+
+	bool m_bIsOn = false;
+
+private:
+	int m_nCurrentUnit = 0;
+	int m_nCurrentButtonPos = 0;
+	int m_yOrigin = 0;
+
+	int m_nUnitCount = 10;
+	double m_radius = 2.0;
+
+	bool m_bWillDrag = false;
+	bool m_bIsDragging = false;
+
+	wxTimer m_tAnimationTimer;
+	wxSize m_szCacheSize;
 };
 
 wxDECLARE_EVENT(wxEVT_SWITCH, wxCommandEvent);

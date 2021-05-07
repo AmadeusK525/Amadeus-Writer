@@ -1,15 +1,15 @@
-///////////////////////////////////////////////////////////////////////////////
-// Name:        SiwtchCtrl.h
-// Purpose:     Implementing a custom wxSwitchCtrl
-// Author:      AmadeusK525
-// Created:     2020-04-13
+/////////////////////////////////////////////////////////////////////////////
+// Name:        src/generic/switchctrlg.cpp
+// Purpose:     Generic wxSwitchCtrl class implementation
+// Author:      Leonardo Bronstein Franceschetti <bronstein.franceschetti@protonmail.com>
+// Created:     2019-02-07
+// Copyright:   (c) 2019 wxWidgets development team
 // Licence:     wxWindows licence
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 #include "SwitchCtrl.h"
-
-#include <wx\dcbuffer.h>
-#include <wx\dcgraph.h>
+#include <wx/wx.h>
+#include <wx/dcgraph.h>
 
 wxColour wxMixColours(const wxColour& firstColour, const wxColour& secondColour, int percent)
 {
@@ -20,19 +20,24 @@ wxColour wxMixColours(const wxColour& firstColour, const wxColour& secondColour,
 	return wxColour((unsigned char)newRed, (unsigned char)newGreen, (unsigned char)newBlue);
 }
 
+// Implementing events
 wxDEFINE_EVENT(wxEVT_SWITCH, wxCommandEvent);
 wxDEFINE_EVENT(wxEVT_SWITCHING, wxCommandEvent);
 
-BEGIN_EVENT_TABLE(wxSwitchCtrl, wxControl)
+
+wxBEGIN_EVENT_TABLE(wxSwitchCtrl, wxControl)
 
 EVT_PAINT(wxSwitchCtrl::OnPaint)
 EVT_SIZE(wxSwitchCtrl::OnSize)
 
+EVT_LEFT_DOWN(wxSwitchCtrl::OnLeftDown)
 EVT_LEFT_UP(wxSwitchCtrl::OnLeftUp)
+EVT_MOTION(wxSwitchCtrl::OnMouseMove)
+EVT_MOUSE_CAPTURE_LOST(wxSwitchCtrl::OnMouseCaptureLost)
 
-EVT_TIMER(12345, wxSwitchCtrl::OnTimer)
+EVT_TIMER(12345, wxSwitchCtrl::OnAnimationTimer)
 
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 wxSwitchCtrl::wxSwitchCtrl(wxWindow* parent,
 	wxWindowID id,
@@ -42,11 +47,9 @@ wxSwitchCtrl::wxSwitchCtrl(wxWindow* parent,
 	const wxSize& size,
 	long style,
 	const wxValidator& validator,
-	const wxString& name) : wxControl(parent, id, pos, size, style, validator, name), m_animationTimer(this, 12345)
+	const wxString& name)
+	: wxControl(parent, id, pos, size, style, validator, name), m_tAnimationTimer(this, 12345)
 {
-	SetBackgroundColour(m_parent->GetBackgroundColour());
-	SetDoubleBuffered(true);
-
 	m_sizer = new wxBoxSizer(wxVERTICAL);
 	m_sizer->AddStretchSpacer(1);
 	SetSizer(m_sizer);
@@ -105,13 +108,15 @@ wxSize wxSwitchCtrl::DoGetBestClientSize() const
 		return labelSize + wxSize(labelSize.x < 15 ? 20 : labelSize.x, labelSize.y);
 	}
 	else
+	{
 		return FromDIP(wxSize(m_radius * 4, m_radius * 2));
+	}
 }
 
 void wxSwitchCtrl::DoSwitch(bool state, bool sendEvent)
 {
-	if ( state == m_isOn )
-		return;
+	if ( state == m_bIsOn )
+		sendEvent = false;
 
 	if ( sendEvent )
 	{
@@ -124,9 +129,9 @@ void wxSwitchCtrl::DoSwitch(bool state, bool sendEvent)
 			return;
 	}
 
-	m_isOn = state;
-	m_cacheSize = GetClientSize();
-	m_animationTimer.Start(1);
+	m_bIsOn = state;
+	m_szCacheSize = GetClientSize();
+	m_tAnimationTimer.Start(1);
 
 	if ( sendEvent )
 	{
@@ -136,24 +141,34 @@ void wxSwitchCtrl::DoSwitch(bool state, bool sendEvent)
 	}
 }
 
-void wxSwitchCtrl::OnTimer(wxTimerEvent& event)
+void wxSwitchCtrl::OnAnimationTimer(wxTimerEvent& event)
 {
-	if ( m_isOn )
-		if ( m_currentUnit < m_units ) m_currentUnit++;
+	if ( m_bIsOn )
+	{
+		if ( m_nCurrentUnit < m_nUnitCount )
+		{
+			m_nCurrentUnit++;
+		}
 		else
 		{
-			m_currentUnit = m_units;
-			m_animationTimer.Stop();
+			m_nCurrentUnit = m_nUnitCount;
+			m_tAnimationTimer.Stop();
 		}
+	}
 	else
-		if ( m_currentUnit > 0 ) m_currentUnit--;
+	{
+		if ( m_nCurrentUnit > 0 )
+		{
+			m_nCurrentUnit--;
+		}
 		else
 		{
-			m_currentUnit = 0;
-			m_animationTimer.Stop();
+			m_nCurrentUnit = 0;
+			m_tAnimationTimer.Stop();
 		}
+	}
 
-	m_currentCenterPos = ((double)(m_currentUnit * (m_cacheSize.x - (m_radius * 2))) / m_units);
+	m_nCurrentButtonPos = ((double)(m_nCurrentUnit * (m_szCacheSize.x - (m_radius * 2))) / m_nUnitCount);
 	Refresh(true);
 	Update();
 }
@@ -164,7 +179,7 @@ void wxSwitchCtrl::OnPaint(wxPaintEvent& event)
 	wxGCDC gdc(dc);
 	wxSize clientSize = GetClientSize();
 
-	wxColour slideColour = wxMixColours(m_disabledColour, m_enabledColour, (m_currentUnit * 100) / m_units);
+	wxColour slideColour = wxMixColours(m_disabledColour, m_enabledColour, (m_nCurrentUnit * 100) / m_nUnitCount);
 
 	gdc.SetBrush(wxBrush(slideColour));
 	gdc.SetPen(*wxTRANSPARENT_PEN);
@@ -172,7 +187,7 @@ void wxSwitchCtrl::OnPaint(wxPaintEvent& event)
 
 	gdc.SetBrush(wxBrush(m_buttonColour));
 	gdc.SetPen(*wxTRANSPARENT_PEN);
-	gdc.DrawCircle(wxPoint(m_radius + m_currentCenterPos, clientSize.y - m_radius), m_radius - 1);
+	gdc.DrawCircle(wxPoint(m_radius + m_nCurrentButtonPos, clientSize.y - m_radius), m_radius - 1);
 }
 
 void wxSwitchCtrl::OnSize(wxSizeEvent& event)
@@ -190,12 +205,75 @@ void wxSwitchCtrl::OnSize(wxSizeEvent& event)
 	}
 
 	m_radius = (double)size.y / 2.0;
-	m_currentCenterPos = ((double)(m_currentUnit * (size.x - (m_radius * 2))) / m_units);
+	m_nCurrentButtonPos = ((double)(m_nCurrentUnit * (size.x - (m_radius * 2))) / m_nUnitCount);
 
 	event.Skip();
 }
 
+void wxSwitchCtrl::OnLeftDown(wxMouseEvent& event)
+{
+	// If the user presses clicks on the button, prepare to
+	// drag, but don't change state to dragging yet.
+
+	int buttonWidth = m_radius * 2;
+	wxRect buttonRect(m_nCurrentButtonPos, GetClientSize().y - buttonWidth, buttonWidth, buttonWidth);
+
+	if ( buttonRect.Contains(event.GetPosition()) )
+		m_bWillDrag = true;
+}
+
 void wxSwitchCtrl::OnLeftUp(wxMouseEvent& event)
 {
-	DoSwitch(!m_isOn);
+	if ( !m_bIsDragging )
+		DoSwitch(!m_bIsOn);
+	else
+	{
+		m_bWillDrag = false;
+		m_bIsDragging = false;
+		ReleaseMouse();
+
+		DoSwitch(m_nCurrentUnit >= m_nUnitCount / 2 ? true : false);
+	}
+}
+
+void wxSwitchCtrl::OnMouseMove(wxMouseEvent& event)
+{
+	if ( m_bWillDrag )
+	{
+		CaptureMouse();
+		m_bIsDragging = true;
+		m_bWillDrag = false;
+	}
+
+	if ( m_bIsDragging )
+	{
+		wxSize clientSize(GetClientSize());
+		wxPoint mousePos(event.GetPosition());
+
+		// Force input to be valid
+		if ( mousePos.x < 0 )
+			mousePos.x = 0;
+		else if ( mousePos.x > clientSize.x )
+			mousePos.x = clientSize.x;
+
+		int unitWidth = clientSize.x / m_nUnitCount;
+
+		// Calculate current button unit and its position
+		m_nCurrentUnit = mousePos.x / unitWidth;
+		m_nCurrentButtonPos = ((double)(m_nCurrentUnit * (clientSize.x - (m_radius * 2))) / m_nUnitCount);
+
+		// Update the screen for the user
+		Refresh();
+		Update();
+	}
+
+	event.Skip();
+}
+
+void wxSwitchCtrl::OnMouseCaptureLost(wxMouseCaptureLostEvent& event)
+{
+	m_bWillDrag = false;
+	m_bIsDragging = false;
+
+	DoSwitch(m_nCurrentUnit >= m_nUnitCount / 2 ? true : false);
 }
