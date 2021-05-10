@@ -433,7 +433,7 @@ class amHotTrackingDVCHandler : public wxEvtHandler
 {
 private:
 	wxDataViewCtrl* m_dvc = nullptr;
-	amDataViewModel* m_model;
+	amDataViewModel* m_model = nullptr;
 
 	wxDataViewItem m_itemUnderMouse{ nullptr };
 

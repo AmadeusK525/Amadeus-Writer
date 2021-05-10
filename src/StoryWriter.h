@@ -394,7 +394,7 @@ struct amStoryWriterNotebookPage
 	wxRichTextCtrl* rtc = nullptr;
 	wxScrolledWindow* notePanel = nullptr;
 
-	Document* document;
+	Document* document = nullptr;
 	int dbID = -1;
 
 	amStoryWriterNotebookPage() = default;

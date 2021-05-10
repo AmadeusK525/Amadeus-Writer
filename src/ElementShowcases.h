@@ -273,6 +273,26 @@ public:
 class amItemShowcase : public amElementShowcase
 {
 private:
+	wxStaticText* m_stHeightLabel = nullptr,
+		* m_stWidthLabel = nullptr,
+		* m_stDepthLabel = nullptr,
+		* m_stManMade = nullptr,
+		* m_stMagic = nullptr,
+		* m_stGeneralLabel = nullptr,
+		* m_stAppLabel = nullptr,
+		* m_stOriginLabel = nullptr,
+		* m_stHistoryLabel = nullptr,
+		* m_stUsageLabel = nullptr;
+
+	wxStaticText* m_stHeight = nullptr,
+		* m_stWidth = nullptr,
+		* m_stDepth = nullptr;
+
+	wxTextCtrl* m_tcGeneral = nullptr,
+		* m_tcAppearance = nullptr,
+		* m_tcOrigin = nullptr,
+		* m_tcHistory = nullptr,
+		* m_tcUsage = nullptr;
 
 public:
 	amItemShowcase(wxWindow* parent);

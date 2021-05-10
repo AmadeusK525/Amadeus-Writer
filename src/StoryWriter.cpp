@@ -425,9 +425,13 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	wxButton* addCharButton = new wxButton(m_characterPanel, BUTTON_AddChar, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	addCharButton->SetBackgroundColour(wxColour(60, 60, 60));
 	addCharButton->SetForegroundColour(wxColour(255, 255, 255));
+	addCharButton->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	addCharButton->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
 	wxButton* remCharButton = new wxButton(m_characterPanel, BUTTON_RemChar, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	remCharButton->SetBackgroundColour(wxColour(60, 60, 60));
 	remCharButton->SetForegroundColour(wxColour(255, 255, 255));
+	remCharButton->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	remCharButton->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
 
 	wxBoxSizer* charBSizer = new wxBoxSizer(wxHORIZONTAL);
 	charBSizer->Add(addCharButton);
@@ -461,9 +465,13 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	wxButton* addLocButton = new wxButton(m_locationPanel, BUTTON_AddLoc, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	addLocButton->SetBackgroundColour(wxColour(60, 60, 60));
 	addLocButton->SetForegroundColour(wxColour(255, 255, 255));
+	addLocButton->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	addLocButton->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
 	wxButton* remLocButton = new wxButton(m_locationPanel, BUTTON_RemLoc, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	remLocButton->SetBackgroundColour(wxColour(60, 60, 60));
 	remLocButton->SetForegroundColour(wxColour(255, 255, 255));
+	remLocButton->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	remLocButton->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
 
 	wxBoxSizer* locBSizer = new wxBoxSizer(wxHORIZONTAL);
 	locBSizer->Add(addLocButton);
@@ -497,9 +505,13 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	wxButton* addItemButton = new wxButton(m_itemPanel, BUTTON_AddItem, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	addItemButton->SetBackgroundColour(wxColour(60, 60, 60));
 	addItemButton->SetForegroundColour(wxColour(255, 255, 255));
+	addItemButton->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	addItemButton->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
 	wxButton* remItemButton = new wxButton(m_itemPanel, BUTTON_RemItem, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	remItemButton->SetBackgroundColour(wxColour(60, 60, 60));
 	remItemButton->SetForegroundColour(wxColour(255, 255, 255));
+	remItemButton->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
+	remItemButton->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
 
 	wxBoxSizer* itemBSizer = new wxBoxSizer(wxHORIZONTAL);
 	itemBSizer->Add(addItemButton);

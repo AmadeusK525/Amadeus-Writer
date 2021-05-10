@@ -1399,7 +1399,7 @@ amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
 	mainVer->Add(niGeneral, wxSizerFlags(1).Expand().Border(wxLEFT | wxRIGHT, 20));
 
 	m_panel1->SetSizer(mainVer);
-
+	Layout();
 	SetIcon(wxICON(itemIcon));
 }
 

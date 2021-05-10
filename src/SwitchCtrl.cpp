@@ -228,12 +228,12 @@ void wxSwitchCtrl::OnLeftUp(wxMouseEvent& event)
 		DoSwitch(!m_bIsOn);
 	else
 	{
-		m_bWillDrag = false;
-		m_bIsDragging = false;
-		ReleaseMouse();
-
 		DoSwitch(m_nCurrentUnit >= m_nUnitCount / 2 ? true : false);
+		ReleaseMouse();
 	}
+
+	m_bWillDrag = false;
+	m_bIsDragging = false;
 }
 
 void wxSwitchCtrl::OnMouseMove(wxMouseEvent& event)
