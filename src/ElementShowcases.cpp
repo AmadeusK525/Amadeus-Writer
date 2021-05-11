@@ -1836,5 +1836,43 @@ bool amItemShowcase::LoadFirstPanel(Element* element)
 
 void amItemShowcase::ClearAll()
 {
+	Freeze();
+
+	m_role->SetLabel("");
+	m_role->SetBackgroundColour(wxColour(220, 220, 220));
+
+	m_name->SetLabel("");
+	m_image->Show(false);
+
+	m_stManMade->Show(false);
+	m_stMagic->Show(false);
+
+	m_stHeightLabel->Show(false);
+	m_stHeight->Show(false);
+	m_stWidthLabel->Show(false); 
+	m_stWidth->Show(false);
+	m_stDepthLabel->Show(false);
+	m_stDepth->Show(false);
+	
+	m_stGeneralLabel->Show(false);
+	m_tcGeneral->Show(false);
+	m_stAppLabel->Show(false);
+	m_tcAppearance->Show(false);
+	m_stOriginLabel->Show(false);
+	m_tcOrigin->Show(false);
+	m_stHistoryLabel->Show(false);
+	m_tcHistory->Show(false);
+	m_stUsageLabel->Show(false);
+	m_tcUsage->Show(false);
+	
+	for ( pair<wxStaticText*, wxTextCtrl*>& custom : m_custom )
+	{
+		custom.first->Show(false);
+		custom.second->Show(false);
+	}
+
+	m_documents->DeleteAllItems();
 	m_relatedElements->ClearAll();
+
+	Thaw();
 }
