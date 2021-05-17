@@ -14,6 +14,7 @@
 #include "amUtility.h"
 
 #include <memory>
+#include <atomic>
 
 class amCorkboard;
 
@@ -50,7 +51,7 @@ private:
 
 	int m_currentImage = 1;
 
-	bool m_isSaving = false;
+	std::atomic<bool> m_isSaving = false;
 
 public:
 	amCorkboard(wxWindow* parent);

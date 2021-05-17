@@ -18,7 +18,7 @@ private:
 		* m_panel = nullptr;
 
 	amOverview* m_overview = nullptr;
-	amElementsNotebook* m_elements = nullptr;
+	amElementNotebook* m_elementNotebook = nullptr;
 	amStoryNotebook* m_storyNotebook = nullptr;
 	amOutline* m_outline = nullptr;
 	amRelease* m_release = nullptr;
@@ -46,10 +46,12 @@ public:
 		const wxSize& size = wxDefaultSize);
 
 	amOverview* GetOverview();
-	amElementsNotebook* GetElementsNotebook();
+	amElementNotebook* GetElementsNotebook();
 	amStoryNotebook* GetStoryNotebook();
 	amOutline* GetOutline();
 	amRelease* GetRelease();
+
+	wxSimplebook* GetSimplebook() { return m_mainBook; }
 
 	void OnQuit(wxCommandEvent& event);
 	void OnNewFile(wxCommandEvent& event);

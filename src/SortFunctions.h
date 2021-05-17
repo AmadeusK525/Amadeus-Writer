@@ -72,6 +72,8 @@ inline bool amSortElements(Element* element1, Element* element2)
 	}
 	else if ( pItem2 )
 		return false;
+
+	return true;
 }
 
 #endif

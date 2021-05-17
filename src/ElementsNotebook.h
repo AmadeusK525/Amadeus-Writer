@@ -12,7 +12,7 @@
 #include "ProjectManager.h"
 #include "ElementShowcases.h"
 
-class amElementsNotebook : public wxNotebook
+class amElementNotebook : public wxNotebook
 {
 private:
 	amProjectManager* m_manager = nullptr;
@@ -34,7 +34,7 @@ public:
 	wxSearchCtrl* m_searchBar = nullptr;
 
 public:
-	amElementsNotebook(wxWindow* parent);
+	amElementNotebook(wxWindow* parent);
 
 	void InitShowChoices();
 

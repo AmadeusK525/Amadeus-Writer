@@ -1727,35 +1727,36 @@ void amTLTimeline::SetCardData(amTLTimelineCard* card)
 
 void amTLTimeline::Save(bool doCanvas, bool doElements)
 {
-	if ( !m_isSaving )
-	{
-		std::thread thread([&]()
-			{
-				m_isSaving = true;
-				amSQLEntry sqlEntry;
-				sqlEntry.tableName = "outline_timelines";
-				sqlEntry.name = "Timeline Canvas";
+	if ( m_isSaving )
+		return;
 
-				if ( doCanvas )
+	std::thread thread([&]()
+		{
+			m_isSaving = true;
+			amSQLEntry sqlEntry;
+			sqlEntry.tableName = "outline_timelines";
+			sqlEntry.name = "Timeline Canvas";
+
+			if ( doCanvas )
 				{
 					sqlEntry.strings["content"] = wxString();
 					wxStringOutputStream sstream(&sqlEntry.strings["content"]);
 					m_canvas->SaveCanvas(sstream);
 				}
 
-				if ( doElements )
+			if ( doElements )
 				{
 					sqlEntry.strings["timeline_elements"] = wxString();
 					wxStringOutputStream sstream2(&sqlEntry.strings["timeline_elements"]);
 					SaveTimelineElements(sstream2);
 				}
 
-				m_manager->SaveSQLEntry(sqlEntry, sqlEntry);
-				m_isSaving = false;
-			}
-		);
-		thread.detach();
-	}
+			m_manager->SaveSQLEntry(sqlEntry, sqlEntry);
+			m_isSaving = false;
+		}
+	);
+
+	thread.detach();
 }
 
 void amTLTimeline::Load(amProjectSQLDatabase* db)

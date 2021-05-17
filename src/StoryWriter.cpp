@@ -415,12 +415,12 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 
 	m_charInChap = new wxListView(m_characterPanel, -1, wxDefaultPosition, wxDefaultSize,
 		wxLC_HRULES | wxLC_LIST | wxLC_NO_HEADER | wxBORDER_NONE);
-	m_charInChap->SetMinSize(FromDIP(wxSize(150, 150)));
 
 	m_charInChap->SetBackgroundColour(wxColour(35, 35, 35));
 	m_charInChap->SetForegroundColour(wxColour(230, 230, 230));
 	m_charInChap->InsertColumn(0, "Characters present in document", wxLIST_ALIGN_LEFT, FromDIP(10));
-	m_charInChap->SetMinSize(wxSize(15, 15));
+	m_charInChap->SetMinSize(FromDIP(wxSize(150, 150)));
+	m_charInChap->Bind(wxEVT_LIST_ITEM_ACTIVATED, &amStoryWriter::OnElementActivated, this);
 
 	wxButton* addCharButton = new wxButton(m_characterPanel, BUTTON_AddChar, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	addCharButton->SetBackgroundColour(wxColour(60, 60, 60));
@@ -457,10 +457,11 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	m_locInChap = new wxListView(m_locationPanel, -1, wxDefaultPosition, wxDefaultSize,
 		wxLC_HRULES | wxLC_LIST | wxLC_NO_HEADER | wxBORDER_NONE);
 
-	m_locInChap->SetMinSize(FromDIP(wxSize(150, 150)));
 	m_locInChap->SetBackgroundColour(wxColour(35, 35, 35));
 	m_locInChap->SetForegroundColour(wxColour(230, 230, 230));
 	m_locInChap->InsertColumn(0, "Locations present in document", wxLIST_ALIGN_LEFT, FromDIP(155));
+	m_locInChap->SetMinSize(FromDIP(wxSize(150, 150)));
+	m_locInChap->Bind(wxEVT_LIST_ITEM_ACTIVATED, &amStoryWriter::OnElementActivated, this);
 
 	wxButton* addLocButton = new wxButton(m_locationPanel, BUTTON_AddLoc, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	addLocButton->SetBackgroundColour(wxColour(60, 60, 60));
@@ -496,11 +497,12 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 
 	m_itemsInChap = new wxListView(m_itemPanel, -1, wxDefaultPosition, wxDefaultSize,
 		wxLC_HRULES | wxLC_LIST | wxLC_NO_HEADER | wxBORDER_NONE);
-	m_itemsInChap->SetMinSize(FromDIP(wxSize(150, 150)));
 
 	m_itemsInChap->SetBackgroundColour(wxColour(35, 35, 35));
 	m_itemsInChap->SetForegroundColour(wxColour(230, 230, 230));
 	m_itemsInChap->InsertColumn(0, "Items present in document", wxLIST_ALIGN_LEFT, FromDIP(155));
+	m_itemsInChap->SetMinSize(FromDIP(wxSize(150, 150)));
+	m_itemsInChap->Bind(wxEVT_LIST_ITEM_ACTIVATED, &amStoryWriter::OnElementActivated, this);
 
 	wxButton* addItemButton = new wxButton(m_itemPanel, BUTTON_AddItem, "Add", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	addItemButton->SetBackgroundColour(wxColour(60, 60, 60));
@@ -841,8 +843,6 @@ void amStoryWriter::AddCharacter(wxCommandEvent& event)
 	{
 		CheckDocumentValidity();
 		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
-		UpdateCharacterList();
-		m_manager->GetElementsNotebook()->UpdateCharacterList();
 	}
 }
 
@@ -854,8 +854,6 @@ void amStoryWriter::AddLocation(wxCommandEvent& event)
 	{
 		CheckDocumentValidity();
 		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
-		UpdateLocationList();
-		m_manager->GetElementsNotebook()->UpdateLocationList();
 	}
 }
 
@@ -867,8 +865,6 @@ void amStoryWriter::AddItem(wxCommandEvent& event)
 	{
 		CheckDocumentValidity();
 		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
-		UpdateItemList();
-		m_manager->GetElementsNotebook()->UpdateItemList();
 	}
 }
 
@@ -920,6 +916,15 @@ void amStoryWriter::UpdateItemList()
 	}
 
 	m_itemsInChap->Thaw();
+}
+
+void amStoryWriter::OnElementActivated(wxListEvent& event)
+{
+	Element* pElement = m_manager->GetElementByName(event.GetLabel());
+	if ( !pElement )
+		return;
+
+	m_manager->GoToElement(pElement);
 }
 
 void amStoryWriter::OnRemoveCharacter(wxCommandEvent& event)
@@ -1018,6 +1023,9 @@ void amStoryWriter::OnStoryItemSelected(wxDataViewEvent& event)
 {
 	wxDataViewItem item(event.GetItem());
 	StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
+
+	if ( !node )
+		return;
 
 	switch ( node->GetType() )
 	{
@@ -1169,14 +1177,14 @@ void amStoryWriter::LoadFocusDocument()
 	m_swNotebook->Freeze();
 	m_synopsys->SetValue(m_pFocusDocument->synopsys);
 
-	bool isOpen = false;
+	bool bIsOpen = false;
 
 	wxAuiNotebook* notebook = m_swNotebook->GetNotebook();
 	wxVector<amStoryWriterNotebookPage>& pages = m_swNotebook->GetPages();
 
 	for ( amStoryWriterNotebookPage& page : pages )
 	{
-		if ( page.dbID == m_pFocusDocument->id )
+		if ( page.document == m_pFocusDocument )
 		{
 			for ( int i = 0; i < notebook->GetPageCount(); i++ )
 			{
@@ -1185,7 +1193,7 @@ void amStoryWriter::LoadFocusDocument()
 				{
 					m_swNotebook->SetCurrentPage(page, false);
 					m_statusBar->SetStatusText("Zoom: " + std::to_string((int)(page.rtc->GetFontScale() * 100)) + "%", 2);
-					isOpen = true;
+					bIsOpen = true;
 					break;
 				}
 			}
@@ -1193,7 +1201,7 @@ void amStoryWriter::LoadFocusDocument()
 		}
 	}
 
-	if ( !isOpen )
+	if ( !bIsOpen )
 	{
 		wxBusyCursor busy;
 

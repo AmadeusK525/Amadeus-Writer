@@ -214,12 +214,15 @@ public:
 #endif
 };
 
+class amHotTrackingDVCHandler;
 
 class amDataViewModel : public wxDataViewModel
 {
 protected:
 	wxVector<amTreeModelNode*> m_otherRoots{};
 	wxDataViewItem m_itemForDnD{ nullptr };
+
+	amHotTrackingDVCHandler* m_handler = nullptr;
 
 public:
 	inline amDataViewModel() = default;
@@ -283,6 +286,8 @@ public:
 		return is;
 	}
 
+	inline virtual void DeleteItem(const wxDataViewItem& item) {}
+
 	inline virtual bool Reparent(const wxDataViewItem item, const wxDataViewItem newParent)
 	{
 		amTreeModelNode* oldParentNode = (amTreeModelNode*)GetParent(item).GetID();
@@ -290,7 +295,6 @@ public:
 		amTreeModelNode* newParentNode = (amTreeModelNode*)newParent.GetID();
 
 		wxDataViewItem oldParent((void*)oldParentNode);
-
 
 		if ( !item.IsOk() )
 			return false;
@@ -302,7 +306,10 @@ public:
 			for ( amTreeModelNode*& node : m_otherRoots )
 			{
 				if ( node == itemNode )
+				{
 					m_otherRoots.erase(&node);
+					break;
+				}
 			}
 		}
 
@@ -322,7 +329,6 @@ public:
 
 		wxDataViewItem oldParent((void*)oldParentNode);
 
-
 		if ( !item.IsOk() )
 			return false;
 
@@ -333,7 +339,10 @@ public:
 			for ( amTreeModelNode*& node : m_otherRoots )
 			{
 				if ( node == itemNode )
+				{
 					m_otherRoots.erase(&node);
+					break;
+				}
 			}
 		}
 
@@ -342,13 +351,17 @@ public:
 			int i = 0;
 			for ( amTreeModelNode*& node : m_otherRoots )
 			{
-				if ( i++ == n )
+				if ( i == n )
+				{
 					m_otherRoots.insert(&node, itemNode);
+					break;
+				}
+				i++;
 			}
 		}
 
-		ItemAdded(newParent, item);
 		ItemDeleted(oldParent, item);
+		ItemAdded(newParent, item);
 		return true;
 	}
 
@@ -425,6 +438,8 @@ public:
 	inline virtual void OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc) = 0;
 
 	inline void UnsetItemForDnD() { if ( m_itemForDnD.IsOk() ) m_itemForDnD.Unset(); }
+
+	inline void SetHandler(amHotTrackingDVCHandler* handler) { m_handler = handler; }
 };
 
 
@@ -432,6 +447,7 @@ public:
 class amHotTrackingDVCHandler : public wxEvtHandler
 {
 private:
+
 	wxDataViewCtrl* m_dvc = nullptr;
 	amDataViewModel* m_model = nullptr;
 
@@ -452,6 +468,7 @@ public:
 		BindEvents();
 
 		m_model = model;
+		m_model->SetHandler(this);
 		return m_dvc;
 	}
 
@@ -470,6 +487,8 @@ public:
 	}
 
 	inline wxDataViewCtrl* GetDVC() { return m_dvc; }
+	inline wxDataViewItem GetItemUnderMouse() { return m_itemUnderMouse; }
+	inline void SetItemUnderMouse(const wxDataViewItem& item) { m_itemUnderMouse = item; }
 
 	inline void CalculateItemRect(wxDataViewItem& item, wxRect& rect)
 	{

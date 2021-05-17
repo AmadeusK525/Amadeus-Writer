@@ -25,6 +25,8 @@ private:
 public:
 	amStoryNotebook(wxWindow* parent, amProjectManager* manager);
 
+	void SetBookData(Book* book);
+
 	void AddDocument(Document* document, int pos = -1);
 	void AddToList(Document* document, int pos = -1);
 

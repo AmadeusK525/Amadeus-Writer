@@ -14,6 +14,21 @@ CompType Item::iCompType = CompRole;
 
 wxIMPLEMENT_CLASS(Element, wxObject);
 
+Element::~Element()
+{
+	for ( Document*& pDocument : documents )
+	{
+		for ( Element*& pElement : pDocument->elements )
+		{
+			if ( pElement == this )
+			{
+				pDocument->elements.erase(&pElement);
+				break;
+			}
+		}
+	}
+}
+
 bool Element::operator<(const Element& other) const
 {
 	int i, j;

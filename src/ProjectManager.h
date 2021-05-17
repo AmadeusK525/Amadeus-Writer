@@ -65,7 +65,7 @@ public:
 
 class amMainFrame;
 class amOverview;
-class amElementsNotebook;
+class amElementNotebook;
 class amStoryNotebook;
 class amOutline;
 class amRelease;
@@ -80,7 +80,7 @@ private:
 
 	amMainFrame* m_mainFrame = nullptr;
 	amOverview* m_overview = nullptr;
-	amElementsNotebook* m_elements = nullptr;
+	amElementNotebook* m_elementNotebook = nullptr;
 	amStoryNotebook* m_storyNotebook = nullptr;
 	amOutline* m_outline = nullptr;
 	amRelease* m_release = nullptr;
@@ -91,7 +91,7 @@ private:
 
 	bool m_isInitialized = false;
 
-	int m_currentBook = 1;
+	int m_currentBookPos = 1;
 
 public:
 	amProjectManager();
@@ -110,7 +110,7 @@ public:
 	bool DoLoadProject(const wxString& path);
 
 	void LoadBooks();
-	void LoadBookContent(Book* book);
+	void LoadBookContent(Book* book, bool loadDocuments);
 	void LoadDocuments(wxVector<Document*>& documents, int bookId);
 	void SetupDocumentHierarchy(Book* book);
 
@@ -124,8 +124,12 @@ public:
 	void SetExecutablePath(const wxString& path);
 	void SetProjectFileName(const wxFileName& fileName);
 
+	bool SetCurrentBook(int bookPos) { return SetCurrentBook(m_project.books[bookPos - 1]); }
+	bool SetCurrentBook(Book* book);
+	void DoSetCurrentBook(Book* book);
+
 	amMainFrame* GetMainFrame();
-	amElementsNotebook* GetElementsNotebook();
+	amElementNotebook* GetElementsNotebook();
 	amStoryNotebook* GetStoryNotebook();
 	amOutline* GetOutline();
 	amRelease* GetRelease();
@@ -161,6 +165,9 @@ public:
 	void EditLocation(Location* original, Location& edit, bool sort = false);
 	void EditItem(Item* original, Item& edit, bool sort = false);
 
+	void UpdateElementInGUI(Element* element);
+	void GoToElement(Element* element);
+
 	void AddElementToDocument(Element* element, Document* document, bool addToDb = true);
 	void RemoveElementFromDocument(Element* element, Document* document);
 
@@ -174,14 +181,14 @@ public:
 	void DeleteItem(Item* item, bool clearShowcase);
 	void DeleteDocument(Document* document);
 
-	inline int GetCurrentBookPos() { return m_currentBook; }
-	inline Book* GetCurrentBook() { return m_project.books[m_currentBook - 1]; }
+	inline int GetCurrentBookPos() { return m_currentBookPos; }
+	inline Book* GetCurrentBook() { return m_project.books[m_currentBookPos - 1]; }
 
 	inline wxVector<Book*>& GetBooks() { return m_project.books; }
-	wxVector<Character*>& GetCharacters();
-	wxVector<Location*>& GetLocations();
-	wxVector<Item*>& GetItems();
-	wxVector<Element*> GetAllElements();
+	inline wxVector<Character*> GetCharacters() { return m_project.GetCharacters(); }
+	inline wxVector<Location*> GetLocations() { return m_project.GetLocations(); }
+	inline wxVector<Item*> GetItems() { return m_project.GetItems(); }
+	inline wxVector<Element*>& GetAllElements() { return m_project.elements; }
 
 	wxVector<Document*>& GetDocumentsInCurrentBook();
 	Document* GetDocumentById(int id);
@@ -194,9 +201,9 @@ public:
 
 	inline unsigned int GetBookCount() { return m_project.books.size(); }
 	inline unsigned int GetDocumentCount(int book) { return m_project.GetDocuments(book).size(); }
-	inline unsigned int GetCharacterCount() { return m_project.characters.size(); }
-	inline unsigned int GetLocationCount() { return m_project.locations.size(); }
-	inline unsigned int GetItemCount() { return m_project.items.size(); }
+	inline unsigned int GetCharacterCount() { return m_project.GetCharacters().size(); }
+	inline unsigned int GetLocationCount() { return m_project.GetLocations().size(); }
+	inline unsigned int GetItemCount() { return m_project.GetItems().size(); }
 };
 
 #endif

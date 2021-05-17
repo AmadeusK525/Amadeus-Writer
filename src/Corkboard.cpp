@@ -153,28 +153,28 @@ void amCorkboard::ExportToImage(wxBitmapType type)
 
 void amCorkboard::Save()
 {
-	if ( !m_isSaving )
-	{
-		std::thread thread([&]()
-			{
-				m_isSaving = true;
+	if ( m_isSaving )
+		return;
 
-				amSQLEntry sqlEntry;
-				sqlEntry.tableName = "outline_corkboards";
-				sqlEntry.name = "Corkboard Canvas";
+	std::thread thread([&]()
+		{
+			m_isSaving = true;
 
-				sqlEntry.strings["content"] = wxString();
+			amSQLEntry sqlEntry;
+			sqlEntry.tableName = "outline_corkboards";
+			sqlEntry.name = "Corkboard Canvas";
 
-				wxStringOutputStream sstream(&sqlEntry.strings["content"]);
-				m_canvas->SaveCanvas(sstream);
+			sqlEntry.strings["content"] = wxString();
 
-				m_manager->SaveSQLEntry(sqlEntry, sqlEntry);
-				m_isSaving = false;
-			}
-		);
+			wxStringOutputStream sstream(&sqlEntry.strings["content"]);
+			m_canvas->SaveCanvas(sstream);
 
-		thread.detach();
-	}
+			m_manager->SaveSQLEntry(sqlEntry, sqlEntry);
+			m_isSaving = false;
+		}
+	);
+
+	thread.detach();
 }
 
 void amCorkboard::Load(amProjectSQLDatabase* db)

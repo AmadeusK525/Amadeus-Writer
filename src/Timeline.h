@@ -13,6 +13,7 @@
 #include "amUtility.h"
 
 #include <map>
+#include <atomic>
 
 using std::pair;
 
@@ -403,7 +404,7 @@ private:
 	amTLTimelineSidebar* m_sidebar = nullptr;
 
 	bool m_isSidebarShown = false;
-	bool m_isSaving = false;
+	std::atomic<bool> m_isSaving = false;
 
 public:
 	amTLTimeline(wxWindow* parent);

@@ -12,22 +12,36 @@
 class amOverview;
 class amBookPicker;
 
-class amBookPicker : public wxScrolledWindow
+class amBookPicker : public wxPanel
 {
 private:
 	wxSize m_bookCoverSize{};
 	wxSize m_buttonSize{};
 
-	amOverview* m_parent = nullptr;
+	amOverview* m_overview = nullptr;
 
+	wxScrolledWindow* m_mainWindow = nullptr;
 	wxBoxSizer* m_mainSizer = nullptr;
-	wxVector<wxBitmapToggleButton*> m_bookButtons{};
+
+	struct amBookButton : public wxBitmapToggleButton
+	{
+		Book* book = nullptr;
+
+		amBookButton(wxWindow* parent, Book* book, const wxBitmap& bmp,
+			const wxPoint& pos, const wxSize& size) :
+			wxBitmapToggleButton(parent, -1, bmp, pos, size), book(book)
+		{
+			wxASSERT(book);
+		}
+	};
+
+	wxVector<amBookButton*> m_bookButtons{};
 
 public:
 	amBookPicker(amOverview* parent);
 
 	void AddButton(Book* book, int index);
-	void OnButtonPress(wxCommandEvent& event);
+	void OnBookClicked(wxCommandEvent& event);
 
 	void SetSelection(int bookPos);
 };
@@ -44,10 +58,17 @@ private:
 	amProjectManager* m_manager = nullptr;
 	amBookPicker* m_bookPicker = nullptr;
 
+	wxStaticText* m_stBookTitle = nullptr;
+	wxStaticText* m_stBookAuthor = nullptr;
+
+	wxBoxSizer* m_mainSizer = nullptr;
+
 public:
 	amOverview(wxWindow* parent, amProjectManager* manager);
 
-	void LoadOverview();
+	void SetBookData(Book* book);
+
+	void LoadBookContainer();
 };
 
 #endif

@@ -21,6 +21,7 @@ public:
 	amRelease(wxWindow* parent);
 	~amRelease();
 
+	void SetBookData(Book* book);
 	void UpdateContent();
 
 	void OnNext(wxCommandEvent& event);

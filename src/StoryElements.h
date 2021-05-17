@@ -60,6 +60,7 @@ struct Element : public wxObject
 	int id = -1;
 
 	Element() = default;
+	virtual ~Element();
 
 	virtual void Save(wxSQLite3Database* db) = 0;
 	virtual bool Update(wxSQLite3Database* db) = 0;

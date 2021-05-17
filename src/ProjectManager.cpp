@@ -45,6 +45,7 @@ bool amProjectSQLDatabase::Init()
 		return false;
 	}
 
+	CreateAllTables();
 	return true;
 }
 
@@ -164,60 +165,19 @@ void amProjectSQLDatabase::CreateAllTables()
 
 	//////////////////// MANY-TO-MANY TABLES ////////////////////
 
-	wxArrayString tCharactersInDocuments;
-	tCharactersInDocuments.Add("character_id INTEGER");
-	tCharactersInDocuments.Add("document_id INTEGER");
-	tCharactersInDocuments.Add("FOREIGN KEY(character_id) REFERENCES characters(id)");
-	tCharactersInDocuments.Add("FOREIGN KEY(document_id) REFERENCES documents(id)");
+	// Don't use element foreign keys because they don't point to one table only.
+	wxArrayString tElementsInDocuments;
+	tElementsInDocuments.Add("element_id INTEGER");
+	tElementsInDocuments.Add("document_id INTEGER");
+	tElementsInDocuments.Add("element_class TEXT");
+	tElementsInDocuments.Add("FOREIGN KEY(document_id) REFERENCES documents(id)");
 
-	wxArrayString tLocationsInDocuments;
-	tLocationsInDocuments.Add("location_id INTEGER");
-	tLocationsInDocuments.Add("document_id INTEGER");
-	tLocationsInDocuments.Add("FOREIGN KEY(location_id) REFERENCES location(id)");
-	tLocationsInDocuments.Add("FOREIGN KEY(document_id) REFERENCES documents(id)");
-
-	wxArrayString tItemsInDocuments;
-	tItemsInDocuments.Add("item_id INTEGER");
-	tItemsInDocuments.Add("document_id INTEGER");
-	tItemsInDocuments.Add("FOREIGN KEY(item_id) REFERENCES item(id)");
-	tItemsInDocuments.Add("FOREIGN KEY(document_id) REFERENCES documents(id)");
-
-	wxArrayString tCharactersToCharacters;
-	tCharactersToCharacters.Add("element_id INTEGER");
-	tCharactersToCharacters.Add("related_id INTEGER");
-	tCharactersToCharacters.Add("relation INTEGER");
-	tCharactersToCharacters.Add("FOREIGN KEY(element_id) REFERENCES characters(id)");
-	tCharactersToCharacters.Add("FOREIGN KEY(related_id) REFERENCES characters(id)");
-
-	wxArrayString tCharactersToLocations;
-	tCharactersToLocations.Add("element_id INTEGER");
-	tCharactersToLocations.Add("related_id INTEGER");
-	tCharactersToLocations.Add("FOREIGN KEY(element_id) REFERENCES characters(id)");
-	tCharactersToLocations.Add("FOREIGN KEY(related_id) REFERENCES locations(id)");
-
-	wxArrayString tCharactersToItems;
-	tCharactersToItems.Add("element_id INTEGER");
-	tCharactersToItems.Add("related_id INTEGER");
-	tCharactersToItems.Add("FOREIGN KEY(element_id) REFERENCES characters(id)");
-	tCharactersToItems.Add("FOREIGN KEY(related_id) REFERENCES items(id)");
-
-	wxArrayString tLocationsToLocations;
-	tLocationsToLocations.Add("element_id INTEGER");
-	tLocationsToLocations.Add("related_id INTEGER");
-	tLocationsToLocations.Add("FOREIGN KEY(element_id) REFERENCES locations(id)");
-	tLocationsToLocations.Add("FOREIGN KEY(related_id) REFERENCES locations(id)");
-
-	wxArrayString tLocationsToItems;
-	tLocationsToItems.Add("element_id INTEGER");
-	tLocationsToItems.Add("related_id INTEGER");
-	tLocationsToItems.Add("FOREIGN KEY(element_id) REFERENCES locations(id)");
-	tLocationsToItems.Add("FOREIGN KEY(related_id) REFERENCES items(id)");
-
-	wxArrayString tItemsToItems;
-	tItemsToItems.Add("element_id INTEGER");
-	tItemsToItems.Add("related_id INTEGER");
-	tItemsToItems.Add("FOREIGN KEY(element_id) REFERENCES items(id)");
-	tItemsToItems.Add("FOREIGN KEY(related_id) REFERENCES items(id)");
+	wxArrayString tElementsToElements;
+	tElementsToElements.Add("element_id INTEGER");
+	tElementsToElements.Add("related_id INTEGER");
+	tElementsToElements.Add("element_class TEXT");
+	tElementsToElements.Add("related_class TEXT");
+	tElementsToElements.Add("relation INTEGER");
 
 	try
 	{
@@ -240,16 +200,8 @@ void amProjectSQLDatabase::CreateAllTables()
 		CreateTable("outline_timelines", tOutlineTimelines);
 		CreateTable("outline_files", tOutlineFiles);
 
-		CreateTable("characters_documents", tCharactersInDocuments);
-		CreateTable("locations_documents", tLocationsInDocuments);
-		CreateTable("items_documents", tItemsInDocuments);
-
-		CreateTable("characters_characters", tCharactersToCharacters);
-		CreateTable("characters_locations", tCharactersToLocations);
-		CreateTable("characters_items", tCharactersToItems);
-		CreateTable("locations_locations", tLocationsToLocations);
-		CreateTable("locations_items", tLocationsToItems);
-		CreateTable("items_items", tItemsToItems);
+		CreateTable("elements_documents", tElementsInDocuments);
+		CreateTable("elements_elements", tElementsToElements);
 
 		Commit();
 	}
@@ -672,13 +624,15 @@ bool amProjectManager::Init()
 
 	if ( m_project.amFile.IsOk() )
 	{
+		wxBusyCursor busy;
+
 		if ( !m_mainFrame )
 		{
 			m_mainFrame = new amMainFrame("Amadeus Writer - " + m_project.amFile.GetFullName(),
 				this, wxDefaultPosition, wxDefaultSize);
 
 			m_overview = m_mainFrame->GetOverview();
-			m_elements = m_mainFrame->GetElementsNotebook();
+			m_elementNotebook = m_mainFrame->GetElementsNotebook();
 			m_storyNotebook = m_mainFrame->GetStoryNotebook();
 			m_outline = m_mainFrame->GetOutline();
 			m_release = m_mainFrame->GetRelease();
@@ -693,12 +647,12 @@ bool amProjectManager::Init()
 
 			book->Save(&m_storage);
 			m_project.books.push_back(book);
-			m_overview->LoadOverview();
+			m_overview->LoadBookContainer();
 		}
 		else
 			LoadProject();
 
-		m_elements->InitShowChoices();
+		m_elementNotebook->InitShowChoices();
 		m_isInitialized = true;
 
 		return true;
@@ -754,9 +708,14 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 
 		m_storage.Commit();
 
-		m_overview->LoadOverview();
-		m_elements->UpdateAll();
+		Book* currentBook = GetCurrentBook();
+
+		m_overview->LoadBookContainer();
+		m_overview->SetBookData(currentBook);
+		m_elementNotebook->UpdateAll();
+		m_storyNotebook->SetBookData(currentBook);
 		m_outline->LoadOutline(&m_storage);
+		m_release->SetBookData(currentBook);
 
 		m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
 		SetLastSave();
@@ -771,35 +730,38 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 
 void amProjectManager::LoadBooks()
 {
-	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM books");
-	int count = table.GetRowCount();
-	m_project.books.reserve(count);
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT name, id FROM books;");
 
-	for ( int i = 0; i < count; i++ )
+	int i = 0;
+	while ( result.NextRow() )
 	{
-		table.SetRow(i);
-		int id = table.GetInt("id");
+		Book* book = new Book(result.GetAsString("name"), i + 1);
+		book->SetId(result.GetInt("id"));
 
-		Book* book = new Book(table.GetAsString("name"), i + 1);
-
-		book->author = table.GetAsString("author");
-		book->genre = table.GetAsString("genre");
-		book->description = table.GetAsString("description");
-		book->synopsys = table.GetAsString("synopsys");
-
-		book->SetId(id);
-
-		LoadDocuments(book->documents, id);
+		LoadBookContent(book, i == 0);
 
 		m_project.books.push_back(book);
+		i++;
 	}
 }
 
-void amProjectManager::LoadBookContent(Book* book)
+void amProjectManager::LoadBookContent(Book* book, bool loadDocuments)
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM books WHERE book_id = " +
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM books WHERE id = " +
 		std::to_string(book->id) + " ORDER BY position ASC;");
-	int i = 0;
+
+	while ( result.NextRow() )
+	{
+		book->author = result.GetAsString("author");
+		book->genre = result.GetAsString("genre");
+		book->description = result.GetAsString("description");
+		book->synopsys = result.GetAsString("synopsys");
+
+		if ( loadDocuments )
+			LoadDocuments(book->documents, book->id);
+
+		break;
+	}
 }
 
 void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
@@ -845,41 +807,23 @@ void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
 			pDocument->notes.push_back(note);
 		}
 
-		results2 = m_storage.ExecuteQuery("SELECT * FROM characters_documents WHERE document_id = " +
+		results2 = m_storage.ExecuteQuery("SELECT * FROM elements_documents WHERE document_id = " +
 			std::to_string(documentId) + ";");
 
 		while ( results2.NextRow() )
 		{
-			wxSQLite3ResultSet characterResult = m_storage.ExecuteQuery("SELECT name FROM characters WHERE id = " +
-				std::to_string(results2.GetInt("character_id")));
+			wxClassInfo* elementClass = wxClassInfo::FindClass(results2.GetAsString("element_class"));
 
-			AddElementToDocument(GetElementByName(characterResult.GetAsString("name")), pDocument, false);
-		}
-
-		results2 = m_storage.ExecuteQuery("SELECT * FROM locations_documents WHERE document_id = " +
-			std::to_string(documentId) + ";");
-
-		while ( results2.NextRow() )
-		{
-			wxSQLite3ResultSet locationResult = m_storage.ExecuteQuery("SELECT name FROM locations WHERE id = " +
-				std::to_string(results2.GetInt("location_id")));
-
-			AddElementToDocument(GetElementByName(locationResult.GetAsString("name")), pDocument, false);
-		}
-
-		results2 = m_storage.ExecuteQuery("SELECT * FROM items_documents WHERE document_id = " +
-			std::to_string(documentId) + ";");
-
-		while ( results2.NextRow() )
-		{
-			wxSQLite3ResultSet itemResult = m_storage.ExecuteQuery("SELECT name FROM items WHERE id = " +
-				std::to_string(results2.GetInt("item_id")));
-
-			AddElementToDocument(GetElementByName(itemResult.GetAsString("name")), pDocument, false);
+			for ( Element*& pElement : GetAllElements() )
+			{
+				if ( pElement->IsKindOf(elementClass) && pElement->id == results2.GetInt("element_id") )
+				{
+					AddElementToDocument(pElement, pDocument, false);
+				}
+			}
 		}
 
 		documents.push_back(pDocument);
-		m_storyNotebook->AddDocument(pDocument);
 	}
 }
 
@@ -909,7 +853,7 @@ void amProjectManager::LoadCharacters()
 {
 	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM characters;");
 	int count = table.GetRowCount();
-	m_project.characters.reserve(count);
+	m_project.elements.reserve(m_project.elements.size() + count);
 
 	for ( int i = 0; i < count; i++ )
 	{
@@ -952,17 +896,17 @@ void amProjectManager::LoadCharacters()
 			pCharacter->custom.push_back(pair<wxString, wxString>(result.GetAsString("name"), result.GetAsString("content")));
 		}
 
-		m_project.characters.push_back(pCharacter);
+		m_project.elements.push_back(pCharacter);
 	}
 
-	std::sort(m_project.characters.begin(), m_project.characters.end(), amSortCharacters);
+	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
 }
 
 void amProjectManager::LoadLocations()
 {
 	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM locations");
 	int count = table.GetRowCount();
-	m_project.locations.reserve(count);
+	m_project.elements.reserve(m_project.elements.size() + count);
 
 	for ( int i = 0; i < count; i++ )
 	{
@@ -1003,17 +947,17 @@ void amProjectManager::LoadLocations()
 			pLocation->custom.push_back(pair<wxString, wxString>(result.GetAsString("name"), result.GetAsString("content")));
 		}
 
-		m_project.locations.push_back(pLocation);
+		m_project.elements.push_back(pLocation);
 	}
 
-	std::sort(m_project.locations.begin(), m_project.locations.end(), amSortLocations);
+	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
 }
 
 void amProjectManager::LoadItems()
 {
 	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM items");
 	int count = table.GetRowCount();
-	m_project.items.reserve(count);
+	m_project.elements.reserve(m_project.elements.size() + count);
 
 	for ( int i = 0; i < count; i++ )
 	{
@@ -1058,107 +1002,47 @@ void amProjectManager::LoadItems()
 			pItem->custom.push_back(pair<wxString, wxString>(result.GetAsString("name"), result.GetAsString("content")));
 		}
 
-		m_project.items.push_back(pItem);
+		m_project.elements.push_back(pItem);
 	}
 
-	std::sort(m_project.items.begin(), m_project.items.end(), amSortItems);
+	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
 }
 
 void amProjectManager::LoadStandardRelations()
 {
-	wxVector<std::pair<wxString, wxString>> tableNames;
-	tableNames.push_back(std::make_pair("characters", "characters"));
-	tableNames.push_back(std::make_pair("characters", "locations"));
-	tableNames.push_back(std::make_pair("characters", "items"));
-	tableNames.push_back(std::make_pair("locations", "locations"));
-	tableNames.push_back(std::make_pair("locations", "items"));
-	tableNames.push_back(std::make_pair("items", "items"));
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM elements_elements;");
 
-	for ( std::pair<wxString, wxString>& table : tableNames )
+	while ( result.NextRow() )
 	{
-		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM " + table.first + "_" + table.second + ";");
-		int elementType, relatedType;
-		
-		if ( table.first == "characters" )
-			elementType = 0;
-		else if ( table.first == "locations" )
-			elementType = 1;
-		else
-			elementType = 2;
+		Element* pElement = nullptr;
+		Element* pRelated = nullptr;
+		int elementID = result.GetInt("element_id");
+		int relatedID = result.GetInt("related_id");
+		wxClassInfo* elementClass = wxClassInfo::FindClass(result.GetAsString("element_class"));
+		wxClassInfo* relatedClass = wxClassInfo::FindClass(result.GetAsString("related_class"));
 
-		if ( table.second == "characters" )
-			relatedType = 0;
-		else if ( table.second == "locations" )
-			relatedType = 1;
-		else
-			relatedType = 2;
+		wxVector<Element*> vElements = GetAllElements();
 
-		while ( result.NextRow() )
+		for ( Element*& pElementInVector : vElements )
 		{
-			int elementID = result.GetInt("element_id");
-			int relatedID = result.GetInt("related_id");
-
-			wxVector<Element*> elements;
-			switch ( elementType )
+			if ( pElementInVector->IsKindOf(elementClass) && pElementInVector->id == elementID )
 			{
-			case 0:
-				for ( Character*& pCharacter : GetCharacters() )
-					elements.push_back(pCharacter); 
-				
+				pElement = pElementInVector;
 				break;
-
-			case 1:
-				for ( Location*& pLocation : GetLocations() )
-					elements.push_back(pLocation);
-
-				break;
-
-			case 2:
-				for ( Item*& pItem : GetItems() )
-					elements.push_back(pItem);
-
-				break;
-			}
-
-			for ( Element*& pElement : elements )
-			{
-				if ( pElement->id == elementID )
-				{
-					wxVector<Element*> related;
-					switch ( relatedType )
-					{
-					case 0:
-						for ( Character*& pCharacter : GetCharacters() )
-							related.push_back(pCharacter);
-
-						break;
-
-					case 1:
-						for ( Location*& pLocation : GetLocations() )
-							related.push_back(pLocation);
-
-						break;
-
-					case 2:
-						for ( Item*& pItem : GetItems() )
-							related.push_back(pItem);
-
-						break;
-					}
-
-					for ( Element*& pRelated : related )
-					{
-						if ( pRelated->id == relatedID )
-						{
-							RelateElements(pElement, pRelated, false);
-							break;
-						}
-					}
-
-					break;
-				}
 			}
 		}
+	
+		for ( Element*& pRelatedInVector : vElements )
+		{
+			if ( pRelatedInVector->IsKindOf(relatedClass) && pRelatedInVector->id == relatedID )
+			{
+				pRelated = pRelatedInVector;
+				break;
+			}
+		}
+
+		if ( pElement && pRelated )
+			RelateElements(pElement, pRelated, false);
 	}
 
 	for ( Element*& pElement : GetAllElements() )
@@ -1181,14 +1065,56 @@ void amProjectManager::SetProjectFileName(const wxFileName& fileName)
 	m_project.amFile.Assign(fileName);
 }
 
+bool amProjectManager::SetCurrentBook(Book* book)
+{
+	if ( m_storyWriter )
+	{
+		wxMessageDialog dialog(m_mainFrame, "The Amadeus Story Writer is open and currently in use.\n"
+			"To switch books, you need to close it first. Do you wish to close it and load the new book?",
+			"Story Writer is in use", wxYES_NO);
+
+		if ( dialog.ShowModal() != wxID_YES )
+			return false;
+		
+		if ( !m_storyWriter->Close(true) )
+			return false;
+
+		m_storyWriter = nullptr;
+	}
+
+	DoSetCurrentBook(book);
+	return true;
+}
+
+void amProjectManager::DoSetCurrentBook(Book* book)
+{
+	GetCurrentBook()->CleanUpDocuments();
+	LoadBookContent(book, true);
+
+	m_overview->SetBookData(book);
+
+	m_elementNotebook->UpdateAll();
+	amElementShowcase* showcase = m_elementNotebook->GetCharacterShowcase();
+	showcase->SetData(showcase->GetElement());
+	showcase = m_elementNotebook->GetLocationShowcase();
+	showcase->SetData(showcase->GetElement());
+	showcase = m_elementNotebook->GetItemShowcase();
+	showcase->SetData(showcase->GetElement());
+
+	m_storyNotebook->SetBookData(book);
+	m_release->SetBookData(book);
+	
+	m_currentBookPos = book->pos;
+}
+
 amMainFrame* amProjectManager::GetMainFrame()
 {
 	return m_mainFrame;
 }
 
-amElementsNotebook* amProjectManager::GetElementsNotebook()
+amElementNotebook* amProjectManager::GetElementsNotebook()
 {
-	return m_elements;
+	return m_elementNotebook;
 }
 
 amStoryNotebook* amProjectManager::GetStoryNotebook()
@@ -1334,13 +1260,13 @@ void amProjectManager::AddCharacter(Character* character, bool refreshElements)
 	character->Save(&m_storage);
 	m_storage.Commit();
 
-	m_project.characters.push_back(character);
-	std::sort(m_project.characters.begin(), m_project.characters.end(), amSortCharacters);
+	m_project.elements.push_back(character);
+	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
 
 	if ( refreshElements )
 	{
-		m_elements->UpdateCharacterList();
-		m_elements->SetSearchAC(wxBookCtrlEvent());
+		m_elementNotebook->UpdateCharacterList();
+		m_elementNotebook->SetSearchAC(wxBookCtrlEvent());
 	}
 
 	m_outline->GetOutlineFiles()->AppendCharacter(character);
@@ -1352,13 +1278,13 @@ void amProjectManager::AddLocation(Location* location, bool refreshElements)
 	location->Save(&m_storage);
 	m_storage.Commit();
 
-	m_project.locations.push_back(location);
-	std::sort(m_project.locations.begin(), m_project.locations.end(), amSortLocations);
+	m_project.elements.push_back(location);
+	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
 
 	if ( refreshElements )
 	{
-		m_elements->UpdateLocationList();
-		m_elements->SetSearchAC(wxBookCtrlEvent());
+		m_elementNotebook->UpdateLocationList();
+		m_elementNotebook->SetSearchAC(wxBookCtrlEvent());
 	}
 
 	m_outline->GetOutlineFiles()->AppendLocation(location);
@@ -1370,13 +1296,13 @@ void amProjectManager::AddItem(Item* item, bool refreshElements)
 	item->Save(&m_storage);
 	m_storage.Commit();
 
-	m_project.items.push_back(item);
-	std::sort(m_project.items.begin(), m_project.items.end(), amSortItems);
+	m_project.elements.push_back(item);
+	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
 
 	if ( refreshElements )
 	{
-		m_elements->UpdateItemList();
-		m_elements->SetSearchAC(wxBookCtrlEvent());
+		m_elementNotebook->UpdateItemList();
+		m_elementNotebook->SetSearchAC(wxBookCtrlEvent());
 	}
 
 	m_outline->GetOutlineFiles()->AppendItem(item);
@@ -1434,25 +1360,13 @@ void amProjectManager::EditCharacter(Character* original, Character& edit, bool 
 
 		if ( sort )
 		{
-			std::sort(m_project.characters.begin(), m_project.characters.end(), amSortCharacters);
-			m_elements->UpdateCharacterList();
+			std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
+			m_elementNotebook->UpdateCharacterList();
 		}
-		else
-		{
-			int n = 0;
-			for ( Character*& character : m_project.characters )
-			{
-				if ( character == original )
-				{
-					m_elements->UpdateCharacter(n, character);
-					break;
-				}
+		
+		UpdateElementInGUI(original);
 
-				n++;
-			}
-		}
-
-		m_elements->m_charShow->SetData(original);
+		m_elementNotebook->m_charShow->SetData(original);
 		m_mainFrame->Enable(true);
 
 		thread.detach();
@@ -1483,25 +1397,13 @@ void amProjectManager::EditLocation(Location* original, Location& edit, bool sor
 
 		if ( sort )
 		{
-			std::sort(m_project.locations.begin(), m_project.locations.end(), amSortLocations);
-			m_elements->UpdateLocationList();
-		}
-		else
-		{
-			int n = 0;
-			for ( Location*& location : m_project.locations )
-			{
-				if ( location == original )
-				{
-					m_elements->UpdateLocation(n, location);
-					break;
-				}
-
-				n++;
-			}
+			std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
+			m_elementNotebook->UpdateLocationList();
 		}
 
-		m_elements->m_locShow->SetData(original);
+		UpdateElementInGUI(original);
+
+		m_elementNotebook->m_locShow->SetData(original);
 		m_mainFrame->Enable(true);
 
 		thread.detach();
@@ -1531,24 +1433,13 @@ void amProjectManager::EditItem(Item* original, Item& edit, bool sort)
 
 		if ( sort )
 		{
-			std::sort(m_project.items.begin(), m_project.items.end(), amSortItems);
-			m_elements->UpdateItemList();
+			std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
+			m_elementNotebook->UpdateItemList();
 		}
-		else
-		{
-			int n = 0;
-			for ( Item*& item : m_project.items )
-			{
-				if ( item == original )
-				{
-					m_elements->UpdateItem(n, item);
-					break;
-				}
+	
+		UpdateElementInGUI(original);
 
-				n++;
-			}
-		}
-		m_elements->m_itemShow->SetData(original);
+		m_elementNotebook->m_itemShow->SetData(original);
 		m_mainFrame->Enable(true);
 
 		thread.detach();
@@ -1559,6 +1450,61 @@ void amProjectManager::EditItem(Item* original, Item& edit, bool sort)
 	{
 		wxMessageBox(e);
 	}
+}
+
+void amProjectManager::UpdateElementInGUI(Element* element)
+{
+	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+	{
+		int n = m_elementNotebook->m_charList->FindItem(0, element->name);
+		if ( n != -1 )
+			m_elementNotebook->UpdateCharacter(n, (Character*)element);
+
+		amCharacterShowcase* showcase = m_elementNotebook->GetCharacterShowcase();
+		if ( showcase->GetElement() == element )
+			showcase->SetData(element);
+
+		if ( m_storyWriter )
+			m_storyWriter->UpdateCharacterList();
+	}
+	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+	{
+		int n = m_elementNotebook->m_locList->FindItem(0, element->name);
+		if ( n != -1 )
+			m_elementNotebook->UpdateLocation(n, (Location*)element);
+
+		/*amLocationShowcase* showcase = m_elementNotebook->GetLocationShowcase();
+		if ( showcase->GetElement() == element )
+			showcase->SetData(element);*/
+
+		if ( m_storyWriter )
+			m_storyWriter->UpdateLocationList();
+	}
+	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+	{
+		int n = m_elementNotebook->m_itemList->FindItem(0, element->name);
+		if ( n != -1 )
+			m_elementNotebook->UpdateItem(n, (Item*)element);
+
+		//amItemShowcase* showcase = m_elementNotebook->GetItemShowcase();
+		//if ( showcase->GetElement() == element )
+		//	showcase->SetData(element);
+
+		if ( m_storyWriter )
+			m_storyWriter->UpdateItemList();
+	}
+}
+
+void amProjectManager::GoToElement(Element* element)
+{
+	if ( !element )
+		return;
+
+	m_mainFrame->GetSimplebook()->SetSelection(1);
+	m_elementNotebook->GoToElement(element);
+
+	if ( m_storyWriter )
+		m_storyWriter->Iconize();
 }
 
 void amProjectManager::AddElementToDocument(Element* element, Document* document, bool addToDb)
@@ -1585,10 +1531,10 @@ void amProjectManager::AddElementToDocument(Element* element, Document* document
 		{
 			try
 			{
-				amSQLEntry elementEntry = element->GenerateSQLEntryForId();
-				m_storage.InsertManyToMany(elementEntry.tableName + "_documents",
-					elementEntry, elementEntry.tableName.Left(elementEntry.tableName.size() - 1) + "_id",
-					document->GenerateSQLEntryForId(), "document_id");
+				wxString update("INSERT INTO elements_documents (element_id, document_id, element_class) VALUES (");
+				update << element->id << ", " << document->id << ", '" << element->GetClassInfo()->GetClassName() << "');";
+
+				m_storage.ExecuteUpdate(update);
 			}
 			catch ( wxSQLite3Exception& e )
 			{
@@ -1612,6 +1558,8 @@ void amProjectManager::AddElementToDocument(Element* element, Document* document
 		std::sort(document->elements.begin(), document->elements.end(), amSortElements);
 		document->elements.push_back(element);
 	}
+
+	UpdateElementInGUI(element);
 }
 
 void amProjectManager::RemoveElementFromDocument(Element * element, Document * document)
@@ -1625,11 +1573,11 @@ void amProjectManager::RemoveElementFromDocument(Element * element, Document * d
 		{
 			element->documents.erase(&pDocInElement);
 
-			amSQLEntry elementEntry = element->GenerateSQLEntryForId();
-			m_storage.DeleteManyToMany(elementEntry.tableName + "_documents",
-				element->id, elementEntry.tableName.Left(elementEntry.tableName.size() - 1) + "_id",
-				document->id, "document_id");
+			wxString update("DELETE FROM elements_documents WHERE element_id = ");
+			update << element->id << " AND document_id = " << document->id <<
+				" AND element_class = '" << element->GetClassInfo()->GetClassName() << "';";
 
+			m_storage.ExecuteUpdate(update);
 			break;
 		}
 	}
@@ -1643,6 +1591,7 @@ void amProjectManager::RemoveElementFromDocument(Element * element, Document * d
 		}
 	}
 
+	UpdateElementInGUI(element);
 }
 
 void amProjectManager::RelateElements(Element* element1, Element* element2, bool addToDb)
@@ -1679,33 +1628,17 @@ void amProjectManager::RelateElements(Element* element1, Element* element2, bool
 		std::sort(element2->relatedElements.begin(), element2->relatedElements.end(), amSortElements);
 	}
 
-	if ( addToDb )
+	if ( addToDb && !had1 && !had2 )
 	{
-		amSQLEntry sqlEntry1 = element1->GenerateSQLEntryForId();
-		amSQLEntry sqlEntry2 = element2->GenerateSQLEntryForId();
+		wxString update("INSERT INTO elements_elements (element_id, related_id, element_class, related_class) VALUES (");
+		update << element1->id << "," << element2->id << ", '" <<
+			element1->GetClassInfo()->GetClassName() << "', '" << element2->GetClassInfo()->GetClassName() << "');";
 
-		if ( !had1 )
-		{
-			wxString table1 = sqlEntry1.tableName + "_" + sqlEntry2.tableName;
-			if ( m_storage.TableExists(table1) )
-			{
-				m_storage.InsertManyToMany(table1,
-					sqlEntry1, "element_id",
-					sqlEntry2, "related_id");
-			}
-		}
-
-		if ( !had2 )
-		{
-			wxString table2 = sqlEntry2.tableName + "_" + sqlEntry1.tableName;
-			if ( m_storage.TableExists(table2) )
-			{
-				m_storage.InsertManyToMany(table2,
-					sqlEntry2, "element_id",
-					sqlEntry1, "related_id");
-			}
-		}
+		m_storage.ExecuteUpdate(update);
 	}
+
+	UpdateElementInGUI(element1);
+	UpdateElementInGUI(element2);
 }
 
 void amProjectManager::UnrelateElements(Element* element1, Element* element2, bool removeFromDb)
@@ -1732,35 +1665,25 @@ void amProjectManager::UnrelateElements(Element* element1, Element* element2, bo
 		}
 	}
 
-	if ( removeFromDb )
+	if ( removeFromDb && !had1 && !had2 )
 	{
-		amSQLEntry sqlEntry1 = element1->GenerateSQLEntryForId();
-		amSQLEntry sqlEntry2 = element2->GenerateSQLEntryForId();
+		wxString update("DELETE FROM elements_elements WHERE element_id = ");
+		update << element1->id << " AND related_id = " << element2->id << 
+			" AND element_class = '" << element1->GetClassInfo()->GetClassName() << 
+			"' AND related_class = '" << element2->GetClassInfo()->GetClassName() << "';";
 
-		if ( had1 )
-		{
-			wxString table1 = sqlEntry1.tableName + "_" + sqlEntry2.tableName;
+		m_storage.ExecuteUpdate(update);
 
-			if ( m_storage.TableExists(table1) )
-			{
-				m_storage.DeleteManyToMany(table1,
-					sqlEntry1, "element_id",
-					sqlEntry2, "related_id");
-			}
-		}
+		update = "DELETE FROM elements_elements WHERE element_id = ";
+		update << element2->id << " AND related_id = " << element1->id <<
+			" AND element_class = '" << element2->GetClassInfo()->GetClassName() <<
+			"' AND related_class = '" << element1->GetClassInfo()->GetClassName() << "';";
 
-		if ( had2 )
-		{
-			wxString table2 = sqlEntry2.tableName + "_" + sqlEntry1.tableName;
-
-			if ( m_storage.TableExists(table2) )
-			{
-				m_storage.DeleteManyToMany(table2,
-					sqlEntry2, "element_id",
-					sqlEntry1, "related_id");
-			}
-		}
+		m_storage.ExecuteUpdate(update);
 	}
+
+	UpdateElementInGUI(element1);
+	UpdateElementInGUI(element2);
 }
 
 Element* amProjectManager::GetElementByName(const wxString& name)
@@ -1781,7 +1704,7 @@ void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)
 		RemoveElementFromDocument(character, pDocument);
 
 	if ( clearShowcase )
-		m_elements->GetCharacterShowcase()->SetData(nullptr);
+		m_elementNotebook->GetCharacterShowcase()->SetData(nullptr);
 
 	for ( amTLThread*& thread : m_outline->GetTimeline()->GetThreads() )
 	{
@@ -1798,12 +1721,12 @@ void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)
 	}
 
 	m_storage.DeleteSQLEntry(sqlEntry);
-	for ( Character*& pCharacter : m_project.characters )
+	for ( Element*& pElement : m_project.elements )
 	{
-		if ( pCharacter == character )
+		if ( pElement == character )
 		{
-			delete pCharacter;
-			m_project.characters.erase(&pCharacter);
+			m_project.elements.erase(&pElement);
+			delete character;
 			break;
 		}
 	}
@@ -1815,7 +1738,7 @@ void amProjectManager::DeleteLocation(Location* location, bool clearShowcase)
 		RemoveElementFromDocument(location, pDocument);
 
 	if ( clearShowcase )
-		m_elements->GetLocationShowcase()->SetData(nullptr);
+		m_elementNotebook->GetLocationShowcase()->SetData(nullptr);
 
 	amSQLEntry sqlEntry = location->GenerateSQLEntry();
 	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
@@ -1824,12 +1747,12 @@ void amProjectManager::DeleteLocation(Location* location, bool clearShowcase)
 	}
 
 	m_storage.DeleteSQLEntry(sqlEntry);
-	for ( Location*& pLocation : m_project.locations )
+	for ( Element*& pElement : m_project.elements )
 	{
-		if ( pLocation == location )
+		if ( pElement == location )
 		{
-			delete pLocation;
-			m_project.locations.erase(&pLocation);
+			m_project.elements.erase(&pElement);
+			delete location;
 			break;
 		}
 	}
@@ -1841,7 +1764,7 @@ void amProjectManager::DeleteItem(Item* item, bool clearShowcase)
 		RemoveElementFromDocument(item, pDocument);
 
 	if ( clearShowcase )
-		m_elements->GetItemShowcase()->SetData(nullptr);
+		m_elementNotebook->GetItemShowcase()->SetData(nullptr);
 
 	amSQLEntry sqlEntry = item->GenerateSQLEntry();
 	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
@@ -1851,12 +1774,12 @@ void amProjectManager::DeleteItem(Item* item, bool clearShowcase)
 
 	m_storage.DeleteSQLEntry(sqlEntry);
 
-	for ( Item*& pItem : m_project.items )
+	for ( Element*& pElement : m_project.elements )
 	{
-		if ( pItem == item )
+		if ( pElement == item )
 		{
-			delete pItem;
-			m_project.items.erase(&pItem);
+			m_project.elements.erase(&pElement);
+			delete item;
 			break;
 		}
 	}
@@ -1895,40 +1818,9 @@ void amProjectManager::DeleteDocument(Document* document)
 	}
 }
 
-wxVector<Character*>& amProjectManager::GetCharacters()
-{
-	return m_project.GetCharacters();
-}
-
-wxVector<Location*>& amProjectManager::GetLocations()
-{
-	return m_project.GetLocations();
-}
-
-wxVector<Item*>& amProjectManager::GetItems()
-{
-	return m_project.GetItems();
-}
-
-wxVector<Element*> amProjectManager::GetAllElements()
-{
-	wxVector<Element*> elements;
-
-	for ( Character*& pCharacter : GetCharacters() )
-		elements.push_back(pCharacter);
-
-	for ( Location*& pLocation: GetLocations() )
-		elements.push_back(pLocation);
-
-	for ( Item*& pItem : GetItems() )
-		elements.push_back(pItem);
-
-	return elements;
-}
-
 wxVector<Document*>& amProjectManager::GetDocumentsInCurrentBook()
 {
-	return m_project.GetDocuments(m_currentBook);
+	return m_project.GetDocuments(m_currentBookPos);
 }
 
 Document* amProjectManager::GetDocumentById(int id)
@@ -1948,7 +1840,7 @@ Document* amProjectManager::GetDocumentById(int id)
 wxArrayString amProjectManager::GetCharacterNames()
 {
 	wxArrayString names(true);
-	for ( Character*& pCharacter : m_project.characters )
+	for ( Character*& pCharacter : m_project.GetCharacters() )
 		names.Add(pCharacter->name);
 
 	return names;
@@ -1957,7 +1849,7 @@ wxArrayString amProjectManager::GetCharacterNames()
 wxArrayString amProjectManager::GetLocationNames()
 {
 	wxArrayString names(true);
-	for ( Location*& pLocation : m_project.locations )
+	for ( Location*& pLocation : m_project.GetLocations() )
 		names.Add(pLocation->name);
 
 	return names;
@@ -1966,7 +1858,7 @@ wxArrayString amProjectManager::GetLocationNames()
 wxArrayString amProjectManager::GetItemNames()
 {
 	wxArrayString names(true);
-	for ( Item*& pItem : m_project.items )
+	for ( Item*& pItem : m_project.GetItems() )
 		names.Add(pItem->name);
 
 	return names;

@@ -22,6 +22,9 @@ amRelease::~amRelease()
 
 }
 
+void amRelease::SetBookData(Book* book)
+{}
+
 void amRelease::UpdateContent()
 {
 

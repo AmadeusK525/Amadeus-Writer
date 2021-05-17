@@ -121,8 +121,8 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_overview->Show();
 
 	//Setting up notebook Elements page
-	m_elements = new amElementsNotebook(m_mainBook);
-	m_elements->Hide();
+	m_elementNotebook = new amElementNotebook(m_mainBook);
+	m_elementNotebook->Hide();
 
 	m_storyNotebook = new amStoryNotebook(m_mainBook, m_manager);
 	m_storyNotebook->Hide();
@@ -134,7 +134,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_release->Hide();
 
 	m_mainBook->ShowNewPage(m_overview);
-	m_mainBook->ShowNewPage(m_elements);
+	m_mainBook->ShowNewPage(m_elementNotebook);
 	m_mainBook->ShowNewPage(m_storyNotebook);
 	m_mainBook->ShowNewPage(m_outline);
 	m_mainBook->ShowNewPage(m_release);
@@ -201,13 +201,13 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	// Initializing the search bar. It's actually owned by the another class, but it's initialized in this constructor.
 
-	m_elements->m_searchBar = new wxSearchCtrl(m_toolBar, TOOL_Search,
+	m_elementNotebook->m_searchBar = new wxSearchCtrl(m_toolBar, TOOL_Search,
 		wxEmptyString, wxDefaultPosition, FromDIP(wxSize(250, -1)), wxTE_CAPITALIZE | wxBORDER_SIMPLE);
-	m_elements->m_searchBar->SetBackgroundColour(wxColour(30, 30, 30));
-	m_elements->m_searchBar->SetForegroundColour(wxColour(255, 255, 255));
-	m_elements->m_searchBar->ShowCancelButton(true);
+	m_elementNotebook->m_searchBar->SetBackgroundColour(wxColour(30, 30, 30));
+	m_elementNotebook->m_searchBar->SetForegroundColour(wxColour(255, 255, 255));
+	m_elementNotebook->m_searchBar->ShowCancelButton(true);
 
-	m_toolBar->AddControl(m_elements->m_searchBar);
+	m_toolBar->AddControl(m_elementNotebook->m_searchBar);
 	m_toolBar->AddSeparator();
 
 	m_toolBar->Realize();
@@ -235,7 +235,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 void amMainFrame::OnNewFile(wxCommandEvent& event)
 {
 	// Updating everything that needs to be reset.
-	m_elements->ClearAll();
+	m_elementNotebook->ClearAll();
 	m_storyNotebook->ClearAll();
 	m_outline->ClearAll();
 
@@ -451,7 +451,7 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event)
 
 	m_mainBook->ChangeSelection(page);
 	m_toolBar->Show(showToolBar);
-	m_elements->m_searchBar->Show(showSearch);
+	m_elementNotebook->m_searchBar->Show(showSearch);
 	m_verticalSizer->Layout();
 }
 
@@ -504,7 +504,7 @@ void amMainFrame::OnSashChanged(wxSplitterEvent& event)
 void amMainFrame::Search(wxCommandEvent& event)
 {
 	// Get which page (Characters, Locations or Items) is currently displayed.
-	int sel = m_elements->GetSelection();
+	int sel = m_elementNotebook->GetSelection();
 	int item;
 
 	// Get the searched wxString.
@@ -516,7 +516,7 @@ void amMainFrame::Search(wxCommandEvent& event)
 	switch ( sel )
 	{
 	case 0:
-		item = m_elements->m_charList->FindItem(-1, nameSearch, true);
+		item = m_elementNotebook->m_charList->FindItem(-1, nameSearch, true);
 
 		if ( item == -1 )
 		{
@@ -525,15 +525,15 @@ void amMainFrame::Search(wxCommandEvent& event)
 		}
 		else
 		{
-			m_elements->m_charList->Select(item, true);
-			m_elements->m_charList->EnsureVisible(item);
-			m_elements->m_charList->SetFocus();
+			m_elementNotebook->m_charList->Select(item, true);
+			m_elementNotebook->m_charList->EnsureVisible(item);
+			m_elementNotebook->m_charList->SetFocus();
 		}
 
 		break;
 
 	case 1:
-		item = m_elements->m_locList->FindItem(-1, event.GetString(), true);
+		item = m_elementNotebook->m_locList->FindItem(-1, event.GetString(), true);
 
 		if ( item == -1 )
 		{
@@ -542,9 +542,9 @@ void amMainFrame::Search(wxCommandEvent& event)
 		}
 		else
 		{
-			m_elements->m_locList->Select(item, true);
-			m_elements->m_locList->EnsureVisible(item);
-			m_elements->m_locList->SetFocus();
+			m_elementNotebook->m_locList->Select(item, true);
+			m_elementNotebook->m_locList->EnsureVisible(item);
+			m_elementNotebook->m_locList->SetFocus();
 		}
 
 		break;
@@ -562,9 +562,9 @@ amOverview* amMainFrame::GetOverview()
 	return m_overview;
 }
 
-amElementsNotebook* amMainFrame::GetElementsNotebook()
+amElementNotebook* amMainFrame::GetElementsNotebook()
 {
-	return m_elements;
+	return m_elementNotebook;
 }
 
 amStoryNotebook* amMainFrame::GetStoryNotebook()
@@ -586,5 +586,5 @@ amRelease* amMainFrame::GetRelease()
 // will probably get rid of it after further investigating.
 void amMainFrame::UpdateElements(wxCommandEvent& event)
 {
-	m_elements->UpdateAll();
+	m_elementNotebook->UpdateAll();
 }

@@ -141,6 +141,13 @@ void OutlineTreeModel::DeleteItem(const wxDataViewItem& item)
 		wxMessageBox(_("Cannot remove special folders!"));
 		return;
 	}
+
+	if ( m_handler )
+	{
+		if ( item == m_handler->GetItemUnderMouse() )
+			m_handler->SetItemUnderMouse(wxDataViewItem(nullptr));
+	}
+
 	// first remove the node from the parent's array of children;
 	// NOTE: OutlineTreeModelNode is only an array of _pointers_
 	//       thus removing the node from it doesn't result in freeing it
@@ -164,11 +171,10 @@ void OutlineTreeModel::DeleteItem(const wxDataViewItem& item)
 	}
 
 	wxDataViewItem parent(parentNode);
+	ItemDeleted(parent, item);
 
 	// free the node
 	delete node;
-
-	ItemDeleted(parent, item);
 }
 
 bool OutlineTreeModel::Reposition(const wxDataViewItem& item, int n)
@@ -270,7 +276,7 @@ unsigned int OutlineTreeModel::GetChildren(const wxDataViewItem& parent,
 		}
 
 		for ( unsigned int i = 0; i < m_otherRoots.size(); i++ )
-			array.Add(wxDataViewItem(m_otherRoots.at(i)));
+			array.Add(wxDataViewItem(m_otherRoots[i]));
 
 
 		return n + m_otherRoots.size();
@@ -387,7 +393,7 @@ void OutlineTreeModel::OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc)
 		if ( GetParent(m_itemForDnD) != item )
 		{
 			if ( index > 3 )
-				Reparent(m_itemForDnD, wxDataViewItem(nullptr), index - 3);
+				Reparent(m_itemForDnD, wxDataViewItem(nullptr), index - 4);
 			else
 				Reparent(m_itemForDnD, wxDataViewItem(nullptr));
 		}
@@ -438,7 +444,7 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 	m_files = m_filesHTHandler.Create(m_leftPanel, TREE_Files, m_outlineTreeModel.get());
 
 	m_files->GetMainWindow()->Bind(wxEVT_KEY_DOWN, &amOutlineFilesPanel::OnKeyDownDataView, this);
-	m_files->GetMainWindow()->Bind(wxEVT_RIGHT_DOWN, &amOutlineFilesPanel::OnRightDownDataView, this);
+	m_files->Bind(wxEVT_DATAVIEW_ITEM_CONTEXT_MENU, &amOutlineFilesPanel::OnRightDownDataView, this);
 
 	m_filesTB = new wxToolBar(m_leftPanel, -1);
 	m_filesTB->AddTool(TOOL_NewFile, "", wxBITMAP_PNG(addFile), _("Add new file."));
@@ -477,9 +483,9 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 
 void amOutlineFilesPanel::Init()
 {
-	wxVector<Character*>& charList = amGetManager()->GetCharacters();
-	wxVector<Location*>& locList = amGetManager()->GetLocations();
-	wxVector<Item*>& itemList = amGetManager()->GetItems();
+	wxVector<Character*> charList = amGetManager()->GetCharacters();
+	wxVector<Location*> locList = amGetManager()->GetLocations();
+	wxVector<Item*> itemList = amGetManager()->GetItems();
 
 	for ( Character*& character : charList )
 		AppendCharacter(character);
@@ -860,6 +866,7 @@ void amOutlineFilesPanel::NewFile(wxCommandEvent& event)
 	wxDataViewItem item = m_outlineTreeModel->AppendFile(sel, "New file");
 	m_files->Select(item);
 	m_currentNode = (OutlineTreeModelNode*)item.GetID();
+
 	Save();
 }
 
@@ -929,11 +936,9 @@ void amOutlineFilesPanel::OnKeyDownDataView(wxKeyEvent& event)
 	}
 }
 
-void amOutlineFilesPanel::OnRightDownDataView(wxMouseEvent& event)
+void amOutlineFilesPanel::OnRightDownDataView(wxDataViewEvent& event)
 {
-	wxDataViewItem item;
-	wxDataViewColumn* col;
-	m_files->HitTest(event.GetPosition(), item, col);
+	wxDataViewItem item(event.GetItem());
 
 	if ( !item.IsOk() )
 		return;
@@ -1142,9 +1147,12 @@ void amOutlineFilesPanel::DeserializeNode(wxXmlNode* node, wxDataViewItem& paren
 		wxString bufString = child->GetContent();
 		wxStringInputStream stream(bufString);
 
-		wxRichTextBuffer buffer;
-		buffer.LoadFile(stream, wxRICHTEXT_TYPE_XML);
+		wxRichTextBuffer localBuffer;
+		localBuffer.LoadFile(stream, wxRICHTEXT_TYPE_XML);
 		item = m_outlineTreeModel->AppendFile(parent, node->GetAttribute("name").ToStdString());
+
+		wxRichTextBuffer* pNodeBuffer = ((OutlineTreeModelNode*)item.GetID())->GetBuffer();
+		*pNodeBuffer = localBuffer;
 	}
 	else if ( node->GetName() == "Folder" )
 	{
@@ -1175,56 +1183,56 @@ void amOutlineFilesPanel::DeserializeNode(wxXmlNode* node, wxDataViewItem& paren
 
 bool amOutlineFilesPanel::Save()
 {
-	bool succeeded = false;
+	if ( m_isSaving || !IsShownOnScreen() )
+		return false;
 
-	if ( !m_isSaving && IsShownOnScreen() )
-	{
-		std::thread thread([&]()
+	bool bSucceeded = false;
+
+	std::thread thread([&]()
+		{
+			m_isSaving = true;
+
+			SaveCurrentBuffer();
+			wxXmlDocument doc;
+
+			wxXmlNode* root = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "AO-Files");
+			doc.SetRoot(root);
+
+			wxDataViewItemArray rootFiles;
+			m_outlineTreeModel->GetChildren(wxDataViewItem(nullptr), rootFiles);
+
+			for ( unsigned int i = 0; i < rootFiles.GetCount(); i++ )
 			{
-				m_isSaving = true;
-
-				SaveCurrentBuffer();
-				wxXmlDocument doc;
-
-				wxXmlNode* root = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "AO-Files");
-				doc.SetRoot(root);
-
-				wxDataViewItemArray rootFiles;
-				m_outlineTreeModel->GetChildren(wxDataViewItem(nullptr), rootFiles);
-
-				for ( unsigned int i = 0; i < rootFiles.GetCount(); i++ )
-				{
-					if ( m_outlineTreeModel->IsContainer(rootFiles[i]) )
-						root->AddChild(SerializeFolder(rootFiles[i]));
-					else
-						root->AddChild(SerializeFile(rootFiles[i]));
-				}
-
-				amSQLEntry sqlEntry;
-				sqlEntry.strings["content"] = wxString();
-
-				wxStringOutputStream stream(&sqlEntry.strings["content"]);
-
-				if ( doc.Save(stream) )
-				{
-					sqlEntry.tableName = "outline_files";
-					sqlEntry.name = "Outline Files";
-
-					amGetManager()->SaveSQLEntry(sqlEntry, sqlEntry);
-
-					succeeded = true;
-				}
+				if ( m_outlineTreeModel->IsContainer(rootFiles[i]) )
+					root->AddChild(SerializeFolder(rootFiles[i]));
 				else
-					succeeded = false;
-
-				m_isSaving = false;
+					root->AddChild(SerializeFile(rootFiles[i]));
 			}
-		);
 
-		thread.detach();
-	}
+			amSQLEntry sqlEntry;
+			sqlEntry.strings["content"] = wxString();
 
-	return succeeded;
+			wxStringOutputStream stream(&sqlEntry.strings["content"]);
+
+			if ( doc.Save(stream) )
+			{
+				sqlEntry.tableName = "outline_files";
+				sqlEntry.name = "Outline Files";
+
+				amGetManager()->SaveSQLEntry(sqlEntry, sqlEntry);
+
+				bSucceeded = true;
+			}
+			else
+				bSucceeded = false;
+
+			m_isSaving = false;
+		}
+	);
+
+	thread.detach();
+
+	return bSucceeded;
 }
 
 bool amOutlineFilesPanel::Load(amProjectSQLDatabase* db)

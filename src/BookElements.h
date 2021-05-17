@@ -125,6 +125,8 @@ struct Book
 
 	void SetId(int id) { this->id = id; }
 
+	void CleanUpDocuments();
+
 	void Save(wxSQLite3Database* db);
 	bool Update(wxSQLite3Database* db, bool updateDocuments);
 
@@ -145,17 +147,15 @@ struct amProject
 {
 	wxVector<Book*> books{};
 
-	wxVector<Character*> characters{};
-	wxVector<Location*> locations{};
-	wxVector<Item*> items{};
-
-	virtual ~amProject();
+	wxVector<Element*> elements;
 
 	wxFileName amFile{};
 
-	inline wxVector<Character*>& GetCharacters() { return characters; }
-	inline wxVector<Location*>& GetLocations() { return locations; }
-	inline wxVector<Item*>& GetItems() { return items; }
+	virtual ~amProject();
+
+	wxVector<Character*> GetCharacters();
+	wxVector<Location*> GetLocations();
+	wxVector<Item*> GetItems();
 
 	wxVector<Document*>& GetDocuments(int bookPos);
 };

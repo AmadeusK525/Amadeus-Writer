@@ -27,6 +27,16 @@ amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
 	AddPage(m_list, "List");
 }
 
+void amStoryNotebook::SetBookData(Book* book)
+{
+	ClearAll();
+
+	for ( Document*& pDocument : book->documents )
+	{
+		AddDocument(pDocument);
+	}
+}
+
 void amStoryNotebook::AddDocument(Document* document, int pos)
 {
 	m_grid->AddButton();

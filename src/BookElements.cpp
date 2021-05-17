@@ -15,6 +15,18 @@
 
 Document::~Document()
 {
+	for ( Element*& pElement : elements )
+	{
+		for ( Document*& pDocument : pElement->documents )
+		{
+			if ( pDocument == this )
+			{
+				pElement->documents.erase(&pDocument);
+				break;
+			}
+		}
+	}
+
 	for ( Note*& pNote : notes )
 		delete pNote;
 
@@ -271,10 +283,7 @@ wxSize Book::coverSize{ 660, 900 };
 
 Book::~Book()
 {
-	for ( Document*& pDocument : documents )
-	{
-		delete pDocument;
-	}
+	CleanUpDocuments();
 }
 
 bool Book::Init()
@@ -350,6 +359,14 @@ void Book::InitCover()
 
 	dc.DrawText(textToDraw, 10, (coverSize.y / 2) - (textSize.y / 2));
 	cover = bitmapCover.ConvertToImage();
+}
+
+void Book::CleanUpDocuments()
+{
+	for ( Document*& pDocument : documents )
+		delete pDocument;
+
+	documents.clear();
 }
 
 void Book::Save(wxSQLite3Database* db)
@@ -520,17 +537,50 @@ amSQLEntry Book::GenerateSQLEntryForId()
 
 amProject::~amProject()
 {
-	for ( Character*& pCharacter : characters )
-		delete pCharacter;
-
-	for ( Location*& pLocations : locations )
-		delete pLocations;
-
-	for ( Item*& pItem : items )
-		delete pItem;
+	for ( Element*& pElement : elements )
+		delete pElement;
 
 	for ( Book*& pBook : books )
 		delete pBook;
+}
+
+wxVector<Character*> amProject::GetCharacters()
+{
+	wxVector<Character*> characters;
+	for ( Element*& pElement : elements )
+	{
+		Character* pCharacter = dynamic_cast<Character*>(pElement);
+		if ( pCharacter )
+			characters.push_back(pCharacter);
+	}
+
+	return characters;
+}
+
+wxVector<Location*> amProject::GetLocations()
+{
+	wxVector<Location*> locations;
+	for ( Element*& pElement : elements )
+	{
+		Location* pLocation = dynamic_cast<Location*>(pElement);
+		if ( pLocation )
+			locations.push_back(pLocation);
+	}
+
+	return locations;
+}
+
+wxVector<Item*> amProject::GetItems()
+{
+	wxVector<Item*> items;
+	for ( Element*& pElement : elements )
+	{
+		Item* pItem = dynamic_cast<Item*>(pElement);
+		if ( pItem )
+			items.push_back(pItem);
+	}
+
+	return items;
 }
 
 wxVector<Document*>& amProject::GetDocuments(int bookPos)

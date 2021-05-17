@@ -12,6 +12,8 @@
 #include "amUtility.h"
 #include "ProjectManager.h"
 
+#include <atomic>
+
 class OutlineTreeModelNode : public amTreeModelNode
 {
 private:
@@ -218,7 +220,7 @@ private:
 	OutlineTreeModelNode* m_currentNode = nullptr;
 
 	wxTimer m_timer{ this, TIMER_OutlineFiles };
-	bool m_isSaving = false;
+	std::atomic<bool> m_isSaving = false;
 
 public:
 	amOutlineFilesPanel(wxWindow* parent);
@@ -243,9 +245,9 @@ public:
 	void DeleteItem(wxDataViewItem& item);
 
 	void OnKeyDownDataView(wxKeyEvent& event);
-	void OnRightDownDataView(wxMouseEvent& event);
 	void OnMenuDataView(wxCommandEvent& event);
 
+	void OnRightDownDataView(wxDataViewEvent& event);
 	void OnSelectionChanged(wxDataViewEvent& event);
 	void OnEditingStart(wxDataViewEvent& event);
 	void OnEditingEnd(wxDataViewEvent& event);

@@ -325,6 +325,8 @@ public:
 	void UpdateLocationList();
 	void UpdateItemList();
 
+	void OnElementActivated(wxListEvent& event);
+
 	void OnStoryItemActivated(wxDataViewEvent& event);
 	void OnStoryItemSelected(wxDataViewEvent& event);
 	void OnStoryViewRightClick(wxMouseEvent& event);

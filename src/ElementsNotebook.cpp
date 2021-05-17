@@ -13,33 +13,33 @@
 
 #include "wxmemdbg.h"
 
-BEGIN_EVENT_TABLE(amElementsNotebook, wxNotebook)
+BEGIN_EVENT_TABLE(amElementNotebook, wxNotebook)
 
-EVT_LIST_ITEM_FOCUSED(LIST_CharList, amElementsNotebook::OnCharacterSelected)
-EVT_LIST_ITEM_SELECTED(LIST_LocList, amElementsNotebook::OnLocationSelected)
-EVT_LIST_ITEM_SELECTED(LIST_ItemList, amElementsNotebook::OnItemSelected)
+EVT_LIST_ITEM_FOCUSED(LIST_CharList, amElementNotebook::OnCharacterSelected)
+EVT_LIST_ITEM_SELECTED(LIST_LocList, amElementNotebook::OnLocationSelected)
+EVT_LIST_ITEM_SELECTED(LIST_ItemList, amElementNotebook::OnItemSelected)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, amElementsNotebook::OnCharRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_CharList, amElementsNotebook::OnCharacterActivated)
-EVT_MENU(LISTMENU_EditChar, amElementsNotebook::OnEditCharacter)
-EVT_LIST_END_LABEL_EDIT(LIST_CharList, amElementsNotebook::OnEditCharName)
-EVT_MENU(LISTMENU_DeleteChar, amElementsNotebook::OnDeleteCharacter)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, amElementNotebook::OnCharRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_CharList, amElementNotebook::OnCharacterActivated)
+EVT_MENU(LISTMENU_EditChar, amElementNotebook::OnEditCharacter)
+EVT_LIST_END_LABEL_EDIT(LIST_CharList, amElementNotebook::OnEditCharName)
+EVT_MENU(LISTMENU_DeleteChar, amElementNotebook::OnDeleteCharacter)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_LocList, amElementsNotebook::OnLocRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_LocList, amElementsNotebook::OnLocationActivated)
-EVT_MENU(LISTMENU_EditLoc, amElementsNotebook::OnEditLocation)
-EVT_MENU(LISTMENU_DeleteLoc, amElementsNotebook::OnDeleteLocation)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_LocList, amElementNotebook::OnLocRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_LocList, amElementNotebook::OnLocationActivated)
+EVT_MENU(LISTMENU_EditLoc, amElementNotebook::OnEditLocation)
+EVT_MENU(LISTMENU_DeleteLoc, amElementNotebook::OnDeleteLocation)
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemList, amElementsNotebook::OnItemRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_ItemList, amElementsNotebook::OnItemActivated)
-EVT_MENU(LISTMENU_EditItem, amElementsNotebook::OnEditItem)
-EVT_MENU(LISTMENU_DeleteItem, amElementsNotebook::OnDeleteItem)
+EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemList, amElementNotebook::OnItemRightClick)
+EVT_LIST_ITEM_ACTIVATED(LIST_ItemList, amElementNotebook::OnItemActivated)
+EVT_MENU(LISTMENU_EditItem, amElementNotebook::OnEditItem)
+EVT_MENU(LISTMENU_DeleteItem, amElementNotebook::OnDeleteItem)
 
-EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, amElementsNotebook::SetSearchAC)
+EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, amElementNotebook::SetSearchAC)
 
 END_EVENT_TABLE()
 
-amElementsNotebook::amElementsNotebook(wxWindow* parent) :
+amElementNotebook::amElementNotebook(wxWindow* parent) :
 	wxNotebook(parent, NOTEBOOK_THIS, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
 	m_manager = amGetManager();
@@ -81,7 +81,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	cSortByLabel->SetFont(wxFontInfo(11).Bold());
 
 	m_cSortBy = new wxChoice(cLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-	m_cSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnCharactersSortBy, this);
+	m_cSortBy->Bind(wxEVT_CHOICE, &amElementNotebook::OnCharactersSortBy, this);
 	m_cSortBy->SetSelection(0);
 
 	wxStaticText* cShowLabel = new wxStaticText(cLeft, -1, "Show:");
@@ -146,7 +146,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	sortBy.Insert("Importance", 0);
 
 	m_lSortBy = new wxChoice(lLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-	m_lSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnLocationsSortBy, this);
+	m_lSortBy->Bind(wxEVT_CHOICE, &amElementNotebook::OnLocationsSortBy, this);
 	m_lSortBy->SetSelection(0);
 
 	wxBoxSizer* lSortBySizer = new wxBoxSizer(wxHORIZONTAL);
@@ -196,7 +196,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	iSortByLabel->SetFont(wxFontInfo(11).Bold());
 
 	m_iSortBy = new wxChoice(iLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-	m_iSortBy->Bind(wxEVT_CHOICE, &amElementsNotebook::OnLocationsSortBy, this);
+	m_iSortBy->Bind(wxEVT_CHOICE, &amElementNotebook::OnItemsSortBy, this);
 	m_iSortBy->SetSelection(0);
 
 	wxBoxSizer* iSortBySizer = new wxBoxSizer(wxHORIZONTAL);
@@ -216,7 +216,7 @@ amElementsNotebook::amElementsNotebook(wxWindow* parent) :
 	this->AddPage(itemsFrame, "Items");
 }
 
-void amElementsNotebook::InitShowChoices()
+void amElementNotebook::InitShowChoices()
 {
 	amCheckListBox* pList = ((amCheckListBox*)m_cShow->GetPopupControl());
 	pList->InsertItems(m_manager->GetBookTitles(), 0);
@@ -224,7 +224,7 @@ void amElementsNotebook::InitShowChoices()
 	m_cShow->SetText(m_manager->GetBookTitles()[0]);
 }
 
-void amElementsNotebook::GoToElement(Element* element)
+void amElementNotebook::GoToElement(Element* element)
 {
 	Character* pCharacterToSet = dynamic_cast<Character*>(element);
 	if ( pCharacterToSet )
@@ -287,7 +287,7 @@ void amElementsNotebook::GoToElement(Element* element)
 	}
 }
 
-void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event))
+void amElementNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event))
 {
 	wxMenu menu;
 	menu.Append(LISTMENU_EditChar, "&Edit");
@@ -295,7 +295,7 @@ void amElementsNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event))
 	PopupMenu(&menu, wxDefaultPosition);
 }
 
-void amElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event))
+void amElementNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event))
 {
 	amCharacterCreator* edit = new amCharacterCreator(m_manager->GetMainFrame(), m_manager, -1,
 		"Edit character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
@@ -307,12 +307,12 @@ void amElementsNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event))
 	m_manager->GetMainFrame()->Enable(false);
 }
 
-void amElementsNotebook::OnEditCharName(wxListEvent& event)
+void amElementNotebook::OnEditCharName(wxListEvent& event)
 {
 	m_manager->GetCharacters()[m_charList->GetFirstSelected()]->name = event.GetLabel();
 }
 
-void amElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event))
+void amElementNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event))
 {
 	long sel = m_charList->GetFirstSelected();
 
@@ -327,12 +327,12 @@ void amElementsNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event))
 	}
 }
 
-void amElementsNotebook::OnCharacterActivated(wxListEvent& WXUNUSED(event))
+void amElementNotebook::OnCharacterActivated(wxListEvent& WXUNUSED(event))
 {
 	OnEditCharacter(wxCommandEvent());
 }
 
-void amElementsNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event))
+void amElementNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event))
 {
 	wxMenu menu;
 	menu.Append(LISTMENU_EditLoc, "&Edit");
@@ -340,7 +340,7 @@ void amElementsNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event))
 	PopupMenu(&menu, wxDefaultPosition);
 }
 
-void amElementsNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event))
+void amElementNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event))
 {
 	amLocationCreator* edit = new amLocationCreator(m_manager->GetMainFrame(), m_manager, -1,
 		"Edit location - ''", wxDefaultPosition, FromDIP(wxSize(900, 650)));
@@ -352,7 +352,7 @@ void amElementsNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event))
 	m_manager->GetMainFrame()->Enable(false);
 }
 
-void amElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event))
+void amElementNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event))
 {
 	long sel = m_locList->GetFirstSelected();
 
@@ -367,12 +367,12 @@ void amElementsNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event))
 	}
 }
 
-void amElementsNotebook::OnLocationActivated(wxListEvent& event)
+void amElementNotebook::OnLocationActivated(wxListEvent& event)
 {
 	OnEditLocation(wxCommandEvent());
 }
 
-void amElementsNotebook::OnItemRightClick(wxListEvent& event)
+void amElementNotebook::OnItemRightClick(wxListEvent& event)
 {
 	wxMenu menu;
 	menu.Append(LISTMENU_EditItem, "&Edit");
@@ -380,7 +380,7 @@ void amElementsNotebook::OnItemRightClick(wxListEvent& event)
 	PopupMenu(&menu, wxDefaultPosition);
 }
 
-void amElementsNotebook::OnEditItem(wxCommandEvent& event)
+void amElementNotebook::OnEditItem(wxCommandEvent& event)
 {
 	amItemCreator* edit = new amItemCreator(m_manager->GetMainFrame(), m_manager, -1,
 		"Edit item - ''", wxDefaultPosition, FromDIP(wxSize(900, 720)));
@@ -392,7 +392,7 @@ void amElementsNotebook::OnEditItem(wxCommandEvent& event)
 	m_manager->GetMainFrame()->Enable(false);
 }
 
-void amElementsNotebook::OnDeleteItem(wxCommandEvent& event)
+void amElementNotebook::OnDeleteItem(wxCommandEvent& event)
 {
 	long sel = m_itemList->GetFirstSelected();
 
@@ -407,12 +407,12 @@ void amElementsNotebook::OnDeleteItem(wxCommandEvent& event)
 	}
 }
 
-void amElementsNotebook::OnItemActivated(wxListEvent& event)
+void amElementNotebook::OnItemActivated(wxListEvent& event)
 {
 	OnEditItem(wxCommandEvent());
 }
 
-void amElementsNotebook::OnCharacterSelected(wxListEvent& event)
+void amElementNotebook::OnCharacterSelected(wxListEvent& event)
 {
 	long sel = m_charList->GetFirstSelected();
 
@@ -422,7 +422,7 @@ void amElementsNotebook::OnCharacterSelected(wxListEvent& event)
 		m_charShow->SetData(nullptr);
 }
 
-void amElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event))
+void amElementNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event))
 {
 	long sel = m_locList->GetFirstSelected();
 
@@ -432,7 +432,7 @@ void amElementsNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event))
 		m_locShow->SetData(nullptr);
 }
 
-void amElementsNotebook::OnItemSelected(wxListEvent& event)
+void amElementNotebook::OnItemSelected(wxListEvent& event)
 {
 	long sel = m_itemList->GetFirstSelected();
 
@@ -442,119 +442,83 @@ void amElementsNotebook::OnItemSelected(wxListEvent& event)
 		m_itemShow->SetData(nullptr);
 }
 
-void amElementsNotebook::OnCharactersSortBy(wxCommandEvent& event)
+void amElementNotebook::OnCharactersSortBy(wxCommandEvent& event)
 {
 	m_cSortBy->SetSelection(event.GetInt());
 	Character::cCompType = (CompType)event.GetInt();
 
 	int currentSelection = m_charList->GetFirstSelected();
 
-	wxVector<Character*>& vCharacters = m_manager->GetCharacters();
-	std::sort(vCharacters.begin(), vCharacters.end(), amSortCharacters);
+	wxVector<Element*>& vElements = m_manager->GetAllElements();
+	std::sort(vElements.begin(), vElements.end(), amSortElements);
 
-	for ( Element*& pElement : m_manager->GetAllElements() )
+	for ( Element*& pElement : vElements )
 	{
 		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
-	}
-
-	int toSet = -1;
-	if ( currentSelection != -1 )
-	{
-		wxString name = m_charList->GetItemText(currentSelection);
-		int i = 0;
-
-		for ( Character*& pCharacter : m_manager->GetCharacters() )
-		{
-			if ( pCharacter->name == name )
-			{
-				toSet = i;
-				break;
-			}
-
-			i++;
-		}
 	}
 
 	UpdateCharacterList();
 	m_charList->SetFocus();
-	m_charList->Select(toSet);
-	m_charList->Focus(toSet);
+
+	Element* pCurElement = m_charShow->GetElement();
+
+	if ( pCurElement )
+	{
+		int toSet = m_charList->FindItem(0, pCurElement->name);
+    	m_charList->Select(toSet);
+		m_charList->Focus(toSet);
+	}
 }
 
-void amElementsNotebook::OnLocationsSortBy(wxCommandEvent& event)
+void amElementNotebook::OnLocationsSortBy(wxCommandEvent& event)
 {
 	m_lSortBy->SetSelection(event.GetInt());
 	Location::lCompType = (CompType)event.GetInt();
 
-	wxVector<Location*>& vLocations = m_manager->GetLocations();
-	std::sort(vLocations.begin(), vLocations.end(), amSortLocations);
+	wxVector<Element*>& vElements = m_manager->GetAllElements();
+	std::sort(vElements.begin(), vElements.end(), amSortElements);
 
-	for ( Element*& pElement : m_manager->GetAllElements() )
+	for ( Element*& pElement : vElements )
 	{
 		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
 	}
 
-	int currentSelection = m_locList->GetFirstSelected();
-	int toSet = -1;
-
-	if ( currentSelection != -1 )
-	{
-		wxString name = m_locList->GetItemText(currentSelection);
-		int i = 0;
-
-		for ( Location*& pLocation : m_manager->GetLocations() )
-		{
-			if ( pLocation->name == name )
-			{
-				toSet = i;
-				break;
-			}
-
-			i++;
-		}
-	}
 
 	UpdateLocationList();
 	m_locList->SetFocus();
-	m_locList->Select(toSet);
-	m_locList->Focus(toSet);
+
+	Element* pCurElement = m_locShow->GetElement();
+
+	if ( pCurElement )
+	{
+		int toSet = m_locList->FindItem(0, pCurElement->name);
+		m_locList->Select(toSet);
+		m_locList->Focus(toSet);
+	}
 }
 
-void amElementsNotebook::OnItemsSortBy(wxCommandEvent& event)
+void amElementNotebook::OnItemsSortBy(wxCommandEvent& event)
 {
 	m_iSortBy->SetSelection(event.GetInt());
 	Item::iCompType = (CompType)event.GetInt();
 
-	wxVector<Item*>& vItems = m_manager->GetItems();
-	std::sort(vItems.begin(), vItems.end(), amSortItems);
-
-	int currentSelection = m_itemList->GetFirstSelected();
-	int toSet = -1;
-
-	if ( currentSelection != -1 )
-	{
-		wxString name = m_itemList->GetItemText(currentSelection);
-		int i = 0;
-
-		for ( Item*& pItem : m_manager->GetItems() )
-		{
-			if ( pItem->name == name )
-			{
-				toSet = i;
-				break;
-			}
-
-			i++;
-		}
-	}
+	wxVector<Element*>& vElements = m_manager->GetAllElements();
+	std::sort(vElements.begin(), vElements.end(), amSortElements);
 
 	UpdateItemList();
-	m_itemList->SetFocus();
-	m_itemList->Select(toSet);
-	m_itemList->Focus(toSet);
+
+	Element* pCurElement = m_itemShow->GetElement();
+
+	if ( pCurElement )
+	{
+		int toSet = m_itemList->FindItem(0, pCurElement->name);
+		m_itemList->SetFocus();
+		m_itemList->Select(toSet);
+		m_itemList->Focus(toSet);
+	}
 }
 
-void amElementsNotebook::ClearAll()
+void amElementNotebook::ClearAll()
 {
 	m_charList->DeleteAllItems();
 	m_locList->DeleteAllItems();
@@ -564,7 +528,7 @@ void amElementsNotebook::ClearAll()
 	m_itemShow->SetData(nullptr);
 }
 
-void amElementsNotebook::UpdateCharacter(int n, Character* character)
+void amElementNotebook::UpdateCharacter(int n, Character* character)
 {
 	m_charList->SetItem(n, 0, character->name);
 
@@ -623,7 +587,7 @@ void amElementsNotebook::UpdateCharacter(int n, Character* character)
 		m_charList->SetItemColumnImage(n, 0, -1);
 }
 
-void amElementsNotebook::UpdateLocation(int n, Location* location)
+void amElementNotebook::UpdateLocation(int n, Location* location)
 {
 	m_locList->SetItem(n, 0, location->name);
 
@@ -674,7 +638,7 @@ void amElementsNotebook::UpdateLocation(int n, Location* location)
 		m_locList->SetItemColumnImage(n, 0, -1);
 }
 
-void amElementsNotebook::UpdateItem(int n, Item* item)
+void amElementNotebook::UpdateItem(int n, Item* item)
 {
 	m_itemList->SetItem(n, 0, item->name);
 
@@ -729,7 +693,7 @@ void amElementsNotebook::UpdateItem(int n, Item* item)
 		m_itemList->SetItemColumnImage(n, 0, -1);
 }
 
-void amElementsNotebook::UpdateCharacterList()
+void amElementNotebook::UpdateCharacterList()
 {
 	m_charList->Freeze();
 
@@ -759,7 +723,7 @@ void amElementsNotebook::UpdateCharacterList()
 	m_charList->Thaw();
 }
 
-void amElementsNotebook::UpdateLocationList()
+void amElementNotebook::UpdateLocationList()
 {
 	m_locList->Freeze();
 
@@ -787,7 +751,7 @@ void amElementsNotebook::UpdateLocationList()
 	m_locList->Thaw();
 }
 
-void amElementsNotebook::UpdateItemList()
+void amElementNotebook::UpdateItemList()
 {
 	m_itemList->Freeze();
 
@@ -815,14 +779,14 @@ void amElementsNotebook::UpdateItemList()
 	m_itemList->Thaw();
 }
 
-void amElementsNotebook::UpdateAll()
+void amElementNotebook::UpdateAll()
 {
 	UpdateCharacterList();
 	UpdateLocationList();
 	UpdateItemList();
 }
 
-void amElementsNotebook::SetSearchAC(wxBookCtrlEvent& WXUNUSED(event))
+void amElementNotebook::SetSearchAC(wxBookCtrlEvent& WXUNUSED(event))
 {
 	int sel = this->GetSelection();
 

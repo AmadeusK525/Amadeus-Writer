@@ -837,28 +837,7 @@ void amElementShowcase::OnRemoveDocument(wxCommandEvent & event)
 		sel = m_documents->GetNextSelected(sel - 1);
 	}
 
-	amElementsNotebook* notebook = manager->GetElementsNotebook();
-
-	long elementIndex = notebook->m_charList->FindItem(0, GetElement()->name);
-	if ( elementIndex != -1 )
-	{
-		notebook->UpdateCharacter(elementIndex, (Character*)GetElement());
-		return;
-	}
-
-	elementIndex = notebook->m_locList->FindItem(0, GetElement()->name);
-	if ( elementIndex != -1 )
-	{
-		notebook->UpdateLocation(elementIndex, (Location*)GetElement());
-		return;
-	}
-
-	elementIndex = notebook->m_itemList->FindItem(0, GetElement()->name);
-	if ( elementIndex != -1 )
-	{
-		notebook->UpdateItem(elementIndex, (Item*)GetElement());
-		return;
-	}
+	amElementNotebook* notebook = manager->GetElementsNotebook();
 }
 
 void amElementShowcase::OnOpenDocument(wxCommandEvent& event)
