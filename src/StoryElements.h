@@ -9,6 +9,7 @@
 
 struct Element;
 struct Document;
+struct Book;
 struct Location;
 struct Item;
 
@@ -57,10 +58,16 @@ struct Element : public wxObject
 	wxVector<Element*> relatedElements{};
 
 	static CompType elCompType;
+
 	int id = -1;
 
 	Element() = default;
 	virtual ~Element();
+
+	Document* GetFirstDocument() const;
+	Document* GetLastDocument() const;
+	Document* GetFirstDocumentInBook(Book* book) const;
+	Document* GetLastDocumentInBook(Book* book) const;
 
 	virtual void Save(wxSQLite3Database* db) = 0;
 	virtual bool Update(wxSQLite3Database* db) = 0;

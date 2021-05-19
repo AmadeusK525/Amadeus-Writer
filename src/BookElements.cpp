@@ -27,11 +27,7 @@ Document::~Document()
 		}
 	}
 
-	for ( Note*& pNote : notes )
-		delete pNote;
-
-	if ( buffer )
-		delete buffer;
+	CleanUp();
 }
 
 bool Document::HasRedNote()
@@ -55,7 +51,7 @@ void Document::Save(wxSQLite3Database* db)
 
 		wxString insert("INSERT INTO documents (name, synopsys, content, position, type, book_id, isInTrash"
 			", parent_document_id, character_pov_id) VALUES (");
-		insert << "'%q', '%q', '%q', " << position << ", " << type << ", " << bookID << ", " << isInTrash << ", '%q', '%q');";
+		insert << "'%q', '%q', '%q', " << position << ", " << type << ", " << book->id << ", " << isInTrash << ", '%q', '%q');";
 
 		wxString content;
 		if ( this->buffer )
@@ -97,7 +93,7 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 
 		wxString update("UPDATE documents SET name = '%q', synopsys = '%q', position = ");
 
-		update << position << ", type = " << (int)type << ", isInTrash = " << isInTrash << ", book_id = " << bookID
+		update << position << ", type = " << (int)type << ", isInTrash = " << isInTrash << ", book_id = " << book->id
 			<< ", parent_document_id = ";
 		if ( parent )
 			update << parent->id;
@@ -107,20 +103,23 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 		if ( updateContent )
 		{
 			wxString content;
-			update << ", content = '%q' WHERE id = " << id << ";";
+			wxString plainText;
+			update << ", content = '%q', plain_text = '%q' WHERE id = " << id << ";";
 
 			if ( this->buffer )
 			{
 				wxStringOutputStream sstream(&content);
 				this->buffer->SaveFile(sstream, wxRICHTEXT_TYPE_XML);
+				plainText = this->buffer->GetText();
 			}
 			else
 			{
 				content = "NULL";
+				plainText = "NULL";
 			}
 
 			buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8(),
-				(const char*)content.ToUTF8());
+				(const char*)content.ToUTF8(), (const char*)plainText.ToUTF8());
 		}
 		else
 		{
@@ -195,6 +194,43 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 	return true;
 }
 
+void Document::LoadSelf(wxSQLite3Database* db, wxRichTextCtrl* targetRtc)
+{
+	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM document_notes WHERE document_id = " + std::to_string(id) + ";");
+
+	while ( result.NextRow() )
+	{
+		Note* pNote = new Note(result.GetAsString("content"), result.GetAsString("name"));
+		pNote->isDone = result.GetInt("isDone");
+		
+		notes.push_back(pNote);
+	}
+
+	result = db->ExecuteQuery("SELECT content FROM documents WHERE id = " + std::to_string(id) + ";");
+	if ( result.NextRow() )
+	{
+		buffer = &targetRtc->GetBuffer();
+		wxString content = result.GetAsString("content");
+
+		if ( !content.IsEmpty() && !(content == "NULL") )
+		{
+			wxStringInputStream sstream(content);
+			buffer->LoadFile(sstream, wxRICHTEXT_TYPE_XML);
+		}
+	}
+}
+
+void Document::CleanUp()
+{
+	for ( Note*& pNote : notes )
+	{
+		delete pNote;
+	}
+	notes.clear();
+
+	buffer = nullptr;
+}
+
 amSQLEntry Document::GenerateSQLEntrySimple()
 {
 	amSQLEntry sqlEntry;
@@ -203,7 +239,7 @@ amSQLEntry Document::GenerateSQLEntrySimple()
 
 	sqlEntry.integers.reserve(2);
 	sqlEntry.integers["position"] = position;
-	sqlEntry.integers["book_id"] = bookID;
+	sqlEntry.integers["book_id"] = book->id;
 
 	sqlEntry.strings["synopsys"] = synopsys;
 
@@ -244,7 +280,7 @@ amSQLEntry Document::GenerateSQLEntryForId()
 
 	sqlEntry.specialForeign = true;
 	sqlEntry.foreignKey.first = "book_id";
-	sqlEntry.foreignKey.second = bookID;
+	sqlEntry.foreignKey.second = book->id;
 
 	sqlEntry.integers["position"] = position;
 
@@ -253,12 +289,15 @@ amSQLEntry Document::GenerateSQLEntryForId()
 
 bool Document::operator<(const Document& other) const
 {
-	return position < other.position;
+	if ( book->pos == other.book->pos )
+		return position < other.position;
+
+	return book->pos < other.book->pos;
 }
 
 bool Document::operator==(const Document& other) const
 {
-	return bookID == other.bookID && position == other.position;
+	return book->id == other.book->id && position == other.position;
 }
 
 Note::Note(wxString content, wxString name)

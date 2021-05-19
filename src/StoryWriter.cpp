@@ -32,25 +32,30 @@ bool StoryTreeModel::Save()
 	return false;
 }
 
-void StoryTreeModel::CreateFromScratch(Book* book)
+void StoryTreeModel::CreateFromScratch(amProject* project)
 {
 	wxString name;
 
-	m_book = new StoryTreeModelNode(book->title, book->id);
-	m_book->SetContainer(true);
-	m_trash = new StoryTreeModelNode(_("Trash"));
-	m_trash->SetContainer(true);
-
-	wxDataViewItem bookItem(m_book);
-
-	ItemAdded(wxDataViewItem(nullptr), bookItem);
-	ItemAdded(wxDataViewItem(nullptr), wxDataViewItem(m_trash));
-
-	for ( Document*& pDocument : book->documents )
+	m_trashNode = new StoryTreeModelNode(_("Trash"));
+	m_trashNode->SetContainer(true);
+	ItemAdded(wxDataViewItem(nullptr), wxDataViewItem(m_trashNode));
+	
+	for ( Book*& pBook : project->books )
 	{
-		if ( !pDocument->parent )
+		StoryTreeModelNode* pBookNode = new StoryTreeModelNode(pBook);
+		pBookNode->SetContainer(true);
+
+		m_vBooks.push_back(pBookNode);
+		wxDataViewItem bookItem(pBookNode);
+
+		ItemAdded(wxDataViewItem(nullptr), bookItem);
+
+		for ( Document*& pDocument : pBook->documents )
 		{
-			AddDocument(pDocument, bookItem);
+			if ( !pDocument->parent )
+			{
+				AddDocument(pDocument, bookItem);
+			}
 		}
 	}
 }
@@ -61,8 +66,8 @@ wxDataViewItem StoryTreeModel::AddDocument(Document* document, const wxDataViewI
 	wxDataViewItem parent;
 	if ( document->isInTrash )
 	{
-		node = new StoryTreeModelNode((StoryTreeModelNode*)parentItem.GetID(), m_trash, document);
-		parent = wxDataViewItem(m_trash);
+		node = new StoryTreeModelNode((StoryTreeModelNode*)parentItem.GetID(), m_trashNode, document);
+		parent = wxDataViewItem(m_trashNode);
 	}
 	else
 	{
@@ -84,16 +89,22 @@ wxDataViewItem StoryTreeModel::AddDocument(Document* document, const wxDataViewI
 wxDataViewItem StoryTreeModel::GetDocumentItem(Document* document)
 {
 	wxDataViewItem item(nullptr);
-	for ( amTreeModelNode*& node : m_book->GetChildren() )
+	for ( StoryTreeModelNode*& pBookNode : m_vBooks )
 	{
-		item = ScanForDocumentRecursive((StoryTreeModelNode*)node, document);
+		for ( amTreeModelNode*& node : pBookNode->GetChildren() )
+		{
+			item = ScanForDocumentRecursive((StoryTreeModelNode*)node, document);
+			if ( item.IsOk() )
+				break;
+		}
+
 		if ( item.IsOk() )
 			break;
 	}
 
-	if ( !item.IsOk() )
+	if ( !item.IsOk() && m_trashNode )
 	{
-		for ( amTreeModelNode*& node : m_trash->GetChildren() )
+		for ( amTreeModelNode*& node : m_trashNode->GetChildren() )
 		{
 			item = ScanForDocumentRecursive((StoryTreeModelNode*)node, document);
 			if ( item.IsOk() )
@@ -137,9 +148,9 @@ STMN_Type StoryTreeModel::MoveToTrash(const wxDataViewItem& item)
 	node->RemoveSelfFromParentList();
 	ItemDeleted(GetParent(item), wxDataViewItem(node));
 
-	m_trash->Append(node);
+	m_trashNode->Append(node);
 	node->SetIsInTrash(true);
-	ItemAdded(wxDataViewItem((void*)m_trash), wxDataViewItem(node));
+	ItemAdded(wxDataViewItem((void*)m_trashNode), wxDataViewItem(node));
 
 	return node->GetType();
 }
@@ -152,10 +163,10 @@ STMN_Type StoryTreeModel::RestoreFromTrash(const wxDataViewItem& item)
 
 	amTreeModelNode* parent = node->GetParent();
 
-	for ( amTreeModelNode*& trashChild : m_trash->GetChildren() )
+	for ( amTreeModelNode*& trashChild : m_trashNode->GetChildren() )
 	{
 		if ( trashChild == node )
-			m_trash->GetChildren().erase(&trashChild);
+			m_trashNode->GetChildren().erase(&trashChild);
 	}
 
 	wxVector<amTreeModelNode*>& children = parent->GetChildren();
@@ -176,10 +187,21 @@ STMN_Type StoryTreeModel::RestoreFromTrash(const wxDataViewItem& item)
 
 	node->SetIsInTrash(false);
 
-	ItemDeleted(wxDataViewItem(m_trash), item);
+	ItemDeleted(wxDataViewItem(m_trashNode), item);
 	ItemAdded(wxDataViewItem(parent), item);
 
 	return node->GetType();
+}
+
+wxDataViewItem StoryTreeModel::GetBookItem(Book* book)
+{
+	for ( StoryTreeModelNode* pBookNode : m_vBooks )
+	{
+		if ( pBookNode->GetBook() == book )
+			return wxDataViewItem(pBookNode);
+	}
+
+	return wxDataViewItem(nullptr);
 }
 
 void StoryTreeModel::DeleteItem(const wxDataViewItem& item)
@@ -188,11 +210,6 @@ void StoryTreeModel::DeleteItem(const wxDataViewItem& item)
 	if ( !node )      // happens if item.IsOk()==false
 		return;
 
-	if ( node == m_book || node == m_trash )
-	{
-		wxMessageBox(_("Cannot remove special folders!"));
-		return;
-	}
 	// first remove the node from the parent's array of children;
 	// NOTE: StoryTreeModelNode is only an array of _pointers_
 	//       thus removing the node from it doesn't result in freeing it
@@ -215,12 +232,16 @@ void StoryTreeModel::DeleteItem(const wxDataViewItem& item)
 		}
 	}
 
+	if ( this->m_handler->GetItemUnderMouse() == item )
+	{
+		this->m_handler->SetItemUnderMouse(wxDataViewItem(nullptr));
+	}
+
 	wxDataViewItem parent(parentNode);
+	ItemDeleted(parent, item);
 
 	// free the node
 	delete node;
-
-	ItemDeleted(parent, item);
 }
 
 wxDataViewItem StoryTreeModel::SelectDocument(Document* document)
@@ -244,17 +265,38 @@ bool StoryTreeModel::Reposition(const wxDataViewItem& item, int n)
 	return true;
 }
 
-void StoryTreeModel::Clear()
+void StoryTreeModel::ClearContent()
 {
 	wxVector<amTreeModelNode*> array;
 
-	array = m_book->GetChildren();
-	for ( unsigned int i = 0; i < array.size(); i++ )
-		DeleteItem(wxDataViewItem(array[i]));
+	for ( StoryTreeModelNode* pBookNode : m_vBooks )
+	{
+		array = pBookNode->GetChildren();
+		for ( unsigned int i = 0; i < array.size(); i++ )
+			DeleteItem(wxDataViewItem(array[i]));
+	}
 
-	array = m_trash->GetChildren();
-	for ( unsigned int i = 0; i < array.size(); i++ )
-		DeleteItem(wxDataViewItem(array[i]));
+	if ( m_trashNode )
+	{
+		array = m_trashNode->GetChildren();
+		for ( unsigned int i = 0; i < array.size(); i++ )
+			DeleteItem(wxDataViewItem(array[i]));
+	}
+}
+
+void StoryTreeModel::ClearAll()
+{
+	for ( StoryTreeModelNode* pBookNode : m_vBooks )
+	{
+		DeleteItem(wxDataViewItem(pBookNode));
+	}
+	m_vBooks.clear();
+
+	if ( m_trashNode )
+	{
+		DeleteItem(wxDataViewItem(m_trashNode));
+		m_trashNode = nullptr;
+	}
 }
 
 void StoryTreeModel::GetValue(wxVariant& variant,
@@ -291,7 +333,7 @@ wxDataViewItem StoryTreeModel::GetParent(const wxDataViewItem& item) const
 	StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
 
 	if ( node->IsInTrash() )
-		return wxDataViewItem(m_trash);
+		return wxDataViewItem(m_trashNode);
 	else
 		return wxDataViewItem(node->GetParent());
 }
@@ -304,15 +346,15 @@ unsigned int StoryTreeModel::GetChildren(const wxDataViewItem& parent,
 	{
 		int n = 0;
 
-		if ( m_book )
+		for ( StoryTreeModelNode* pBookNode : m_vBooks )
 		{
-			array.Add(wxDataViewItem(m_book));
+			array.Add(wxDataViewItem(pBookNode));
 			n++;
 		}
 
-		if ( m_trash )
+		if ( m_trashNode )
 		{
-			array.Add(wxDataViewItem(m_trash));
+			array.Add(wxDataViewItem(m_trashNode));
 			n++;
 		}
 
@@ -377,8 +419,6 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	wxFRAME_FLOAT_ON_PARENT | wxDEFAULT_FRAME_STYLE | wxCLIP_CHILDREN)
 {
 	m_manager = manager;
-	m_pFocusDocument = document;
-	m_bookPos = m_manager->GetCurrentBookPos();
 
 	Hide();
 	SetBackgroundColour({ 20, 20, 20 });
@@ -589,7 +629,14 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	m_storyView->GetMainWindow()->Bind(wxEVT_RIGHT_DOWN, &amStoryWriter::OnStoryViewRightClick, this);
 
 	if ( !m_storyTreeModel->Load() )
-		m_storyTreeModel->CreateFromScratch(m_manager->GetCurrentBook());
+	{
+		m_storyTreeModel->CreateFromScratch(m_manager->GetProject());
+		
+		for ( StoryTreeModelNode* pBookNode : m_storyTreeModel->GetBooks() )
+			m_storyView->Expand(wxDataViewItem(pBookNode));
+
+		m_storyView->Expand(wxDataViewItem(m_storyTreeModel->GetTrash()));
+	}
 
 	m_storyView->Refresh();
 
@@ -692,8 +739,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	m_swNotebook->SetNoteSize(FromDIP(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10)));
 
 	SetIcon(wxICON(amadeus));
-
-	LoadFocusDocument();
+	LoadDocument(document);
 
 	Show();
 	SetFocus();
@@ -726,19 +772,18 @@ void amStoryWriter::AddNote(Note* note, bool addToDocument)
 	m_swNotebook->AddNote(note);
 	m_note->Clear();
 	m_noteLabel->SetValue("New note");
-	m_doGreenNote = false;
 
 	if ( addToDocument )
-		m_pFocusDocument->notes.push_back(note);
+		m_activeTab.document->notes.push_back(note);
 
 	CheckNotes();
 }
 
 void amStoryWriter::CheckNotes()
 {
-	if ( !m_pFocusDocument->notes.empty() )
+	if ( !m_activeTab.document->notes.empty() )
 	{
-		if ( m_pFocusDocument->HasRedNote() )
+		if ( m_activeTab.document->HasRedNote() )
 		{
 			m_noteChecker->SetBackgroundColour(wxColour(120, 0, 0));
 			m_noteChecker->SetLabel("Unresolved notes!");
@@ -840,10 +885,7 @@ void amStoryWriter::AddCharacter(wxCommandEvent& event)
 {
 	wxString name = event.GetString();
 	if ( m_charInChap->FindItem(-1, name) == -1 )
-	{
-		CheckDocumentValidity();
-		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
-	}
+		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_activeTab.document);
 }
 
 void amStoryWriter::AddLocation(wxCommandEvent& event)
@@ -851,10 +893,7 @@ void amStoryWriter::AddLocation(wxCommandEvent& event)
 	wxString name = event.GetString();
 
 	if ( m_locInChap->FindItem(-1, name) == -1 )
-	{
-		CheckDocumentValidity();
-		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
-	}
+		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_activeTab.document);
 }
 
 void amStoryWriter::AddItem(wxCommandEvent& event)
@@ -862,10 +901,7 @@ void amStoryWriter::AddItem(wxCommandEvent& event)
 	wxString name = event.GetString();
 
 	if ( m_itemsInChap->FindItem(-1, name) == -1 )
-	{
-		CheckDocumentValidity();
-		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_pFocusDocument);
-	}
+		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_activeTab.document);
 }
 
 void amStoryWriter::UpdateCharacterList()
@@ -874,7 +910,7 @@ void amStoryWriter::UpdateCharacterList()
 	m_charInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Element*& pElement : m_pFocusDocument->elements )
+	for ( Element*& pElement : m_activeTab.document->elements )
 	{
 		Character* pCharacter = dynamic_cast<Character*>(pElement);
 
@@ -891,7 +927,7 @@ void amStoryWriter::UpdateLocationList()
 	m_locInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Element*& pElement: m_pFocusDocument->elements )
+	for ( Element*& pElement: m_activeTab.document->elements )
 	{
 		Location* pLocation= dynamic_cast<Location*>(pElement);
 
@@ -907,7 +943,7 @@ void amStoryWriter::UpdateItemList()
 	m_itemsInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Element*& pElement : m_pFocusDocument->elements )
+	for ( Element*& pElement : m_activeTab.document->elements )
 	{
 		Item* pItem= dynamic_cast<Item*>(pElement);
 
@@ -932,14 +968,12 @@ void amStoryWriter::OnRemoveCharacter(wxCommandEvent& event)
 	int sel = m_charInChap->GetFirstSelected();
 	int nos = m_charInChap->GetSelectedItemCount();
 
-	CheckDocumentValidity();
-
 	for ( int i = 0; i < nos; i++ )
 	{
 		wxString name = m_charInChap->GetItemText(sel);
 		m_charInChap->DeleteItem(sel);
 
-		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_pFocusDocument);
+		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_activeTab.document);
 
 		sel = m_charInChap->GetNextSelected(sel - 1);
 	}
@@ -953,14 +987,12 @@ void amStoryWriter::OnRemoveLocation(wxCommandEvent& event)
 	int sel = m_locInChap->GetFirstSelected();
 	int nos = m_locInChap->GetSelectedItemCount();
 
-	CheckDocumentValidity();
-
 	for ( int i = 0; i < nos; i++ )
 	{
 		wxString name = m_locInChap->GetItemText(sel);
 		m_locInChap->DeleteItem(sel);
 
-		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_pFocusDocument);
+		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_activeTab.document);
 
 		sel = m_locInChap->GetNextSelected(sel + 1);
 	}
@@ -974,14 +1006,12 @@ void amStoryWriter::OnRemoveItem(wxCommandEvent& event)
 	int sel = m_itemsInChap->GetFirstSelected();
 	int nos = m_itemsInChap->GetSelectedItemCount();
 
-	CheckDocumentValidity();
-
 	for ( int i = 0; i < nos; i++ )
 	{
 		wxString name = m_itemsInChap->GetItemText(sel);
 		m_itemsInChap->DeleteItem(sel);
 
-		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_pFocusDocument);
+		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_activeTab.document);
 
 		sel = m_itemsInChap->GetNextSelected(sel + 1);
 	}
@@ -1005,11 +1035,10 @@ void amStoryWriter::OnStoryItemActivated(wxDataViewEvent& event)
 	case STMN_Document:
 	{
 		Document* pDocument = node->GetDocument();
-		if ( pDocument != m_pFocusDocument )
+		if ( pDocument != m_activeTab.document )
 		{
-			SaveFocusDocument();
-			m_pFocusDocument = pDocument;
-			LoadFocusDocument();
+			SaveActiveTab();
+			LoadDocument(pDocument);
 		}
 
 		break;
@@ -1118,21 +1147,21 @@ void amStoryWriter::OnRestoreFromTrash(wxCommandEvent& event)
 	}
 }
 
-void amStoryWriter::SetCurrentDocument(Document* document, bool saveBefore, bool load)
+void amStoryWriter::SetActiveTab(amStoryWriterTab& tab, bool saveBefore, bool load)
 {
 	if ( saveBefore )
-		SaveFocusDocument();
-
-	m_pFocusDocument = document;
+		SaveActiveTab();
 
 	if ( load )
-		LoadFocusDocument();
+		LoadDocument(tab.document);
+
+	m_activeTab = tab;
 }
 
 void amStoryWriter::OnNextDocument(wxCommandEvent& event)
 {
 	wxVector<Document*>& documents = m_manager->GetDocumentsInCurrentBook();
-	int currentIndex = m_pFocusDocument->position - 1;
+	int currentIndex = m_activeTab.document->position - 1;
 	int max = documents.size() - 1;
 
 	if ( currentIndex < max )
@@ -1144,13 +1173,16 @@ void amStoryWriter::OnNextDocument(wxCommandEvent& event)
 		} while ( toSet->isInTrash && currentIndex < max );
 
 		if ( !toSet->isInTrash )
-			SetCurrentDocument(toSet, true, true);
+		{
+			SaveActiveTab();
+			LoadDocument(toSet);
+		}
 	}
 }
 
 void amStoryWriter::OnPreviousDocument(wxCommandEvent& event)
 {
-	int currentIndex = m_pFocusDocument->position - 1;
+	int currentIndex = m_activeTab.document->position - 1;
 	if ( currentIndex > 0 )
 	{
 		wxVector<Document*>& documents = m_manager->GetDocumentsInCurrentBook();
@@ -1161,38 +1193,39 @@ void amStoryWriter::OnPreviousDocument(wxCommandEvent& event)
 		} while ( toSet->isInTrash && currentIndex > 0 );
 
 		if ( !toSet->isInTrash )
-			SetCurrentDocument(toSet, true, true);
+		{
+			SaveActiveTab();
+			LoadDocument(toSet);
+		}
 	}
 }
 
-void amStoryWriter::CheckDocumentValidity()
+void amStoryWriter::LoadDocument(Document* document)
 {
+	if ( m_activeTab.document == document )
+		return;
 
-}
+	SetTitle(document->name);
 
-void amStoryWriter::LoadFocusDocument()
-{
-	SetTitle(m_pFocusDocument->name);
-
-	m_swNotebook->Freeze();
-	m_synopsys->SetValue(m_pFocusDocument->synopsys);
+	Freeze();
+	m_synopsys->SetValue(document->synopsys);
 
 	bool bIsOpen = false;
 
 	wxAuiNotebook* notebook = m_swNotebook->GetNotebook();
-	wxVector<amStoryWriterNotebookPage>& pages = m_swNotebook->GetPages();
+	wxVector<amStoryWriterTab>& tabs = m_swNotebook->GetTabs();
 
-	for ( amStoryWriterNotebookPage& page : pages )
+	for ( amStoryWriterTab& tab : tabs )
 	{
-		if ( page.document == m_pFocusDocument )
+		if ( tab.document == document )
 		{
 			for ( int i = 0; i < notebook->GetPageCount(); i++ )
 			{
 				wxWindow* window = notebook->GetPage(i);
-				if ( window == page.notePanel || window == page.rtc )
+				if ( window == tab.notePanel || window == tab.rtc )
 				{
-					m_swNotebook->SetCurrentPage(page, false);
-					m_statusBar->SetStatusText("Zoom: " + std::to_string((int)(page.rtc->GetFontScale() * 100)) + "%", 2);
+					m_swNotebook->SetCurrentTab(tab, false);
+					m_statusBar->SetStatusText("Zoom: " + std::to_string((int)(tab.rtc->GetFontScale() * 100)) + "%", 2);
 					bIsOpen = true;
 					break;
 				}
@@ -1219,11 +1252,7 @@ void amStoryWriter::LoadFocusDocument()
 		rtc->SetBasicStyle(attr);
 		rtc->SetBackgroundColour(wxColour(35, 35, 35));
 
-		if ( m_pFocusDocument->buffer )
-		{
-			m_pFocusDocument->buffer->SetBasicStyle(attr);
-			rtc->GetBuffer() = *m_pFocusDocument->buffer;
-		}
+		document->LoadSelf(m_manager->GetStorage(), rtc);
 
 		rtc->GetBuffer().SetMargins(FromDIP(72), FromDIP(72), 0, 0);
 		rtc->GetBuffer().Invalidate(wxRICHTEXT_ALL);
@@ -1238,34 +1267,20 @@ void amStoryWriter::LoadFocusDocument()
 		notePage->SetSizer(notesSizer);
 		notePage->SetScrollRate(15, 15);
 
-		m_swNotebook->AddPage(
-			amStoryWriterNotebookPage(rtc, notePage, m_pFocusDocument),
-			m_pFocusDocument->name
-		);
+		m_swNotebook->AddTab(amStoryWriterTab(rtc, notePage, document), document->name);
 
-		m_note->Freeze();
-		m_noteLabel->Freeze();
-		notePage->Freeze();
-
-		for ( Note*& pNote : m_pFocusDocument->notes )
+		for ( Note*& pNote : document->notes )
 		{
-			m_note->SetValue(pNote->content);
-			m_noteLabel->SetValue(pNote->name);
-			m_doGreenNote = pNote->isDone;
-
 			AddNote(pNote, false);
 		}
-
-		m_note->Thaw();
-		m_noteLabel->Thaw();
-		notePage->Thaw();
 	}
 
-	m_storyView->Select(m_storyTreeModel->GetDocumentItem(m_pFocusDocument));
+	m_storyView->Select(m_storyTreeModel->GetDocumentItem(document));
 
-	m_swNotebook->GetCorkboard()->Layout();
-	m_swNotebook->GetTextCtrl()->SetFocus();
-	m_swNotebook->Thaw();
+	m_activeTab.notePanel->Layout();
+	m_activeTab.rtc->SetFocus();
+
+	Thaw();
 
 	UpdateCharacterList();
 	UpdateLocationList();
@@ -1276,44 +1291,32 @@ void amStoryWriter::LoadFocusDocument()
 	m_statusBar->SetStatusText("Document up-to-date", 0);
 }
 
-void amStoryWriter::SaveFocusDocument()
+void amStoryWriter::SaveActiveTab()
 {
-	CheckDocumentValidity();
+	if ( !m_activeTab.document || !m_activeTab.rtc )
+		return;
 
-	wxRichTextCtrl* rtc = m_swNotebook->GetTextCtrl();
 	bool saveBuffer = false;
-	if ( m_pFocusDocument->buffer )
+	if ( m_activeTab.document->buffer && m_activeTab.rtc )
 	{
-		if ( rtc )
-		{
-			*m_pFocusDocument->buffer = rtc->GetBuffer();
-			m_pFocusDocument->buffer->SetBasicStyle(rtc->GetBasicStyle());
-			saveBuffer = true;
-		}
-	}
-	else
-	{
-		if ( rtc && !rtc->IsEmpty() )
-		{
-			m_pFocusDocument->buffer = new wxRichTextBuffer(rtc->GetBuffer());
-			saveBuffer = true;
-		}
+		//*m_activeTab.document->buffer = m_activeTab.rtc->GetBuffer();
+		//m_activeTab.document->buffer->SetBasicStyle(m_activeTab.rtc->GetBasicStyle());
+		saveBuffer = true;
 	}
 
-	m_pFocusDocument->synopsys = m_synopsys->GetValue();
-	m_pFocusDocument->Update(m_manager->GetStorage(), saveBuffer, true);
+	m_activeTab.document->synopsys = m_synopsys->GetValue();
+	m_activeTab.document->Update(m_manager->GetStorage(), saveBuffer, true);
 }
 
 void amStoryWriter::CountWords()
 {
 	int result = 0;
 
-	if ( !m_swNotebook->GetTextCtrl()->IsEmpty() )
+	if ( !m_activeTab.rtc->IsEmpty() )
 	{
-		std::stringstream stream(m_swNotebook->GetTextCtrl()->GetValue().ToStdString());
+		std::stringstream stream(m_activeTab.rtc->GetValue().ToStdString());
 		result = std::distance(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>());
 	}
-
 
 	m_statusBar->SetStatusText("Number of words: " + std::to_string(result), 1);
 }
@@ -1322,7 +1325,7 @@ void amStoryWriter::OnTimerEvent(wxTimerEvent& event)
 {
 	m_statusBar->SetStatusText("Autosaving document...", 0);
 
-	SaveFocusDocument();
+	SaveActiveTab();
 
 	m_statusBar->SetStatusText("Counting words...", 0);
 	CountWords();
@@ -1352,7 +1355,12 @@ void amStoryWriter::ToggleFullScreen(bool fs)
 
 void amStoryWriter::OnClose(wxCloseEvent& event)
 {
-	SaveFocusDocument();
+	SaveActiveTab();
+	for ( amStoryWriterTab& tab : m_swNotebook->GetTabs() )
+	{
+		tab.document->CleanUp();
+	}
+
 	m_manager->NullifyStoryWriter();
 
 	Destroy();
@@ -1528,7 +1536,7 @@ void amStoryWriterToolbar::OnNoteView(wxCommandEvent& event)
 
 		if ( current )
 		{
-			for ( amStoryWriterNotebookPage& it : m_parent->GetAllWriterPages() )
+			for ( amStoryWriterTab& it : m_parent->GetAllWriterPages() )
 			{
 				if ( current == it.rtc )
 				{
@@ -1555,7 +1563,7 @@ void amStoryWriterToolbar::OnNoteView(wxCommandEvent& event)
 
 		if ( current )
 		{
-			for ( amStoryWriterNotebookPage& it : m_parent->GetAllWriterPages() )
+			for ( amStoryWriterTab& it : m_parent->GetAllWriterPages() )
 			{
 				if ( current == it.notePanel )
 				{
@@ -1715,12 +1723,13 @@ END_EVENT_TABLE()
 amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* documentWriter) :
 	wxPanel(parent)
 {
-	m_parent = documentWriter;
+	m_storyWriter = documentWriter;
 
 	m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT | wxAUI_NB_CLOSE_ON_ALL_TABS |
 		wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_BOTTOM | wxBORDER_NONE);
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CHANGED, &amStoryWriterNotebook::OnSelectionChanged, this);
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSE, &amStoryWriterNotebook::OnPageClosing, this);
+	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSED, &amStoryWriterNotebook::OnPageClosed, this);
 
 	m_contentToolbar = new amStoryWriterToolbar(this);
 	m_contentToolbar->SetDoubleBuffered(true);
@@ -1735,26 +1744,26 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* do
 	m_timer.Start(10000);
 }
 
-void amStoryWriterNotebook::AddPage(amStoryWriterNotebookPage& page, const wxString& title)
+void amStoryWriterNotebook::AddTab(amStoryWriterTab& tab, const wxString& title)
 {
-	m_writerPages.push_back(page);
-	m_notebook->AddPage(page.rtc, title, false);
+	m_swTabs.push_back(tab);
+	m_notebook->AddPage(tab.rtc, title, false);
 
-	SetCurrentPage(page, false);
+	SetCurrentTab(tab, false);
 }
 
-void amStoryWriterNotebook::SetCurrentPage(amStoryWriterNotebookPage& page, bool load)
+void amStoryWriterNotebook::SetCurrentTab(amStoryWriterTab& tab, bool load)
 {
 	int i = 0;
-	for ( amStoryWriterNotebookPage& pageIt : m_writerPages )
+	for ( amStoryWriterTab& tabIt : m_swTabs )
 	{
-		if ( pageIt.dbID == page.dbID )
+		if ( tabIt.document == tab.document )
 		{
-			m_parent->SetCurrentDocument(page.document, load, load);
-			m_contentToolbar->SetCurrentPage(page);
+			m_storyWriter->SetActiveTab(tab, load, load);
+			m_contentToolbar->SetCurrentTab(tab);
 
-			m_curTextCtrl = page.rtc;
-			m_curCorkboard = page.notePanel;
+			m_curTextCtrl = tab.rtc;
+			m_curCorkboard = tab.notePanel;
 
 			m_notebook->ChangeSelection(i);
 			return;
@@ -1765,21 +1774,19 @@ void amStoryWriterNotebook::SetCurrentPage(amStoryWriterNotebookPage& page, bool
 
 void amStoryWriterNotebook::OnText(wxCommandEvent& WXUNUSED(event))
 {
-	m_parent->m_statusBar->SetStatusText("Document modified. Autosaving soon...", 0);
+	m_storyWriter->m_statusBar->SetStatusText("Document modified. Autosaving soon...", 0);
 }
 
 void amStoryWriterNotebook::OnSelectionChanged(wxAuiNotebookEvent& event)
 {
 	int sel = event.GetSelection();
-
 	wxWindow* window = m_notebook->GetPage(sel);
-	for ( amStoryWriterNotebookPage& page : m_writerPages )
+	for ( amStoryWriterTab& tab : m_swTabs )
 	{
-		if ( page.rtc == window || page.notePanel == window )
+		if ( tab.rtc == window || tab.notePanel == window )
 		{
-			m_parent->SaveFocusDocument();
-			m_contentToolbar->SetCurrentPage(page);
-			m_parent->SetCurrentDocument(page.document, true, true);
+			m_storyWriter->SetActiveTab(tab, true, true);
+			m_contentToolbar->SetCurrentTab(tab);
 			return;
 		}
 	}
@@ -1787,43 +1794,69 @@ void amStoryWriterNotebook::OnSelectionChanged(wxAuiNotebookEvent& event)
 	event.Skip();
 }
 
-void amStoryWriterNotebook::OnZoomChange(int zoom)
-{
-	m_parent->PushStatusText("Zoom: " + std::to_string(zoom) + "%", 2);
-}
-
 void amStoryWriterNotebook::OnPageClosing(wxAuiNotebookEvent& event)
 {
 	if ( m_notebook->GetPageCount() == 1 )
+	{
 		event.Veto();
+	}
 	else
 	{
-		wxWindow* window = m_notebook->GetPage(event.GetSelection());
-		for ( amStoryWriterNotebookPage& page : m_writerPages )
+		wxWindow* page = m_notebook->GetPage(event.GetSelection());
+		for ( amStoryWriterTab& tab : m_swTabs )
 		{
-			if ( page.rtc == window || page.notePanel == window )
+			if ( tab.rtc == page || tab.notePanel == page )
 			{
+				m_closingTab = tab;
 
-				if ( page.rtc->IsShownOnScreen() || page.notePanel->IsShown() )
-				{
-					if ( !page.rtc->IsShown() )
-						page.rtc->Destroy();
-					else if ( !page.notePanel->IsShown() )
-						page.notePanel->Destroy();
-				}
+				// Nullify the page about to be closed but leave the other one as it is
+				if ( tab.rtc == page )
+					m_closingTab.rtc = nullptr;
+				else
+					m_closingTab.notePanel = nullptr;
 
-				m_writerPages.erase(&page);
 				break;
 			}
 		}
-
-		event.Skip();
 	}
+}
+
+void amStoryWriterNotebook::OnZoomChange(int zoom)
+{
+	m_storyWriter->PushStatusText("Zoom: " + std::to_string(zoom) + "%", 2);
+}
+
+void amStoryWriterNotebook::OnPageClosed(wxAuiNotebookEvent& event)
+{
+	if ( !m_closingTab.document )
+		return;
+
+	if ( m_closingTab.rtc )
+		m_closingTab.rtc->Destroy();
+	else if ( m_closingTab.notePanel )
+		m_closingTab.notePanel->Destroy();
+
+	m_closingTab.document->CleanUp();
+
+	for ( amStoryWriterTab& tab : m_swTabs )
+	{
+		if ( m_closingTab.document == tab.document )
+		{
+			m_swTabs.erase(&tab);
+			break;
+		}
+	}
+
+	m_closingTab.document = nullptr;
+	m_closingTab.rtc = nullptr;
+	m_closingTab.notePanel = nullptr;
+
+	event.Skip();
 }
 
 bool amStoryWriterNotebook::HasRedNote()
 {
-	for ( Note*& pNote : m_parent->GetFocusDocument()->notes )
+	for ( Note*& pNote : m_storyWriter->GetActiveTab().document->notes )
 	{
 		if ( !pNote->isDone )
 			return true;
@@ -1919,7 +1952,7 @@ void amStoryWriterNotebook::SetRed(wxCommandEvent& event)
 
 	wxPanel* sp;
 	int i = 0;
-	for ( Note*& pNote : m_parent->GetFocusDocument()->notes )
+	for ( Note*& pNote : m_storyWriter->GetActiveTab().document->notes )
 	{
 		sp = (wxPanel*)m_curCorkboard->GetSizer()->GetItem(i)->GetWindow();
 
@@ -1934,7 +1967,7 @@ void amStoryWriterNotebook::SetRed(wxCommandEvent& event)
 		i++;
 	}
 
-	m_parent->CheckNotes();
+	m_storyWriter->CheckNotes();
 }
 
 void amStoryWriterNotebook::SetGreen(wxCommandEvent& event)
@@ -1944,7 +1977,7 @@ void amStoryWriterNotebook::SetGreen(wxCommandEvent& event)
 
 	wxPanel* sp;
 	int i = 0;
-	for ( Note*& pNote : m_parent->GetFocusDocument()->notes )
+	for ( Note*& pNote : m_storyWriter->GetActiveTab().document->notes )
 	{
 		sp = (wxPanel*)m_curCorkboard->GetSizer()->GetItem(i)->GetWindow();
 
@@ -1959,7 +1992,7 @@ void amStoryWriterNotebook::SetGreen(wxCommandEvent& event)
 		i++;
 	}
 
-	m_parent->CheckNotes();
+	m_storyWriter->CheckNotes();
 }
 
 void amStoryWriterNotebook::OnDeleteNote(wxCommandEvent& WXUNUSED(event))
@@ -1969,7 +2002,7 @@ void amStoryWriterNotebook::OnDeleteNote(wxCommandEvent& WXUNUSED(event))
 		wxPanel* sp;
 
 		int i = 0;
-		Document* pDocument = m_parent->GetFocusDocument();
+		Document* pDocument = m_storyWriter->GetActiveTab().document;
 		for ( Note*& pNote : pDocument->notes )
 		{
 			sp = (wxPanel*)m_curCorkboard->GetSizer()->GetItem(i)->GetWindow();
@@ -1991,7 +2024,7 @@ void amStoryWriterNotebook::OnDeleteNote(wxCommandEvent& WXUNUSED(event))
 		m_selNote = nullptr;
 	}
 
-	m_parent->CheckNotes();
+	m_storyWriter->CheckNotes();
 }
 
 void amStoryWriterNotebook::OnNoteClick(wxMouseEvent& event)
@@ -2013,7 +2046,7 @@ void amStoryWriterNotebook::UpdateNoteLabel(wxCommandEvent& event)
 
 	wxPanel* sp;
 	int i = 0;
-	for ( Note*& pNote : m_parent->GetFocusDocument()->notes )
+	for ( Note*& pNote : m_storyWriter->GetActiveTab().document->notes )
 	{
 		sp = (wxPanel*)m_curCorkboard->GetSizer()->GetItem(i)->GetWindow();
 		if ( sp == pan )
@@ -2032,7 +2065,7 @@ void amStoryWriterNotebook::UpdateNote(wxCommandEvent& event)
 
 	wxPanel* sp;
 	int i = 0;
-	for ( Note*& pNote : m_parent->GetFocusDocument()->notes )
+	for ( Note*& pNote : m_storyWriter->GetActiveTab().document->notes )
 	{
 		sp = (wxPanel*)m_curCorkboard->GetSizer()->GetItem(i)->GetWindow();
 		if ( sp == pan )

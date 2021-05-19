@@ -14,6 +14,10 @@
 #include "OutlineFiles.h"
 #include "Note.h"
 
+class amStoryWriterTab;
+class amStoryWriter;
+class amStoryWriterNotebook;
+
 
 ///////////////////////////////////////////////////////////////////
 //////////////////////// StoryTreeModelNode ///////////////////////
@@ -32,22 +36,18 @@ enum STMN_Type
 class StoryTreeModelNode : public amTreeModelNode
 {
 private:
-	StoryTreeModelNode* m_trash = nullptr;
+	StoryTreeModelNode* m_trashNode = nullptr;
 
 	STMN_Type m_type = STMN_Null;
 	Document* m_document = nullptr;
 	Book* m_book = nullptr;
 	int m_index = -1;
-	int m_dbID = -1;
-
-	bool m_isInTrash = false;
 
 	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash,
-		const wxString& title, int index, int id, STMN_Type type) :
+		const wxString& title, int index, STMN_Type type) :
 		amTreeModelNode(parent, title)
 	{
 		m_index = index;
-		m_dbID = id;
 		m_type = type;
 
 		if ( m_parent )
@@ -55,11 +55,10 @@ private:
 			if ( trash )
 			{
 				trash->Append(this);
-				m_isInTrash = true;
 			}
 			else
 			{
-				if ( index >= m_parent->GetChildCount() )
+				if ( index >= m_parent->GetChildCount() || index < 0 )
 					m_parent->Append(this);
 				else
 					m_parent->Insert(this, index);
@@ -81,18 +80,24 @@ private:
 public:
 	static wxVector<wxIcon> m_icons;
 
-	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, Document* document) :
-		StoryTreeModelNode(parent, trash, document->name, document->position - 1, document->id, STMN_Document)
+	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, Document* document, int position) :
+		StoryTreeModelNode(parent, trash, document->name, position, STMN_Document)
 	{
 		m_document = document;
 	}
 
-	inline StoryTreeModelNode(const wxString& bookTitle, int id) :
-		StoryTreeModelNode(nullptr, nullptr, bookTitle, -1, id, STMN_Book)
+	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, Document* document) :
+		StoryTreeModelNode(parent, trash, document, document->position)
 	{}
 
+	inline StoryTreeModelNode(Book* book) :
+		StoryTreeModelNode(nullptr, nullptr, book->title, -1, STMN_Book)
+	{
+		m_book = book;
+	}
+
 	inline StoryTreeModelNode(const wxString& trashTitle) :
-		StoryTreeModelNode(nullptr, nullptr, trashTitle, -1, -1, STMN_Trash)
+		StoryTreeModelNode(nullptr, nullptr, trashTitle, -1, STMN_Trash)
 	{}
 
 	inline static void InitAllIcons()
@@ -125,7 +130,12 @@ public:
 		}
 	}
 
-	inline int GetID() { return m_dbID; }
+	inline int GetID() {
+		if ( m_document) return m_document->id;
+		if ( m_book ) return m_book->id;
+
+		return -1;
+	}
 
 	inline int GetIndex() { return m_index; }
 	inline void SetIndex(int index) { m_index = index; }
@@ -136,16 +146,17 @@ public:
 	inline bool IsDocument() { return m_type == STMN_Document; }
 	inline bool IsTrash() { return m_type == STMN_Trash; }
 
+	inline Book* GetBook() { return m_book; }
 	inline Document* GetDocument() { return m_document; }
 
-	inline bool IsInTrash() { return m_isInTrash; }
-	inline void SetIsInTrash(bool is) { m_isInTrash = is; }
+	inline bool IsInTrash() { return (m_document && m_document->isInTrash); }
+	inline void SetIsInTrash(bool is) { if ( m_document ) m_document->isInTrash = is; }
 
 	inline STMN_Type GetType() { return m_type; }
 
 	inline virtual void Reparent(StoryTreeModelNode* newParent)
 	{
-		if ( m_parent && !m_isInTrash )
+		if ( m_parent && !IsInTrash() )
 			RemoveSelfFromParentList();
 
 		m_parent = newParent;
@@ -156,7 +167,7 @@ public:
 
 	inline virtual void Reparent(StoryTreeModelNode* newParent, int n)
 	{
-		if ( m_parent && !m_isInTrash )
+		if ( m_parent && !IsInTrash() )
 			RemoveSelfFromParentList();
 
 		m_parent = newParent;
@@ -181,26 +192,33 @@ class StoryTreeModel : public amDataViewModel
 {
 private:
 	// pointers to some "special" nodes of the tree:
-	StoryTreeModelNode* m_book = nullptr;
-	StoryTreeModelNode* m_trash = nullptr;
+	wxVector<StoryTreeModelNode*> m_vBooks;
+	StoryTreeModelNode* m_trashNode = nullptr;
 
 public:
 	StoryTreeModel();
 	~StoryTreeModel()
 	{
-		if ( m_book )
-			delete m_book;
+		for ( StoryTreeModelNode*& bookNode : m_vBooks )
+		{
+			if ( bookNode )
+				delete bookNode;
+		}
 
-		if ( m_trash )
-			delete m_trash;
+		if ( m_trashNode )
+			delete m_trashNode;
 	}
 
 	bool Load();
 	bool Save();
-	void CreateFromScratch(Book* book);
+	void CreateFromScratch(amProject* project);
+
+	inline wxVector<StoryTreeModelNode*>& GetBooks() { return m_vBooks; }
+	inline StoryTreeModelNode* GetTrash() { return m_trashNode; }
 
 	wxDataViewItem AddDocument(Document* document, const wxDataViewItem& parentItem);
 
+	wxDataViewItem GetBookItem(Book* book);
 	wxDataViewItem GetDocumentItem(Document* document);
 	wxDataViewItem ScanForDocumentRecursive(StoryTreeModelNode* node, Document* document);
 
@@ -214,7 +232,8 @@ public:
 
 	bool Reposition(const wxDataViewItem& item, int n);
 
-	void Clear();
+	void ClearContent();
+	void ClearAll();
 
 	// implementation of base class virtuals to define model
 	virtual unsigned int GetColumnCount() const
@@ -239,6 +258,25 @@ public:
 	virtual void OnBeginDrag(wxDataViewEvent& event, wxDataViewCtrl* dvc) {}
 	virtual void OnDropPossible(wxDataViewEvent& event, wxDataViewCtrl* dvc) {}
 	virtual void OnDrop(wxDataViewEvent& event, wxDataViewCtrl* dvc) {}
+};
+
+
+///////////////////////////////////////////////////////////////////////
+//////////////////////////// StoryWriterTab ///////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+
+struct amStoryWriterTab
+{
+	wxRichTextCtrl* rtc = nullptr;
+	wxScrolledWindow* notePanel = nullptr;
+
+	Document* document = nullptr;
+
+	amStoryWriterTab() = default;
+	amStoryWriterTab(wxRichTextCtrl* rtc, wxScrolledWindow* notePanel, Document* document) :
+		rtc(rtc), notePanel(notePanel), document(document)
+	{}
 };
 
 
@@ -289,11 +327,8 @@ private:
 	wxButton* m_noteClear = nullptr,
 		* m_noteAdd = nullptr;
 
-	Document* m_pFocusDocument = nullptr;
-	int m_bookPos = -1;
+	amStoryWriterTab m_activeTab;
 	wxTimer m_saveTimer;
-
-	bool m_doGreenNote = false;
 
 	wxDataViewItem m_itemForTrash{ nullptr };
 	wxDataViewItem m_itemForRestore{ nullptr };
@@ -334,16 +369,15 @@ public:
 	void OnMoveToTrash(wxCommandEvent& event);
 	void OnRestoreFromTrash(wxCommandEvent& event);
 
-	void SetCurrentDocument(Document* document, bool saveBefore, bool load);
+	void SetActiveTab(amStoryWriterTab& tab, bool saveBefore, bool load);
 
 	void OnNextDocument(wxCommandEvent& event);
 	void OnPreviousDocument(wxCommandEvent& event);
-	void CheckDocumentValidity();
 
-	void LoadFocusDocument();
-	void SaveFocusDocument();
+	void LoadDocument(Document* document);
+	void SaveActiveTab();
 
-	inline Document* GetFocusDocument() { return m_pFocusDocument; }
+	inline amStoryWriterTab GetActiveTab() { return m_activeTab; }
 
 	void CountWords();
 
@@ -386,26 +420,6 @@ enum
 };
 
 
-///////////////////////////////////////////////////////////////////////
-//////////////////////// StoryWriterNotebookPage //////////////////////
-///////////////////////////////////////////////////////////////////////
-
-
-struct amStoryWriterNotebookPage
-{
-	wxRichTextCtrl* rtc = nullptr;
-	wxScrolledWindow* notePanel = nullptr;
-
-	Document* document = nullptr;
-	int dbID = -1;
-
-	amStoryWriterNotebookPage() = default;
-	amStoryWriterNotebookPage(wxRichTextCtrl* rtc, wxScrolledWindow* notePanel, Document* document) :
-		rtc(rtc), notePanel(notePanel), document(document), dbID(document->id)
-	{}
-};
-
-
 //////////////////////////////////////////////////////////////////
 //////////////////////// StoryWriterToolbar //////////////////////
 //////////////////////////////////////////////////////////////////
@@ -445,7 +459,7 @@ private:
 	wxComboBox* m_fontSize = nullptr;
 	wxSlider* m_contentScale = nullptr;
 
-	amStoryWriterNotebookPage m_currentPage;
+	amStoryWriterTab m_currentPage;
 
 public:
 	amStoryWriterToolbar(wxWindow* parent,
@@ -455,7 +469,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxTB_DEFAULT_STYLE | wxTB_FLAT);
 
-	inline void SetCurrentPage(amStoryWriterNotebookPage& currentPage) { m_currentPage = currentPage; }
+	inline void SetCurrentTab(amStoryWriterTab& currentPage) { m_currentPage = currentPage; }
 
 	void OnBold(wxCommandEvent& event);
 	void OnItalic(wxCommandEvent& event);
@@ -497,7 +511,7 @@ public:
 class amStoryWriterNotebook : public wxPanel
 {
 private:
-	amStoryWriter* m_parent = nullptr;
+	amStoryWriter* m_storyWriter = nullptr;
 	wxAuiNotebook* m_notebook = nullptr;
 
 	amStoryWriterToolbar* m_contentToolbar = nullptr;
@@ -509,14 +523,15 @@ private:
 	wxPanel* m_selNote = nullptr;
 	wxSize m_noteSize{};
 
-	wxVector<amStoryWriterNotebookPage> m_writerPages{};
+	wxVector<amStoryWriterTab> m_swTabs{};
+	amStoryWriterTab m_closingTab;
 
 public:
 	amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* documentWriter);
 
 	inline wxRichTextCtrl* GetTextCtrl() { return m_curTextCtrl; }
 	inline wxPanel* GetCorkboard() { return m_curCorkboard; }
-	inline wxVector<amStoryWriterNotebookPage>& GetPages() { return m_writerPages; }
+	inline wxVector<amStoryWriterTab>& GetTabs() { return m_swTabs; }
 	inline amStoryWriterToolbar* GetToolbar() { return m_contentToolbar; }
 
 	inline wxWrapSizer* GetNotesSizer() { return (wxWrapSizer*)m_curCorkboard->GetSizer(); }
@@ -524,21 +539,22 @@ public:
 
 	inline wxWindow* GetCurrentPage() { return m_notebook->GetCurrentPage(); }
 	inline int GetSelection() { return m_notebook->GetSelection(); }
-	inline wxVector<amStoryWriterNotebookPage>& GetAllWriterPages() { return m_writerPages; }
+	inline wxVector<amStoryWriterTab>& GetAllWriterPages() { return m_swTabs; }
 	inline wxAuiNotebook* GetNotebook() { return m_notebook; }
 
-	void AddPage(amStoryWriterNotebookPage& page, const wxString& title);
-	void SetCurrentPage(amStoryWriterNotebookPage& page, bool load);
+	void AddTab(amStoryWriterTab& tab, const wxString& title);
+	void SetCurrentTab(amStoryWriterTab& tab, bool load);
 
 	inline void SetNoteSize(wxSize& size) { m_noteSize = size; }
 
 	void OnSelectionChanged(wxAuiNotebookEvent& event);
 	void OnPageClosing(wxAuiNotebookEvent& event);
+	void OnPageClosed(wxAuiNotebookEvent& event);
 
 	void OnText(wxCommandEvent& event);
 	void OnZoomChange(int zoom);
 
-	inline void ToggleFullScreen(bool fs) { m_parent->ToggleFullScreen(fs); }
+	inline void ToggleFullScreen(bool fs) { m_storyWriter->ToggleFullScreen(fs); }
 
 	bool HasRedNote();
 

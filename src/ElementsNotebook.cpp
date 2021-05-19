@@ -557,27 +557,17 @@ void amElementNotebook::UpdateCharacter(int n, Character* character)
 
 	m_charList->SetItem(n, 1, role);
 
-	if ( !character->documents.empty() )
-	{
-		int first = 99999;
-		int last = -1;
-		for ( Document*& pDocument : character->documents )
-		{
-			if ( pDocument->position < first )
-				first = pDocument->position;
-
-			if ( pDocument->position > last )
-				last = pDocument->position;
-		}
-
-		m_charList->SetItem(n, 2, wxString("Document ") << first);
-		m_charList->SetItem(n, 3, wxString("Document ") << last);
-	}
+	Document* pFirstDocument = character->GetFirstDocument();
+	if ( pFirstDocument )
+		m_charList->SetItem(n, 2, wxString(_("Book ")) << pFirstDocument->book->pos << _(", Document ") << pFirstDocument->position);
 	else
-	{
 		m_charList->SetItem(n, 2, "-");
+
+	Document* pLastDocument = character->GetLastDocument();
+	if ( pLastDocument )
+		m_charList->SetItem(n, 3, wxString(_("Book ")) << pLastDocument->book->pos << _(", Document ") << pLastDocument->position);
+	else
 		m_charList->SetItem(n, 3, "-");
-	}
 
 	m_charList->SetItem(n, 4, std::to_string(character->documents.size()));
 

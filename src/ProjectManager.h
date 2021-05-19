@@ -111,7 +111,7 @@ public:
 
 	void LoadBooks();
 	void LoadBookContent(Book* book, bool loadDocuments);
-	void LoadDocuments(wxVector<Document*>& documents, int bookId);
+	void LoadDocuments(Book* book);
 	void SetupDocumentHierarchy(Book* book);
 
 	void LoadCharacters();
@@ -180,6 +180,8 @@ public:
 	void DeleteLocation(Location* location, bool clearShowcase);
 	void DeleteItem(Item* item, bool clearShowcase);
 	void DeleteDocument(Document* document);
+
+	inline amProject* GetProject() { return &m_project; }
 
 	inline int GetCurrentBookPos() { return m_currentBookPos; }
 	inline Book* GetCurrentBook() { return m_project.books[m_currentBookPos - 1]; }

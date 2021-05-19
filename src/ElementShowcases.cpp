@@ -648,16 +648,23 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	documentsLabel->SetForegroundColour(wxColour(255, 255, 255));
 	documentsLabel->SetFont(wxFontInfo(11).Bold());
 
-	m_documents = new wxListView(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
-		wxBORDER_SIMPLE | wxLC_LIST | wxLC_HRULES | wxLC_NO_HEADER);
-	m_documents->SetBackgroundColour(wxColour(30, 30, 30));
-	m_documents->SetForegroundColour(wxColour(255, 255, 255));
-	m_documents->AppendColumn("Documents");
-	m_documents->Bind(wxEVT_SIZE, [&](wxSizeEvent& event)
-		{
-			m_documents->SetColumnWidth(0, m_documents->GetClientSize().x);
-			event.Skip();
-		});
+	m_documentViewModel = new StoryTreeModel;
+
+#ifdef __WXMSW__
+	m_documentView = m_documentViewHandler.Create(m_secondPanel, -1, m_documentViewModel.get(),
+		wxBORDER_NONE | wxDV_NO_HEADER | wxDV_MULTIPLE);
+#else
+	m_documentView = new wxDataViewCtrl(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
+		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
+	m_documentView->AssociateModel(&m_documentViewModel);
+#endif
+
+	m_documentView->SetBackgroundColour(wxColour(90, 90, 90));
+	m_documentView->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, &amElementShowcase::OnDocumentActivated, this);
+
+	wxDataViewColumn* pColumn = new wxDataViewColumn(_("Documents"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
+		wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
+	m_documentView->AppendColumn(pColumn);
 
 	auto enableBut = [&](wxUpdateUIEvent& event) { event.Enable(GetElement()); };
 
@@ -691,7 +698,7 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 	documentButtonsSizer->Add(openDocument, wxSizerFlags(0).Expand());
 
 	wxBoxSizer* documentsSizer = new wxBoxSizer(wxHORIZONTAL);
-	documentsSizer->Add(m_documents, wxSizerFlags(1).Expand());
+	documentsSizer->Add(m_documentView, wxSizerFlags(1).Expand());
 	documentsSizer->Add(documentButtonsSizer, wxSizerFlags(1).Expand());
 
 	m_relatedElements = new amRelatedElementsContainer(m_secondPanel, this);
@@ -727,9 +734,29 @@ bool amElementShowcase::LoadSecondPanel(Element* element)
 
 	m_nameSecondPanel->SetLabel(element->name);
 
-	m_documents->DeleteAllItems();
+	m_documentViewModel->ClearAll();
 	for ( int i = 0; i < element->documents.size(); i++ )
-		m_documents->InsertItem(i, element->documents[i]->name);
+	{
+		Document*& pDocument = element->documents[i];
+		if ( pDocument->isInTrash )
+			continue;
+
+		wxDataViewItem bookItem = m_documentViewModel->GetBookItem(pDocument->book);
+		if ( !bookItem.IsOk() )
+		{
+			bookItem = wxDataViewItem(new StoryTreeModelNode(pDocument->book));
+			m_documentViewModel->GetBooks().push_back((StoryTreeModelNode*)bookItem.GetID());
+			m_documentViewModel->ItemAdded(wxDataViewItem(nullptr), bookItem);
+		}
+
+		m_documentViewModel->ItemAdded(
+			bookItem,
+			wxDataViewItem(new StoryTreeModelNode((StoryTreeModelNode*)bookItem.GetID(), nullptr, pDocument, -1))
+		);
+	}
+
+	for ( StoryTreeModelNode* pBookNode : m_documentViewModel->GetBooks() )
+		m_documentView->Expand(wxDataViewItem(pBookNode));
 
 	m_relatedElements->LoadAllElements(element);
 
@@ -742,6 +769,14 @@ bool amElementShowcase::LoadSecondPanel(Element* element)
 void amElementShowcase::OnNextPanel(wxCommandEvent& event)
 {
 	ShowPage(1);
+}
+
+void amElementShowcase::OnDocumentActivated(wxDataViewEvent& event)
+{
+	StoryTreeModelNode* pNode = (StoryTreeModelNode*)event.GetItem().GetID();
+
+	if ( pNode && pNode->IsDocument() )
+		amGetManager()->OpenDocument(pNode->GetDocument());
 }
 
 void amElementShowcase::OnPreviousPanel(wxCommandEvent& event)
@@ -770,86 +805,114 @@ void amElementShowcase::ShowPage(int index)
 
 void amElementShowcase::OnAddDocument(wxCommandEvent& event)
 {
-	wxPopupTransientWindow* win = new wxPopupTransientWindow(m_addDocumentBtn, wxBORDER_NONE | wxPU_CONTAINS_CONTROLS);
+	wxPopupTransientWindow* win = new wxPopupTransientWindow(m_addDocumentBtn, wxBORDER_SIMPLE | wxPU_CONTAINS_CONTROLS);
 
-	wxVector<Document*> documents = amGetManager()->GetDocumentsInCurrentBook();
-	wxArrayString documentNames;
+	wxDataViewCtrl* dvc;
+	m_addDocumentViewModel = new StoryTreeModel;
+#ifdef __WXMSW__
+	dvc = m_addDocumentViewHandler.Create(win, -1, m_addDocumentViewModel.get());
+#else
+	dvc = new wxDataViewCtrl(win, -1, wxDefaultPosition, wxDefaultSize,
+		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
+	dvc->AssociateModel(&m_addDocumentViewModel);
+#endif
+	dvc->AppendColumn(new wxDataViewColumn("", new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
+		wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT));
+	dvc->SetBackgroundColour(wxColour(90, 90, 90));
 
-	for ( Document*& pDocument : documents )
+	for ( Book*& pBook : amGetManager()->GetBooks() )
 	{
-		if ( m_documents->FindItem(0, pDocument->name) == -1 )
-			documentNames.Add(pDocument->name);
-	}
+		StoryTreeModelNode* pBookNode = new StoryTreeModelNode(pBook);
+		wxDataViewItem bookItem(pBookNode);
+		m_addDocumentViewModel->GetBooks().push_back(pBookNode);
+		m_addDocumentViewModel->ItemAdded(wxDataViewItem(nullptr), bookItem);
 
-	wxListBox* list = new wxListBox(win, -1, wxDefaultPosition, wxDefaultSize,
-		documentNames, wxBORDER_SIMPLE | wxLB_NEEDED_SB | wxLB_SINGLE);
-	list->Bind(wxEVT_LISTBOX_DCLICK, [this, list](wxCommandEvent& event)
+		for ( Document*& pDocument : pBook->documents )
 		{
-			wxBusyCursor cursor;
-
-			amProjectManager* manager = amGetManager();
-			for ( Document*& pDocument : manager->GetDocumentsInCurrentBook() )
+			bool bIsPresent = false;
+			for ( Document*& pDocumentInElement : m_element->documents )
 			{
-				if ( pDocument->name == event.GetString() )
+				if ( pDocumentInElement == pDocument )
 				{
-					manager->AddElementToDocument(m_element, pDocument);
-					list->Delete(list->FindString(pDocument->name));
-					LoadSecondPanel(m_element);
+					bIsPresent = true;
 					break;
 				}
 			}
+
+			if ( !bIsPresent && !pDocument->isInTrash && !pDocument->parent )
+			{
+				m_addDocumentViewModel->AddDocument(pDocument, bookItem);
+			}
+		}
+	}
+
+	dvc->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, [this, dvc](wxDataViewEvent& event)
+		{
+			wxBusyCursor busy;
+
+			StoryTreeModelNode* pNode = (StoryTreeModelNode*)event.GetItem().GetID();
+			if ( !pNode )
+				return;
+
+			if ( !pNode->IsDocument() )
+				return;
+
+			amGetManager()->AddElementToDocument(m_element, pNode->GetDocument());
+			m_addDocumentViewModel->DeleteItem(wxDataViewItem(pNode));
+			LoadSecondPanel(m_element);
 		});
-	list->SetBackgroundColour(wxColour(55, 55, 55));
-	list->SetForegroundColour(wxColour(255, 255, 255));
 
 	wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
-	siz->Add(list, wxSizerFlags(1).Expand());
+	siz->Add(dvc, wxSizerFlags(1).Expand());
 	win->SetSizer(siz);
 
 	wxSize addButtonSize(m_addDocumentBtn->GetSize());
 	win->SetPosition(m_addDocumentBtn->ClientToScreen(wxPoint(0, addButtonSize.y)));
-	win->SetSize(wxSize(addButtonSize.x, 150));
+	win->SetSize(wxSize(addButtonSize.x, 300));
 
 	win->Popup();
 	event.Skip();
 }
 
-void amElementShowcase::OnRemoveDocument(wxCommandEvent & event)
+void amElementShowcase::OnRemoveDocument(wxCommandEvent& event)
 {
 	wxBusyCursor cursor;
-
 	amProjectManager* manager = amGetManager();
-	wxString documentName;
-	long sel = m_documents->GetFirstSelected();
 
-	while ( sel != -1 )
+	wxDataViewItemArray selections;
+	wxVector<Document*> toBeRemoved;
+	size_t selCount = m_documentView->GetSelections(selections);
+	
+	for ( int i = 0; i < selCount; i++ )
 	{
-		documentName = m_documents->GetItemText(sel);
-		for ( Document*& pDocument : manager->GetDocumentsInCurrentBook() )
+		StoryTreeModelNode* pNode = (StoryTreeModelNode*)selections[i].GetID();
+		if ( pNode->IsDocument() )
 		{
-			if ( pDocument->name == documentName )
-			{
-				manager->RemoveElementFromDocument(GetElement(), pDocument);
-				m_documents->DeleteItem(sel);
-			}
+			toBeRemoved.push_back(pNode->GetDocument());
 		}
-
-		sel = m_documents->GetNextSelected(sel - 1);
 	}
 
-	amElementNotebook* notebook = manager->GetElementsNotebook();
+	for ( Document*& pDocument : toBeRemoved )
+	{
+		manager->RemoveElementFromDocument(m_element, pDocument);
+	}
 }
 
 void amElementShowcase::OnOpenDocument(wxCommandEvent& event)
 {
+	wxBusyCursor busy;
 	amProjectManager* manager = amGetManager();
-	long sel = m_documents->GetFirstSelected();
 
-	while ( sel != -1 )
+	wxDataViewItemArray selections;
+	size_t selCount = m_documentView->GetSelections(selections);
+
+	for ( int i = 0; i < selCount; i++ )
 	{
-		manager->OpenDocument(m_element->documents[sel]);
-
-		sel = m_documents->GetNextSelected(sel);
+		StoryTreeModelNode* pNode = (StoryTreeModelNode*)selections[i].GetID();
+		if ( pNode->IsDocument() )
+		{
+			manager->OpenDocument(pNode->GetDocument());
+		}
 	}
 }
 
@@ -953,7 +1016,7 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 		label->SetBackgroundColour(wxColour(15, 15, 15));
 		label->SetForegroundColour(wxColour(230, 230, 230));
 		label->Show(false);
-		
+
 		content->SetBackgroundStyle(wxBG_STYLE_PAINT);
 		content->SetBackgroundColour(wxColour(10, 10, 10));
 		content->SetForegroundColour(wxColour(255, 255, 255));
@@ -1217,6 +1280,7 @@ void amCharacterShowcase::ClearAll()
 		custom.second->Show(false);
 	}
 
+	m_documentViewModel->ClearAll();
 	m_relatedElements->ClearAll();
 	Thaw();
 }
@@ -1227,7 +1291,7 @@ void amCharacterShowcase::ClearAll()
 ///////////////////////////////////////////////////////////////////
 
 
-amLocationShowcase::amLocationShowcase(wxWindow* parent) :amElementShowcase(parent)
+amLocationShowcase::amLocationShowcase(wxWindow* parent) : amElementShowcase(parent)
 {
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(9));
@@ -1509,6 +1573,7 @@ void amLocationShowcase::ClearAll()
 		custom.second->Show(false);
 	}
 
+	m_documentViewModel->ClearAll();
 	m_relatedElements->ClearAll();
 	Thaw();
 }
@@ -1519,7 +1584,8 @@ void amLocationShowcase::ClearAll()
 ///////////////////////////////////////////////////////////////////
 
 
-amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent) {
+amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent)
+{
 	wxFont labelFont(wxFontInfo(12).Bold());
 	wxFont contentFont(wxFontInfo(11));
 
@@ -1692,7 +1758,7 @@ bool amItemShowcase::LoadFirstPanel(Element* element)
 	m_stWidth->Show(isntEmpty);
 	if ( isntEmpty )
 		m_stWidth->SetLabel(pItem->width);
-	
+
 	isntEmpty = !pItem->depth.IsEmpty();
 	m_stDepthLabel->Show(isntEmpty);
 	m_stDepth->Show(isntEmpty);
@@ -1775,7 +1841,7 @@ bool amItemShowcase::LoadFirstPanel(Element* element)
 			label->SetFont(wxFontInfo(12).Bold());
 			label->SetBackgroundColour(wxColour(15, 15, 15));
 			label->SetForegroundColour(wxColour(230, 230, 230));
-	
+
 			wxTextCtrl* content = new wxTextCtrl(m_mainPanel, -1, "", wxDefaultPosition,
 				size, wxTE_READONLY | wxTE_MULTILINE | wxTE_NO_VSCROLL | wxBORDER_NONE);
 			content->SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -1828,11 +1894,11 @@ void amItemShowcase::ClearAll()
 
 	m_stHeightLabel->Show(false);
 	m_stHeight->Show(false);
-	m_stWidthLabel->Show(false); 
+	m_stWidthLabel->Show(false);
 	m_stWidth->Show(false);
 	m_stDepthLabel->Show(false);
 	m_stDepth->Show(false);
-	
+
 	m_stGeneralLabel->Show(false);
 	m_tcGeneral->Show(false);
 	m_stAppLabel->Show(false);
@@ -1843,14 +1909,14 @@ void amItemShowcase::ClearAll()
 	m_tcHistory->Show(false);
 	m_stUsageLabel->Show(false);
 	m_tcUsage->Show(false);
-	
+
 	for ( pair<wxStaticText*, wxTextCtrl*>& custom : m_custom )
 	{
 		custom.first->Show(false);
 		custom.second->Show(false);
 	}
 
-	m_documents->DeleteAllItems();
+	m_documentViewModel->ClearAll();
 	m_relatedElements->ClearAll();
 
 	Thaw();

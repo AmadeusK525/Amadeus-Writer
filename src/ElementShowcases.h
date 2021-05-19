@@ -10,6 +10,7 @@
 
 #include "ImagePanel.h"
 #include "StoryElements.h"
+#include "StoryWriter.h"
 #include "SwitchCtrl.h"
 #include "amUtility.h"
 
@@ -158,12 +159,20 @@ protected:
 		* m_nameSecondPanel = nullptr,
 		* m_role = nullptr;
 
-	wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
+	wxVector<std::pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 
 	wxBoxSizer* m_mainVerSizer = nullptr;
 	wxBoxSizer* m_secondVerSizer = nullptr;
 
-	wxListView* m_documents = nullptr;
+	wxDataViewCtrl* m_documentView = nullptr;
+	wxObjectDataPtr<StoryTreeModel> m_documentViewModel;
+	wxObjectDataPtr<StoryTreeModel> m_addDocumentViewModel;
+#ifdef __WXMSW__
+	amHotTrackingDVCHandler m_documentViewHandler;
+	amHotTrackingDVCHandler m_addDocumentViewHandler;
+#endif /*__WXMSW__*/
+
+	//wxListView* m_documents = nullptr;
 	wxButton* m_addDocumentBtn = nullptr;
 
 	amRelatedElementsContainer* m_relatedElements = nullptr;
@@ -179,6 +188,8 @@ public:
 	void ShowPage(int index);
 
 	Element* GetElement() { return m_element; }
+
+	void OnDocumentActivated(wxDataViewEvent& event);
 
 	void OnAddDocument(wxCommandEvent& event);
 	void OnRemoveDocument(wxCommandEvent& event);
@@ -219,8 +230,6 @@ private:
 		* m_backstory = nullptr;
 
 	wxSwitchCtrl* m_isAlive = nullptr;
-
-	wxVector<pair<wxStaticText*, wxTextCtrl*>> m_custom{};
 
 public:
 	amCharacterShowcase(wxWindow* parent);

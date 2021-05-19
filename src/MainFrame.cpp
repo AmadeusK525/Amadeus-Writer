@@ -212,7 +212,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_toolBar->Realize();
 
-	splitter->SplitVertically(m_selPanel, m_mainBook, FromDIP(230));
+	splitter->SplitVertically(m_selPanel, m_mainBook, FromDIP(150));
 	splitter->SetSashGravity(0.0);
 
 	m_verticalSizer = new wxBoxSizer(wxVERTICAL);

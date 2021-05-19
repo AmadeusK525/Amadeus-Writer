@@ -29,6 +29,40 @@ Element::~Element()
 	}
 }
 
+Document* Element::GetFirstDocument() const
+{
+	Document* pFirstDocument = nullptr;
+	for ( Document* pDocument : documents )
+	{
+		if ( !pFirstDocument || *pDocument < *pFirstDocument )
+			pFirstDocument = pDocument;
+	}
+
+	return pFirstDocument;
+}
+
+Document* Element::GetLastDocument() const
+{
+	Document* pLastDocument = nullptr;
+	for ( Document* pDocument : documents )
+	{
+		if ( !pLastDocument || *pLastDocument < *pDocument )
+			pLastDocument = pDocument;
+	}
+
+	return pLastDocument;
+}
+
+Document* Element::GetFirstDocumentInBook(Book* book) const
+{
+	return nullptr;
+}
+
+Document* Element::GetLastDocumentInBook(Book* book) const
+{
+	return nullptr;
+}
+
 bool Element::operator<(const Element& other) const
 {
 	int i, j;
@@ -53,45 +87,33 @@ bool Element::operator<(const Element& other) const
 
 		break;
 	case CompFirst:
-		i = 9999;
-		j = 9999;
+	{
+		Document* pFirstDocument = GetFirstDocument();
+		Document* pOtherFirstDocument = other.GetFirstDocument();
 
-		for ( Document* document : documents )
-		{
-			if ( document->position < i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position < j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i < j;
+		if ( pFirstDocument && pOtherFirstDocument )
+			return *pFirstDocument < *pOtherFirstDocument;
+		else if ( !pFirstDocument && pOtherFirstDocument )
+			return false;
+		else if ( pFirstDocument && !pOtherFirstDocument )
+			return true;
 
 		break;
+	}
 	case CompLast:
-		i = -1;
-		j = -1;
+	{
+		Document* pLastDocument = GetLastDocument();
+		Document* pOtherLastDocument = other.GetLastDocument();
 
-		for ( Document* document : documents )
-		{
-			if ( document->position > i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position > j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i > j;
+		if ( pLastDocument && pOtherLastDocument )
+			return *pOtherLastDocument < *pLastDocument;
+		else if ( !pLastDocument && pOtherLastDocument )
+			return false;
+		else if ( pLastDocument && !pOtherLastDocument )
+			return true;
 
 		break;
+	}
 	default:
 		break;
 	}
@@ -350,73 +372,8 @@ amSQLEntry Character::GenerateSQLEntryForId()
 
 bool Character::operator<(const Character& other) const
 {
-	int i, j;
-
-	switch ( cCompType )
-	{
-	case CompRole:
-		if ( role != other.role )
-			return role < other.role;
-
-		break;
-
-	case CompNameInverse:
-		return name.Lower() > other.name.Lower();
-		break;
-
-	case CompDocuments:
-		i = documents.size();
-		j = other.documents.size();
-
-		if ( i != j )
-			return i > j;
-
-		break;
-	case CompFirst:
-		i = 9999;
-		j = 9999;
-
-		for ( Document* document : documents )
-		{
-			if ( document->position < i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position < j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i < j;
-
-		break;
-	case CompLast:
-		i = -1;
-		j = -1;
-
-		for ( Document* document : documents )
-		{
-			if ( document->position > i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position > j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i > j;
-
-		break;
-	default:
-		break;
-	}
-
-	return name.Lower() < other.name.Lower();
+	elCompType = cCompType;
+	return this->Element::operator<(other);
 }
 
 void Character::operator=(const Character& other)
@@ -673,73 +630,8 @@ amSQLEntry Location::GenerateSQLEntryForId()
 
 bool Location::operator<(const Location& other) const
 {
-	int i, j;
-
-	switch ( lCompType )
-	{
-	case CompRole:
-		if ( role != other.role )
-			return role < other.role;
-
-		break;
-
-	case CompNameInverse:
-		return name.Lower() > other.name.Lower();
-		break;
-
-	case CompDocuments:
-		i = documents.size();
-		j = other.documents.size();
-
-		if ( i != j )
-			return i > j;
-
-		break;
-	case CompFirst:
-		i = 9999;
-		j = 9999;
-
-		for ( Document* document : documents )
-		{
-			if ( document->position < i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position < j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i < j;
-
-		break;
-	case CompLast:
-		i = -1;
-		j = -1;
-
-		for ( Document* document : documents )
-		{
-			if ( document->position > i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position > j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i > j;
-
-		break;
-	default:
-		break;
-	}
-
-	return name.Lower() < other.name.Lower();
+	elCompType = lCompType;
+	return this->Element::operator<(other);
 }
 
 void Location::operator=(const Location& other)
@@ -1000,73 +892,8 @@ amSQLEntry Item::GenerateSQLEntryForId()
 
 bool Item::operator<(const Item& other) const
 {
-	int i, j;
-
-	switch ( iCompType )
-	{
-	case CompRole:
-		if ( role != other.role )
-			return role < other.role;
-
-		break;
-
-	case CompNameInverse:
-		return name.Lower() > other.name.Lower();
-		break;
-
-	case CompDocuments:
-		i = documents.size();
-		j = other.documents.size();
-
-		if ( i != j )
-			return i > j;
-
-		break;
-	case CompFirst:
-		i = 9999;
-		j = 9999;
-
-		for ( Document* document : documents )
-		{
-			if ( document->position < i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position < j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i < j;
-
-		break;
-	case CompLast:
-		i = -1;
-		j = -1;
-
-		for ( Document* document : documents )
-		{
-			if ( document->position > i )
-				i = document->position;
-		}
-
-		for ( Document* document : other.documents )
-		{
-			if ( document->position > j )
-				j = document->position;
-		}
-
-		if ( i != j )
-			return i > j;
-
-		break;
-	default:
-		break;
-	}
-
-	return name.Lower() < other.name.Lower();
+	elCompType = iCompType;
+	return this->Element::operator<(other);
 }
 
 void Item::operator=(const Item& other)

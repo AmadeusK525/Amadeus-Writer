@@ -171,7 +171,7 @@ void DocumentCreator::Cancel(wxCommandEvent& event)
 
 void DocumentCreator::Create(wxCommandEvent& event)
 {
-	Document* pDocument = new Document(nullptr, -1, -1, Document_Chapter);
+	Document* pDocument = new Document(nullptr, -1, m_manager->GetCurrentBook(), Document_Chapter);
 
 	if ( m_ndocName->GetValue() != "" && m_ndocName->IsModified() )
 		pDocument->name = m_ndocName->GetValue();
@@ -184,7 +184,7 @@ void DocumentCreator::Create(wxCommandEvent& event)
 
 	pDocument->position = pos + 1;
 
-	m_manager->AddDocument(pDocument, m_manager->GetBooks()[0], pos);
+	m_manager->AddDocument(pDocument, m_manager->GetCurrentBook(), pos);
 	m_manager->GetMainFrame()->Enable();
 	Destroy();
 

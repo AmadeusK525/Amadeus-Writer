@@ -129,6 +129,7 @@ void amProjectSQLDatabase::CreateAllTables()
 	tDocuments.Add("name TEXT NOT NULL");
 	tDocuments.Add("synopsys TEXT");
 	tDocuments.Add("content TEXT");
+	tDocuments.Add("plain_text TEXT");
 	tDocuments.Add("position INTEGER");
 	tDocuments.Add("type INTEGER");
 	tDocuments.Add("parent_document_id INTEGER");
@@ -628,7 +629,7 @@ bool amProjectManager::Init()
 
 		if ( !m_mainFrame )
 		{
-			m_mainFrame = new amMainFrame("Amadeus Writer - " + m_project.amFile.GetFullName(),
+			m_mainFrame = new amMainFrame(m_project.amFile.GetFullName() + "Amadeus Writer - ",
 				this, wxDefaultPosition, wxDefaultSize);
 
 			m_overview = m_mainFrame->GetOverview();
@@ -717,7 +718,7 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 		m_outline->LoadOutline(&m_storage);
 		m_release->SetBookData(currentBook);
 
-		m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
+		m_mainFrame->SetTitle(m_project.amFile.GetFullName() + "Amadeus Writer - ");
 		SetLastSave();
 	}
 	catch ( wxSQLite3Exception& e )
@@ -738,7 +739,7 @@ void amProjectManager::LoadBooks()
 		Book* book = new Book(result.GetAsString("name"), i + 1);
 		book->SetId(result.GetInt("id"));
 
-		LoadBookContent(book, i == 0);
+		LoadBookContent(book, true);
 
 		m_project.books.push_back(book);
 		i++;
@@ -758,56 +759,33 @@ void amProjectManager::LoadBookContent(Book* book, bool loadDocuments)
 		book->synopsys = result.GetAsString("synopsys");
 
 		if ( loadDocuments )
-			LoadDocuments(book->documents, book->id);
+			LoadDocuments(book);
 
 		break;
 	}
 }
 
-void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
+void amProjectManager::LoadDocuments(Book* book)
 {
 	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM documents WHERE book_id = " +
-		std::to_string(bookId) + " ORDER BY position ASC;");
+		std::to_string(book->id) + " ORDER BY position ASC;");
 
 	while ( result.NextRow() )
 	{
 		int documentId = result.GetInt("id");
 
-		Document* pDocument = new Document(nullptr, bookId, result.GetInt("position"), (DocumentType)result.GetInt("type"));
+		Document* pDocument = new Document(nullptr, result.GetInt("position"), book, (DocumentType)result.GetInt("type"));
 
 		pDocument->name = result.GetAsString("name");
 		pDocument->synopsys = result.GetAsString("synopsys");
 		pDocument->position = result.GetInt("position");
 		pDocument->type = (DocumentType)result.GetInt("type");
-		pDocument->bookID = bookId;
+		pDocument->book = book;
 		pDocument->isInTrash = result.GetInt("isInTrash");
-
-		if ( !result.IsNull("content") )
-		{
-			wxString content = result.GetAsString("content");
-
-			if ( content != "NULL" )
-			{
-				pDocument->buffer = new wxRichTextBuffer;
-				wxStringInputStream sstream(content);
-				pDocument->buffer->LoadFile(sstream, wxRICHTEXT_TYPE_XML);
-			}
-		}
 
 		pDocument->SetId(documentId);
 
-		wxSQLite3ResultSet results2 = m_storage.ExecuteQuery("SELECT * FROM document_notes WHERE document_id = " +
-			std::to_string(documentId) + ";");
-
-		while ( results2.NextRow() )
-		{
-			Note* note = new Note(results2.GetAsString("content"), results2.GetAsString("name"));
-			note->isDone = results2.GetBool("isDone");
-
-			pDocument->notes.push_back(note);
-		}
-
-		results2 = m_storage.ExecuteQuery("SELECT * FROM elements_documents WHERE document_id = " +
+		wxSQLite3ResultSet results2 = m_storage.ExecuteQuery("SELECT * FROM elements_documents WHERE document_id = " +
 			std::to_string(documentId) + ";");
 
 		while ( results2.NextRow() )
@@ -823,7 +801,7 @@ void amProjectManager::LoadDocuments(wxVector<Document*>& documents, int bookId)
 			}
 		}
 
-		documents.push_back(pDocument);
+		book->documents.push_back(pDocument);
 	}
 }
 
@@ -1219,7 +1197,7 @@ void amProjectManager::OpenDocument(Document* document)
 {
 	if ( m_storyWriter )
 	{
-		m_storyWriter->SetCurrentDocument(document, true, true);
+		m_storyWriter->LoadDocument(document);
 		m_storyWriter->Maximize();
 	}
 	else
@@ -1317,7 +1295,7 @@ void amProjectManager::AddItem(Item* item, bool refreshElements)
 /// <param name="pos">Where in the section will the document be inserted</param>
 void amProjectManager::AddDocument(Document* document, Book* book, int pos)
 {
-	document->bookID = book->id;
+	document->book = book;
 	m_storyNotebook->AddDocument(document, pos);
 
 	document->Save(&m_storage);

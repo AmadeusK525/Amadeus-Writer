@@ -4,9 +4,14 @@
 
 #include <wx\wx.h>
 #include <wx\filename.h>
-#include <wx\richtext\richtextbuffer.h>
+#include <wx\richtext\richtextctrl.h>
 
 #include "StoryElements.h"
+
+struct amProject;
+struct Book;
+struct Document;
+struct Note;
 
 
 /////////////////////////////////////////////////////////////////
@@ -44,6 +49,7 @@ struct Document
 {
 	Document* parent = nullptr;
 	wxVector<Document*> children{};
+	Book* book = nullptr;
 
 	wxString name{ "" };
 	wxString synopsys{ "" };
@@ -57,15 +63,14 @@ struct Document
 
 	int position = -1;
 	int id = -1;
-	int bookID = -1;
 
 	bool isInTrash = false;
 
-	Document(Document* parent, int position, int bookId, DocumentType documentType) :
+	Document(Document* parent, int position, Book* book, DocumentType documentType) :
 		parent(parent),
-		position(position),
-		bookID(bookId),
-		type(documentType)
+		book(book),
+		type(documentType),
+		position(position)
 	{}
 	virtual ~Document();
 
@@ -75,6 +80,9 @@ struct Document
 
 	void Save(wxSQLite3Database* db);
 	bool Update(wxSQLite3Database* db, bool updateContent, bool updateNotes);
+
+	void LoadSelf(wxSQLite3Database* db, wxRichTextCtrl* targetRtc);
+	void CleanUp();
 
 	amSQLEntry GenerateSQLEntrySimple();
 	amSQLEntry GenerateSQLEntry();
@@ -96,6 +104,7 @@ struct Book
 	wxImage cover;
 
 	wxString title{ "" };
+	wxString shortTitle{ "" };
 	wxString publisher{ "" };
 
 	wxString author{ "" },
