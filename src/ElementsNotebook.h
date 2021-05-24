@@ -12,24 +12,63 @@
 #include "ProjectManager.h"
 #include "ElementShowcases.h"
 
+class amCheckListBox;
+
+enum
+{
+	LISTMENU_EditElement,
+	LISTMENU_DeleteElement
+};
+
+class amElementNotebookPage : public amSplitterWindow 
+{
+private:
+	wxClassInfo* m_elementType = nullptr;
+	wxListView* m_elementList = nullptr;
+	wxImageList* m_imageList = nullptr;
+
+	wxChoice* m_sortBy = nullptr;
+	wxVector<Book*> m_vBooksToShow;
+
+	wxComboCtrl* m_show = nullptr;
+	amCheckListBox* m_bookCheckList = nullptr;
+
+	amElementShowcase* m_elementShowcase = nullptr;
+
+public:
+	amElementNotebookPage(wxWindow* parent, wxClassInfo* showcaseType, const wxArrayString& sortByChoices);
+
+	bool ShouldShow(Element* element);
+	void ClearAll();
+	void InitShowChoices();
+
+	void GoToElement(Element* element);
+
+	void UpdateList();
+	void UpdateElementInList(int n, Element* element);
+
+	inline wxListView* GetList() { return m_elementList; }
+	inline amElementShowcase* GetShowcase() { return m_elementShowcase; }
+
+	void OnElementSelected(wxListEvent& event);
+	void OnElementRightClick(wxListEvent& event);
+
+	void OnEditElement(wxCommandEvent& event);
+	void OnDeleteElement(wxCommandEvent& event);
+
+	void OnElementsSortBy(wxCommandEvent& event);
+	void OnCheckListBox(wxCommandEvent& event);
+};
+
 class amElementNotebook : public wxNotebook
 {
 private:
 	amProjectManager* m_manager = nullptr;
 
 public:
-	wxListView* m_charList = nullptr, * m_locList = nullptr, * m_itemList = nullptr;
-	wxImageList* m_charImageList = nullptr, * m_locImageList = nullptr, * m_itemsImageList = nullptr;
-
-	amCharacterShowcase* m_charShow = nullptr;
-	amLocationShowcase* m_locShow = nullptr;
-	amItemShowcase* m_itemShow = nullptr;
-
-	wxChoice* m_cSortBy = nullptr,
-		* m_lSortBy = nullptr,
-		* m_iSortBy = nullptr;
-
-	wxComboCtrl* m_cShow = nullptr;
+	amElementNotebookPage* m_characterPage = nullptr,
+		* m_locationPage = nullptr,
+		* m_itemPage = nullptr;
 
 	wxSearchCtrl* m_searchBar = nullptr;
 
@@ -38,70 +77,33 @@ public:
 
 	void InitShowChoices();
 
-	inline amCharacterShowcase* GetCharacterShowcase() { return m_charShow; }
-	inline amLocationShowcase* GetLocationShowcase() { return m_locShow; }
-	inline amItemShowcase* GetItemShowcase() { return m_itemShow; }
+	wxListView* GetAppropriateList(Element* element);
+	amElementNotebookPage* GetAppropriatePage(Element* element);
+
+	inline amElementShowcase* GetCharacterShowcase() { return m_characterPage->GetShowcase(); }
+	inline amElementShowcase* GetLocationShowcase() { return m_locationPage->GetShowcase(); }
+	inline amElementShowcase* GetItemShowcase() { return m_itemPage->GetShowcase(); }
+
+	inline wxListView* GetCharacterList() { return m_characterPage->GetList(); }
+	inline wxListView* GetLocationList() { return m_locationPage->GetList(); }
+	inline wxListView* GetItemList() { return m_itemPage->GetList(); }
 
 	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 
 	void GoToElement(Element* element);
+	bool ShouldShow(Element* element) const;
 
-	void OnCharRightClick(wxListEvent& event);
-	void OnEditCharName(wxListEvent& event);
-	void OnEditCharacter(wxCommandEvent& event);
-	void OnDeleteCharacter(wxCommandEvent& event);
-	void OnCharacterActivated(wxListEvent& event);
-
-	void OnLocRightClick(wxListEvent& event);
-	void OnEditLocation(wxCommandEvent& event);
-	void OnDeleteLocation(wxCommandEvent& event);
-	void OnLocationActivated(wxListEvent& event);
-
-	void OnItemRightClick(wxListEvent& event);
-	void OnEditItem(wxCommandEvent& event);
-	void OnDeleteItem(wxCommandEvent& event);
-	void OnItemActivated(wxListEvent& event);
-
-	void OnCharacterSelected(wxListEvent& event);
-	void OnLocationSelected(wxListEvent& event);
-	void OnItemSelected(wxListEvent& event);
-
-	void OnCharactersSortBy(wxCommandEvent& event);
-	void OnLocationsSortBy(wxCommandEvent& event);
-	void OnItemsSortBy(wxCommandEvent& event);
-
-	void SetSearchAC(wxBookCtrlEvent& event);
+	void UpdateSearchAutoComplete(wxBookCtrlEvent& event);
 
 	void ClearAll();
 
-	void UpdateCharacter(int n, Character* character);
-	void UpdateLocation(int n, Location* location);
-	void UpdateItem(int n, Item* item);
+	void RemoveElementFromList(Element* element);
+	void UpdateElementInList(int n, Element* element);
 
-	void UpdateCharacterList();
-	void UpdateLocationList();
-	void UpdateItemList();
+	inline void UpdateCharacterList() { m_characterPage->UpdateList(); }
+	inline void UpdateLocationList() { m_locationPage->UpdateList(); }
+	inline void UpdateItemList() { m_itemPage->UpdateList(); }
 	void UpdateAll();
-
-	DECLARE_EVENT_TABLE()
-};
-
-enum
-{
-	NOTEBOOK_THIS,
-
-	PANEL_Char,
-
-	LIST_CharList,
-	LIST_LocList,
-	LIST_ItemList,
-
-	LISTMENU_EditChar,
-	LISTMENU_EditLoc,
-	LISTMENU_EditItem,
-	LISTMENU_DeleteChar,
-	LISTMENU_DeleteLoc,
-	LISTMENU_DeleteItem
 };
 
 
@@ -134,14 +136,19 @@ public:
 
 		bool first = true;
 
-		for ( auto& it : selections )
+		for ( int& it : selections )
 		{
 			if ( !first )
 				string << ", ";
+			else
+				first = false;
 
 			string << GetString(it);
-			first = false;
 		}
+
+		if ( string.IsEmpty() )
+			string = "All";
+
 		return string;
 	}
 
@@ -152,10 +159,8 @@ public:
 
 	void OnMouseClick(wxMouseEvent& event)
 	{
-		int n = HitTest(event.GetPosition());
-
-		Check(n, !IsChecked(n));
 		GetComboCtrl()->SetText(GetStringValue());
+		event.Skip();
 	}
 };
 

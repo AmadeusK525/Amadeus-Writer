@@ -178,7 +178,10 @@ protected:
 	amRelatedElementsContainer* m_relatedElements = nullptr;
 
 public:
+	amElementShowcase() = default;
 	amElementShowcase(wxWindow* parent);
+
+	virtual bool Create(wxWindow* parent);
 
 	virtual void SetData(Element* element);
 	virtual bool LoadFirstPanel(Element* element) = 0;
@@ -199,6 +202,8 @@ public:
 	void OnPreviousPanel(wxCommandEvent& event);
 
 	inline void EmptyMouseEvent(wxMouseEvent& event) {}
+	
+	wxDECLARE_ABSTRACT_CLASS(amElementShowcase);
 };
 
 
@@ -232,10 +237,15 @@ private:
 	wxSwitchCtrl* m_isAlive = nullptr;
 
 public:
+	amCharacterShowcase() = default;
 	amCharacterShowcase(wxWindow* parent);
+
+	virtual bool Create(wxWindow* parent);
 
 	virtual bool LoadFirstPanel(Element* element) override;
 	virtual void ClearAll() override;
+
+	wxDECLARE_DYNAMIC_CLASS(amCharacterShowcase);
 };
 
 
@@ -267,10 +277,15 @@ private:
 	bool m_first = true;
 
 public:
+	amLocationShowcase() = default;
 	amLocationShowcase(wxWindow* parent);
 	
+	virtual bool Create(wxWindow* parent);
+
 	virtual bool LoadFirstPanel(Element* element) override;	
 	virtual void ClearAll() override;
+
+	wxDECLARE_DYNAMIC_CLASS(amLocationShowcase);
 };
 
 
@@ -304,10 +319,15 @@ private:
 		* m_tcUsage = nullptr;
 
 public:
+	amItemShowcase() = default;
 	amItemShowcase(wxWindow* parent);
+	
+	virtual bool Create(wxWindow* parent);
 
 	virtual bool LoadFirstPanel(Element* element) override;
 	virtual void ClearAll() override;
+
+	wxDECLARE_DYNAMIC_CLASS(amItemShowcase);
 };
 
 #endif

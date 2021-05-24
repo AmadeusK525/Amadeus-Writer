@@ -1222,7 +1222,7 @@ void amStoryWriter::LoadDocument(Document* document)
 			for ( int i = 0; i < notebook->GetPageCount(); i++ )
 			{
 				wxWindow* window = notebook->GetPage(i);
-				if ( window == tab.notePanel || window == tab.rtc )
+				if ( window == tab.mainPanel)
 				{
 					m_swNotebook->SetCurrentTab(tab, false);
 					m_statusBar->SetStatusText("Zoom: " + std::to_string((int)(tab.rtc->GetFontScale() * 100)) + "%", 2);
@@ -1238,7 +1238,10 @@ void amStoryWriter::LoadDocument(Document* document)
 	{
 		wxBusyCursor busy;
 
-		wxRichTextCtrl* rtc = new wxRichTextCtrl(notebook, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
+		wxPanel* mainPanel = new wxPanel(notebook, -1);
+		mainPanel->SetBackgroundColour(wxColour(20, 20, 20));
+
+		wxRichTextCtrl* rtc = new wxRichTextCtrl(mainPanel, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
 			wxRE_MULTILINE | wxBORDER_NONE);
 
 		wxRichTextAttr attr;
@@ -1257,7 +1260,7 @@ void amStoryWriter::LoadDocument(Document* document)
 		rtc->GetBuffer().SetMargins(FromDIP(72), FromDIP(72), 0, 0);
 		rtc->GetBuffer().Invalidate(wxRICHTEXT_ALL);
 
-		wxScrolledWindow* notePage = new wxScrolledWindow(notebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+		wxScrolledWindow* notePage = new wxScrolledWindow(mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 		notePage->SetBackgroundColour(wxColour(45, 45, 45));
 		notePage->EnableScrolling(false, true);
 		notePage->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_DEFAULT);
@@ -1267,7 +1270,13 @@ void amStoryWriter::LoadDocument(Document* document)
 		notePage->SetSizer(notesSizer);
 		notePage->SetScrollRate(15, 15);
 
-		m_swNotebook->AddTab(amStoryWriterTab(rtc, notePage, document), document->name);
+		wxBoxSizer* mainPanelSizer = new wxBoxSizer(wxHORIZONTAL);
+		mainPanelSizer->Add(rtc, wxSizerFlags(1).Expand());
+		mainPanelSizer->Add(notePage, wxSizerFlags(1).Expand());
+
+		mainPanel->SetSizer(mainPanelSizer);
+
+		m_swNotebook->AddTab(amStoryWriterTab(mainPanel, rtc, notePage, document), document->name);
 
 		for ( Note*& pNote : document->notes )
 		{
@@ -1472,7 +1481,7 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
 
 void amStoryWriterToolbar::OnBold(wxCommandEvent& event)
 {
-	m_currentPage.rtc->ApplyBoldToSelection();
+	m_currentTab.rtc->ApplyBoldToSelection();
 
 	if ( m_parent )
 		m_parent->OnText(event);
@@ -1480,7 +1489,7 @@ void amStoryWriterToolbar::OnBold(wxCommandEvent& event)
 
 void amStoryWriterToolbar::OnItalic(wxCommandEvent& event)
 {
-	m_currentPage.rtc->ApplyItalicToSelection();
+	m_currentTab.rtc->ApplyItalicToSelection();
 
 	if ( m_parent )
 		m_parent->OnText(event);
@@ -1488,7 +1497,7 @@ void amStoryWriterToolbar::OnItalic(wxCommandEvent& event)
 
 void amStoryWriterToolbar::OnUnderline(wxCommandEvent& event)
 {
-	m_currentPage.rtc->ApplyUnderlineToSelection();
+	m_currentTab.rtc->ApplyUnderlineToSelection();
 
 	if ( m_parent )
 		m_parent->OnText(event);
@@ -1496,7 +1505,7 @@ void amStoryWriterToolbar::OnUnderline(wxCommandEvent& event)
 
 void amStoryWriterToolbar::OnAlignLeft(wxCommandEvent& event)
 {
-	m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));
+	m_currentTab.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_LEFT));
 
 	if ( m_parent )
 		m_parent->OnText(event);
@@ -1504,7 +1513,7 @@ void amStoryWriterToolbar::OnAlignLeft(wxCommandEvent& event)
 
 void amStoryWriterToolbar::OnAlignCenter(wxCommandEvent& event)
 {
-	m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
+	m_currentTab.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_CENTER));
 
 	if ( m_parent )
 		m_parent->OnText(event);
@@ -1512,7 +1521,7 @@ void amStoryWriterToolbar::OnAlignCenter(wxCommandEvent& event)
 
 void amStoryWriterToolbar::OnAlignCenterJust(wxCommandEvent& event)
 {
-	m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
+	m_currentTab.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_JUSTIFIED));
 
 	if ( m_parent )
 		m_parent->OnText(event);
@@ -1520,7 +1529,7 @@ void amStoryWriterToolbar::OnAlignCenterJust(wxCommandEvent& event)
 
 void amStoryWriterToolbar::OnAlignRight(wxCommandEvent& event)
 {
-	m_currentPage.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
+	m_currentTab.rtc->ApplyAlignmentToSelection(wxTextAttrAlignment(wxTEXT_ALIGNMENT_RIGHT));
 
 	if ( m_parent )
 		m_parent->OnText(event);
@@ -1532,58 +1541,21 @@ void amStoryWriterToolbar::OnNoteView(wxCommandEvent& event)
 
 	if ( GetToolState(TOOL_NoteView) )
 	{
-		wxRichTextCtrl* current = dynamic_cast<wxRichTextCtrl*>(m_parent->GetCurrentPage());
-
-		if ( current )
+		if ( m_currentTab.rtc->IsShown() )
 		{
-			for ( amStoryWriterTab& it : m_parent->GetAllWriterPages() )
-			{
-				if ( current == it.rtc )
-				{
-					wxAuiNotebook* notebook = m_parent->GetNotebook();
-
-					int index = notebook->GetSelection();
-					wxString title = notebook->GetPageText(index);
-
-					notebook->InsertPage(index, it.notePanel, title, false);
-					notebook->ChangeSelection(index);
-					notebook->RemovePage(index + 1);
-
-					it.rtc->Hide();
-					//it.notePanel->Show();
-					it.notePanel->GetSizer()->FitInside(it.notePanel);
-					break;
-				}
-			}
+			m_currentTab.rtc->Hide();
+			m_currentTab.notePanel->Show();
+			m_currentTab.notePanel->SendSizeEventToParent();
 		}
 	}
 	else
 	{
-		wxScrolledWindow* current = dynamic_cast<wxScrolledWindow*>(m_parent->GetCurrentPage());
-
-		if ( current )
+		if ( m_currentTab.notePanel->IsShown() )
 		{
-			for ( amStoryWriterTab& it : m_parent->GetAllWriterPages() )
-			{
-				if ( current == it.notePanel )
-				{
-					wxAuiNotebook* notebook = m_parent->GetNotebook();
-
-					int index = notebook->GetSelection();
-					wxString title = notebook->GetPageText(index);
-
-					notebook->InsertPage(index, it.rtc, title, false);
-					notebook->ChangeSelection(index);
-					notebook->RemovePage(index + 1);
-
-					it.notePanel->Hide();
-					//it.rtc->Show();
-					it.rtc->Layout();
-					break;
-				}
-			}
+			m_currentTab.notePanel->Hide();
+			m_currentTab.rtc->Show();
+			m_currentTab.rtc->SendSizeEventToParent();
 		}
-		Layout();
 	}
 
 	m_parent->Thaw();
@@ -1591,17 +1563,17 @@ void amStoryWriterToolbar::OnNoteView(wxCommandEvent& event)
 
 void amStoryWriterToolbar::OnTestCircle(wxCommandEvent& event)
 {
-	wxRichTextRange sel = m_currentPage.rtc->GetSelectionRange();
-	wxRichTextBuffer& buf = m_currentPage.rtc->GetBuffer();
+	wxRichTextRange sel = m_currentTab.rtc->GetSelectionRange();
+	wxRichTextBuffer& buf = m_currentTab.rtc->GetBuffer();
 
 
 	wxRichTextProperties prop;
 	prop.SetProperty("commentStart", true);
 
-	buf.InsertFieldWithUndo(&buf, sel.GetStart(), "commentTag", prop, m_currentPage.rtc, 0, m_currentPage.rtc->GetBasicStyle());
+	buf.InsertFieldWithUndo(&buf, sel.GetStart(), "commentTag", prop, m_currentTab.rtc, 0, m_currentTab.rtc->GetBasicStyle());
 
 	prop.SetProperty("commentStart", false);
-	buf.InsertFieldWithUndo(&buf, sel.GetEnd() + 1, "commentTag", prop, m_currentPage.rtc, 0, m_currentPage.rtc->GetBasicStyle());
+	buf.InsertFieldWithUndo(&buf, sel.GetEnd() + 1, "commentTag", prop, m_currentTab.rtc, 0, m_currentTab.rtc->GetBasicStyle());
 
 	for ( wxRichTextObject* it : buf.GetChildren() )
 	{
@@ -1611,7 +1583,7 @@ void amStoryWriterToolbar::OnTestCircle(wxCommandEvent& event)
 	wxFFileOutputStream fileStream("F:\\RTCdump.txt");
 	wxTextOutputStream textStream(fileStream);
 
-	m_currentPage.rtc->GetBuffer().Dump(textStream);
+	m_currentTab.rtc->GetBuffer().Dump(textStream);
 
 	fileStream.Close();
 }
@@ -1620,7 +1592,7 @@ void amStoryWriterToolbar::OnZoom(wxCommandEvent& event)
 {
 	int zoom = event.GetInt();
 
-	m_currentPage.rtc->SetFontScale((double)zoom / 100.0, true);
+	m_currentTab.rtc->SetFontScale((double)zoom / 100.0, true);
 	m_parent->OnZoomChange(zoom);
 	m_contentScale->SetToolTip(std::to_string(zoom));
 }
@@ -1634,43 +1606,43 @@ void amStoryWriterToolbar::OnPageView(wxCommandEvent& WXUNUSED(event)) {}
 
 void amStoryWriterToolbar::OnUpdateBold(wxUpdateUIEvent& event)
 {
-	event.Check(m_currentPage.rtc->IsSelectionBold());
+	event.Check(m_currentTab.rtc->IsSelectionBold());
 }
 
 void amStoryWriterToolbar::OnUpdateItalic(wxUpdateUIEvent& event)
 {
-	event.Check(m_currentPage.rtc->IsSelectionItalics());
+	event.Check(m_currentTab.rtc->IsSelectionItalics());
 }
 
 void amStoryWriterToolbar::OnUpdateUnderline(wxUpdateUIEvent& event)
 {
-	event.Check(m_currentPage.rtc->IsSelectionUnderlined());
+	event.Check(m_currentTab.rtc->IsSelectionUnderlined());
 }
 
 void amStoryWriterToolbar::OnUpdateAlignLeft(wxUpdateUIEvent& event)
 {
-	event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
+	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
 }
 
 void amStoryWriterToolbar::OnUpdateAlignCenter(wxUpdateUIEvent& event)
 {
-	event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
+	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
 }
 
 void amStoryWriterToolbar::OnUpdateAlignCenterJust(wxUpdateUIEvent& event)
 {
-	event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
+	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
 }
 
 void amStoryWriterToolbar::OnUpdateAlignRight(wxUpdateUIEvent& event)
 {
-	event.Check(m_currentPage.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
+	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
 }
 
 void amStoryWriterToolbar::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event))
 {
 	wxRichTextAttr attr;
-	m_currentPage.rtc->GetStyle(m_currentPage.rtc->GetInsertionPoint(), attr);
+	m_currentTab.rtc->GetStyle(m_currentTab.rtc->GetInsertionPoint(), attr);
 	wxString size(std::to_string(attr.GetFontSize()));
 
 	if ( m_fontSize->GetValue() != size )
@@ -1679,35 +1651,34 @@ void amStoryWriterToolbar::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event))
 
 void amStoryWriterToolbar::OnUpdateNoteView(wxUpdateUIEvent& event)
 {
-	wxScrolledWindow* currentCorkboard = dynamic_cast<wxScrolledWindow*>(m_parent->GetCurrentPage());
-	event.Check(currentCorkboard);
+	event.Check(m_currentTab.notePanel->IsShown());
 }
 
 void amStoryWriterToolbar::OnFontSize(wxCommandEvent& event)
 {
-	m_currentPage.rtc->SetFocus();
+	m_currentTab.rtc->SetFocus();
 	wxRichTextAttr attr;
 	attr.SetFlags(wxTEXT_ATTR_FONT_SIZE);
 	long size;
 	event.GetString().ToLong(&size);
 	attr.SetFontSize(size);
 
-	if ( m_currentPage.rtc->HasSelection() )
+	if ( m_currentTab.rtc->HasSelection() )
 	{
-		m_currentPage.rtc->SetStyleEx(m_currentPage.rtc->GetSelectionRange(), attr,
+		m_currentTab.rtc->SetStyleEx(m_currentTab.rtc->GetSelectionRange(), attr,
 			wxRICHTEXT_SETSTYLE_WITH_UNDO | wxRICHTEXT_SETSTYLE_OPTIMIZE | wxRICHTEXT_SETSTYLE_CHARACTERS_ONLY);
 	}
 	else
 	{
-		wxRichTextAttr current = m_currentPage.rtc->GetDefaultStyle();
+		wxRichTextAttr current = m_currentTab.rtc->GetDefaultStyle();
 		current.Apply(attr);
-		m_currentPage.rtc->SetDefaultStyle(current);
+		m_currentTab.rtc->SetDefaultStyle(current);
 	}
 }
 
 void amStoryWriterToolbar::OnUpdateZoom(wxUpdateUIEvent& event)
 {
-	((wxSlider*)FindControl(TOOL_ContentScale))->SetValue(m_currentPage.rtc->GetFontScale() * 100);
+	((wxSlider*)FindControl(TOOL_ContentScale))->SetValue(m_currentTab.rtc->GetFontScale() * 100);
 }
 
 
@@ -1747,17 +1718,19 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* do
 void amStoryWriterNotebook::AddTab(amStoryWriterTab& tab, const wxString& title)
 {
 	m_swTabs.push_back(tab);
-	m_notebook->AddPage(tab.rtc, title, false);
+	m_notebook->AddPage(tab.mainPanel, title, false);
 
 	SetCurrentTab(tab, false);
 }
 
 void amStoryWriterNotebook::SetCurrentTab(amStoryWriterTab& tab, bool load)
 {
-	int i = 0;
-	for ( amStoryWriterTab& tabIt : m_swTabs )
+	for ( int i = 0; i < m_notebook->GetPageCount(); i++ )
 	{
-		if ( tabIt.document == tab.document )
+		wxWindow* pPage = m_notebook->GetPage(i);
+		amStoryWriterTab& tabIt = m_swTabs[i];
+
+		if ( pPage == tabIt.mainPanel )
 		{
 			m_storyWriter->SetActiveTab(tab, load, load);
 			m_contentToolbar->SetCurrentTab(tab);
@@ -1768,7 +1741,6 @@ void amStoryWriterNotebook::SetCurrentTab(amStoryWriterTab& tab, bool load)
 			m_notebook->ChangeSelection(i);
 			return;
 		}
-		i++;
 	}
 }
 
@@ -1783,7 +1755,7 @@ void amStoryWriterNotebook::OnSelectionChanged(wxAuiNotebookEvent& event)
 	wxWindow* window = m_notebook->GetPage(sel);
 	for ( amStoryWriterTab& tab : m_swTabs )
 	{
-		if ( tab.rtc == window || tab.notePanel == window )
+		if ( tab.mainPanel == window )
 		{
 			m_storyWriter->SetActiveTab(tab, true, true);
 			m_contentToolbar->SetCurrentTab(tab);
@@ -1805,7 +1777,7 @@ void amStoryWriterNotebook::OnPageClosing(wxAuiNotebookEvent& event)
 		wxWindow* page = m_notebook->GetPage(event.GetSelection());
 		for ( amStoryWriterTab& tab : m_swTabs )
 		{
-			if ( tab.rtc == page || tab.notePanel == page )
+			if ( tab.mainPanel )
 			{
 				m_closingTab = tab;
 
@@ -1831,11 +1803,6 @@ void amStoryWriterNotebook::OnPageClosed(wxAuiNotebookEvent& event)
 	if ( !m_closingTab.document )
 		return;
 
-	if ( m_closingTab.rtc )
-		m_closingTab.rtc->Destroy();
-	else if ( m_closingTab.notePanel )
-		m_closingTab.notePanel->Destroy();
-
 	m_closingTab.document->CleanUp();
 
 	for ( amStoryWriterTab& tab : m_swTabs )
@@ -1848,6 +1815,7 @@ void amStoryWriterNotebook::OnPageClosed(wxAuiNotebookEvent& event)
 	}
 
 	m_closingTab.document = nullptr;
+	m_closingTab.mainPanel = nullptr;
 	m_closingTab.rtc = nullptr;
 	m_closingTab.notePanel = nullptr;
 

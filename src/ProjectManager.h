@@ -161,6 +161,10 @@ public:
 	void AddItem(Item* item, bool refreshElements);
 	void AddDocument(Document* document, Book* book, int pos = -1);
 
+	void ResortElements();
+
+	void StartEditingElement(Element* element);
+
 	void EditCharacter(Character* original, Character& edit, bool sort = false);
 	void EditLocation(Location* original, Location& edit, bool sort = false);
 	void EditItem(Item* original, Item& edit, bool sort = false);
@@ -175,10 +179,9 @@ public:
 	void UnrelateElements(Element* element1, Element* element2, bool removeFromDb = true);
 
 	Element* GetElementByName(const wxString& name);
+	Book* GetBookByName(const wxString& name);
 
-	void DeleteCharacter(Character* character, bool clearShowcase);
-	void DeleteLocation(Location* location, bool clearShowcase);
-	void DeleteItem(Item* item, bool clearShowcase);
+	void DeleteElement(Element* element);
 	void DeleteDocument(Document* document);
 
 	inline amProject* GetProject() { return &m_project; }

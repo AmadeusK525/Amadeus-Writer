@@ -102,14 +102,6 @@ void amRelatedElementsContainer::DoLoad(Element* element, bool(*ShouldAdd)(Eleme
 	int buttonCount = m_grid->GetItemCount();
 	int relatedCount = element->relatedElements.size();
 
-	if ( buttonCount > relatedCount )
-	{
-		for ( int i = buttonCount - 1; i > relatedCount - 1; i-- )
-		{
-			m_grid->GetItem(i)->GetWindow()->Destroy();
-		}
-	}
-
 	int i = 0;
 	for ( Element*& pRelated : element->relatedElements )
 	{
@@ -132,6 +124,10 @@ void amRelatedElementsContainer::DoLoad(Element* element, bool(*ShouldAdd)(Eleme
 			i++;
 		}
 	}
+
+	size_t buttonCountAfter = i;
+	for ( i = buttonCount; i > buttonCountAfter; i-- )
+		m_grid->GetItem(i - 1)->GetWindow()->Destroy();
 
 	Layout();
 	SendSizeEventToParent();
@@ -578,9 +574,18 @@ void amRelatedElementsDialog::OnListResize(wxSizeEvent& event)
 ///////////////////////////////////////////////////////////////////
 
 
-amElementShowcase::amElementShowcase(wxWindow* parent) :
-	wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize)
+wxIMPLEMENT_ABSTRACT_CLASS(amElementShowcase, wxWindow);
+
+amElementShowcase::amElementShowcase(wxWindow* parent)
 {
+	Create(parent);
+}
+
+bool amElementShowcase::Create(wxWindow* parent)
+{
+	if ( !wxWindow::Create(parent, -1) )
+		return false;
+
 	wxFont font(wxFontInfo(12).Bold());
 
 	SetDoubleBuffered(true);
@@ -714,6 +719,8 @@ amElementShowcase::amElementShowcase(wxWindow* parent) :
 
 	m_secondPanel->SetSizerAndFit(m_secondVerSizer);
 	m_secondPanel->SetScrollRate(0, 20);
+
+	return true;
 }
 
 void amElementShowcase::SetData(Element* element)
@@ -922,8 +929,18 @@ void amElementShowcase::OnOpenDocument(wxCommandEvent& event)
 ///////////////////////////////////////////////////////////////////
 
 
-amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(parent)
+wxIMPLEMENT_DYNAMIC_CLASS(amCharacterShowcase, amElementShowcase);
+
+amCharacterShowcase::amCharacterShowcase(wxWindow* parent)
 {
+	Create(parent);
+}
+
+bool amCharacterShowcase::Create(wxWindow* parent)
+{
+	if ( !amElementShowcase::Create(parent) )
+		return false;
+
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(11));
 
@@ -1038,6 +1055,8 @@ amCharacterShowcase::amCharacterShowcase(wxWindow* parent) : amElementShowcase(p
 	m_mainVerSizer->Add(m_personality, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
 	m_mainVerSizer->Add(m_bsLabel, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxTOP, 10).Left());
 	m_mainVerSizer->Add(m_backstory, wxSizerFlags(0).Border(wxLEFT | wxRIGHT | wxBOTTOM, 10).Expand());
+
+	return true;
 }
 
 bool amCharacterShowcase::LoadFirstPanel(Element* element)
@@ -1248,12 +1267,13 @@ bool amCharacterShowcase::LoadFirstPanel(Element* element)
 void amCharacterShowcase::ClearAll()
 {
 	Freeze();
-	m_name->SetLabel("");
+	m_name->SetLabel(" ");
+	m_name->Show(true);
 
 	m_role->SetLabel("");
 	m_role->SetBackgroundColour(wxColour(220, 220, 220));
 
-	m_image->SetImage(wxImage());
+	m_image->Show(false);
 
 	m_isAlive->Show(false);
 
@@ -1280,8 +1300,11 @@ void amCharacterShowcase::ClearAll()
 		custom.second->Show(false);
 	}
 
+	m_nameSecondPanel->SetLabel("");
 	m_documentViewModel->ClearAll();
 	m_relatedElements->ClearAll();
+
+	Layout();
 	Thaw();
 }
 
@@ -1291,8 +1314,18 @@ void amCharacterShowcase::ClearAll()
 ///////////////////////////////////////////////////////////////////
 
 
-amLocationShowcase::amLocationShowcase(wxWindow* parent) : amElementShowcase(parent)
+wxIMPLEMENT_DYNAMIC_CLASS(amLocationShowcase, amElementShowcase);
+
+amLocationShowcase::amLocationShowcase(wxWindow* parent)
 {
+	Create(parent);
+}
+
+bool amLocationShowcase::Create(wxWindow* parent)
+{
+	if ( !amElementShowcase::Create(parent) )
+		return false;
+
 	wxFont font(wxFontInfo(12).Bold());
 	wxFont font2(wxFontInfo(9));
 
@@ -1371,6 +1404,8 @@ amLocationShowcase::amLocationShowcase(wxWindow* parent) : amElementShowcase(par
 	horSizer->Add(m_secondColumn, wxSizerFlags(1).Expand().Border(wxLEFT, 10));
 
 	m_mainVerSizer->Add(horSizer, wxSizerFlags(1).Expand().Border(wxALL, 15));
+
+	return true;
 }
 
 bool amLocationShowcase::LoadFirstPanel(Element* element)
@@ -1547,12 +1582,13 @@ bool amLocationShowcase::LoadFirstPanel(Element* element)
 void amLocationShowcase::ClearAll()
 {
 	Freeze();
-	m_name->SetLabel("");
+	m_name->SetLabel(" ");
+	m_name->Show(true);
 
 	m_role->SetLabel("");
 	m_role->SetBackgroundColour(wxColour(220, 220, 220));
 
-	m_image->SetImage(wxImage());
+	m_image->Show(false);
 
 	m_general->Show(false);
 	m_generalLabel->Show(false);
@@ -1573,8 +1609,11 @@ void amLocationShowcase::ClearAll()
 		custom.second->Show(false);
 	}
 
+	m_nameSecondPanel->SetLabel("");
 	m_documentViewModel->ClearAll();
 	m_relatedElements->ClearAll();
+
+	Layout();
 	Thaw();
 }
 
@@ -1584,8 +1623,18 @@ void amLocationShowcase::ClearAll()
 ///////////////////////////////////////////////////////////////////
 
 
-amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent)
+wxIMPLEMENT_DYNAMIC_CLASS(amItemShowcase, amElementShowcase);
+
+amItemShowcase::amItemShowcase(wxWindow* parent)
 {
+	Create(parent);
+}
+
+bool amItemShowcase::Create(wxWindow * parent)
+{
+	if ( !amElementShowcase::Create(parent) )
+		return false;
+
 	wxFont labelFont(wxFontInfo(12).Bold());
 	wxFont contentFont(wxFontInfo(11));
 
@@ -1714,6 +1763,8 @@ amItemShowcase::amItemShowcase(wxWindow* parent) : amElementShowcase(parent)
 	m_mainVerSizer->Add(m_tcHistory, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM | wxRIGHT, 10));
 	m_mainVerSizer->Add(m_stUsageLabel, wxSizerFlags(0).Left().Border(wxLEFT | wxTOP | wxRIGHT, 10));
 	m_mainVerSizer->Add(m_tcUsage, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM | wxRIGHT, 10));
+
+	return true;
 }
 
 bool amItemShowcase::LoadFirstPanel(Element* element)
@@ -1887,6 +1938,8 @@ void amItemShowcase::ClearAll()
 	m_role->SetBackgroundColour(wxColour(220, 220, 220));
 
 	m_name->SetLabel("");
+	m_name->Show();
+
 	m_image->Show(false);
 
 	m_stManMade->Show(false);
@@ -1916,8 +1969,10 @@ void amItemShowcase::ClearAll()
 		custom.second->Show(false);
 	}
 
+	m_nameSecondPanel->SetLabel("");
 	m_documentViewModel->ClearAll();
 	m_relatedElements->ClearAll();
 
+	Layout();
 	Thaw();
 }

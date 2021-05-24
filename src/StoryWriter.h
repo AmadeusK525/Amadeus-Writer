@@ -12,9 +12,8 @@
 #include "ProjectManager.h"
 #include "StoryNotebook.h"
 #include "OutlineFiles.h"
-#include "Note.h"
 
-class amStoryWriterTab;
+struct amStoryWriterTab;
 class amStoryWriter;
 class amStoryWriterNotebook;
 
@@ -268,14 +267,16 @@ public:
 
 struct amStoryWriterTab
 {
+	wxPanel* mainPanel = nullptr;
+
 	wxRichTextCtrl* rtc = nullptr;
 	wxScrolledWindow* notePanel = nullptr;
 
 	Document* document = nullptr;
 
 	amStoryWriterTab() = default;
-	amStoryWriterTab(wxRichTextCtrl* rtc, wxScrolledWindow* notePanel, Document* document) :
-		rtc(rtc), notePanel(notePanel), document(document)
+	amStoryWriterTab(wxPanel* mainPanel, wxRichTextCtrl* rtc, wxScrolledWindow* notePanel, Document* document) :
+		mainPanel(mainPanel), rtc(rtc), notePanel(notePanel), document(document)
 	{}
 };
 
@@ -459,7 +460,7 @@ private:
 	wxComboBox* m_fontSize = nullptr;
 	wxSlider* m_contentScale = nullptr;
 
-	amStoryWriterTab m_currentPage;
+	amStoryWriterTab m_currentTab;
 
 public:
 	amStoryWriterToolbar(wxWindow* parent,
@@ -469,7 +470,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxTB_DEFAULT_STYLE | wxTB_FLAT);
 
-	inline void SetCurrentTab(amStoryWriterTab& currentPage) { m_currentPage = currentPage; }
+	inline void SetCurrentTab(amStoryWriterTab& currentPage) { m_currentTab = currentPage; }
 
 	void OnBold(wxCommandEvent& event);
 	void OnItalic(wxCommandEvent& event);

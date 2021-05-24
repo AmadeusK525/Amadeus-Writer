@@ -32,7 +32,7 @@ Element::~Element()
 Document* Element::GetFirstDocument() const
 {
 	Document* pFirstDocument = nullptr;
-	for ( Document* pDocument : documents )
+	for ( Document* const& pDocument : documents )
 	{
 		if ( !pFirstDocument || *pDocument < *pFirstDocument )
 			pFirstDocument = pDocument;
@@ -44,7 +44,7 @@ Document* Element::GetFirstDocument() const
 Document* Element::GetLastDocument() const
 {
 	Document* pLastDocument = nullptr;
-	for ( Document* pDocument : documents )
+	for ( Document* const& pDocument : documents )
 	{
 		if ( !pLastDocument || *pLastDocument < *pDocument )
 			pLastDocument = pDocument;
@@ -61,6 +61,17 @@ Document* Element::GetFirstDocumentInBook(Book* book) const
 Document* Element::GetLastDocumentInBook(Book* book) const
 {
 	return nullptr;
+}
+
+bool Element::IsInBook(Book* book) const
+{
+	for ( Document* const& pDocument : documents )
+	{
+		if ( pDocument->book == book )
+			return true;
+	}
+
+	return false;
 }
 
 bool Element::operator<(const Element& other) const

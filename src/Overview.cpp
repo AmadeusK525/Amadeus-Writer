@@ -20,7 +20,7 @@ amBookPicker::amBookPicker(amOverview* parent) :
 	m_bookCoverSize = { Book::GetCoverSize().x / 6, Book::GetCoverSize().y / 6 };
 	m_buttonSize = m_bookCoverSize + wxSize(15, 15);
 
-	m_mainWindow->SetMinClientSize(wxSize(m_buttonSize.x + 5, m_buttonSize.y + 5));
+	m_mainWindow->SetMinClientSize(wxSize(-1, m_buttonSize.y + 10));
 
 	wxButton* addBook = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
 	addBook->SetBitmap(wxBITMAP_PNG(plus));
@@ -38,7 +38,7 @@ amBookPicker::amBookPicker(amOverview* parent) :
 	wxBoxSizer* vertical = new wxBoxSizer(wxVERTICAL);
 	vertical->Add(m_mainWindow, wxSizerFlags(1).Expand());
 	vertical->Add(bottomLine, wxSizerFlags(0).Expand());
-	SetSizer(vertical);
+	SetSizerAndFit(vertical);
 }
 
 void amBookPicker::AddButton(Book* book, int index)
@@ -59,7 +59,7 @@ void amBookPicker::AddButton(Book* book, int index)
 	}
 	m_mainSizer->Insert(index, button, wxSizerFlags().Border(wxBOTTOM | wxLEFT | wxTOP, 5));
 
-	FitInside();
+	m_mainWindow->Fit();
 }
 
 void amBookPicker::OnBookClicked(wxCommandEvent& event)

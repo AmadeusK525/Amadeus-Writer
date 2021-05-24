@@ -40,8 +40,18 @@ protected:
 	Element* m_elementEdit = nullptr;
 
 public:
+	amElementCreator() = default;
 	amElementCreator(wxWindow* parent,
-		amProjectManager* m_manager,
+		amProjectManager* manager,
+		long id = wxID_ANY,
+		const wxString& label = "Create element",
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxSize(600, 600),
+		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
+		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+
+	virtual bool Create(wxWindow* parent,
+		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create element",
 		const wxPoint& pos = wxDefaultPosition,
@@ -52,7 +62,7 @@ public:
 	virtual wxVector<wxString> GetValues() = 0;
 	wxVector<pair<wxString, wxString>> GetCustom();
 
-	virtual void SetEdit(Element* element) = 0;
+	virtual void StartEditing(Element* element) = 0;
 	virtual void DoEdit(wxCommandEvent& event) = 0;
 
 	virtual void AddCustomAttr(wxCommandEvent& event) = 0;
@@ -65,8 +75,8 @@ public:
 	void SetImage(wxCommandEvent& event);
 	void RemoveImage(wxCommandEvent& event);
 
-	virtual void Create(wxCommandEvent& event) = 0;
-	virtual void CheckClose(wxCloseEvent& event) = 0;
+	virtual void OnCreateElement(wxCommandEvent& event) = 0;
+	virtual void OnClose(wxCloseEvent& event);
 
 	enum
 	{
@@ -93,6 +103,7 @@ public:
 	};
 
 	DECLARE_EVENT_TABLE()
+	wxDECLARE_ABSTRACT_CLASS(amElementCreator);
 };
 
 
@@ -122,6 +133,7 @@ private:
 		* ncSecon = nullptr;
 
 public:
+	amCharacterCreator() = default;
 	amCharacterCreator(wxWindow* parent,
 		amProjectManager* manager,
 		long id = wxID_ANY,
@@ -131,15 +143,26 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
+	virtual bool Create(wxWindow* parent,
+		amProjectManager* manager,
+		long id = wxID_ANY,
+		const wxString& label = "Create element",
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxSize(600, 600),
+		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
+		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+
 	virtual wxVector<wxString> GetValues();
 
-	virtual void SetEdit(Element* editChar);
+	virtual void StartEditing(Element* editChar);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
 
-	virtual void Create(wxCommandEvent& event);
-	virtual void CheckClose(wxCloseEvent& event);
+	virtual void OnCreateElement(wxCommandEvent& event);
+	virtual void OnClose(wxCloseEvent& event);
+
+	wxDECLARE_DYNAMIC_CLASS(amCharacterCreator);
 };
 
 
@@ -175,17 +198,28 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
+	virtual bool Create(wxWindow* parent,
+		amProjectManager* manager,
+		long id = wxID_ANY,
+		const wxString& label = "Create element",
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxSize(600, 600),
+		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
+		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+
 	virtual wxVector<wxString> GetValues();
 
-	virtual void SetEdit(Element* editLoc);
+	virtual void StartEditing(Element* editLoc);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
 	virtual void RemoveCustomAttr(wxCommandEvent& event);
 	void RecolorCustoms();
 
-	virtual void Create(wxCommandEvent& event);
-	virtual void CheckClose(wxCloseEvent& event);
+	virtual void OnCreateElement(wxCommandEvent& event);
+	virtual void OnClose(wxCloseEvent& event);
+
+	wxDECLARE_DYNAMIC_CLASS(amLocationCreator);
 };
 
 
@@ -228,16 +262,27 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
+	virtual bool Create(wxWindow* parent,
+		amProjectManager* m_manager,
+		long id = wxID_ANY,
+		const wxString& label = "Create element",
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxSize(600, 600),
+		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
+		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+
 	virtual wxVector<wxString> GetValues();
 
-	virtual void SetEdit(Element* editItem);
+	virtual void StartEditing(Element* editItem);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
 
-	virtual void Create(wxCommandEvent& event);
-	virtual void CheckClose(wxCloseEvent& event);
+	virtual void OnCreateElement(wxCommandEvent& event);
+	virtual void OnClose(wxCloseEvent& event);
 
 	void OnPaint(wxPaintEvent& event);
+
+	wxDECLARE_DYNAMIC_CLASS(amItemCreator);
 };
 #endif

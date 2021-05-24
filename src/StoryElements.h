@@ -69,6 +69,8 @@ struct Element : public wxObject
 	Document* GetFirstDocumentInBook(Book* book) const;
 	Document* GetLastDocumentInBook(Book* book) const;
 
+	bool IsInBook(Book* book) const;
+
 	virtual void Save(wxSQLite3Database* db) = 0;
 	virtual bool Update(wxSQLite3Database* db) = 0;
 

@@ -82,7 +82,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_selPanel->SetBackgroundColour(wxColour(40, 40, 40));
 	m_selPanel->SetDoubleBuffered(true);
 
-	wxFont font(wxFontInfo(16).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
+	wxFont font(wxFontInfo(13).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
 
 	for ( int i = 0; i < 5; i++ )
 		m_mainButtons.push_back(nullptr);
@@ -93,6 +93,8 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_mainButtons[2] = new wxButton(m_selPanel, BUTTON_Documents, "Story", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[3] = new wxButton(m_selPanel, BUTTON_Outline, "Outline", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_mainButtons[4] = new wxButton(m_selPanel, BUTTON_Release, "Release", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	
+	m_buttonSizer = new wxBoxSizer(wxVERTICAL);
 
 	for ( wxButton* button : m_mainButtons )
 	{
@@ -101,17 +103,12 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 		button->SetForegroundColour(wxColour(245, 245, 245));
 		button->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
 		button->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+		m_buttonSizer->Add(button, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 5));
 	}
+
 	m_mainButtons[0]->SetBackgroundColour(wxDarkenColour(wxColour(130, 0, 0), 28));
 
-	m_buttonSizer = new wxBoxSizer(wxVERTICAL);
-	m_buttonSizer->Add(m_mainButtons[0], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-	m_buttonSizer->Add(m_mainButtons[1], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-	m_buttonSizer->Add(m_mainButtons[2], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-	m_buttonSizer->Add(m_mainButtons[3], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-	m_buttonSizer->Add(m_mainButtons[4], wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 10));
-	m_buttonSizer->AddStretchSpacer(1);
-
+	m_buttonSizer->AddStretchSpacer(2);
 	m_selPanel->SetSizer(m_buttonSizer);
 
 	m_mainBook = new wxSimplebook(splitter);
@@ -142,48 +139,70 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_mainBook->ChangeSelection(0);
 
 	// Create menus and such
-	wxMenuBar* mainMenu = new wxMenuBar();
+	wxMenuBar* pMainMenu = new wxMenuBar();
 
-	wxMenu* fileMenu = new wxMenu();
-	wxMenu* exportCanvas = new wxMenu();
-	exportCanvas->Append(MENU_ExportCorkboardPNG, "PNG image", "Export the contents of the Canvas to an image file, in this case, PNG");
-	exportCanvas->Append(MENU_ExportCorkboardBMP, "BMP image", "Export the contents of the Canvas to an image file, in this case, BMP");
+	wxMenu* pFileMenu = new wxMenu();
+	wxMenu* pExportCanvasMenu = new wxMenu();
+	pExportCanvasMenu->Append(MENU_ExportCorkboardPNG, "PNG image", "Export the contents of the Canvas to an image file, in this case, PNG");
+	pExportCanvasMenu->Append(MENU_ExportCorkboardBMP, "BMP image", "Export the contents of the Canvas to an image file, in this case, BMP");
 
-	fileMenu->Append(MENU_New, "&New project", "Create a new project");
-	fileMenu->Append(MENU_Open, "&Open project", "Open an existing project");
-	fileMenu->Append(MENU_Save, "&Save", "Save the current sqlEntry project");
-	fileMenu->Append(MENU_SaveAs, "Save &As");
-	fileMenu->AppendSubMenu(exportCanvas, "Export corkboard to...");
-	fileMenu->Append(MENU_Quit, "&Quit", "Quit the editor");
+	wxMenu* pNewMenu = new wxMenu();
+	pNewMenu->Append(-1, _("Book"));
+	pNewMenu->Append(-1, _("Project"));
 
-	wxMenu* projectMenu = new wxMenu();
+	wxMenu* pImportElementMenu = new wxMenu();
+	pImportElementMenu->Append(-1, _("Character"));
+	pImportElementMenu->Append(-1, _("Location"));
+	pImportElementMenu->Append(-1, _("Item"));
 
-	projectMenu->Append(MENU_NewDocument, "New &Document", "Create a new document");
-	projectMenu->AppendSeparator();
-	projectMenu->Append(MENU_NewCharacter, "New Character", "Create a new character");
-	projectMenu->Append(MENU_NewLocation, "New &Location", "Create a new location");
-	projectMenu->Append(MENU_NewItem, "New &Item", "Create a new item");
+	wxMenu* pImportMenu = new wxMenu();
+	pImportMenu->Append(-1, _("Book"));
+	pImportMenu->Append(-1, _("Document"));
+	pImportMenu->AppendSeparator();
+	pImportMenu->Append(-1, _("Element"), pImportElementMenu);
 
-	wxMenu* editMenu = new wxMenu();
-	editMenu->Append(MENU_Update, "&Update", "Update");
-	editMenu->Append(MENU_ProjectName, "&Project Name", "Edit project name");
+	pFileMenu->Append(-1, _("&New..."), pNewMenu);
+	pFileMenu->Append(-1, _("&Open project"), _("Open an existing project"));
+	pFileMenu->Append(-1, _("&Save"), _("Save the current sqlEntry project"));
+	pFileMenu->Append(-1, _("Save &As"));
+	pFileMenu->Append(-1, _("Import from project..."), pImportMenu);
+	pFileMenu->AppendSubMenu(pExportCanvasMenu, _("Export corkboard to..."));
+	pFileMenu->Append(MENU_Quit, _("&Quit"), _("Quit the editor"));
 
-	wxMenu* helpMenu = new wxMenu();
-	helpMenu->Append(wxID_ABOUT, "&About", "Shows information about the application");
+	wxMenu* pProjectMenu = new wxMenu();
 
-	wxMenu* viewMenu = new wxMenu();
-	viewMenu->AppendRadioItem(wxID_ANY, "&Dark theme");
-	viewMenu->AppendRadioItem(-1, "&Light theme");
+	pProjectMenu->Append(-1, _("New &Book"), _("Create a new books"));
+	pProjectMenu->Append(MENU_NewDocument, _("New &Document"), _("Create a new document"));
+	pProjectMenu->AppendSeparator();
+	pProjectMenu->Append(MENU_NewCharacter, _("New Character"), _("Create a new character"));
+	pProjectMenu->Append(MENU_NewLocation, _("New &Location"), _("Create a new location"));
+	pProjectMenu->Append(MENU_NewItem, _("New &Item"), _("Create a new item"));
 
-	mainMenu->Append(fileMenu, _("File"));
-	mainMenu->Append(editMenu, "Edit");
-	mainMenu->Append(viewMenu, "View");
-	mainMenu->Append(projectMenu, "Project");
-	mainMenu->Append(helpMenu, "Help");
-	SetMenuBar(mainMenu);
+	wxMenu* pEditMenu = new wxMenu();
+	pEditMenu->Append(MENU_Update, _("&Update"), _("Update"));
+	pEditMenu->Append(MENU_ProjectName, _("&Project Name"), _("Edit project name"));
+
+	wxMenu* pHelpMenu = new wxMenu();
+	pHelpMenu->Append(wxID_ABOUT, _("&About"), _("Shows information about the application"));
+
+	wxMenu* pViewMenu = new wxMenu();
+	pViewMenu->AppendRadioItem(wxID_ANY, _("&Dark theme"));
+	pViewMenu->AppendRadioItem(-1, _("&Light theme"));
+	pViewMenu->AppendSeparator();
+	pViewMenu->Append(-1, _("&Overview"));
+	pViewMenu->Append(-1, _("&Elements"));
+	pViewMenu->Append(-1, _("&Story"));
+	pViewMenu->Append(-1, _("&Outline"));
+	pViewMenu->Append(-1, _("&Release"));
+
+	pMainMenu->Append(pFileMenu, _("File"));
+	pMainMenu->Append(pEditMenu, _("Edit"));
+	pMainMenu->Append(pViewMenu, _("View"));
+	pMainMenu->Append(pProjectMenu, _("Project"));
+	pMainMenu->Append(pHelpMenu, _("Help"));
+	SetMenuBar(pMainMenu);
 
 	// Creating toolbar and setting tools
-
 	m_toolBar = new wxToolBar(m_mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT);
 	m_toolBar->SetBackgroundColour(wxColour(100, 100, 100));
 
@@ -212,7 +231,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_toolBar->Realize();
 
-	splitter->SplitVertically(m_selPanel, m_mainBook, FromDIP(150));
+	splitter->SplitVertically(m_selPanel, m_mainBook, FromDIP(100));
 	splitter->SetSashGravity(0.0);
 
 	m_verticalSizer = new wxBoxSizer(wxVERTICAL);
@@ -516,24 +535,24 @@ void amMainFrame::Search(wxCommandEvent& event)
 	switch ( sel )
 	{
 	case 0:
-		item = m_elementNotebook->m_charList->FindItem(-1, nameSearch, true);
+		item = m_elementNotebook->GetCharacterList()->FindItem(-1, nameSearch, true);
 
 		if ( item == -1 )
 		{
-			wxMessageBox("Character """ + nameSearch + """ could not be found", "Not found!",
+			wxMessageBox("Character \"" + nameSearch + "\" could not be found", "Not found!",
 				wxOK | wxICON_INFORMATION | wxCENTER);
 		}
 		else
 		{
-			m_elementNotebook->m_charList->Select(item, true);
-			m_elementNotebook->m_charList->EnsureVisible(item);
-			m_elementNotebook->m_charList->SetFocus();
+			m_elementNotebook->GetCharacterList()->Select(item, true);
+			m_elementNotebook->GetCharacterList()->EnsureVisible(item);
+			m_elementNotebook->GetCharacterList()->SetFocus();
 		}
 
 		break;
 
 	case 1:
-		item = m_elementNotebook->m_locList->FindItem(-1, event.GetString(), true);
+		item = m_elementNotebook->GetLocationList()->FindItem(-1, event.GetString(), true);
 
 		if ( item == -1 )
 		{
@@ -542,14 +561,28 @@ void amMainFrame::Search(wxCommandEvent& event)
 		}
 		else
 		{
-			m_elementNotebook->m_locList->Select(item, true);
-			m_elementNotebook->m_locList->EnsureVisible(item);
-			m_elementNotebook->m_locList->SetFocus();
+			m_elementNotebook->GetLocationList()->Select(item, true);
+			m_elementNotebook->GetLocationList()->EnsureVisible(item);
+			m_elementNotebook->GetLocationList()->SetFocus();
 		}
 
 		break;
 
 	case 2:
+		item = m_elementNotebook->GetItemList()->FindItem(-1, event.GetString(), true);
+
+		if ( item == -1 )
+		{
+			wxMessageBox("Item """ + nameSearch + """ could not be found", "Not found!",
+				wxOK | wxICON_INFORMATION | wxCENTER);
+		}
+		else
+		{
+			m_elementNotebook->GetItemList()->Select(item, true);
+			m_elementNotebook->GetItemList()->EnsureVisible(item);
+			m_elementNotebook->GetItemList()->SetFocus();
+		}
+
 		break;
 
 	case 3:

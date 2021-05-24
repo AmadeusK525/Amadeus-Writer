@@ -12,6 +12,7 @@
 #include "ElementShowcases.h"
 #include "StoryWriter.h"
 #include "SortFunctions.h"
+#include "ElementCreators.h"
 
 #include <wx\progdlg.h>
 #include <wx\mstream.h>
@@ -179,6 +180,17 @@ void amProjectSQLDatabase::CreateAllTables()
 	tElementsToElements.Add("element_class TEXT");
 	tElementsToElements.Add("related_class TEXT");
 	tElementsToElements.Add("relation INTEGER");
+
+	///////////////////// PROJECT TABLES ///////////////////////
+
+	/*wxArrayString tProjectProperties;
+	tProjectProperties.Add("element_id INTEGER");
+	tProjectProperties.Add("related_id INTEGER");
+	tProjectProperties.Add("element_class TEXT");
+	tProjectProperties.Add("related_class TEXT");
+	tProjectProperties.Add("relation INTEGER");
+
+	wxArrayString tUserData;*/
 
 	try
 	{
@@ -1066,7 +1078,6 @@ bool amProjectManager::SetCurrentBook(Book* book)
 
 void amProjectManager::DoSetCurrentBook(Book* book)
 {
-	GetCurrentBook()->CleanUpDocuments();
 	LoadBookContent(book, true);
 
 	m_overview->SetBookData(book);
@@ -1244,7 +1255,7 @@ void amProjectManager::AddCharacter(Character* character, bool refreshElements)
 	if ( refreshElements )
 	{
 		m_elementNotebook->UpdateCharacterList();
-		m_elementNotebook->SetSearchAC(wxBookCtrlEvent());
+		m_elementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
 	}
 
 	m_outline->GetOutlineFiles()->AppendCharacter(character);
@@ -1262,7 +1273,7 @@ void amProjectManager::AddLocation(Location* location, bool refreshElements)
 	if ( refreshElements )
 	{
 		m_elementNotebook->UpdateLocationList();
-		m_elementNotebook->SetSearchAC(wxBookCtrlEvent());
+		m_elementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
 	}
 
 	m_outline->GetOutlineFiles()->AppendLocation(location);
@@ -1280,7 +1291,7 @@ void amProjectManager::AddItem(Item* item, bool refreshElements)
 	if ( refreshElements )
 	{
 		m_elementNotebook->UpdateItemList();
-		m_elementNotebook->SetSearchAC(wxBookCtrlEvent());
+		m_elementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
 	}
 
 	m_outline->GetOutlineFiles()->AppendItem(item);
@@ -1322,6 +1333,37 @@ void amProjectManager::AddDocument(Document* document, Book* book, int pos)
 	}
 }
 
+void amProjectManager::ResortElements()
+{
+	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
+
+	for ( Element*& pElement : m_project.elements )
+	{
+		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
+	}
+
+	for ( Book*& pBook : m_project.books )
+	{
+		for ( Document*& pDocument : pBook->documents )
+		{
+			std::sort(pDocument->elements.begin(), pDocument->elements.end(), amSortElements);
+		}
+	}
+}
+
+void amProjectManager::StartEditingElement(Element* element)
+{
+	wxString strCreatorClass("am" + wxString(element->GetClassInfo()->GetClassName()) + "Creator");
+
+	amElementCreator* creator = (amElementCreator*)wxClassInfo::FindClass(strCreatorClass)->CreateObject();
+	if ( !creator->Create(nullptr, this, -1, "Create " + element->name) )
+		return;
+
+	creator->CenterOnParent();
+	creator->StartEditing(element);
+	creator->Show(true);
+}
+
 void amProjectManager::EditCharacter(Character* original, Character& edit, bool sort)
 {
 	try
@@ -1344,7 +1386,6 @@ void amProjectManager::EditCharacter(Character* original, Character& edit, bool 
 		
 		UpdateElementInGUI(original);
 
-		m_elementNotebook->m_charShow->SetData(original);
 		m_mainFrame->Enable(true);
 
 		thread.detach();
@@ -1381,7 +1422,6 @@ void amProjectManager::EditLocation(Location* original, Location& edit, bool sor
 
 		UpdateElementInGUI(original);
 
-		m_elementNotebook->m_locShow->SetData(original);
 		m_mainFrame->Enable(true);
 
 		thread.detach();
@@ -1417,7 +1457,6 @@ void amProjectManager::EditItem(Item* original, Item& edit, bool sort)
 	
 		UpdateElementInGUI(original);
 
-		m_elementNotebook->m_itemShow->SetData(original);
 		m_mainFrame->Enable(true);
 
 		thread.detach();
@@ -1432,43 +1471,33 @@ void amProjectManager::EditItem(Item* original, Item& edit, bool sort)
 
 void amProjectManager::UpdateElementInGUI(Element* element)
 {
-	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+	bool bShouldShowInNotebook = m_elementNotebook->ShouldShow(element);
+	amElementNotebookPage* pPage = m_elementNotebook->GetAppropriatePage(element);
+
+	int n = pPage->GetList()->FindItem(0, element->name);
+	if ( n != -1 )
 	{
-		int n = m_elementNotebook->m_charList->FindItem(0, element->name);
-		if ( n != -1 )
-			m_elementNotebook->UpdateCharacter(n, (Character*)element);
+		if ( !bShouldShowInNotebook )
+			m_elementNotebook->RemoveElementFromList(element);
+		else
+			m_elementNotebook->UpdateElementInList(n, element);
+	}
+	else
+	{
+		if ( bShouldShowInNotebook )
+			pPage->UpdateList();
+	}
 
-		amCharacterShowcase* showcase = m_elementNotebook->GetCharacterShowcase();
-		if ( showcase->GetElement() == element )
-			showcase->SetData(element);
+	if ( pPage->GetShowcase()->GetElement() == element )
+		pPage->GetShowcase()->SetData(element);
 
-		if ( m_storyWriter )
+	if ( m_storyWriter )
+	{
+		if ( element->IsKindOf(wxCLASSINFO(Character)) )
 			m_storyWriter->UpdateCharacterList();
-	}
-	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
-	{
-		int n = m_elementNotebook->m_locList->FindItem(0, element->name);
-		if ( n != -1 )
-			m_elementNotebook->UpdateLocation(n, (Location*)element);
-
-		/*amLocationShowcase* showcase = m_elementNotebook->GetLocationShowcase();
-		if ( showcase->GetElement() == element )
-			showcase->SetData(element);*/
-
-		if ( m_storyWriter )
+		else if ( element->IsKindOf(wxCLASSINFO(Location)) )
 			m_storyWriter->UpdateLocationList();
-	}
-	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
-	{
-		int n = m_elementNotebook->m_itemList->FindItem(0, element->name);
-		if ( n != -1 )
-			m_elementNotebook->UpdateItem(n, (Item*)element);
-
-		//amItemShowcase* showcase = m_elementNotebook->GetItemShowcase();
-		//if ( showcase->GetElement() == element )
-		//	showcase->SetData(element);
-
-		if ( m_storyWriter )
+		else if ( element->IsKindOf(wxCLASSINFO(Item)) )
 			m_storyWriter->UpdateItemList();
 	}
 }
@@ -1675,24 +1704,33 @@ Element* amProjectManager::GetElementByName(const wxString& name)
 	return nullptr;
 }
 
-void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)
+Book* amProjectManager::GetBookByName(const wxString& name)
+{
+	for ( Book*& pBook : GetBooks() )
+	{
+		if ( pBook->title == name )
+			return pBook;
+	}
+
+	return nullptr;
+}
+
+void amProjectManager::DeleteElement(Element* element)
 {
 	wxBusyCursor cursor;
-	for ( Document*& pDocument : character->documents )
-		RemoveElementFromDocument(character, pDocument);
+	for ( Document*& pDocument : element->documents )
+		RemoveElementFromDocument(element, pDocument);
 
-	if ( clearShowcase )
-		m_elementNotebook->GetCharacterShowcase()->SetData(nullptr);
-
-	for ( amTLThread*& thread : m_outline->GetTimeline()->GetThreads() )
+	if ( element->IsKindOf(wxCLASSINFO(Character)) )
 	{
-		if ( thread->GetCharacter() == character->name )
+		for ( amTLThread*& thread : m_outline->GetTimeline()->GetThreads() )
 		{
-			m_outline->GetTimeline()->DeleteThread(thread, false);
+			if ( thread->GetCharacter() == element->name )
+				m_outline->GetTimeline()->DeleteThread(thread, false);
 		}
 	}
 
-	amSQLEntry sqlEntry = character->GenerateSQLEntry();
+	amSQLEntry sqlEntry = element->GenerateSQLEntry();
 	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
 	{
 		m_storage.DeleteSQLEntry(childEntry);
@@ -1701,63 +1739,10 @@ void amProjectManager::DeleteCharacter(Character* character, bool clearShowcase)
 	m_storage.DeleteSQLEntry(sqlEntry);
 	for ( Element*& pElement : m_project.elements )
 	{
-		if ( pElement == character )
+		if ( pElement == element )
 		{
 			m_project.elements.erase(&pElement);
-			delete character;
-			break;
-		}
-	}
-}
-
-void amProjectManager::DeleteLocation(Location* location, bool clearShowcase)
-{
-	for ( Document*& pDocument : location->documents )
-		RemoveElementFromDocument(location, pDocument);
-
-	if ( clearShowcase )
-		m_elementNotebook->GetLocationShowcase()->SetData(nullptr);
-
-	amSQLEntry sqlEntry = location->GenerateSQLEntry();
-	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
-	{
-		m_storage.DeleteSQLEntry(childEntry);
-	}
-
-	m_storage.DeleteSQLEntry(sqlEntry);
-	for ( Element*& pElement : m_project.elements )
-	{
-		if ( pElement == location )
-		{
-			m_project.elements.erase(&pElement);
-			delete location;
-			break;
-		}
-	}
-}
-
-void amProjectManager::DeleteItem(Item* item, bool clearShowcase)
-{
-	for ( Document*& pDocument : item->documents )
-		RemoveElementFromDocument(item, pDocument);
-
-	if ( clearShowcase )
-		m_elementNotebook->GetItemShowcase()->SetData(nullptr);
-
-	amSQLEntry sqlEntry = item->GenerateSQLEntry();
-	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
-	{
-		m_storage.DeleteSQLEntry(childEntry);
-	}
-
-	m_storage.DeleteSQLEntry(sqlEntry);
-
-	for ( Element*& pElement : m_project.elements )
-	{
-		if ( pElement == item )
-		{
-			m_project.elements.erase(&pElement);
-			delete item;
+			delete element;
 			break;
 		}
 	}

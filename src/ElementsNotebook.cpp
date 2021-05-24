@@ -13,61 +13,362 @@
 
 #include "wxmemdbg.h"
 
-BEGIN_EVENT_TABLE(amElementNotebook, wxNotebook)
 
-EVT_LIST_ITEM_FOCUSED(LIST_CharList, amElementNotebook::OnCharacterSelected)
-EVT_LIST_ITEM_SELECTED(LIST_LocList, amElementNotebook::OnLocationSelected)
-EVT_LIST_ITEM_SELECTED(LIST_ItemList, amElementNotebook::OnItemSelected)
+amElementNotebookPage::amElementNotebookPage(wxWindow* parent, wxClassInfo* showcaseType, const wxArrayString& sortByChoices) :
+	amSplitterWindow(parent)
+{
+	SetBackgroundColour(wxColour(10, 10, 10));
+	SetSize(GetClientSize());
+	SetSashGravity(1.0);
+	SetMinimumPaneSize(20);
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_CharList, amElementNotebook::OnCharRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_CharList, amElementNotebook::OnCharacterActivated)
-EVT_MENU(LISTMENU_EditChar, amElementNotebook::OnEditCharacter)
-EVT_LIST_END_LABEL_EDIT(LIST_CharList, amElementNotebook::OnEditCharName)
-EVT_MENU(LISTMENU_DeleteChar, amElementNotebook::OnDeleteCharacter)
+	wxPanel* left = new wxPanel(this);
+	left->SetBackgroundColour(wxColour(20, 20, 20));
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_LocList, amElementNotebook::OnLocRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_LocList, amElementNotebook::OnLocationActivated)
-EVT_MENU(LISTMENU_EditLoc, amElementNotebook::OnEditLocation)
-EVT_MENU(LISTMENU_DeleteLoc, amElementNotebook::OnDeleteLocation)
+	m_elementList = new wxListView(left, -1, wxDefaultPosition, wxDefaultSize,
+		wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
+	m_elementList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, FromDIP(190));
+	m_elementList->InsertColumn(1, sortByChoices.front(), wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+	m_elementList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, FromDIP(130));
+	m_elementList->InsertColumn(3, "Last Appearance", wxLIST_FORMAT_CENTER, FromDIP(130));
+	m_elementList->InsertColumn(4, "Documents", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
 
-EVT_LIST_ITEM_RIGHT_CLICK(LIST_ItemList, amElementNotebook::OnItemRightClick)
-EVT_LIST_ITEM_ACTIVATED(LIST_ItemList, amElementNotebook::OnItemActivated)
-EVT_MENU(LISTMENU_EditItem, amElementNotebook::OnEditItem)
-EVT_MENU(LISTMENU_DeleteItem, amElementNotebook::OnDeleteItem)
+	m_elementList->SetBackgroundColour(wxColour(45, 45, 45));
+	m_elementList->SetForegroundColour(wxColour(245, 245, 245));
+	m_elementList->Bind(wxEVT_LIST_ITEM_ACTIVATED, [&](wxListEvent&) { OnEditElement(wxCommandEvent()); });
+	m_elementList->Bind(wxEVT_LIST_ITEM_SELECTED, &amElementNotebookPage::OnElementSelected, this);
+	m_elementList->Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, &amElementNotebookPage::OnElementRightClick, this);
 
-EVT_NOTEBOOK_PAGE_CHANGED(NOTEBOOK_THIS, amElementNotebook::SetSearchAC)
+	m_imageList = new wxImageList(24, 24);
+	m_elementList->AssignImageList(m_imageList, wxIMAGE_LIST_SMALL);
 
-END_EVENT_TABLE()
+	wxStaticText* sortByLabel = new wxStaticText(left, -1, "Sort by:");
+	sortByLabel->SetForegroundColour(wxColour(250, 250, 250));
+	sortByLabel->SetFont(wxFontInfo(11).Bold());
+
+	m_sortBy = new wxChoice(left, -1, wxDefaultPosition, wxDefaultSize, sortByChoices);
+	m_sortBy->Bind(wxEVT_CHOICE, &amElementNotebookPage::OnElementsSortBy, this);
+	m_sortBy->SetSelection(0);
+
+	wxStaticText* showLabel = new wxStaticText(left, -1, "Show:");
+	showLabel->SetForegroundColour(wxColour(250, 250, 250));
+	showLabel->SetFont(wxFontInfo(11).Bold());
+
+	m_show = new wxComboCtrl(left, -1, "", wxDefaultPosition, wxSize(200, -1), wxCB_READONLY);
+	m_bookCheckList = new amCheckListBox();
+	m_bookCheckList->Bind(wxEVT_CHECKLISTBOX, &amElementNotebookPage::OnCheckListBox, this);
+
+	m_show->SetPopupControl(m_bookCheckList);
+
+	wxBoxSizer* footerSizer = new wxBoxSizer(wxHORIZONTAL);
+	footerSizer->Add(sortByLabel, wxSizerFlags(0).CenterVertical());
+	footerSizer->AddSpacer(5);
+	footerSizer->Add(m_sortBy, wxSizerFlags(0).CenterVertical());
+	footerSizer->AddStretchSpacer(1);
+	footerSizer->Add(showLabel, wxSizerFlags(0).CenterVertical());
+	footerSizer->AddSpacer(5);
+	footerSizer->Add(m_show, wxSizerFlags(0).CenterVertical());
+
+	wxBoxSizer* leftSizer = new wxBoxSizer(wxVERTICAL);
+	leftSizer->Add(m_elementList, wxSizerFlags(1).Expand().Border(wxLEFT | wxTOP, 5));
+	leftSizer->AddSpacer(10);
+	leftSizer->Add(footerSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
+	left->SetSizer(leftSizer);
+
+	m_elementShowcase = (amElementShowcase*)showcaseType->CreateObject();
+	m_elementShowcase->Create(this);
+
+	SplitVertically(left, m_elementShowcase);
+}
+
+bool amElementNotebookPage::ShouldShow(Element* element)
+{
+	if ( !element )
+		return false;
+
+	bool bShouldShow = false;
+
+	if ( m_vBooksToShow.empty() )
+		return true;
+
+	for ( Book* const& pBook : m_vBooksToShow )
+	{
+		if ( element->IsInBook(pBook) )
+		{
+			bShouldShow = true;
+			break;
+		}
+	}
+
+	return bShouldShow;
+}
+
+void amElementNotebookPage::ClearAll()
+{
+	m_elementList->DeleteAllItems();
+	m_elementShowcase->ClearAll();
+}
+
+void amElementNotebookPage::InitShowChoices()
+{
+	m_bookCheckList->InsertItems(amGetManager()->GetBookTitles(), 0);
+	m_bookCheckList->Check(0);
+	m_show->SetText(_("All"));
+}
+
+void amElementNotebookPage::GoToElement(Element * element)
+{
+	m_elementShowcase->Freeze();
+
+	int n = m_elementList->FindItem(-1, element->name);
+	if ( n != -1 )
+	{
+		m_elementList->Select(n);
+		m_elementList->Focus(n);
+		m_elementList->SetFocus();
+	}
+	else
+	{
+		m_elementShowcase->SetData(element);
+		m_elementShowcase->SetFocus();
+	}
+
+	m_elementShowcase->ShowPage(0);
+	m_elementShowcase->Thaw();
+}
+
+void amElementNotebookPage::UpdateList()
+{
+	amProjectManager* pManager = amGetManager();
+
+	m_elementList->Freeze();
+	m_imageList->RemoveAll();
+
+	size_t sizeBefore = m_elementList->GetItemCount();
+
+	wxVector<Element*> vElements;
+	if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amCharacterShowcase)) )
+	{
+		for ( Character*& pCharacter : pManager->GetCharacters() )
+			vElements.push_back(pCharacter);
+	}
+	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amLocationShowcase)) )
+	{
+		for ( Location*& pLocation : pManager->GetLocations() )
+			vElements.push_back(pLocation);
+	}
+	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amItemShowcase)) )
+	{
+		for ( Item*& pItem : pManager->GetItems() )
+			vElements.push_back(pItem);
+	}
+
+	int i = 0;
+	for ( Element* const& pElement : vElements )
+	{
+		if ( !ShouldShow(pElement) )
+			continue;
+
+		if ( i >= sizeBefore )
+			m_elementList->InsertItem(i, "");
+
+		UpdateElementInList(i++, pElement);
+	}
+
+	size_t sizeAfter = i;
+
+	for ( int i = sizeBefore; i > sizeAfter; i-- )
+		m_elementList->DeleteItem(i - 1);
+
+	m_elementList->Thaw();
+}
+
+void amElementNotebookPage::UpdateElementInList(int n, Element* element)
+{
+	m_elementList->SetItem(n, 0, element->name);
+
+	wxString role;
+	switch ( element->role )
+	{
+	case Role::cProtagonist:
+		role = "Protagonist";
+		break;
+
+	case Role::cSupporting:
+		role = "Supporting";
+		break;
+
+	case Role::cVillian:
+		role = "Villian";
+		break;
+
+	case Role::cSecondary:
+		role = "Secondary";
+		break;
+
+	case Role::lHigh:
+	case Role::iHigh:
+		role = _("High");
+		break;
+
+	case Role::lLow:
+	case Role::iLow:
+		role = _("Low");
+		break;
+	}
+
+	m_elementList->SetItem(n, 1, role);
+
+	Document* pFirstDocument = element->GetFirstDocument();
+	if ( pFirstDocument )
+		m_elementList->SetItem(n, 2, wxString(_("Book ")) << pFirstDocument->book->pos << _(", Document ") << pFirstDocument->position);
+	else
+		m_elementList->SetItem(n, 2, "-");
+
+	Document* pLastDocument = element->GetLastDocument();
+	if ( pLastDocument )
+		m_elementList->SetItem(n, 3, wxString(_("Book ")) << pLastDocument->book->pos << _(", Document ") << pLastDocument->position);
+	else
+		m_elementList->SetItem(n, 3, "-");
+
+	m_elementList->SetItem(n, 4, std::to_string(element->documents.size()));
+
+	if ( element->image.IsOk() )
+		m_elementList->SetItemColumnImage(n, 0, m_imageList->Add(wxBitmap(amGetScaledImage(24, 24, element->image))));
+	else
+		m_elementList->SetItemColumnImage(n, 0, -1);
+}
+
+void amElementNotebookPage::OnEditElement(wxCommandEvent& event)
+{
+	int n = m_elementList->GetFirstSelected();
+	if ( n != -1 )
+	{
+		amProjectManager* pManager = amGetManager();
+		Element* pElement = pManager->GetElementByName(m_elementList->GetItemText(n));
+		
+		if ( pElement )
+			pManager->StartEditingElement(pElement);
+	}
+}
+
+void amElementNotebookPage::OnDeleteElement(wxCommandEvent& event)
+{
+	amProjectManager* pManager = amGetManager();
+	long sel = m_elementList->GetFirstSelected();
+
+	wxMessageDialog deleteCheck(pManager->GetMainFrame(), "Are you sure you want to delete '" +
+		m_elementList->GetItemText(sel) + "'?"
+		"\nAll ties to this Element in other parts of the program (Outline files, Timeline, Document bindings...) will be permantely deleted as well.",
+		"Delete element", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
+
+	if ( deleteCheck.ShowModal() == wxID_YES )
+	{
+		m_elementList->DeleteItem(sel);
+		pManager->DeleteElement(pManager->GetElementByName(m_elementList->GetItemText(sel)));
+	}
+}
+
+void amElementNotebookPage::OnElementsSortBy(wxCommandEvent& event)
+{
+	amProjectManager* pManager = amGetManager();
+	wxVector<Element*> vElements;
+
+	if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amCharacterShowcase)) )
+	{
+		m_sortBy->SetSelection(event.GetInt());
+		Character::cCompType = (CompType)event.GetInt();
+
+		for ( Character*& pCharacter : pManager->GetCharacters() )
+			vElements.push_back(pCharacter);
+	}
+	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amLocationShowcase)) )
+	{
+		m_sortBy->SetSelection(event.GetInt());
+		Location::lCompType = (CompType)event.GetInt();
+
+		for ( Location*& pLocation : pManager->GetLocations() )
+			vElements.push_back(pLocation);
+	}
+	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amItemShowcase)) )
+	{
+		m_sortBy->SetSelection(event.GetInt());
+		Item::iCompType = (CompType)event.GetInt();
+
+		for ( Item*& pItem : pManager->GetItems() )
+			vElements.push_back(pItem);
+	}
+
+	int currentSelection = m_elementList->GetFirstSelected();
+
+	amGetManager()->ResortElements();
+	UpdateList();
+
+	m_elementList->SetFocus();
+
+	Element* pCurElement = m_elementShowcase->GetElement();
+
+	if ( pCurElement )
+	{
+		int toSet = m_elementList->FindItem(0, pCurElement->name);
+		m_elementList->Select(toSet);
+		m_elementList->Focus(toSet);
+	}
+}
+
+void amElementNotebookPage::OnCheckListBox(wxCommandEvent & event)
+{
+	m_vBooksToShow.clear();
+	
+	wxArrayInt selections;
+	m_bookCheckList->GetCheckedItems(selections);
+
+	for ( int& sel : selections )
+	{
+		m_vBooksToShow.push_back(amGetManager()->GetBooks()[sel]);
+	}
+
+	UpdateList();
+
+	Element* pDisplayedElement = m_elementShowcase->GetElement();
+	if ( !ShouldShow(pDisplayedElement) )
+	{
+		m_elementShowcase->SetData(nullptr);
+	}
+
+	event.Skip();
+}
+
+void amElementNotebookPage::OnElementSelected(wxListEvent& event)
+{
+	long sel = m_elementList->GetFirstSelected();
+
+	if ( sel != -1 )
+		m_elementShowcase->SetData(amGetManager()->GetElementByName(m_elementList->GetItemText(sel)));
+	else
+		m_elementShowcase->SetData(nullptr);
+}
+
+void amElementNotebookPage::OnElementRightClick(wxListEvent & event)
+{
+	wxMenu menu;
+	menu.Append(LISTMENU_EditElement, "&Edit");
+	menu.Append(LISTMENU_DeleteElement, "&Delete");
+	PopupMenu(&menu, wxDefaultPosition);
+}
+
+
+////////////////////////////////////////////////////////////////
+////////////////////// amElementNotebook ///////////////////////
+////////////////////////////////////////////////////////////////
+
 
 amElementNotebook::amElementNotebook(wxWindow* parent) :
-	wxNotebook(parent, NOTEBOOK_THIS, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
+	wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
 	m_manager = amGetManager();
 
 	//Setting up first notebook tab with a characters list
-	amSplitterWindow* charFrame = new amSplitterWindow(this, PANEL_Char);
-	charFrame->SetBackgroundColour(wxColour(10, 10, 10));
-	charFrame->SetSize(GetClientSize());
-	charFrame->SetSashGravity(1.0);
-	charFrame->SetMinimumPaneSize(20);
-
-	wxPanel* cLeft = new wxPanel(charFrame);
-	cLeft->SetBackgroundColour(wxColour(20, 20, 20));
-
-	m_charList = new wxListView(cLeft, LIST_CharList, wxDefaultPosition, wxDefaultSize,
-		wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
-	m_charList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, 190);
-	m_charList->InsertColumn(1, "Role", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-	m_charList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_charList->InsertColumn(3, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_charList->InsertColumn(4, "Documents", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-
-	m_charList->SetBackgroundColour(wxColour(45, 45, 45));
-	m_charList->SetForegroundColour(wxColour(245, 245, 245));
-
-	m_charImageList = new wxImageList(24, 24);
-	m_charList->AssignImageList(m_charImageList, wxIMAGE_LIST_SMALL);
-
 	wxArrayString sortBy;
 	sortBy.Add("Role");
 	sortBy.Add("Name (A-Z)");
@@ -76,697 +377,82 @@ amElementNotebook::amElementNotebook(wxWindow* parent) :
 	sortBy.Add("First appearance");
 	sortBy.Add("Last appearance");
 
-	wxStaticText* cSortByLabel = new wxStaticText(cLeft, -1, "Sort by:");
-	cSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
-	cSortByLabel->SetFont(wxFontInfo(11).Bold());
-
-	m_cSortBy = new wxChoice(cLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-	m_cSortBy->Bind(wxEVT_CHOICE, &amElementNotebook::OnCharactersSortBy, this);
-	m_cSortBy->SetSelection(0);
-
-	wxStaticText* cShowLabel = new wxStaticText(cLeft, -1, "Show:");
-	cShowLabel->SetForegroundColour(wxColour(250, 250, 250));
-	cShowLabel->SetFont(wxFontInfo(11).Bold());
-
-	m_cShow = new wxComboCtrl(cLeft, -1, "", wxDefaultPosition, wxSize(200, -1), wxCB_READONLY);
-	amCheckListBox* cBooks = new amCheckListBox();
-
-	m_cShow->SetPopupControl(cBooks);
-
-	wxBoxSizer* cFooterSizer = new wxBoxSizer(wxHORIZONTAL);
-	cFooterSizer->Add(cSortByLabel, wxSizerFlags(0).CenterVertical());
-	cFooterSizer->AddSpacer(5);
-	cFooterSizer->Add(m_cSortBy, wxSizerFlags(0).CenterVertical());
-	cFooterSizer->AddStretchSpacer(1);
-	cFooterSizer->Add(cShowLabel, wxSizerFlags(0).CenterVertical());
-	cFooterSizer->AddSpacer(5);
-	cFooterSizer->Add(m_cShow, wxSizerFlags(0).CenterVertical());
-
-	wxBoxSizer* cLeftSizer = new wxBoxSizer(wxVERTICAL);
-	cLeftSizer->Add(m_charList, wxSizerFlags(1).Expand().Border(wxLEFT | wxTOP, 5));
-	cLeftSizer->AddSpacer(10);
-	cLeftSizer->Add(cFooterSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
-	cLeft->SetSizer(cLeftSizer);
-
-	m_charShow = new amCharacterShowcase(charFrame);
-
-	charFrame->SplitVertically(cLeft, m_charShow);
-	this->AddPage(charFrame, "Characters");
-
-	//Setting up second notebook tab with a locations list
-	amSplitterWindow* locFrame = new amSplitterWindow(this, wxID_ANY);
-	locFrame->SetBackgroundColour(wxColour(0, 0, 0));
-	locFrame->SetSize(GetClientSize());
-	locFrame->SetMinimumPaneSize(20);
-	locFrame->SetSashGravity(1.0);
-
-	wxPanel* lLeft = new wxPanel(locFrame);
-	lLeft->SetBackgroundColour(wxColour(20, 20, 20));
-
-	m_locList = new wxListView(lLeft, LIST_LocList, wxDefaultPosition, wxDefaultSize,
-		wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
-	m_locList->InsertColumn(0, "Name of location", wxLIST_FORMAT_CENTER, 125);
-	m_locList->InsertColumn(1, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-	m_locList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_locList->InsertColumn(3, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_locList->InsertColumn(4, "Documents", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-
-	m_locList->SetBackgroundColour(wxColour(45, 45, 45));
-	m_locList->SetForegroundColour(wxColour(245, 245, 245));
-	m_locList->SetMinSize(wxSize(300, 400));
-
-	m_locImageList = new wxImageList(24, 24);
-	m_locList->AssignImageList(m_locImageList, wxIMAGE_LIST_SMALL);
-
-	wxStaticText* lSortByLabel = new wxStaticText(lLeft, -1, "Sort by:");
-	lSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
-	lSortByLabel->SetFont(wxFontInfo(11).Bold());
+	m_characterPage = new amElementNotebookPage(this, wxCLASSINFO(amCharacterShowcase), sortBy);
+	this->AddPage(m_characterPage, "Characters");
 
 	sortBy.Remove("Role");
 	sortBy.Insert("Importance", 0);
 
-	m_lSortBy = new wxChoice(lLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-	m_lSortBy->Bind(wxEVT_CHOICE, &amElementNotebook::OnLocationsSortBy, this);
-	m_lSortBy->SetSelection(0);
+	m_locationPage = new amElementNotebookPage(this, wxCLASSINFO(amLocationShowcase), sortBy);
+	this->AddPage(m_locationPage, "Locations");
 
-	wxBoxSizer* lSortBySizer = new wxBoxSizer(wxHORIZONTAL);
-	lSortBySizer->Add(lSortByLabel, wxSizerFlags(0).CenterVertical());
-	lSortBySizer->AddSpacer(5);
-	lSortBySizer->Add(m_lSortBy, wxSizerFlags(0).CenterVertical());
-
-	wxBoxSizer* lLeftSizer = new wxBoxSizer(wxVERTICAL);
-	lLeftSizer->Add(m_locList, wxSizerFlags(1).Expand().Border(wxLEFT | wxTOP, 5));
-	lLeftSizer->AddSpacer(10);
-	lLeftSizer->Add(lSortBySizer, wxSizerFlags(0).Left().Border(wxLEFT | wxBOTTOM, 5));
-	lLeft->SetSizer(lLeftSizer);
-
-	m_locShow = new amLocationShowcase(locFrame);
-
-	locFrame->SplitVertically(lLeft, m_locShow);
-	this->AddPage(locFrame, "Locations");
-
-	//Setting up third notebook tab
-	amSplitterWindow* itemsFrame = new amSplitterWindow(this, wxID_ANY);
-	itemsFrame->SetBackgroundColour(wxColour(0, 0, 0));
-	itemsFrame->SetSize(GetClientSize());
-	itemsFrame->SetMinimumPaneSize(20);
-	itemsFrame->SetSashGravity(1.0);
-
-	wxPanel* iLeft = new wxPanel(itemsFrame);
-	iLeft->SetBackgroundColour(wxColour(20, 20, 20));
-
-	m_itemList = new wxListView(iLeft, LIST_ItemList, wxDefaultPosition, wxDefaultSize,
-		wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
-	m_itemList->InsertColumn(0, "Name of item", wxLIST_FORMAT_CENTER, 120);
-	m_itemList->InsertColumn(1, "Is Magic", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-	m_itemList->InsertColumn(2, "Importance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-	m_itemList->InsertColumn(3, "First Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_itemList->InsertColumn(4, "Last Appearance", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE_USEHEADER);
-	m_itemList->InsertColumn(5, "Documents", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
-
-	m_itemList->SetBackgroundColour(wxColour(45, 45, 45));
-	m_itemList->SetForegroundColour(wxColour(245, 245, 245));
-	m_itemList->SetMinSize(wxSize(300, 400));
-
-	m_itemsImageList = new wxImageList(24, 24);
-	m_itemList->AssignImageList(m_itemsImageList, wxIMAGE_LIST_SMALL);
-
-	wxStaticText* iSortByLabel = new wxStaticText(iLeft, -1, "Sort by:");
-	iSortByLabel->SetForegroundColour(wxColour(250, 250, 250));
-	iSortByLabel->SetFont(wxFontInfo(11).Bold());
-
-	m_iSortBy = new wxChoice(iLeft, -1, wxDefaultPosition, wxDefaultSize, sortBy);
-	m_iSortBy->Bind(wxEVT_CHOICE, &amElementNotebook::OnItemsSortBy, this);
-	m_iSortBy->SetSelection(0);
-
-	wxBoxSizer* iSortBySizer = new wxBoxSizer(wxHORIZONTAL);
-	iSortBySizer->Add(iSortByLabel, wxSizerFlags(0).CenterVertical());
-	iSortBySizer->AddSpacer(5);
-	iSortBySizer->Add(m_iSortBy, wxSizerFlags(0).CenterVertical());
-
-	wxBoxSizer* iLeftSizer = new wxBoxSizer(wxVERTICAL);
-	iLeftSizer->Add(m_itemList, wxSizerFlags(1).Expand().Border(wxLEFT | wxTOP, 5));
-	iLeftSizer->AddSpacer(10);
-	iLeftSizer->Add(iSortBySizer, wxSizerFlags(0).Left().Border(wxLEFT | wxBOTTOM, 5));
-	iLeft->SetSizer(iLeftSizer);
-
-	m_itemShow = new amItemShowcase(itemsFrame);
-
-	itemsFrame->SplitVertically(iLeft, m_itemShow);
-	this->AddPage(itemsFrame, "Items");
+	m_itemPage = new amElementNotebookPage(this, wxCLASSINFO(amItemShowcase), sortBy);
+	this->AddPage(m_itemPage, "Items");
 }
 
 void amElementNotebook::InitShowChoices()
 {
-	amCheckListBox* pList = ((amCheckListBox*)m_cShow->GetPopupControl());
-	pList->InsertItems(m_manager->GetBookTitles(), 0);
-	pList->Check(0);
-	m_cShow->SetText(m_manager->GetBookTitles()[0]);
+	m_characterPage->InitShowChoices();
+	m_locationPage->InitShowChoices();
+	m_itemPage->InitShowChoices();
 }
 
 void amElementNotebook::GoToElement(Element* element)
 {
-	Character* pCharacterToSet = dynamic_cast<Character*>(element);
-	if ( pCharacterToSet )
+	if ( element->IsKindOf(wxCLASSINFO(Character)) )
 	{
 		SetSelection(0);
-
-		int n = m_charList->FindItem(-1, pCharacterToSet->name);
-		if ( n != -1 )
-		{
-			m_charShow->Freeze();
-			m_charList->Select(n);
-			m_charList->Focus(n);
-			m_charShow->ShowPage(0);
-			m_charShow->Thaw();
-
-			m_charList->SetFocus();
-		}
-
-		return;
+		m_characterPage->GoToElement(element);
 	}
-
-	Location* pLocationToSet = dynamic_cast<Location*>(element);
-	if ( pLocationToSet )
+	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
 	{
 		SetSelection(1);
-
-		int n = m_locList->FindItem(-1, pLocationToSet->name);
-		if ( n != -1 )
-		{
-			m_locShow->Freeze();
-			m_locList->Select(n);
-			m_locList->Focus(n);
-			m_locShow->ShowPage(0);
-			m_locShow->Thaw();
-
-			m_locList->SetFocus();
-		}
-
-		return;
+		m_characterPage->GoToElement(element);
 	}
-
-	Item* pItemToSet = dynamic_cast<Item*>(element);
-	if ( pItemToSet )
+	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
 	{
 		SetSelection(2);
-
-		int n = m_itemList->FindItem(-1, pItemToSet->name);
-		if ( n != -1 )
-		{
-			m_itemShow->Freeze();
-			m_itemList->Select(n);
-			m_itemList->Focus(n);
-			m_itemShow->ShowPage(0);
-			m_itemShow->Thaw();
-
-			m_itemList->SetFocus();
-		}
-
-		return;
+		m_characterPage->GoToElement(element);
 	}
 }
 
-void amElementNotebook::OnCharRightClick(wxListEvent& WXUNUSED(event))
+bool amElementNotebook::ShouldShow(Element* element) const
 {
-	wxMenu menu;
-	menu.Append(LISTMENU_EditChar, "&Edit");
-	menu.Append(LISTMENU_DeleteChar, "&Delete");
-	PopupMenu(&menu, wxDefaultPosition);
-}
+	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+		return m_characterPage->ShouldShow(element);
+	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+		return m_locationPage->ShouldShow(element);
+	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+		return m_itemPage->ShouldShow(element);
 
-void amElementNotebook::OnEditCharacter(wxCommandEvent& WXUNUSED(event))
-{
-	amCharacterCreator* edit = new amCharacterCreator(m_manager->GetMainFrame(), m_manager, -1,
-		"Edit character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
-
-	edit->CenterOnParent();
-	edit->SetEdit(m_manager->GetCharacters()[m_charList->GetFirstSelected()]);
-	edit->Show(true);
-
-	m_manager->GetMainFrame()->Enable(false);
-}
-
-void amElementNotebook::OnEditCharName(wxListEvent& event)
-{
-	m_manager->GetCharacters()[m_charList->GetFirstSelected()]->name = event.GetLabel();
-}
-
-void amElementNotebook::OnDeleteCharacter(wxCommandEvent& WXUNUSED(event))
-{
-	long sel = m_charList->GetFirstSelected();
-
-	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_charList->GetItemText(sel) + "'?"
-		"\nIf you have a thread bound to this character in the Timeline, it will be permantely deleted as well.",
-		"Delete character", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
-
-	if ( deleteCheck.ShowModal() == wxID_YES )
-	{
-		m_charList->DeleteItem(sel);
-		m_manager->DeleteCharacter(m_manager->GetCharacters()[sel], true);
-	}
-}
-
-void amElementNotebook::OnCharacterActivated(wxListEvent& WXUNUSED(event))
-{
-	OnEditCharacter(wxCommandEvent());
-}
-
-void amElementNotebook::OnLocRightClick(wxListEvent& WXUNUSED(event))
-{
-	wxMenu menu;
-	menu.Append(LISTMENU_EditLoc, "&Edit");
-	menu.Append(LISTMENU_DeleteLoc, "Delete");
-	PopupMenu(&menu, wxDefaultPosition);
-}
-
-void amElementNotebook::OnEditLocation(wxCommandEvent& WXUNUSED(event))
-{
-	amLocationCreator* edit = new amLocationCreator(m_manager->GetMainFrame(), m_manager, -1,
-		"Edit location - ''", wxDefaultPosition, FromDIP(wxSize(900, 650)));
-
-	edit->CenterOnParent();
-	edit->SetEdit(m_manager->GetLocations()[m_locList->GetFirstSelected()]);
-	edit->Show(true);
-
-	m_manager->GetMainFrame()->Enable(false);
-}
-
-void amElementNotebook::OnDeleteLocation(wxCommandEvent& WXUNUSED(event))
-{
-	long sel = m_locList->GetFirstSelected();
-
-	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_locList->GetItemText(sel) + "'?"
-		"\nIf you have a thread bound to this location in the Timeline, it will be permantely deleted as well.",
-		"Delete location", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
-
-	if ( deleteCheck.ShowModal() == wxID_YES )
-	{
-		m_locList->DeleteItem(sel);
-		m_manager->DeleteLocation(m_manager->GetLocations()[sel], true);
-	}
-}
-
-void amElementNotebook::OnLocationActivated(wxListEvent& event)
-{
-	OnEditLocation(wxCommandEvent());
-}
-
-void amElementNotebook::OnItemRightClick(wxListEvent& event)
-{
-	wxMenu menu;
-	menu.Append(LISTMENU_EditItem, "&Edit");
-	menu.Append(LISTMENU_DeleteItem, "Delete");
-	PopupMenu(&menu, wxDefaultPosition);
-}
-
-void amElementNotebook::OnEditItem(wxCommandEvent& event)
-{
-	amItemCreator* edit = new amItemCreator(m_manager->GetMainFrame(), m_manager, -1,
-		"Edit item - ''", wxDefaultPosition, FromDIP(wxSize(900, 720)));
-
-	edit->CenterOnParent();
-	edit->SetEdit(m_manager->GetItems()[m_itemList->GetFirstSelected()]);
-	edit->Show(true);
-
-	m_manager->GetMainFrame()->Enable(false);
-}
-
-void amElementNotebook::OnDeleteItem(wxCommandEvent& event)
-{
-	long sel = m_itemList->GetFirstSelected();
-
-	wxMessageDialog deleteCheck(m_manager->GetMainFrame(), "Are you sure you want to delete '" + m_itemList->GetItemText(sel) + "'?"
-		"\nIf you have a thread bound to this item in the Timeline, it will be permantely deleted as well.",
-		"Delete item", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
-
-	if ( deleteCheck.ShowModal() == wxID_YES )
-	{
-		m_itemList->DeleteItem(sel);
-		m_manager->DeleteItem(m_manager->GetItems()[sel], true);
-	}
-}
-
-void amElementNotebook::OnItemActivated(wxListEvent& event)
-{
-	OnEditItem(wxCommandEvent());
-}
-
-void amElementNotebook::OnCharacterSelected(wxListEvent& event)
-{
-	long sel = m_charList->GetFirstSelected();
-
-	if ( sel != -1 )
-		m_charShow->SetData(m_manager->GetCharacters()[sel]);
-	else
-		m_charShow->SetData(nullptr);
-}
-
-void amElementNotebook::OnLocationSelected(wxListEvent& WXUNUSED(event))
-{
-	long sel = m_locList->GetFirstSelected();
-
-	if ( sel != -1 )
-		m_locShow->SetData(m_manager->GetLocations()[sel]);
-	else
-		m_locShow->SetData(nullptr);
-}
-
-void amElementNotebook::OnItemSelected(wxListEvent& event)
-{
-	long sel = m_itemList->GetFirstSelected();
-
-	if ( sel != -1 )
-		m_itemShow->SetData(m_manager->GetItems()[sel]);
-	else
-		m_itemShow->SetData(nullptr);
-}
-
-void amElementNotebook::OnCharactersSortBy(wxCommandEvent& event)
-{
-	m_cSortBy->SetSelection(event.GetInt());
-	Character::cCompType = (CompType)event.GetInt();
-
-	int currentSelection = m_charList->GetFirstSelected();
-
-	wxVector<Element*>& vElements = m_manager->GetAllElements();
-	std::sort(vElements.begin(), vElements.end(), amSortElements);
-
-	for ( Element*& pElement : vElements )
-	{
-		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
-	}
-
-	UpdateCharacterList();
-	m_charList->SetFocus();
-
-	Element* pCurElement = m_charShow->GetElement();
-
-	if ( pCurElement )
-	{
-		int toSet = m_charList->FindItem(0, pCurElement->name);
-    	m_charList->Select(toSet);
-		m_charList->Focus(toSet);
-	}
-}
-
-void amElementNotebook::OnLocationsSortBy(wxCommandEvent& event)
-{
-	m_lSortBy->SetSelection(event.GetInt());
-	Location::lCompType = (CompType)event.GetInt();
-
-	wxVector<Element*>& vElements = m_manager->GetAllElements();
-	std::sort(vElements.begin(), vElements.end(), amSortElements);
-
-	for ( Element*& pElement : vElements )
-	{
-		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
-	}
-
-
-	UpdateLocationList();
-	m_locList->SetFocus();
-
-	Element* pCurElement = m_locShow->GetElement();
-
-	if ( pCurElement )
-	{
-		int toSet = m_locList->FindItem(0, pCurElement->name);
-		m_locList->Select(toSet);
-		m_locList->Focus(toSet);
-	}
-}
-
-void amElementNotebook::OnItemsSortBy(wxCommandEvent& event)
-{
-	m_iSortBy->SetSelection(event.GetInt());
-	Item::iCompType = (CompType)event.GetInt();
-
-	wxVector<Element*>& vElements = m_manager->GetAllElements();
-	std::sort(vElements.begin(), vElements.end(), amSortElements);
-
-	UpdateItemList();
-
-	Element* pCurElement = m_itemShow->GetElement();
-
-	if ( pCurElement )
-	{
-		int toSet = m_itemList->FindItem(0, pCurElement->name);
-		m_itemList->SetFocus();
-		m_itemList->Select(toSet);
-		m_itemList->Focus(toSet);
-	}
+	return false;
 }
 
 void amElementNotebook::ClearAll()
 {
-	m_charList->DeleteAllItems();
-	m_locList->DeleteAllItems();
-	m_itemList->DeleteAllItems();
-	m_charShow->SetData(nullptr);
-	m_locShow->SetData(nullptr);
-	m_itemShow->SetData(nullptr);
+	m_characterPage->ClearAll();
+	m_locationPage->ClearAll();
+	m_itemPage->ClearAll();
 }
 
-void amElementNotebook::UpdateCharacter(int n, Character* character)
+void amElementNotebook::RemoveElementFromList(Element* element)
 {
-	m_charList->SetItem(n, 0, character->name);
+	wxListView* list = GetAppropriateList(element);
 
-	wxString role;
-	switch ( character->role )
+	if ( list )
 	{
-	case cProtagonist:
-		role = "Protagonist";
-		break;
-
-	case cSupporting:
-		role = "Supporting";
-		break;
-
-	case cVillian:
-		role = "Villian";
-		break;
-
-	case cSecondary:
-		role = "Secondary";
-		break;
-
-	default:
-		role = "-";
+		long n = list->FindItem(0, element->name);
+		if ( n )
+			list->DeleteItem(n);
 	}
-
-	m_charList->SetItem(n, 1, role);
-
-	Document* pFirstDocument = character->GetFirstDocument();
-	if ( pFirstDocument )
-		m_charList->SetItem(n, 2, wxString(_("Book ")) << pFirstDocument->book->pos << _(", Document ") << pFirstDocument->position);
-	else
-		m_charList->SetItem(n, 2, "-");
-
-	Document* pLastDocument = character->GetLastDocument();
-	if ( pLastDocument )
-		m_charList->SetItem(n, 3, wxString(_("Book ")) << pLastDocument->book->pos << _(", Document ") << pLastDocument->position);
-	else
-		m_charList->SetItem(n, 3, "-");
-
-	m_charList->SetItem(n, 4, std::to_string(character->documents.size()));
-
-	if ( character->image.IsOk() )
-		m_charList->SetItemColumnImage(n, 0, m_charImageList->Add(wxBitmap(amGetScaledImage(24, 24, character->image))));
-	else
-		m_charList->SetItemColumnImage(n, 0, -1);
 }
 
-void amElementNotebook::UpdateLocation(int n, Location* location)
+void amElementNotebook::UpdateElementInList(int n, Element* element)
 {
-	m_locList->SetItem(n, 0, location->name);
+	amElementNotebookPage* page = GetAppropriatePage(element);
 
-	wxString role("");
-	switch ( location->role )
-	{
-	case lHigh:
-		role = "High";
-		break;
-
-	case lLow:
-		role = "Low";
-		break;
-
-	default:
-		role = "-";
-	}
-
-	m_locList->SetItem(n, 1, role);
-
-	if ( !location->documents.empty() )
-	{
-		int first = 999999;
-		int last = -1;
-
-		for ( Document* document : location->documents )
-		{
-			if ( document->position < first )
-				first = document->position;
-
-			if ( document->position > last )
-				last = document->position;
-		}
-
-		m_locList->SetItem(n, 2, wxString("Document ") << first);
-		m_locList->SetItem(n, 3, wxString("Document ") << last);
-	}
-	else
-	{
-		m_locList->SetItem(n, 2, "-");
-		m_locList->SetItem(n, 3, "-");
-	}
-	m_locList->SetItem(n, 4, std::to_string(location->documents.size()));
-
-	if ( location->image.IsOk() )
-		m_locList->SetItemColumnImage(n, 0, m_locImageList->Add(wxBitmap(amGetScaledImage(24, 24, location->image))));
-	else
-		m_locList->SetItemColumnImage(n, 0, -1);
-}
-
-void amElementNotebook::UpdateItem(int n, Item* item)
-{
-	m_itemList->SetItem(n, 0, item->name);
-
-	if ( item->isMagic )
-		m_itemList->SetItem(n, 1, "Yes");
-	else
-		m_itemList->SetItem(n, 1, "No");
-
-	wxString role("");
-	switch ( item->role )
-	{
-	case iHigh:
-		role = "High";
-		break;
-
-	case iLow:
-		role = "Low";
-		break;
-
-	default:
-		role = "-";
-	}
-	m_itemList->SetItem(n, 2, role);
-
-	if ( !item->documents.empty() )
-	{
-		int first = 999999;
-		int last = -1;
-
-		for ( Document* document : item->documents )
-		{
-			if ( document->position < first )
-				first = document->position;
-
-			if ( document->position > last )
-				last = document->position;
-		}
-
-		m_itemList->SetItem(n, 3, wxString("Document ") << first);
-		m_itemList->SetItem(n, 4, wxString("Document ") << last);
-	}
-	else
-	{
-		m_itemList->SetItem(n, 3, "-");
-		m_itemList->SetItem(n, 4, "-");
-	}
-	m_itemList->SetItem(n, 5, std::to_string(item->documents.size()));
-
-	if ( item->image.IsOk() )
-		m_itemList->SetItemColumnImage(n, 0, m_itemsImageList->Add(wxBitmap(amGetScaledImage(24, 24, item->image))));
-	else
-		m_itemList->SetItemColumnImage(n, 0, -1);
-}
-
-void amElementNotebook::UpdateCharacterList()
-{
-	m_charList->Freeze();
-
-	int i = 0;
-	int tlsize = m_charList->GetItemCount();
-	int mfsize = m_manager->GetCharacterCount();
-	int dif;
-
-	m_charImageList->RemoveAll();
-
-	if ( tlsize > mfsize )
-	{
-		dif = tlsize - mfsize;
-		for ( int j = 0; j < dif; j++ )
-			m_charList->DeleteItem(mfsize - j + 1);
-	}
-	else if ( mfsize > tlsize )
-	{
-		dif = mfsize - tlsize;
-		for ( int j = 0; j < dif; j++ )
-			m_charList->InsertItem(0, "");
-	}
-
-	for ( Character*& character : m_manager->GetCharacters() )
-		UpdateCharacter(i++, character);
-
-	m_charList->Thaw();
-}
-
-void amElementNotebook::UpdateLocationList()
-{
-	m_locList->Freeze();
-
-	int i = 0;
-	int tlsize = m_locList->GetItemCount();
-	int mfsize = m_manager->GetLocationCount();
-	int dif;
-
-	if ( tlsize > mfsize )
-	{
-		dif = tlsize - mfsize;
-		for ( int j = 0; j < dif; j++ )
-			m_locList->DeleteItem(mfsize - j + 1);
-	}
-	else if ( mfsize > tlsize )
-	{
-		dif = mfsize - tlsize;
-		for ( int j = 0; j < dif; j++ )
-			m_locList->InsertItem(0, "");
-	}
-
-	for ( Location*& location : m_manager->GetLocations() )
-		UpdateLocation(i++, location);
-
-	m_locList->Thaw();
-}
-
-void amElementNotebook::UpdateItemList()
-{
-	m_itemList->Freeze();
-
-	int i = 0;
-	int tlsize = m_itemList->GetItemCount();
-	int mfsize = m_manager->GetItemCount();
-	int dif;
-
-	if ( tlsize > mfsize )
-	{
-		dif = tlsize - mfsize;
-		for ( int j = 0; j < dif; j++ )
-			m_itemList->DeleteItem(mfsize - j + 1);
-	}
-	else if ( mfsize > tlsize )
-	{
-		dif = mfsize - tlsize;
-		for ( int j = 0; j < dif; j++ )
-			m_itemList->InsertItem(0, "");
-	}
-
-	for ( Item*& item : m_manager->GetItems() )
-		UpdateItem(i++, item);
-
-	m_itemList->Thaw();
+	if ( page )
+		page->UpdateElementInList(n, element);
 }
 
 void amElementNotebook::UpdateAll()
@@ -776,7 +462,32 @@ void amElementNotebook::UpdateAll()
 	UpdateItemList();
 }
 
-void amElementNotebook::SetSearchAC(wxBookCtrlEvent& WXUNUSED(event))
+wxListView* amElementNotebook::GetAppropriateList(Element* element)
+{
+	wxListView* list = nullptr;
+	amElementNotebookPage* page = GetAppropriatePage(element);
+
+	if ( page )
+		list = page->GetList();
+
+	return list;
+}
+
+amElementNotebookPage* amElementNotebook::GetAppropriatePage(Element* element)
+{
+	amElementNotebookPage* page = nullptr;
+
+	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+		page = m_characterPage;
+	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+		page = m_locationPage;
+	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+		page = m_itemPage;
+
+	return page;
+}
+
+void amElementNotebook::UpdateSearchAutoComplete(wxBookCtrlEvent& WXUNUSED(event))
 {
 	int sel = this->GetSelection();
 

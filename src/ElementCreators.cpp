@@ -11,21 +11,31 @@
 
 #include "wxmemdbg.h"
 
+wxIMPLEMENT_ABSTRACT_CLASS(amElementCreator, wxFrame);
+
 BEGIN_EVENT_TABLE(amElementCreator, wxFrame)
 
 EVT_BUTTON(BUTTON_SetImage, amElementCreator::SetImage)
 EVT_BUTTON(BUTTON_RemoveImage, amElementCreator::RemoveImage)
 
-EVT_CLOSE(amElementCreator::CheckClose)
-
 END_EVENT_TABLE()
 
 amElementCreator::amElementCreator(wxWindow* parent, amProjectManager* manager,
-	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	wxFrame(parent, id, label, pos, size, style)
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
 {
+	Create(parent, manager, id, label, pos, size, style);
+}
+
+bool amElementCreator::Create(wxWindow* parent, amProjectManager* manager, long id,
+	const wxString& label, const wxPoint& pos, const wxSize& size, long style)
+{
+	if ( !wxFrame::Create(parent, id, label, pos, size, style) )
+		return false;
+
 	m_manager = manager;
 	CenterOnParent();
+
+	Bind(wxEVT_CLOSE_WINDOW, &amElementCreator::OnClose, this);
 
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
@@ -112,6 +122,8 @@ amElementCreator::amElementCreator(wxWindow* parent, amProjectManager* manager,
 	m_mainSizer->Add(m_btnPanel, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
 
 	SetSizer(m_mainSizer);
+	m_manager->GetMainFrame()->Enable(false);
+	return true;
 }
 
 wxVector<pair<wxString, wxString>> amElementCreator::GetCustom()
@@ -195,7 +207,7 @@ void amElementCreator::Next(wxCommandEvent& event)
 		break;
 
 	case BUTTON_Create:
-		Create(event);
+		OnCreateElement(event);
 		return;
 
 	case BUTTON_CreateEdit:
@@ -279,16 +291,37 @@ void amElementCreator::RemoveImage(wxCommandEvent& event)
 	event.Skip();
 }
 
+void amElementCreator::OnClose(wxCloseEvent& event)
+{
+	m_manager->GetMainFrame()->Enable();
+	event.Skip();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// Character creator //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+wxIMPLEMENT_ABSTRACT_CLASS(amCharacterCreator, amElementCreator);
 
 amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manager,
-	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	amElementCreator(parent, manager, id, label, pos, size, style)
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
 {
+	Create(parent, manager, id, label, pos, size, style);
+}
+
+bool amCharacterCreator::Create(wxWindow* parent,
+	amProjectManager* manager,
+	long id,
+	const wxString& label,
+	const wxPoint& pos,
+	const wxSize& size,
+	long style)
+{
+	if ( !amElementCreator::Create(parent, manager, id, label, pos, size, style) )
+		return false;
+
+	Bind(wxEVT_CLOSE_WINDOW, &amCharacterCreator::OnClose, this);
 
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
@@ -464,6 +497,8 @@ amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manag
 	SetIcon(wxICON(characterIcon));
 	Layout();
 	Show();
+
+	return true;
 }
 
 wxVector<wxString> amCharacterCreator::GetValues()
@@ -494,7 +529,7 @@ wxVector<wxString> amCharacterCreator::GetValues()
 	return vec;
 }
 
-void amCharacterCreator::SetEdit(Element* editChar)
+void amCharacterCreator::StartEditing(Element* editChar)
 {
 	Character* character = dynamic_cast<Character*>(editChar);
 	if ( !character )
@@ -635,7 +670,7 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event)
 	Thaw();
 }
 
-void amCharacterCreator::Create(wxCommandEvent& event)
+void amCharacterCreator::OnCreateElement(wxCommandEvent& event)
 {
 	if ( !ncFullName->IsEmpty() )
 	{
@@ -680,36 +715,19 @@ void amCharacterCreator::Create(wxCommandEvent& event)
 	event.Skip();
 }
 
-void amCharacterCreator::CheckClose(wxCloseEvent& event)
+void amCharacterCreator::OnClose(wxCloseEvent& event)
 {
-
 	if ( ncFullName->IsModified() || ncAge->IsModified() || ncNationality->IsModified() ||
 		ncHeight->IsModified() || ncNickname->IsModified() ||
 		ncAppearance->IsModified() || ncPersonality->IsModified() || ncBackstory->IsModified() )
 	{
-
 		wxMessageDialog check(this, "Are you sure you want to close?",
 			"Close window", wxYES_NO | wxNO_DEFAULT);
 
-		switch ( check.ShowModal() )
-		{
-		case wxID_YES:
-			m_manager->GetMainFrame()->Enable();
-			this->Destroy();
-			break;
-
-		case wxID_NO:
-			break;
-
-			check.Destroy();
-		}
-
+		if ( check.ShowModal() != wxID_YES )
+			return;
 	}
-	else
-	{
-		m_manager->GetMainFrame()->Enable();
-		this->Destroy();
-	}
+
 	event.Skip();
 }
 
@@ -719,10 +737,26 @@ void amCharacterCreator::CheckClose(wxCloseEvent& event)
 ////////////////////////////////////////////////////////////////////////////////////
 
 
+wxIMPLEMENT_ABSTRACT_CLASS(amLocationCreator, amElementCreator);
+
 amLocationCreator::amLocationCreator(wxWindow* parent, amProjectManager* manager,
-	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	amElementCreator(parent, manager, id, label, pos, size, style)
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
 {
+	Create(parent, manager, id, label, pos, size, style);
+}
+
+bool amLocationCreator::Create(wxWindow* parent,
+	amProjectManager* manager,
+	long id,
+	const wxString& label,
+	const wxPoint& pos,
+	const wxSize& size,
+	long style)
+{
+	if ( !amElementCreator::Create(parent, manager, id, label, pos, size, style) )
+		return false;
+
+	Bind(wxEVT_CLOSE_WINDOW, &amLocationCreator::OnClose, this);
 
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
@@ -883,6 +917,8 @@ amLocationCreator::amLocationCreator(wxWindow* parent, amProjectManager* manager
 
 	m_mainSizer->Layout();
 	this->Show();
+
+	return true;
 }
 
 wxVector<wxString> amLocationCreator::GetValues()
@@ -912,7 +948,7 @@ wxVector<wxString> amLocationCreator::GetValues()
 	return vec;
 }
 
-void amLocationCreator::SetEdit(Element* editLoc)
+void amLocationCreator::StartEditing(Element* editLoc)
 {
 	Location* location = dynamic_cast<Location*>(editLoc);
 	if ( !location )
@@ -1088,7 +1124,7 @@ void amLocationCreator::RecolorCustoms()
 	}
 }
 
-void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event))
+void amLocationCreator::OnCreateElement(wxCommandEvent& WXUNUSED(event))
 {
 	if ( !nlName->IsEmpty() )
 	{
@@ -1128,30 +1164,18 @@ void amLocationCreator::Create(wxCommandEvent& WXUNUSED(event))
 	Destroy();
 }
 
-void amLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event))
+void amLocationCreator::OnClose(wxCloseEvent& event)
 {
-
 	if ( nlArchitecture->IsModified() || nlName->IsModified() || nlGeneral->IsModified() ||
 		nlNatural->IsModified() || nlEconomy->IsModified() || nlCulture->IsModified() )
 	{
-
 		wxMessageDialog check(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
 
-		if ( check.ShowModal() == wxID_YES )
-		{
-			m_manager->GetMainFrame()->Enable();
-			this->Destroy();
-		}
-		else
-		{
-			check.Destroy();
-		}
+		if ( check.ShowModal() != wxID_YES )
+			return;
 	}
-	else
-	{
-		m_manager->GetMainFrame()->Enable();
-		this->Destroy();
-	}
+
+	event.Skip();
 }
 
 
@@ -1159,10 +1183,27 @@ void amLocationCreator::CheckClose(wxCloseEvent& WXUNUSED(event))
 /////////////////////////////////// Item Creator ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
+
+wxIMPLEMENT_ABSTRACT_CLASS(amItemCreator, amElementCreator);
+
 amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
-	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style) :
-	amElementCreator(parent, manager, id, label, pos, size, style)
+	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
 {
+	Create(parent, manager, id, label, pos, size, style);
+}
+
+bool amItemCreator::Create(wxWindow* parent,
+	amProjectManager* manager,
+	long id,
+	const wxString& label,
+	const wxPoint& pos,
+	const wxSize& size,
+	long style)
+{
+	if ( !amElementCreator::Create(parent, manager, id, label, pos, size, style) )
+		return false;
+
+	Bind(wxEVT_CLOSE_WINDOW, &amItemCreator::OnClose, this);
 
 	wxColour dark(40, 40, 40);
 	wxColour darker(30, 30, 30);
@@ -1401,6 +1442,8 @@ amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
 	m_panel1->SetSizer(mainVer);
 	Layout();
 	SetIcon(wxICON(itemIcon));
+
+	return true;
 }
 
 wxVector<wxString> amItemCreator::GetValues()
@@ -1438,7 +1481,7 @@ wxVector<wxString> amItemCreator::GetValues()
 	return vec;
 }
 
-void amItemCreator::SetEdit(Element* editItem)
+void amItemCreator::StartEditing(Element* editItem)
 {
 	Item* item = dynamic_cast<Item*>(editItem);
 	if ( !item )
@@ -1569,7 +1612,7 @@ void amItemCreator::AddCustomAttr(wxCommandEvent& event)
 	Thaw();
 }
 
-void amItemCreator::Create(wxCommandEvent& event)
+void amItemCreator::OnCreateElement(wxCommandEvent& event)
 {
 	if ( !niName->IsEmpty() )
 	{
@@ -1618,29 +1661,18 @@ void amItemCreator::Create(wxCommandEvent& event)
 	Destroy();
 }
 
-void amItemCreator::CheckClose(wxCloseEvent& event)
+void amItemCreator::OnClose(wxCloseEvent& event)
 {
 	if ( niGeneral->IsModified() || niName->IsModified() || niAppearance->IsModified() ||
 		niBackstory->IsModified() || niOrigin->IsModified() || niUsage->IsModified() )
 	{
-
 		wxMessageDialog check(this, "Are you sure you want to close?", "Close", wxYES_NO | wxNO_DEFAULT);
 
-		if ( check.ShowModal() == wxID_YES )
-		{
-			m_manager->GetMainFrame()->Enable();
-			this->Destroy();
-		}
-		else
-		{
-			check.Destroy();
-		}
+		if ( check.ShowModal() != wxID_YES )
+			return;
 	}
-	else
-	{
-		m_manager->GetMainFrame()->Enable();
-		this->Destroy();
-	}
+
+	event.Skip();
 }
 
 void amItemCreator::OnPaint(wxPaintEvent& event)

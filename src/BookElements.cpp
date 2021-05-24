@@ -365,7 +365,7 @@ void Book::InitCover()
 
 		dc.GetMultiLineTextExtent(textToDraw.SubString(begin, end), &textSize.x, &textSize.y);
 
-		if ( textSize.x >= coverSize.x - 20 )
+		if ( textSize.x >= coverSize.x - 40 )
 		{
 			if ( first )
 			{
