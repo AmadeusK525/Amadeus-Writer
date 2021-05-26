@@ -12,7 +12,7 @@ EVT_KEY_UP(amRelease::OnKeyPressed)
 END_EVENT_TABLE()
 
 amRelease::amRelease(wxWindow* parent) :
-	wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SUNKEN)
+	wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
 	SetBackgroundColour(wxColour(20, 20, 20));
 }

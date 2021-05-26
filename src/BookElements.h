@@ -56,6 +56,10 @@ struct Document
 
 	DocumentType type = Document_Other;
 
+	int nWordCountTarget = 0;
+	bool bIncludeInCompile = true;
+	wxString status;
+
 	wxRichTextBuffer* buffer = nullptr;
 
 	wxVector<Element*> elements{};
@@ -116,6 +120,7 @@ struct Book
 	int id = -1;
 
 	wxVector<Document*> documents{};
+	wxVector<Document*> vRecentDocuments{};
 
 	wxVector<Character*> characters{};
 	wxVector<Location*> locations{};
@@ -135,6 +140,7 @@ struct Book
 	void SetId(int id) { this->id = id; }
 
 	void CleanUpDocuments();
+	void PushRecentDocument(Document* document);
 
 	void Save(wxSQLite3Database* db);
 	bool Update(wxSQLite3Database* db, bool updateDocuments);

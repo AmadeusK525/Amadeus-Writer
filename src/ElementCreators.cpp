@@ -302,7 +302,7 @@ void amElementCreator::OnClose(wxCloseEvent& event)
 ////////////////////////////// Character creator //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-wxIMPLEMENT_ABSTRACT_CLASS(amCharacterCreator, amElementCreator);
+wxIMPLEMENT_DYNAMIC_CLASS(amCharacterCreator, amElementCreator);
 
 amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manager,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
@@ -737,7 +737,7 @@ void amCharacterCreator::OnClose(wxCloseEvent& event)
 ////////////////////////////////////////////////////////////////////////////////////
 
 
-wxIMPLEMENT_ABSTRACT_CLASS(amLocationCreator, amElementCreator);
+wxIMPLEMENT_DYNAMIC_CLASS(amLocationCreator, amElementCreator);
 
 amLocationCreator::amLocationCreator(wxWindow* parent, amProjectManager* manager,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
@@ -755,7 +755,7 @@ bool amLocationCreator::Create(wxWindow* parent,
 {
 	if ( !amElementCreator::Create(parent, manager, id, label, pos, size, style) )
 		return false;
-
+	
 	Bind(wxEVT_CLOSE_WINDOW, &amLocationCreator::OnClose, this);
 
 	wxColour dark(50, 50, 50);
@@ -1184,7 +1184,7 @@ void amLocationCreator::OnClose(wxCloseEvent& event)
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-wxIMPLEMENT_ABSTRACT_CLASS(amItemCreator, amElementCreator);
+wxIMPLEMENT_DYNAMIC_CLASS(amItemCreator, amElementCreator);
 
 amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)

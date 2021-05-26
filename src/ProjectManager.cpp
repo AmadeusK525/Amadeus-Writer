@@ -180,17 +180,20 @@ void amProjectSQLDatabase::CreateAllTables()
 	tElementsToElements.Add("element_class TEXT");
 	tElementsToElements.Add("related_class TEXT");
 	tElementsToElements.Add("relation INTEGER");
-
+	
 	///////////////////// PROJECT TABLES ///////////////////////
+	
+	wxArrayString tProject;
+	tProject.Add("name TEXT");
+	tProject.Add("version TEXT");
+	tProject.Add("preferences TEXT");
 
-	/*wxArrayString tProjectProperties;
-	tProjectProperties.Add("element_id INTEGER");
-	tProjectProperties.Add("related_id INTEGER");
-	tProjectProperties.Add("element_class TEXT");
-	tProjectProperties.Add("related_class TEXT");
-	tProjectProperties.Add("relation INTEGER");
-
-	wxArrayString tUserData;*/
+	wxArrayString tSessions;
+	tSessions.Add("selected_book_id INTEGER");
+	tSessions.Add("recent_documents TEXT");
+	tSessions.Add("date TEXT");
+	tSessions.Add("session_attributes TEXT");
+	tSessions.Add("FOREIGN KEY (selected_book_id) REFERENCES books(id)");
 
 	try
 	{
@@ -215,6 +218,9 @@ void amProjectSQLDatabase::CreateAllTables()
 
 		CreateTable("elements_documents", tElementsInDocuments);
 		CreateTable("elements_elements", tElementsToElements);
+
+		//CreateTable("project", tProject);
+		CreateTable("sessions", tSessions);
 
 		Commit();
 	}
@@ -615,6 +621,23 @@ bool amProjectSQLDatabase::RowExists(amSQLEntry& sqlEntry)
 
 
 ///////////////////////////////////////////////////////////////////////
+///////////////////////// ProjectPreferences //////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+
+void amProjectPreferences::MarkSerializableDataMembers()
+{}
+
+void amSessionAttributes::MarkSerializableDataMembers()
+{
+	XS_SERIALIZE_INT(nMainFrameSashPos, "main-frame-sash-pos");
+	XS_SERIALIZE_INT(nCharacterSashPos, "character-sash-pos");
+	XS_SERIALIZE_INT(nLocationSashPos, "location-sash-pos");
+	XS_SERIALIZE_INT(nItemSashPos, "item-sash-pos");
+}
+
+
+///////////////////////////////////////////////////////////////////////
 //////////////////////////// ProjectManager ///////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
@@ -643,6 +666,8 @@ bool amProjectManager::Init()
 		{
 			m_mainFrame = new amMainFrame(m_project.amFile.GetFullName() + "Amadeus Writer - ",
 				this, wxDefaultPosition, wxDefaultSize);
+			m_mainFrame->Hide();
+			m_mainFrame->Maximize();
 
 			m_overview = m_mainFrame->GetOverview();
 			m_elementNotebook = m_mainFrame->GetElementsNotebook();
@@ -668,6 +693,7 @@ bool amProjectManager::Init()
 		m_elementNotebook->InitShowChoices();
 		m_isInitialized = true;
 
+		m_mainFrame->Show();
 		return true;
 	}
 	return false;
@@ -681,6 +707,79 @@ bool amProjectManager::SaveProject()
 bool amProjectManager::LoadProject()
 {
 	return DoLoadProject(m_project.amFile.GetFullPath());
+}
+
+bool amProjectManager::SaveSessionToDb()
+{
+	try
+	{
+		amSessionAttributes attr;
+		attr.nMainFrameSashPos = m_mainFrame->GetMainSplitter()->GetSashPosition();
+		attr.nCharacterSashPos = m_elementNotebook->m_characterPage->GetSashPosition();
+		attr.nLocationSashPos = m_elementNotebook->m_locationPage->GetSashPosition();
+		attr.nItemSashPos = m_elementNotebook->m_itemPage->GetSashPosition();
+
+		wxXmlDocument attrDoc;
+		wxXmlNode* pAttrRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Session-Attributes");
+		attrDoc.SetRoot(pAttrRootNode);
+		pAttrRootNode->AddChild(attr.SerializeObject(nullptr));
+
+		wxStringOutputStream attrStream;
+		attrDoc.Save(attrStream);
+
+		wxXmlDocument doc;
+		wxXmlNode* pDocsRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Recent-Documents");
+		doc.SetRoot(pDocsRootNode);
+
+		for ( Book*& pBook : m_project.books )
+		{
+			wxXmlNode* pBookNode = new wxXmlNode(pDocsRootNode, wxXML_ELEMENT_NODE, "Book");
+			pBookNode->AddAttribute("name", pBook->title);
+			pBookNode->AddAttribute("id", std::to_string(pBook->id));
+
+			for ( auto it = pBook->vRecentDocuments.rbegin();
+				it != pBook->vRecentDocuments.rend(); it++ )
+			{
+				wxXmlNode* pDocNode = new wxXmlNode(pBookNode, wxXML_ELEMENT_NODE, "Document");
+				pDocNode->AddChild(new wxXmlNode(wxXML_TEXT_NODE, (*it)->name));
+				pDocNode->AddAttribute("id", std::to_string((*it)->id));
+			}
+		}
+
+		wxStringOutputStream docStream;
+		doc.Save(docStream);
+
+		wxString strDate = wxDateTime::Now().FormatDate();
+
+		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT date FROM sessions WHERE date = '" + strDate + "';");
+		wxSQLite3StatementBuffer sqlBuffer;
+
+		if ( result.NextRow() )
+		{
+			wxString strUpdate = "UPDATE sessions SET selected_book_id = ";
+			strUpdate << GetCurrentBook()->id << ", recent_documents = '%q', session_attributes = '%q'"
+				" WHERE date = '" << strDate << "';";
+
+			sqlBuffer.Format((const char*)strUpdate, (const char*)docStream.GetString().ToUTF8(),
+				(const char*)attrStream.GetString().ToUTF8());
+		}
+		else
+		{
+			wxString strInsert = "INSERT INTO sessions (selected_book_id, recent_documents, session_attributes, date) VALUES (";
+			strInsert << GetCurrentBook()->id << ", '%q', '%q', '%q')";
+
+			sqlBuffer.Format((const char*)strInsert, (const char*)docStream.GetString().ToUTF8(),
+				(const char*)attrStream.GetString().ToUTF8(), (const char*)strDate.ToUTF8());
+		}
+
+		m_storage.ExecuteUpdate(sqlBuffer);
+	}
+	catch ( wxSQLite3Exception& e )
+	{
+		wxMessageBox(e.GetMessage());
+	}
+
+	return true;
 }
 
 void amProjectManager::SaveSQLEntry(amSQLEntry& original, amSQLEntry& edit)
@@ -724,13 +823,12 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 		Book* currentBook = GetCurrentBook();
 
 		m_overview->LoadBookContainer();
-		m_overview->SetBookData(currentBook);
-		m_elementNotebook->UpdateAll();
-		m_storyNotebook->SetBookData(currentBook);
 		m_outline->LoadOutline(&m_storage);
-		m_release->SetBookData(currentBook);
 
-		m_mainFrame->SetTitle(m_project.amFile.GetFullName() + "Amadeus Writer - ");
+		if ( !LoadLastSession() )
+			SetCurrentBook(currentBook);
+
+		m_mainFrame->SetTitle(m_project.amFile.GetFullName() + " - Amadeus Writer");
 		SetLastSave();
 	}
 	catch ( wxSQLite3Exception& e )
@@ -1045,6 +1143,66 @@ void amProjectManager::LoadStandardRelations()
 void amProjectManager::LoadCharacterRelations()
 {}
 
+bool amProjectManager::LoadLastSession()
+{
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM sessions ORDER BY rowid DESC;");
+	if ( result.NextRow() )
+	{
+		wxStringInputStream sstream(result.GetAsString("recent_documents"));
+		wxXmlDocument doc(sstream);
+
+		wxXmlNode* pRootNode = doc.GetRoot();
+		
+		wxXmlNode* pBookNode = pRootNode->GetChildren();
+		while ( pBookNode )
+		{
+			Book* pBook = GetBookById(wxAtoi(pBookNode->GetAttribute("id")));
+			wxXmlNode* pDocNode = pBookNode->GetChildren();
+			
+			while ( pDocNode )
+			{
+				pBook->vRecentDocuments.push_back(GetDocumentById(wxAtoi(pDocNode->GetAttribute("id"))));
+				pDocNode = pDocNode->GetNext();
+			}
+
+			pBookNode = pBookNode->GetNext();
+		}
+
+		wxStringInputStream attrStream(result.GetAsString("session_attributes"));
+		wxXmlDocument attrDoc(attrStream);
+
+		amSessionAttributes attr;
+		attr.DeserializeObject(attrDoc.GetRoot()->GetChildren());
+		LoadSessionAttr(attr);
+
+		Book* pSelectedBook = GetBookById(result.GetInt("selected_book_id"));
+		if ( pSelectedBook )
+			SetCurrentBook(pSelectedBook);
+
+		return true;
+	}
+
+	return false;
+}
+
+void amProjectManager::LoadSessionAttr(const amSessionAttributes& attr)
+{
+	m_mainFrame->Layout();
+
+	if ( attr.nMainFrameSashPos != -1 )
+		m_mainFrame->GetMainSplitter()->SetSashPosition(attr.nMainFrameSashPos);
+	
+	if ( attr.nCharacterSashPos != -1 )
+		m_elementNotebook->m_characterPage->SetSashPosition(attr.nCharacterSashPos, false);
+
+	if ( attr.nLocationSashPos != -1 )	
+		m_elementNotebook->m_locationPage->SetSashPosition(attr.nLocationSashPos, false);
+
+	if ( attr.nItemSashPos != -1 )
+		m_elementNotebook->m_itemPage->SetSashPosition(attr.nItemSashPos, false);
+
+}
+
 void amProjectManager::SetExecutablePath(const wxString& path)
 {
 	m_executablePath.Assign(path);
@@ -1078,7 +1236,10 @@ bool amProjectManager::SetCurrentBook(Book* book)
 
 void amProjectManager::DoSetCurrentBook(Book* book)
 {
-	LoadBookContent(book, true);
+	if ( !book )
+		return;
+
+	//LoadBookContent(book, true);
 
 	m_overview->SetBookData(book);
 
@@ -1355,13 +1516,14 @@ void amProjectManager::StartEditingElement(Element* element)
 {
 	wxString strCreatorClass("am" + wxString(element->GetClassInfo()->GetClassName()) + "Creator");
 
-	amElementCreator* creator = (amElementCreator*)wxClassInfo::FindClass(strCreatorClass)->CreateObject();
-	if ( !creator->Create(nullptr, this, -1, "Create " + element->name) )
+	wxClassInfo* pCreatorClass = wxClassInfo::FindClass(strCreatorClass);
+	amElementCreator* pCreator = (amElementCreator*)pCreatorClass->CreateObject();
+	if ( !pCreator->Create(m_mainFrame, this, -1, "Edit " + element->name, wxDefaultPosition, pCreator->GetBestSize()) )
 		return;
-
-	creator->CenterOnParent();
-	creator->StartEditing(element);
-	creator->Show(true);
+	
+	pCreator->CenterOnParent();
+	pCreator->StartEditing(element);
+	pCreator->Show(true);
 }
 
 void amProjectManager::EditCharacter(Character* original, Character& edit, bool sort)
@@ -1795,6 +1957,17 @@ Document* amProjectManager::GetDocumentById(int id)
 			if ( pDocument->id == id )
 				return pDocument;
 		}
+	}
+
+	return nullptr;
+}
+
+Book* amProjectManager::GetBookById(int id)
+{
+	for ( Book*& pBook : m_project.books )
+	{
+		if ( pBook->id == id )
+			return pBook;
 	}
 
 	return nullptr;

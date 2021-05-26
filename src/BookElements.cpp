@@ -408,6 +408,30 @@ void Book::CleanUpDocuments()
 	documents.clear();
 }
 
+void Book::PushRecentDocument(Document* document)
+{
+	if ( document->book != this || (!vRecentDocuments.empty() && vRecentDocuments.back() == document) )
+		return;
+	
+	for ( auto it = vRecentDocuments.begin(); it != vRecentDocuments.end(); it++ )
+	{
+		if ( *it == document )
+		{
+			vRecentDocuments.erase(it);
+			vRecentDocuments.push_back(document);
+			return;
+		}
+	}
+
+	if ( vRecentDocuments.size() > 10 )
+	{
+		vRecentDocuments.erase(vRecentDocuments.begin());
+	}
+		
+	vRecentDocuments.push_back(document);
+	return;
+}
+
 void Book::Save(wxSQLite3Database* db)
 {
 	try

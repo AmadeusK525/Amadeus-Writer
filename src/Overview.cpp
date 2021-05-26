@@ -64,45 +64,26 @@ void amBookPicker::AddButton(Book* book, int index)
 
 void amBookPicker::OnBookClicked(wxCommandEvent& event)
 {
-	amBookButton* button = (amBookButton*)event.GetEventObject();
-	Book* currentBook = amGetManager()->GetCurrentBook();
+	amBookButton* pButton = (amBookButton*)event.GetEventObject();
+	Book* pCurrentBook = amGetManager()->GetCurrentBook();
 
-	if ( currentBook != button->book )
+	if ( pCurrentBook != pButton->book )
 	{
 		wxBusyCursor cursor;
-		if ( !amGetManager()->SetCurrentBook(button->book->pos) )
+		if ( !amGetManager()->SetCurrentBook(pButton->book->pos) )
 		{
-			for ( amBookButton*& pButton : m_bookButtons )
-				if ( pButton->book == currentBook )
-					button = pButton;
-		}
-		else
-		{
-			currentBook = amGetManager()->GetCurrentBook();
-		}
-	}
-
-	for ( amBookButton* buttonIt : m_bookButtons )
-	{
-		if ( buttonIt->book == currentBook )
-		{
-			buttonIt->SetValue(true);
-			buttonIt->SetFocus();
-		}
-		else
-		{
-			buttonIt->SetValue(false);
+			SetSelectionByBook(amGetManager()->GetCurrentBook());
 		}
 	}
 
 	event.Skip();
 }
 
-void amBookPicker::SetSelection(int bookPos)
+void amBookPicker::SetSelectionByBook(Book* book)
 {
 	for ( int i = 0; i < m_bookButtons.size(); i++ )
 	{
-		if ( bookPos == i + 1 )
+		if ( book == m_bookButtons[i]->book )
 			m_bookButtons[i]->SetValue(true);
 		else
 			m_bookButtons[i]->SetValue(false);
@@ -126,20 +107,47 @@ amOverview::amOverview(wxWindow* parent, amProjectManager* manager) : wxPanel(pa
 	m_stBookTitle->SetBackgroundColour(wxColour(0, 0, 0));
 	m_stBookTitle->SetForegroundColour(wxColour(255, 255, 255));
 	m_stBookTitle->SetFont(wxFontInfo(20).Bold());
+	m_stBookTitle->SetDoubleBuffered(true);
 
 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 	sizer->Add(m_bookPicker, wxSizerFlags(1).Top());
 	sizer->Add(m_stBookTitle, wxSizerFlags(1).Top());
 
+//	m_recentDocumentsModel = new StoryTreeModel;
+//
+//#ifdef __WXMSW__
+//	m_recentDocumentsDVC = m_recentDocumentsHandler.Create(this, -1, m_recentDocumentsModel.get(),
+//		wxBORDER_NONE | wxDV_MULTIPLE);
+//#else
+//	m_recentDocumentsDVC = new wxDataViewCtrl(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
+//		wxDV_SINGLE | wxBORDER_NONE);
+//	m_recentDocumentsDVC->AssociateModel(&m_recentDocumentsModel);
+//#endif
+//
+//	m_recentDocumentsDVC->SetBackgroundColour(wxColour(90, 90, 90));
+//	//m_recentDocumentsDVC->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, &amElementShowcase::OnDocumentActivated, this);
+//
+//	wxDataViewColumn* pColumn = new wxDataViewColumn(_("Documents"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
+//		wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
+//	m_recentDocumentsDVC->AppendColumn(pColumn);
+//
+//	pColumn = new wxDataViewColumn(_("Words"), new wxDataViewTextRenderer(wxDataViewTextRenderer::GetDefaultType(),
+//		wxDATAVIEW_CELL_INERT), 1, FromDIP(80), wxALIGN_CENTER);
+//	m_recentDocumentsDVC->AppendColumn(pColumn);
+
 	m_mainSizer = new wxBoxSizer(wxVERTICAL);
 	m_mainSizer->Add(sizer, wxSizerFlags(0).Expand());
+	//m_mainSizer->Add(m_recentDocumentsDVC, wxSizerFlags(1).Left().Border(wxALL, 10));
 
 	SetSizer(m_mainSizer);
+	Layout();
 }
 
 void amOverview::SetBookData(Book* book)
 {
 	Freeze();
+
+	m_bookPicker->SetSelectionByBook(book);
 
 	m_stBookTitle->SetLabel(book->title);
 	Layout();
@@ -157,5 +165,5 @@ void amOverview::LoadBookContainer()
 	for ( Book*& book : books )
 		m_bookPicker->AddButton(book, i++);
 
-	m_bookPicker->SetSelection(m_manager->GetCurrentBookPos());
+	m_bookPicker->SetSelectionByBook(m_manager->GetCurrentBook());
 }

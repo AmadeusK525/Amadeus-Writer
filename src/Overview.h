@@ -6,7 +6,7 @@
 #include <wx\tglbtn.h>
 
 #include "BookElements.h"
-
+#include "StoryWriter.h"
 #include "MainFrame.h"
 
 class amOverview;
@@ -43,7 +43,7 @@ public:
 	void AddButton(Book* book, int index);
 	void OnBookClicked(wxCommandEvent& event);
 
-	void SetSelection(int bookPos);
+	void SetSelectionByBook(Book* book);
 };
 
 
@@ -60,6 +60,12 @@ private:
 
 	wxStaticText* m_stBookTitle = nullptr;
 	wxStaticText* m_stBookAuthor = nullptr;
+
+#ifdef __WXMSW__
+	amHotTrackingDVCHandler m_recentDocumentsHandler;
+#endif
+	wxDataViewCtrl* m_recentDocumentsDVC = nullptr;
+	wxObjectDataPtr<StoryTreeModel> m_recentDocumentsModel;
 
 	wxBoxSizer* m_mainSizer = nullptr;
 

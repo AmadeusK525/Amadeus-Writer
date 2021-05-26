@@ -63,7 +63,6 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
 	m_manager = manager;
-	Hide();
 
 	m_mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
 	m_mainPanel->SetBackgroundColour(wxColour(40, 40, 40));
@@ -72,13 +71,13 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_holderSizer->Add(m_mainPanel, wxSizerFlags(1).Expand());
 	SetSizer(m_holderSizer);
 
-	amSplitterWindow* splitter = new amSplitterWindow(m_mainPanel, -1, wxDefaultPosition,
+	m_mainSplitter = new amSplitterWindow(m_mainPanel, -1, wxDefaultPosition,
 		wxDefaultSize, wxSP_NOBORDER | wxSP_NO_XP_THEME | wxSP_THIN_SASH | wxSP_LIVE_UPDATE);
-	splitter->SetBackgroundColour(wxColour(20, 20, 20));
-	splitter->SetMinimumPaneSize(50);
-	splitter->Bind(wxEVT_SPLITTER_SASH_POS_CHANGING, &amMainFrame::OnSashChanged, this);
+	m_mainSplitter->SetBackgroundColour(wxColour(20, 20, 20));
+	m_mainSplitter->SetMinimumPaneSize(50);
+	m_mainSplitter->Bind(wxEVT_SPLITTER_SASH_POS_CHANGING, &amMainFrame::OnSashChanged, this);
 
-	m_selPanel = new wxPanel(splitter, wxID_ANY);
+	m_selPanel = new wxPanel(m_mainSplitter, wxID_ANY);
 	m_selPanel->SetBackgroundColour(wxColour(40, 40, 40));
 	m_selPanel->SetDoubleBuffered(true);
 
@@ -111,7 +110,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_buttonSizer->AddStretchSpacer(2);
 	m_selPanel->SetSizer(m_buttonSizer);
 
-	m_mainBook = new wxSimplebook(splitter);
+	m_mainBook = new wxSimplebook(m_mainSplitter);
 	m_mainBook->SetBackgroundColour(wxColour(40, 40, 40));
 
 	m_overview = new amOverview(m_mainBook, m_manager);
@@ -231,12 +230,12 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	m_toolBar->Realize();
 
-	splitter->SplitVertically(m_selPanel, m_mainBook, FromDIP(100));
-	splitter->SetSashGravity(0.0);
+	m_mainSplitter->SplitVertically(m_selPanel, m_mainBook, FromDIP(100));
+	m_mainSplitter->SetSashGravity(0.0);
 
 	m_verticalSizer = new wxBoxSizer(wxVERTICAL);
 	m_verticalSizer->Add(m_toolBar, wxSizerFlags(0).Expand());
-	m_verticalSizer->Add(splitter, wxSizerFlags(1).Expand());
+	m_verticalSizer->Add(m_mainSplitter, wxSizerFlags(1).Expand());
 	m_mainPanel->SetSizer(m_verticalSizer);
 
 	SetIcon(wxICON(amadeus));
@@ -245,10 +244,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	wxRichTextBuffer::AddHandler(new wxRichTextHTMLHandler);
 
 	// Initialize maximized
-	Maximize();
-	m_verticalSizer->Layout();
-
-	Show();
+	Layout();
 }
 
 void amMainFrame::OnNewFile(wxCommandEvent& event)
@@ -321,7 +317,7 @@ void amMainFrame::OnExportCorkboard(wxCommandEvent& event)
 
 void amMainFrame::OnClose(wxCloseEvent& event)
 {
-
+	m_manager->SaveSessionToDb();
 	/*if (event.CanVeto()) {
 		wxMessageDialog saveBefore(this, "Project has been modified and not saved.\nDo you want to save before quitting?",
 			"Quit", wxYES_NO | wxCANCEL | wxYES_DEFAULT | wxICON_EXCLAMATION);

@@ -112,7 +112,6 @@ void amElementNotebookPage::ClearAll()
 void amElementNotebookPage::InitShowChoices()
 {
 	m_bookCheckList->InsertItems(amGetManager()->GetBookTitles(), 0);
-	m_bookCheckList->Check(0);
 	m_show->SetText(_("All"));
 }
 
@@ -407,12 +406,12 @@ void amElementNotebook::GoToElement(Element* element)
 	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
 	{
 		SetSelection(1);
-		m_characterPage->GoToElement(element);
+		m_locationPage->GoToElement(element);
 	}
 	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
 	{
 		SetSelection(2);
-		m_characterPage->GoToElement(element);
+		m_itemPage->GoToElement(element);
 	}
 }
 

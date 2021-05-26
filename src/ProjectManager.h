@@ -7,6 +7,7 @@
 #include <wx\filename.h>
 
 #include <wx\wxsqlite3.h>
+#include <wx\wxsf\wxShapeFramework.h>
 
 #include "ProjectWizard.h"
 #include "BookElements.h"
@@ -59,6 +60,32 @@ public:
 
 
 ///////////////////////////////////////////////////////////////////////
+///////////////////////// ProjectPreferences //////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+
+struct amProjectPreferences : public xsSerializable
+{
+	
+	amProjectPreferences() { MarkSerializableDataMembers(); }
+
+	void MarkSerializableDataMembers();
+};
+
+struct amSessionAttributes : public xsSerializable
+{
+	int nMainFrameSashPos = -1,
+		nCharacterSashPos = -1,
+		nLocationSashPos = -1,
+		nItemSashPos = -1;
+
+	amSessionAttributes() { MarkSerializableDataMembers(); }
+
+	void MarkSerializableDataMembers();
+};
+
+
+///////////////////////////////////////////////////////////////////////
 //////////////////////////// ProjectManager ///////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
@@ -104,6 +131,8 @@ public:
 	bool SaveProject();
 	bool LoadProject();
 
+	bool SaveSessionToDb();
+
 	void SaveSQLEntry(amSQLEntry& original, amSQLEntry& edit);
 
 	bool DoSaveProject(const wxString& path);
@@ -120,6 +149,9 @@ public:
 
 	void LoadStandardRelations();
 	void LoadCharacterRelations();
+
+	bool LoadLastSession();
+	void LoadSessionAttr(const amSessionAttributes& attr);
 
 	void SetExecutablePath(const wxString& path);
 	void SetProjectFileName(const wxFileName& fileName);
@@ -197,6 +229,7 @@ public:
 
 	wxVector<Document*>& GetDocumentsInCurrentBook();
 	Document* GetDocumentById(int id);
+	Book* GetBookById(int id);
 
 	wxArrayString GetCharacterNames();
 	wxArrayString GetLocationNames();

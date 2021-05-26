@@ -46,7 +46,7 @@ public:
 		long id = wxID_ANY,
 		const wxString& label = "Create element",
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxSize(600, 600),
+		const wxSize& size = wxSize(700, 700),
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
@@ -55,7 +55,7 @@ public:
 		long id = wxID_ANY,
 		const wxString& label = "Create element",
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxSize(600, 600),
+		const wxSize& size = wxSize(700, 700),
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
@@ -139,18 +139,18 @@ public:
 		long id = wxID_ANY,
 		const wxString& label = "Create character",
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxSize(520, 585),
+		const wxSize& size = wxSize(700, 700),
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
-		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT);
 
 	virtual bool Create(wxWindow* parent,
 		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create element",
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxSize(600, 600),
+		const wxSize& size = wxSize(700, 700),
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
-		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
 	virtual wxVector<wxString> GetValues();
 
@@ -161,6 +161,8 @@ public:
 
 	virtual void OnCreateElement(wxCommandEvent& event);
 	virtual void OnClose(wxCloseEvent& event);
+
+	inline virtual wxSize DoGetBestClientSize() const override { return wxSize(700, 700); }
 
 	wxDECLARE_DYNAMIC_CLASS(amCharacterCreator);
 };
@@ -189,23 +191,24 @@ private:
 	wxWrapSizer* m_nlcustomSizer = nullptr;
 
 public:
+	amLocationCreator() = default;
 	amLocationCreator(wxWindow* parent,
 		amProjectManager* manager,
 		long id,
-		const wxString& label,
-		const wxPoint& pos,
-		const wxSize& size,
+		const wxString& label = "Create location",
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxSize(900, 650), 
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
-		wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
+		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
 	virtual bool Create(wxWindow* parent,
 		amProjectManager* manager,
 		long id = wxID_ANY,
-		const wxString& label = "Create element",
+		const wxString& label = "Create location",
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxSize(600, 600),
+		const wxSize& size = wxSize(900, 650),
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
-		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
 	virtual wxVector<wxString> GetValues();
 
@@ -218,6 +221,8 @@ public:
 
 	virtual void OnCreateElement(wxCommandEvent& event);
 	virtual void OnClose(wxCloseEvent& event);
+
+	inline virtual wxSize DoGetBestClientSize() const override { return wxSize(1100, 750); }
 
 	wxDECLARE_DYNAMIC_CLASS(amLocationCreator);
 };
@@ -253,23 +258,24 @@ private:
 	wxBoxSizer* niMeaSizer = nullptr;
 
 public:
+	amItemCreator() = default;
 	amItemCreator(wxWindow* parent,
 		amProjectManager* manager,
-		long id,
-		const wxString& label,
-		const wxPoint& pos,
-		const wxSize& size,
+		long id = wxID_ANY,
+		const wxString& label = "Create item",
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxSize(900, 720),
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
-		wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
+		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
 	virtual bool Create(wxWindow* parent,
 		amProjectManager* m_manager,
 		long id = wxID_ANY,
-		const wxString& label = "Create element",
+		const wxString& label = "Create item",
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxSize(600, 600),
+		const wxSize& size = wxSize(900, 720),
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
-		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
+		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
 	virtual wxVector<wxString> GetValues();
 
@@ -282,6 +288,8 @@ public:
 	virtual void OnClose(wxCloseEvent& event);
 
 	void OnPaint(wxPaintEvent& event);
+
+	inline virtual wxSize DoGetBestClientSize() const override { return wxSize(1000, 750); }
 
 	wxDECLARE_DYNAMIC_CLASS(amItemCreator);
 };

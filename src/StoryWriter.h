@@ -382,6 +382,8 @@ public:
 
 	void CountWords();
 
+	void OnCharRTC(wxRichTextEvent& event);
+
 	void OnTimerEvent(wxTimerEvent& event);
 	void OnLeftSplitterChanged(wxSplitterEvent& event);
 

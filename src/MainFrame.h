@@ -7,6 +7,7 @@
 #include <wx\simplebook.h>
 #include <wx\splitter.h>
 
+#include "amUtility.h"
 #include "ProjectManager.h"
 
 class amMainFrame : public wxFrame
@@ -16,6 +17,8 @@ private:
 
 	wxPanel* m_mainPanel = nullptr,
 		* m_panel = nullptr;
+
+	amSplitterWindow* m_mainSplitter = nullptr;
 
 	amOverview* m_overview = nullptr;
 	amElementNotebook* m_elementNotebook = nullptr;
@@ -82,6 +85,7 @@ public:
 	void Search(wxCommandEvent& event);
 
 	inline wxPanel* GetMainPanel() { return m_mainPanel; }
+	inline amSplitterWindow* GetMainSplitter() { return m_mainSplitter; }
 	inline wxBoxSizer* GetHolderSizer() { return m_holderSizer; }
 	inline bool IsFrameFullScreen() { return m_isFrameFullScreen; }
 

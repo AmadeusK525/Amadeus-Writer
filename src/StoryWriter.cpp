@@ -1238,11 +1238,13 @@ void amStoryWriter::LoadDocument(Document* document)
 	{
 		wxBusyCursor busy;
 
-		wxPanel* mainPanel = new wxPanel(notebook, -1);
+		wxPanel* mainPanel = new wxPanel(notebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 		mainPanel->SetBackgroundColour(wxColour(20, 20, 20));
 
 		wxRichTextCtrl* rtc = new wxRichTextCtrl(mainPanel, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
 			wxRE_MULTILINE | wxBORDER_NONE);
+		rtc->Bind(wxEVT_RICHTEXT_CHARACTER, &amStoryWriter::OnCharRTC, this);
+		rtc->Bind(wxEVT_RICHTEXT_DELETE, &amStoryWriter::OnCharRTC, this);
 
 		wxRichTextAttr attr;
 		attr.SetFont(wxFontInfo(10));
@@ -1374,6 +1376,31 @@ void amStoryWriter::OnClose(wxCloseEvent& event)
 
 	Destroy();
 	event.Skip();
+}
+
+void amStoryWriter::OnCharRTC(wxRichTextEvent& event)
+{
+	event.Skip();
+
+	wxRichTextCtrl* pRtc = (wxRichTextCtrl*)event.GetEventObject();
+	Document* pToPush;
+	if ( m_activeTab.rtc == pRtc )
+	{
+		pToPush = m_activeTab.document;
+	}
+	else
+	{
+		for ( amStoryWriterTab& tab : m_swNotebook->GetTabs() )
+		{
+			if ( tab.rtc == pRtc )
+			{
+				pToPush = tab.document;
+				break;
+			}
+		}
+	}
+
+	pToPush->book->PushRecentDocument(pToPush);
 }
 
 
@@ -1698,6 +1725,7 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* do
 
 	m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT | wxAUI_NB_CLOSE_ON_ALL_TABS |
 		wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_BOTTOM | wxBORDER_NONE);
+	m_notebook->GetAuiManager().GetArtProvider()->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(20, 20, 20));
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CHANGED, &amStoryWriterNotebook::OnSelectionChanged, this);
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSE, &amStoryWriterNotebook::OnPageClosing, this);
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSED, &amStoryWriterNotebook::OnPageClosed, this);
