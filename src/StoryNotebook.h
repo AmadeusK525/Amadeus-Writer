@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <wx\notebook.h>
-#include <wx\listctrl.h>
-#include <wx\wrapsizer.h>
+#include <wx/aui/auibook.h>
+#include <wx/listctrl.h>
+#include <wx/wrapsizer.h>
 
 #include "MainFrame.h"
 
@@ -14,7 +14,7 @@
 class StoryGrid;
 struct Document;
 
-class amStoryNotebook : public wxNotebook
+class amStoryNotebook : public wxAuiNotebook
 {
 private:
 	amProjectManager* m_manager = nullptr;

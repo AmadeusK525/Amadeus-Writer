@@ -114,7 +114,7 @@ amOverview::amOverview(wxWindow* parent, amProjectManager* manager) : wxPanel(pa
 	sizer->Add(m_stBookTitle, wxSizerFlags(1).Top());
 
 	wxStaticText* pRecentDocumentsLabel = new wxStaticText(this, -1, _("Recent Documents:"));
-	pRecentDocumentsLabel->SetBackgroundColour(wxColour(40, 40, 40));
+	pRecentDocumentsLabel->SetBackgroundColour(wxColour(60, 60, 60));
 	pRecentDocumentsLabel->SetForegroundColour(wxColour(240,240,240));
 	pRecentDocumentsLabel->SetFont(wxFontInfo(10).Bold());
 

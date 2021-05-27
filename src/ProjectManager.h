@@ -119,7 +119,7 @@ private:
 
 	bool m_isInitialized = false;
 
-	int m_currentBookPos = 1;
+	Book* m_pCurrentBook = nullptr;
 
 public:
 	amProjectManager();
@@ -159,7 +159,6 @@ public:
 
 	bool SetCurrentBook(int bookPos) { return SetCurrentBook(m_project.books[bookPos - 1]); }
 	bool SetCurrentBook(Book* book);
-	void DoSetCurrentBook(Book* book);
 
 	amMainFrame* GetMainFrame();
 	amElementNotebook* GetElementsNotebook();
@@ -219,8 +218,8 @@ public:
 
 	inline amProject* GetProject() { return &m_project; }
 
-	inline int GetCurrentBookPos() { return m_currentBookPos; }
-	inline Book* GetCurrentBook() { return m_project.books[m_currentBookPos - 1]; }
+	inline int GetCurrentBookPos() { return m_pCurrentBook->pos; }
+	inline Book* GetCurrentBook() { return m_pCurrentBook; }
 
 	inline wxVector<Book*>& GetBooks() { return m_project.books; }
 	inline wxVector<Character*> GetCharacters() { return m_project.GetCharacters(); }

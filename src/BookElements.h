@@ -56,11 +56,13 @@ struct Document
 
 	DocumentType type = Document_Other;
 
+	int nWordCount = 0;
 	int nWordCountTarget = 0;
 	bool bIncludeInCompile = true;
 	wxString status;
 
 	wxRichTextBuffer* buffer = nullptr;
+	bool bIsDirty = true;
 
 	wxVector<Element*> elements{};
 	wxVector<Note*> notes{};

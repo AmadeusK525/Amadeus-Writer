@@ -2,13 +2,21 @@
 #include "StoryWriter.h"
 #include "MyApp.h"
 
-#include <wx\dir.h>
+#include <wx/dir.h>
 
 #include "wxmemdbg.h"
 
 amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
-	wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager)
+	wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager)
 {
+	wxAuiSimpleTabArt* pArt = new wxAuiSimpleTabArt();
+	pArt->SetColour(wxColour(50, 50, 50));
+	pArt->SetActiveColour(wxColour(30, 30, 30));
+	SetArtProvider(pArt);
+
+	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+
 	m_grid = new StoryGrid(this, m_manager);
 	m_grid->SetBackgroundColour(wxColour(150, 0, 0));
 

@@ -50,23 +50,29 @@ bool Document::HasRedNote()
 
 int Document::GetWordCount()
 {
-	amProjectSQLDatabase* pDb = amGetManager()->GetStorage();
-	wxSQLite3ResultSet result = pDb->ExecuteQuery("SELECT plain_text FROM documents WHERE id = " + std::to_string(id));
-
-	int count = 0;
-
-	if ( result.NextRow() )
+	if ( bIsDirty )
 	{
-		std::string content = result.GetAsString("plain_text");
+		amProjectSQLDatabase* pDb = amGetManager()->GetStorage();
+		wxSQLite3ResultSet result = pDb->ExecuteQuery("SELECT plain_text FROM documents WHERE id = " + std::to_string(id));
 
-		if ( !content.empty() )
+		int count = 0;
+
+		if ( result.NextRow() )
 		{
-			std::stringstream sstream(content);
-			count = std::distance(std::istream_iterator<std::string>(sstream), std::istream_iterator<std::string>());
+			std::string content = result.GetAsString("plain_text");
+
+			if ( !content.empty() )
+			{
+				std::stringstream sstream(content);
+				count = std::distance(std::istream_iterator<std::string>(sstream), std::istream_iterator<std::string>());
+			}
 		}
+
+		nWordCount = count;
+		bIsDirty = false;
 	}
 
-	return count;
+	return nWordCount;
 }
 
 void Document::Save(wxSQLite3Database* db)

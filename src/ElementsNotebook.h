@@ -4,7 +4,7 @@
 #pragma once
 
 #include <wx\wx.h>
-#include <wx\notebook.h>
+#include <wx\aui\auibook.h>
 #include <wx\listctrl.h>
 #include <wx\combo.h>
 #include <wx\srchctrl.h>
@@ -60,7 +60,7 @@ public:
 	void OnCheckListBox(wxCommandEvent& event);
 };
 
-class amElementNotebook : public wxNotebook
+class amElementNotebook : public wxAuiNotebook
 {
 private:
 	amProjectManager* m_manager = nullptr;

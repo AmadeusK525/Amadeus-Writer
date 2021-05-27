@@ -2,12 +2,12 @@
 #define OUTLINE_H_
 #pragma once
 
-#include <wx/notebook.h>
+#include <wx/aui/aui.h>
 #include <wx/panel.h>
 #include <wx/progdlg.h>
 #include <wx/splitter.h>
 
-#include <wx\sstream.h>
+#include <wx/sstream.h>
 
 #include "ProjectManager.h"
 
@@ -16,7 +16,7 @@ class amCorkboard;
 class amTLTimeline;
 class amOutlineFilesPanel;
 
-class amOutline : public wxNotebook
+class amOutline : public wxAuiNotebook
 {
 private:
 	amCorkboard* m_corkboard = nullptr;

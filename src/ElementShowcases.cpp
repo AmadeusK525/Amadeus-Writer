@@ -1200,13 +1200,14 @@ bool amCharacterShowcase::LoadFirstPanel(Element* element)
 
 	if ( currentCustomCount > characterCustomCount )
 	{
-		pair<wxStaticText*, wxTextCtrl*>* it = m_custom.end() - 1;
 
 		for ( int i = (currentCustomCount - 1); i > (characterCustomCount - 1); i-- )
 		{
-			it->first->Destroy();
-			it->second->Destroy();
-			m_custom.erase(it--);
+			pair<wxStaticText*, wxTextCtrl*>& it = m_custom[i];
+
+			it.first->Destroy();
+			it.second->Destroy();
+			m_custom.erase(&it);
 		}
 	}
 
@@ -1254,7 +1255,7 @@ bool amCharacterShowcase::LoadFirstPanel(Element* element)
 		nol = textCtrl->GetNumberOfLines();
 
 		if ( nol > 5 )
-			textCtrl->SetMinSize(wxSize(-1, (nol * textCtrl->GetCharHeight()) + 5));
+			textCtrl->SetMinSize(wxSize(-1, (nol + 4) * textCtrl->GetCharHeight()));
 		else
 			textCtrl->SetMinSize(size);
 	}
@@ -1498,13 +1499,14 @@ bool amLocationShowcase::LoadFirstPanel(Element* element)
 
 	if ( currentCustomCount > locationCustomCount )
 	{
-		pair<wxStaticText*, wxTextCtrl*>* it = m_custom.end() - 1;
-
 		for ( int i = (currentCustomCount - 1); i > (locationCustomCount - 1); i-- )
 		{
-			it->first->Destroy();
-			it->second->Destroy();
-			m_custom.erase(it--);
+			pair<wxStaticText*, wxTextCtrl*>& it = m_custom[i];
+
+			it.first->Destroy();
+			it.second->Destroy();
+
+			m_custom.erase(&it);
 
 			m_first = !m_first;
 		}
@@ -1568,7 +1570,7 @@ bool amLocationShowcase::LoadFirstPanel(Element* element)
 		nol = textCtrl->GetNumberOfLines();
 
 		if ( nol > 5 )
-			textCtrl->SetMinSize(wxSize(-1, (nol * textCtrl->GetCharHeight()) + 5));
+			textCtrl->SetMinSize(wxSize(-1, (nol + 4) * textCtrl->GetCharHeight()));
 		else
 			textCtrl->SetMinSize(size);
 	}
@@ -1868,13 +1870,14 @@ bool amItemShowcase::LoadFirstPanel(Element* element)
 
 	if ( currentCustomCount > itemCustomCount )
 	{
-		pair<wxStaticText*, wxTextCtrl*>* it = m_custom.end() - 1;
 
 		for ( int i = (currentCustomCount - 1); i > (itemCustomCount - 1); i-- )
 		{
-			it->first->Destroy();
-			it->second->Destroy();
-			m_custom.erase(it--);
+			pair<wxStaticText*, wxTextCtrl*>& it = m_custom[i];
+
+			it.first->Destroy();
+			it.second->Destroy();
+			m_custom.erase(&it);
 		}
 	}
 
@@ -1922,7 +1925,7 @@ bool amItemShowcase::LoadFirstPanel(Element* element)
 	for ( wxTextCtrl*& textCtrl : vTextCtrls )
 	{
 		int nol = textCtrl->GetNumberOfLines();
-		textCtrl->SetMinSize(wxSize(-1, nol > 5 ? ((nol * textCtrl->GetCharHeight()) + 5) : 80));
+		textCtrl->SetMinSize(wxSize(-1, nol > 5 ? ((nol + 4) * textCtrl->GetCharHeight()) : 80));
 	}
 
 	m_mainVerSizer->FitInside(m_mainPanel);

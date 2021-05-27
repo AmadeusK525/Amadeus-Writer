@@ -748,8 +748,8 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	SetSize(FromDIP(wxSize(1100, 700)));
 	Maximize();
 
-	leftSplitter->SplitVertically(leftNotebook, m_swNotebook, FromDIP(230));
-	rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1135));
+	leftSplitter->SplitVertically(leftNotebook, m_swNotebook, FromDIP(200));
+	rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1150));
 	leftSplitter->SetSashGravity(0.0);
 	rightSplitter->SetSashGravity(1.0);
 
@@ -1418,6 +1418,9 @@ void amStoryWriter::OnCharRTC(wxRichTextEvent& event)
 	}
 
 	pToPush->book->PushRecentDocument(pToPush);
+
+	if ( !pToPush->bIsDirty )
+		pToPush->bIsDirty = true;
 }
 
 

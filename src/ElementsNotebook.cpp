@@ -363,9 +363,17 @@ void amElementNotebookPage::OnElementRightClick(wxListEvent & event)
 
 
 amElementNotebook::amElementNotebook(wxWindow* parent) :
-	wxNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
+	wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
 	m_manager = amGetManager();
+
+	wxAuiSimpleTabArt* pArt = new wxAuiSimpleTabArt();
+	pArt->SetColour(wxColour(50, 50, 50));
+	pArt->SetActiveColour(wxColour(30, 30, 30));
+	SetArtProvider(pArt);
+
+	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
 
 	//Setting up first notebook tab with a characters list
 	wxArrayString sortBy;

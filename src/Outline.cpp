@@ -7,8 +7,16 @@
 
 #include "wxmemdbg.h"
 
-amOutline::amOutline(wxWindow* parent) : wxNotebook(parent, -1)
+amOutline::amOutline(wxWindow* parent) : wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
+	wxAuiSimpleTabArt* pArt = new wxAuiSimpleTabArt();
+	pArt->SetColour(wxColour(50, 50, 50));
+	pArt->SetActiveColour(wxColour(30, 30, 30));
+	SetArtProvider(pArt);
+
+	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+
 	m_corkboardHolder = new wxPanel(this);
 	m_corkboard = new amCorkboard(m_corkboardHolder);
 

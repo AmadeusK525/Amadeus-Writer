@@ -1263,31 +1263,8 @@ void amProjectManager::SetProjectFileName(const wxFileName& fileName)
 
 bool amProjectManager::SetCurrentBook(Book* book)
 {
-	if ( m_storyWriter )
-	{
-		wxMessageDialog dialog(m_mainFrame, "The Amadeus Story Writer is open and currently in use.\n"
-			"To switch books, you need to close it first. Do you wish to close it and load the new book?",
-			"Story Writer is in use", wxYES_NO);
-
-		if ( dialog.ShowModal() != wxID_YES )
-			return false;
-		
-		if ( !m_storyWriter->Close(true) )
-			return false;
-
-		m_storyWriter = nullptr;
-	}
-
-	DoSetCurrentBook(book);
-	return true;
-}
-
-void amProjectManager::DoSetCurrentBook(Book* book)
-{
 	if ( !book )
-		return;
-
-	//LoadBookContent(book, true);
+		return false;
 
 	m_overview->SetBookData(book);
 
@@ -1301,8 +1278,9 @@ void amProjectManager::DoSetCurrentBook(Book* book)
 
 	m_storyNotebook->SetBookData(book);
 	m_release->SetBookData(book);
-	
-	m_currentBookPos = book->pos;
+
+	m_pCurrentBook = book;
+	return true;
 }
 
 amMainFrame* amProjectManager::GetMainFrame()
@@ -1993,7 +1971,7 @@ void amProjectManager::DeleteDocument(Document* document)
 
 wxVector<Document*>& amProjectManager::GetDocumentsInCurrentBook()
 {
-	return m_project.GetDocuments(m_currentBookPos);
+	return m_pCurrentBook->documents;
 }
 
 Document* amProjectManager::GetDocumentById(int id)
