@@ -3,6 +3,8 @@
 #include <wx\sstream.h>
 #include <wx\mstream.h>
 
+#include <sstream>
+
 #include "MyApp.h"
 
 #include "wxmemdbg.h"
@@ -30,6 +32,11 @@ Document::~Document()
 	CleanUp();
 }
 
+bool Document::IsStory()
+{
+	return type == Document_Chapter || type == Document_Scene || type == Document_Other;
+}
+
 bool Document::HasRedNote()
 {
 	for ( Note*& pNote : notes )
@@ -39,6 +46,27 @@ bool Document::HasRedNote()
 	}
 
 	return false;
+}
+
+int Document::GetWordCount()
+{
+	amProjectSQLDatabase* pDb = amGetManager()->GetStorage();
+	wxSQLite3ResultSet result = pDb->ExecuteQuery("SELECT plain_text FROM documents WHERE id = " + std::to_string(id));
+
+	int count = 0;
+
+	if ( result.NextRow() )
+	{
+		std::string content = result.GetAsString("plain_text");
+
+		if ( !content.empty() )
+		{
+			std::stringstream sstream(content);
+			count = std::distance(std::istream_iterator<std::string>(sstream), std::istream_iterator<std::string>());
+		}
+	}
+
+	return count;
 }
 
 void Document::Save(wxSQLite3Database* db)

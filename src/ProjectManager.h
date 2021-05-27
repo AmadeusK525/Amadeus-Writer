@@ -77,7 +77,8 @@ struct amSessionAttributes : public xsSerializable
 	int nMainFrameSashPos = -1,
 		nCharacterSashPos = -1,
 		nLocationSashPos = -1,
-		nItemSashPos = -1;
+		nItemSashPos = -1,
+		nOutlineFilesSashPos = -1;
 
 	amSessionAttributes() { MarkSerializableDataMembers(); }
 

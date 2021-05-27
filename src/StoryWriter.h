@@ -294,9 +294,9 @@ private:
 	amProjectManager* m_manager = nullptr;
 	amStoryWriterNotebook* m_swNotebook = nullptr;
 
-	wxTextCtrl* m_synopsys = nullptr,
-		* m_note = nullptr,
-		* m_noteLabel = nullptr;
+	wxTextCtrl* m_noteLabel = nullptr;
+	wxRichTextCtrl* m_synopsys = nullptr,
+		* m_note = nullptr;
 
 	wxStaticText* m_noteChecker = nullptr;
 

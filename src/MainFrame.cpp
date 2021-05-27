@@ -81,7 +81,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_selPanel->SetBackgroundColour(wxColour(40, 40, 40));
 	m_selPanel->SetDoubleBuffered(true);
 
-	wxFont font(wxFontInfo(13).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
+	wxFont font(wxFontInfo(12).Family(wxFONTFAMILY_MODERN).Bold().AntiAliased());
 
 	for ( int i = 0; i < 5; i++ )
 		m_mainButtons.push_back(nullptr);
@@ -102,12 +102,12 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 		button->SetForegroundColour(wxColour(245, 245, 245));
 		button->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
 		button->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
-		m_buttonSizer->Add(button, wxSizerFlags(1).Expand().Border(wxTOP | wxLEFT | wxRIGHT, 5));
+		m_buttonSizer->Add(button, wxSizerFlags(1).Expand().Border(wxALL, 2));
 	}
 
 	m_mainButtons[0]->SetBackgroundColour(wxDarkenColour(wxColour(130, 0, 0), 28));
 
-	m_buttonSizer->AddStretchSpacer(2);
+	m_buttonSizer->AddStretchSpacer(3);
 	m_selPanel->SetSizer(m_buttonSizer);
 
 	m_mainBook = new wxSimplebook(m_mainSplitter);

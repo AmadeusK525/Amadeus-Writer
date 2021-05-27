@@ -113,31 +113,42 @@ amOverview::amOverview(wxWindow* parent, amProjectManager* manager) : wxPanel(pa
 	sizer->Add(m_bookPicker, wxSizerFlags(1).Top());
 	sizer->Add(m_stBookTitle, wxSizerFlags(1).Top());
 
-//	m_recentDocumentsModel = new StoryTreeModel;
-//
-//#ifdef __WXMSW__
-//	m_recentDocumentsDVC = m_recentDocumentsHandler.Create(this, -1, m_recentDocumentsModel.get(),
-//		wxBORDER_NONE | wxDV_MULTIPLE);
-//#else
-//	m_recentDocumentsDVC = new wxDataViewCtrl(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
-//		wxDV_SINGLE | wxBORDER_NONE);
-//	m_recentDocumentsDVC->AssociateModel(&m_recentDocumentsModel);
-//#endif
-//
-//	m_recentDocumentsDVC->SetBackgroundColour(wxColour(90, 90, 90));
-//	//m_recentDocumentsDVC->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, &amElementShowcase::OnDocumentActivated, this);
-//
-//	wxDataViewColumn* pColumn = new wxDataViewColumn(_("Documents"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
-//		wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT);
-//	m_recentDocumentsDVC->AppendColumn(pColumn);
-//
-//	pColumn = new wxDataViewColumn(_("Words"), new wxDataViewTextRenderer(wxDataViewTextRenderer::GetDefaultType(),
-//		wxDATAVIEW_CELL_INERT), 1, FromDIP(80), wxALIGN_CENTER);
-//	m_recentDocumentsDVC->AppendColumn(pColumn);
+	wxStaticText* pRecentDocumentsLabel = new wxStaticText(this, -1, _("Recent Documents:"));
+	pRecentDocumentsLabel->SetBackgroundColour(wxColour(40, 40, 40));
+	pRecentDocumentsLabel->SetForegroundColour(wxColour(240,240,240));
+	pRecentDocumentsLabel->SetFont(wxFontInfo(10).Bold());
+
+	m_recentDocumentsModel = new StoryTreeModel;
+
+#ifdef __WXMSW__
+	m_recentDocumentsDVC = m_recentDocumentsHandler.Create(this, -1, m_recentDocumentsModel.get(),
+		wxBORDER_NONE | wxDV_MULTIPLE);
+#else
+	m_recentDocumentsDVC = new wxDataViewCtrl(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
+		wxDV_SINGLE | wxBORDER_NONE);
+	m_recentDocumentsDVC->AssociateModel(&m_recentDocumentsModel);
+#endif
+
+	m_recentDocumentsDVC->SetBackgroundColour(wxColour(90, 90, 90));
+	m_recentDocumentsDVC->SetMinSize(wxSize(FromDIP(250), -1));
+	m_recentDocumentsDVC->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, &amOverview::OnRecentDocument, this);
+
+	wxDataViewColumn* pColumn = new wxDataViewColumn(_("Document name"), new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
+		wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(170), wxALIGN_LEFT);
+	m_recentDocumentsDVC->AppendColumn(pColumn);
+
+	pColumn = new wxDataViewColumn(_("Words"), new wxDataViewTextRenderer(wxDataViewTextRenderer::GetDefaultType(),
+		wxDATAVIEW_CELL_INERT), 1, FromDIP(80), wxALIGN_CENTER);
+	m_recentDocumentsDVC->AppendColumn(pColumn);
+
+	wxBoxSizer* pRecentDocumentsSizer = new wxBoxSizer(wxVERTICAL);
+	pRecentDocumentsSizer->Add(pRecentDocumentsLabel, wxSizerFlags(0).Expand());
+	pRecentDocumentsSizer->Add(m_recentDocumentsDVC, wxSizerFlags(1));
 
 	m_mainSizer = new wxBoxSizer(wxVERTICAL);
 	m_mainSizer->Add(sizer, wxSizerFlags(0).Expand());
-	//m_mainSizer->Add(m_recentDocumentsDVC, wxSizerFlags(1).Left().Border(wxALL, 10));
+	m_mainSizer->AddSpacer(10);
+	m_mainSizer->Add(pRecentDocumentsSizer, wxSizerFlags(1).Left());
 
 	SetSizer(m_mainSizer);
 	Layout();
@@ -154,7 +165,35 @@ void amOverview::SetBookData(Book* book)
 	m_stBookTitle->Wrap(m_stBookTitle->GetSize().x);
 	Layout();
 
+	LoadRecentDocuments(book);
+
 	Thaw();
+}
+
+void amOverview::LoadRecentDocuments(Book* book)
+{
+	Freeze();
+
+	m_recentDocumentsModel->ClearAll();
+
+	for ( Document*& pDocument : book->vRecentDocuments )
+	{
+		wxDataViewItem docItem = m_recentDocumentsModel->AddDocument(pDocument, wxDataViewItem(nullptr));
+	}
+
+	Thaw();
+}
+
+void amOverview::OnRecentDocument(wxDataViewEvent& event)
+{
+	StoryTreeModelNode* pNode = (StoryTreeModelNode*)event.GetItem().GetID();
+	if ( !pNode )
+		return;
+
+	if ( pNode->GetDocument() )
+		m_manager->OpenDocument(pNode->GetDocument());
+
+	event.Skip();
 }
 
 void amOverview::LoadBookContainer()

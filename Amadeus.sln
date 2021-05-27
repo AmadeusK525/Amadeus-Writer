@@ -4,6 +4,7 @@ VisualStudioVersion = 16.0.30406.217
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Amadeus", "Amadeus.vcxproj", "{853D1FD7-20AB-586C-9699-9680F84AC985}"
 	ProjectSection(ProjectDependencies) = postProject
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8} = {A16D3832-0F42-57CE-8F48-50E06649ADE8}
 		{3FCC50C2-81E9-5DB2-B8D8-2129427568B1} = {3FCC50C2-81E9-5DB2-B8D8-2129427568B1}
 		{6744DAD8-9C70-574A-BFF2-9F8DDDB24A75} = {6744DAD8-9C70-574A-BFF2-9F8DDDB24A75}
 	EndProjectSection
@@ -11,6 +12,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "F:\wxWidgets\build\msw\wx_base.vcxproj", "{3FCC50C2-81E9-5DB2-B8D8-2129427568B1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "F:\wxWidgets\build\msw\wx_core.vcxproj", "{6744DAD8-9C70-574A-BFF2-9F8DDDB24A75}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aui", "F:\wxWidgets\build\msw\wx_aui.vcxproj", "{A16D3832-0F42-57CE-8F48-50E06649ADE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +75,22 @@ Global
 		{6744DAD8-9C70-574A-BFF2-9F8DDDB24A75}.Release|Win32.Build.0 = Release|Win32
 		{6744DAD8-9C70-574A-BFF2-9F8DDDB24A75}.Release|x64.ActiveCfg = Release|x64
 		{6744DAD8-9C70-574A-BFF2-9F8DDDB24A75}.Release|x64.Build.0 = Release|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Debug|Win32.Build.0 = Debug|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Debug|x64.ActiveCfg = Debug|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Debug|x64.Build.0 = Debug|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Debug|Win32.ActiveCfg = DLL Debug|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Debug|Win32.Build.0 = DLL Debug|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Debug|x64.ActiveCfg = DLL Debug|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Debug|x64.Build.0 = DLL Debug|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Release|Win32.ActiveCfg = DLL Release|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Release|Win32.Build.0 = DLL Release|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Release|x64.ActiveCfg = DLL Release|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.DLL Release|x64.Build.0 = DLL Release|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Release|Win32.ActiveCfg = Release|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Release|Win32.Build.0 = Release|Win32
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Release|x64.ActiveCfg = Release|x64
+		{A16D3832-0F42-57CE-8F48-50E06649ADE8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,6 +6,7 @@
 #include <wx\splitter.h>
 #include <wx\image.h>
 #include <wx\dataview.h>
+#include <wx/headerctrl.h>
 
 #include <wx\wxsf\wxShapeFramework.h>
 
@@ -477,6 +478,7 @@ public:
 		wxWindow* mainWindow = m_dvc->GetMainWindow();
 
 		mainWindow->Bind(wxEVT_MOTION, &amHotTrackingDVCHandler::OnDVCMouseMove, this);
+		mainWindow->Bind(wxEVT_ENTER_WINDOW, &amHotTrackingDVCHandler::OnDVCMouseMove, this);
 		mainWindow->Bind(wxEVT_LEAVE_WINDOW, &amHotTrackingDVCHandler::OnDVCLeaveWindow, this);
 		mainWindow->Bind(wxEVT_LEFT_DOWN, &amHotTrackingDVCHandler::OnDVCClick, this);
 		mainWindow->Bind(wxEVT_RIGHT_DOWN, &amHotTrackingDVCHandler::OnDVCClick, this);
@@ -490,49 +492,37 @@ public:
 	inline wxDataViewItem GetItemUnderMouse() { return m_itemUnderMouse; }
 	inline void SetItemUnderMouse(const wxDataViewItem& item) { m_itemUnderMouse = item; }
 
-	inline void CalculateItemRect(wxDataViewItem& item, wxRect& rect)
-	{
-		rect = m_dvc->GetItemRect(item);
-		rect.width += rect.GetLeft();
-		rect.SetLeft(0);
-	}
-
 	inline void OnDVCMouseMove(wxMouseEvent& event)
 	{
 		wxDataViewItem item;
 		wxDataViewColumn* column;
-		m_dvc->HitTest(event.GetPosition(), item, column);
 
-		wxRect rect;
+		wxPoint evtPos = event.GetPosition();
+		wxHeaderCtrl* pHeader = m_dvc->GenericGetHeader();
+	
+		if ( pHeader )
+			evtPos.y += pHeader->GetSize().y;
+
+		m_dvc->HitTest(evtPos, item, column);
 
 		if ( item.IsOk() )
 		{
 			if ( item.GetID() != m_itemUnderMouse.GetID() )
 			{
 				if ( m_itemUnderMouse.IsOk() )
-				{
 					((amTreeModelNode*)m_itemUnderMouse.GetID())->SetHovering(false);
-					CalculateItemRect(m_itemUnderMouse, rect);
-					m_dvc->GetMainWindow()->RefreshRect(rect);
-				}
 
 				((amTreeModelNode*)item.GetID())->SetHovering(true);
-				CalculateItemRect(item, rect);
-				m_dvc->GetMainWindow()->RefreshRect(rect);
-				m_itemUnderMouse = item;
 			}
 		}
 		else
 		{
 			if ( m_itemUnderMouse.IsOk() )
-			{
 				((amTreeModelNode*)m_itemUnderMouse.GetID())->SetHovering(false);
-				CalculateItemRect(m_itemUnderMouse, rect);
-				m_dvc->GetMainWindow()->RefreshRect(rect);
-			}
-
-			m_itemUnderMouse = item;
 		}
+
+		m_itemUnderMouse = item;
+		m_dvc->GetMainWindow()->Refresh();
 
 		event.Skip();
 	}
@@ -542,9 +532,7 @@ public:
 		if ( m_itemUnderMouse.IsOk() )
 		{
 			((amTreeModelNode*)m_itemUnderMouse.GetID())->SetHovering(false);
-			wxRect rect;
-			CalculateItemRect(m_itemUnderMouse, rect);
-			m_dvc->GetMainWindow()->RefreshRect(rect);
+			m_dvc->GetMainWindow()->Refresh();
 		}
 
 		event.Skip();
@@ -691,6 +679,5 @@ public:
 		event.Skip();
 	}
 };
-
 
 #endif; /*UTILITY_AM_H_*/

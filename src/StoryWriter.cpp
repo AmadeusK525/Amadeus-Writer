@@ -75,6 +75,9 @@ wxDataViewItem StoryTreeModel::AddDocument(Document* document, const wxDataViewI
 		parent = parentItem;
 	}
 
+	if ( !parent.IsOk() )
+		m_otherRoots.push_back(node);
+
 	wxDataViewItem item(node);
 	ItemAdded(parent, item);
 
@@ -292,11 +295,20 @@ void StoryTreeModel::ClearAll()
 	}
 	m_vBooks.clear();
 
+	size_t otherRootsCount = m_otherRoots.size();
+	for ( int i = 0; i < otherRootsCount; i++ )
+	{
+		DeleteItem(wxDataViewItem(m_otherRoots[0]));
+	}
+	m_otherRoots.clear();
+
 	if ( m_trashNode )
 	{
 		DeleteItem(wxDataViewItem(m_trashNode));
 		m_trashNode = nullptr;
 	}
+
+	m_handler->SetItemUnderMouse(wxDataViewItem(nullptr));
 }
 
 void StoryTreeModel::GetValue(wxVariant& variant,
@@ -304,22 +316,28 @@ void StoryTreeModel::GetValue(wxVariant& variant,
 {
 	StoryTreeModelNode* node = (StoryTreeModelNode*)item.GetID();
 
-	wxDataViewIconText it;
-	it.SetText(node->GetTitle());
-
-	if ( node->IsBook() )
-		it.SetIcon(node->m_icons[0]);
-	else if ( node->IsDocument() )
-		it.SetIcon(node->m_icons[2]);
-	else if ( node->IsTrash() )
-		it.SetIcon(node->m_icons[3]);
-
 	switch ( col )
 	{
 	case 0:
+	{
+		wxDataViewIconText it;
+		it.SetText(node->GetTitle());
+
+		if ( node->IsBook() )
+			it.SetIcon(node->m_icons[0]);
+		else if ( node->IsDocument() )
+			it.SetIcon(node->m_icons[2]);
+		else if ( node->IsTrash() )
+			it.SetIcon(node->m_icons[3]);
+
 		variant << it;
 		break;
-	default:
+	}
+
+	case 1:
+		if ( node->IsDocument() )
+			variant = std::to_string(node->GetDocument()->GetWordCount());
+
 		break;
 	}
 }
@@ -435,11 +453,18 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	leftSplitter->SetMinimumPaneSize(30);
 	rightSplitter->SetMinimumPaneSize(30);
 
-	rightSplitter->SetDoubleBuffered(true);
-
 	m_swNotebook = new amStoryWriterNotebook(leftSplitter, this);
 
-	wxNotebook* leftNotebook = new wxNotebook(leftSplitter, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	wxAuiNotebook* leftNotebook = new wxAuiNotebook(leftSplitter, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	
+	wxAuiSimpleTabArt* pArt = new wxAuiSimpleTabArt();
+	pArt->SetColour(wxColour(50, 50, 50));
+	pArt->SetActiveColour(wxColour(30, 30, 30));
+	leftNotebook->SetArtProvider(pArt);
+
+	leftNotebook->GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+	leftNotebook->GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
+
 	m_leftPanel = new wxPanel(leftNotebook, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_leftPanel->SetBackgroundColour(wxColour(45, 45, 45));
 
@@ -575,7 +600,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	m_leftSizer->Add(m_locationPanel, wxSizerFlags(1).Expand());
 	m_leftSizer->AddSpacer(FromDIP(15));
 	m_leftSizer->Add(m_itemPanel, wxSizerFlags(1).Expand());
-	m_leftSizer->Add(leftButton, wxSizerFlags(0).Right().Border(wxALL, 5));
+	m_leftSizer->Add(leftButton, wxSizerFlags(0).Right());
 
 	m_leftPanel->SetSizer(m_leftSizer);
 
@@ -604,7 +629,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 
 	wxBoxSizer* outlineSizer = new wxBoxSizer(wxVERTICAL);
 	outlineSizer->Add(m_outlineView, wxSizerFlags(1).Expand());
-	outlineSizer->Add(leftButton2, wxSizerFlags(0).Right().Border(wxALL, 5));
+	outlineSizer->Add(leftButton2, wxSizerFlags(0).Right());
 
 	leftPanel2->SetSizer(outlineSizer);
 
@@ -645,10 +670,10 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 
 	wxBoxSizer* storySizer = new wxBoxSizer(wxVERTICAL);
 	storySizer->Add(m_storyView, wxSizerFlags(1).Expand());
-	storySizer->Add(leftButton3, wxSizerFlags(0).Right().Border(wxALL, 5));
+	storySizer->Add(leftButton3, wxSizerFlags(0).Right());
 
 	leftPanel3->SetSizer(storySizer);
-
+	
 	leftNotebook->AddPage(leftPanel3, "Story");
 	leftNotebook->AddPage(leftPanel2, "Outline");
 	leftNotebook->AddPage(m_leftPanel, "Elements");
@@ -656,14 +681,18 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	wxPanel* rightPanel = new wxPanel(rightSplitter, -1);
 	rightPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
-	m_synopsys = new wxTextCtrl(rightPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_NONE);
+	wxRichTextAttr attr;
+	attr.SetTextColour(wxColour(245, 245, 245));
+	attr.SetFont(wxFontInfo(10));
+
+	m_synopsys = new wxRichTextCtrl(rightPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	m_synopsys->SetBackgroundColour(wxColour(35, 35, 35));
-	m_synopsys->SetFont(wxFontInfo(10));
+	m_synopsys->SetBasicStyle(attr);
 	m_synopsys->SetForegroundColour(wxColour(245, 245, 245));
-	m_synopsys->SetBackgroundStyle(wxBG_STYLE_PAINT);
+	//m_synopsys->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
 	wxStaticText* sumLabel = new wxStaticText(rightPanel, -1, "Synopsys", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
-	sumLabel->SetBackgroundColour(wxColour(150, 0, 0));
+	sumLabel->SetBackgroundColour(wxColour(110, 0, 0));
 	sumLabel->SetFont(wxFont(wxFontInfo(10).Bold().AntiAliased()));
 	sumLabel->SetForegroundColour(wxColour(255, 255, 255));
 	sumLabel->SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -675,17 +704,18 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	m_noteChecker->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
 	m_noteLabel = new wxTextCtrl(rightPanel, -1, "New note", wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
-	m_noteLabel->SetBackgroundColour(wxColour(245, 245, 245));
+	m_noteLabel->SetBackgroundColour(wxColour(80, 80, 80));
+	m_noteLabel->SetForegroundColour(wxColour(255, 255, 255));
 	m_noteLabel->SetFont(wxFont(wxFontInfo(10)));
 	m_noteLabel->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
-	m_note = new wxTextCtrl(rightPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxBORDER_NONE);
-	m_note->SetBackgroundColour(wxColour(255, 250, 205));
-	m_note->SetFont(wxFont(wxFontInfo(10)));
-	m_note->SetBackgroundStyle(wxBG_STYLE_PAINT);
+	m_note = new wxRichTextCtrl(rightPanel, -1, "", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+	m_note->SetBackgroundColour(wxColour(50, 50, 50));
+	m_note->SetBasicStyle(attr);
+	//m_note->SetBackgroundStyle(wxBG_STYLE_PAINT);
 
 	wxPanel* nbHolder = new wxPanel(rightPanel, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_SIMPLE);
-	nbHolder->SetBackgroundColour(wxColour(255, 250, 205));
+	nbHolder->SetBackgroundColour(wxColour(30, 30, 30));
 
 	m_noteClear = new wxButton(nbHolder, BUTTON_NoteClear, "Clear");
 	m_noteClear->SetBackgroundColour(wxColour(240, 240, 240));
@@ -711,7 +741,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, amProjectManager* manager, Docume
 	m_rightSizer->Add(m_noteLabel, wxSizerFlags(0).Expand());
 	m_rightSizer->Add(m_note, wxSizerFlags(1).Expand());
 	m_rightSizer->Add(nbHolder, wxSizerFlags(0).Expand());
-	m_rightSizer->Add(rightButton, wxSizerFlags(0).Left().Border(wxALL, 5));
+	m_rightSizer->Add(rightButton, wxSizerFlags(0).Left());
 
 	rightPanel->SetSizer(m_rightSizer);
 
@@ -1219,17 +1249,10 @@ void amStoryWriter::LoadDocument(Document* document)
 	{
 		if ( tab.document == document )
 		{
-			for ( int i = 0; i < notebook->GetPageCount(); i++ )
-			{
-				wxWindow* window = notebook->GetPage(i);
-				if ( window == tab.mainPanel)
-				{
-					m_swNotebook->SetCurrentTab(tab, false);
-					m_statusBar->SetStatusText("Zoom: " + std::to_string((int)(tab.rtc->GetFontScale() * 100)) + "%", 2);
-					bIsOpen = true;
-					break;
-				}
-			}
+			m_swNotebook->SetCurrentTab(tab, false);
+			m_statusBar->SetStatusText("Zoom: " + std::to_string((int)(tab.rtc->GetFontScale() * 100)) + "%", 2);
+			bIsOpen = true;
+
 			break;
 		}
 	}
@@ -1243,6 +1266,7 @@ void amStoryWriter::LoadDocument(Document* document)
 
 		wxRichTextCtrl* rtc = new wxRichTextCtrl(mainPanel, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
 			wxRE_MULTILINE | wxBORDER_NONE);
+		rtc->SetMinSize(wxSize(750, -1));
 		rtc->Bind(wxEVT_RICHTEXT_CHARACTER, &amStoryWriter::OnCharRTC, this);
 		rtc->Bind(wxEVT_RICHTEXT_DELETE, &amStoryWriter::OnCharRTC, this);
 
@@ -1272,8 +1296,8 @@ void amStoryWriter::LoadDocument(Document* document)
 		notePage->SetSizer(notesSizer);
 		notePage->SetScrollRate(15, 15);
 
-		wxBoxSizer* mainPanelSizer = new wxBoxSizer(wxHORIZONTAL);
-		mainPanelSizer->Add(rtc, wxSizerFlags(1).Expand());
+		wxBoxSizer* mainPanelSizer = new wxBoxSizer(wxVERTICAL);
+		mainPanelSizer->Add(rtc, wxSizerFlags(1).CentreHorizontal());
 		mainPanelSizer->Add(notePage, wxSizerFlags(1).Expand());
 
 		mainPanel->SetSizer(mainPanelSizer);
@@ -1321,15 +1345,8 @@ void amStoryWriter::SaveActiveTab()
 
 void amStoryWriter::CountWords()
 {
-	int result = 0;
-
-	if ( !m_activeTab.rtc->IsEmpty() )
-	{
-		std::stringstream stream(m_activeTab.rtc->GetValue().ToStdString());
-		result = std::distance(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>());
-	}
-
-	m_statusBar->SetStatusText("Number of words: " + std::to_string(result), 1);
+	int count = m_activeTab.document->GetWordCount();
+	m_statusBar->SetStatusText("Number of words: " + std::to_string(count), 1);
 }
 
 void amStoryWriter::OnTimerEvent(wxTimerEvent& event)
@@ -1449,14 +1466,14 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
 {
 	SetBackgroundColour(wxColour(30, 30, 30));
 
-	AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(boldLight), wxBITMAP_PNG(bold), _("Bold"));
-	AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italicLight), wxBITMAP_PNG(italic), _("Italic"));
-	AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underlineLight), wxBITMAP_PNG(underline), _("Underline"));
+	AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(boldLight), wxBITMAP_PNG(boldLight).ConvertToDisabled(), _("Bold"));
+	AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italicLight), wxBITMAP_PNG(italicLight).ConvertToDisabled(), _("Italic"));
+	AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underlineLight), wxBITMAP_PNG(underlineLight).ConvertToDisabled(), _("Underline"));
 	AddSeparator();
-	AddRadioTool(TOOL_AlignLeft, "", wxBITMAP_PNG(leftAlignLight), wxBITMAP_PNG(leftAlign), _("Align left"));
-	AddRadioTool(TOOL_AlignCenter, "", wxBITMAP_PNG(centerAlignLight), wxBITMAP_PNG(centerAlign), _("Align center"));
-	AddRadioTool(TOOL_AlignCenterJust, "", wxBITMAP_PNG(centerJustAlignLight), wxBITMAP_PNG(centerJustAlign), _("Align center and fit"));
-	AddRadioTool(TOOL_AlignRight, "", wxBITMAP_PNG(rightAlignLight), wxBITMAP_PNG(rightAlign), _("Align right"));
+	AddRadioTool(TOOL_AlignLeft, "", wxBITMAP_PNG(leftAlignLight), wxBITMAP_PNG(leftAlignLight).ConvertToDisabled(), _("Align left"));
+	AddRadioTool(TOOL_AlignCenter, "", wxBITMAP_PNG(centerAlignLight), wxBITMAP_PNG(centerAlignLight).ConvertToDisabled(), _("Align center"));
+	AddRadioTool(TOOL_AlignCenterJust, "", wxBITMAP_PNG(centerJustAlignLight), wxBITMAP_PNG(centerJustAlignLight).ConvertToDisabled(), _("Align center and fit"));
+	AddRadioTool(TOOL_AlignRight, "", wxBITMAP_PNG(rightAlignLight), wxBITMAP_PNG(rightAlignLight).ConvertToDisabled(), _("Align right"));
 	AddSeparator();
 
 	wxArrayString sizes;
@@ -1634,39 +1651,46 @@ void amStoryWriterToolbar::OnPageView(wxCommandEvent& WXUNUSED(event)) {}
 void amStoryWriterToolbar::OnUpdateBold(wxUpdateUIEvent& event)
 {
 	event.Check(m_currentTab.rtc->IsSelectionBold());
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
 void amStoryWriterToolbar::OnUpdateItalic(wxUpdateUIEvent& event)
 {
 	event.Check(m_currentTab.rtc->IsSelectionItalics());
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
 void amStoryWriterToolbar::OnUpdateUnderline(wxUpdateUIEvent& event)
 {
 	event.Check(m_currentTab.rtc->IsSelectionUnderlined());
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
 void amStoryWriterToolbar::OnUpdateAlignLeft(wxUpdateUIEvent& event)
 {
 	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_LEFT));
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
 void amStoryWriterToolbar::OnUpdateAlignCenter(wxUpdateUIEvent& event)
 {
 	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_CENTER));
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
 void amStoryWriterToolbar::OnUpdateAlignCenterJust(wxUpdateUIEvent& event)
 {
 	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_JUSTIFIED));
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
 void amStoryWriterToolbar::OnUpdateAlignRight(wxUpdateUIEvent& event)
 {
 	event.Check(m_currentTab.rtc->IsSelectionAligned(wxTEXT_ALIGNMENT_RIGHT));
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
-void amStoryWriterToolbar::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event))
+void amStoryWriterToolbar::OnUpdateFontSize(wxUpdateUIEvent& event)
 {
 	wxRichTextAttr attr;
 	m_currentTab.rtc->GetStyle(m_currentTab.rtc->GetInsertionPoint(), attr);
@@ -1674,6 +1698,8 @@ void amStoryWriterToolbar::OnUpdateFontSize(wxUpdateUIEvent& WXUNUSED(event))
 
 	if ( m_fontSize->GetValue() != size )
 		m_fontSize->SetValue(size);
+
+	event.Enable(m_currentTab.rtc && m_currentTab.rtc->IsShown());
 }
 
 void amStoryWriterToolbar::OnUpdateNoteView(wxUpdateUIEvent& event)
@@ -1703,6 +1729,7 @@ void amStoryWriterToolbar::OnFontSize(wxCommandEvent& event)
 	}
 }
 
+
 void amStoryWriterToolbar::OnUpdateZoom(wxUpdateUIEvent& event)
 {
 	((wxSlider*)FindControl(TOOL_ContentScale))->SetValue(m_currentTab.rtc->GetFontScale() * 100);
@@ -1725,7 +1752,16 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* do
 
 	m_notebook = new wxAuiNotebook(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_NB_TAB_SPLIT | wxAUI_NB_CLOSE_ON_ALL_TABS |
 		wxAUI_NB_TAB_MOVE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_BOTTOM | wxBORDER_NONE);
-	m_notebook->GetAuiManager().GetArtProvider()->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(20, 20, 20));
+	
+	wxAuiSimpleTabArt* pArt = new wxAuiSimpleTabArt();
+	pArt->SetColour(wxColour(50, 50, 50));
+	pArt->SetActiveColour(wxColour(30, 30, 30));
+	m_notebook->SetArtProvider(pArt);
+
+	m_notebook->GetAuiManager().GetArtProvider()->SetColour(wxAUI_DOCKART_BORDER_COLOUR, wxColour(80, 80, 80));
+	m_notebook->GetAuiManager().GetArtProvider()->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(40, 40, 40));
+	m_notebook->GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_SASH_SIZE, 2);
+	
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CHANGED, &amStoryWriterNotebook::OnSelectionChanged, this);
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSE, &amStoryWriterNotebook::OnPageClosing, this);
 	m_notebook->Bind(wxEVT_AUINOTEBOOK_PAGE_CLOSED, &amStoryWriterNotebook::OnPageClosed, this);
@@ -1756,9 +1792,8 @@ void amStoryWriterNotebook::SetCurrentTab(amStoryWriterTab& tab, bool load)
 	for ( int i = 0; i < m_notebook->GetPageCount(); i++ )
 	{
 		wxWindow* pPage = m_notebook->GetPage(i);
-		amStoryWriterTab& tabIt = m_swTabs[i];
 
-		if ( pPage == tabIt.mainPanel )
+		if ( pPage == tab.mainPanel )
 		{
 			m_storyWriter->SetActiveTab(tab, load, load);
 			m_contentToolbar->SetCurrentTab(tab);
@@ -1805,7 +1840,7 @@ void amStoryWriterNotebook::OnPageClosing(wxAuiNotebookEvent& event)
 		wxWindow* page = m_notebook->GetPage(event.GetSelection());
 		for ( amStoryWriterTab& tab : m_swTabs )
 		{
-			if ( tab.mainPanel )
+			if ( tab.mainPanel == page )
 			{
 				m_closingTab = tab;
 

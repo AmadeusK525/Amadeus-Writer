@@ -184,16 +184,23 @@ void amProjectSQLDatabase::CreateAllTables()
 	///////////////////// PROJECT TABLES ///////////////////////
 	
 	wxArrayString tProject;
+	tProject.Add("id INTEGER PRIMARY KEY");
 	tProject.Add("name TEXT");
 	tProject.Add("version TEXT");
 	tProject.Add("preferences TEXT");
 
 	wxArrayString tSessions;
-	tSessions.Add("selected_book_id INTEGER");
-	tSessions.Add("recent_documents TEXT");
+	tSessions.Add("id INTEGER PRIMARY KEY");
+	tSessions.Add("total_word_count INTEGER");
+	tSessions.Add("story_word_count INTEGER");
 	tSessions.Add("date TEXT");
-	tSessions.Add("session_attributes TEXT");
-	tSessions.Add("FOREIGN KEY (selected_book_id) REFERENCES books(id)");
+
+	wxArrayString tLastSession;
+	tLastSession.Add("id INTEGER PRIMARY KEY");
+	tLastSession.Add("selected_book_id INTEGER");
+	tLastSession.Add("session_attributes TEXT");
+	tLastSession.Add("recent_documents TEXT");
+	tLastSession.Add("FOREIGN KEY (selected_book_id) REFERENCES books(id)");
 
 	try
 	{
@@ -221,6 +228,7 @@ void amProjectSQLDatabase::CreateAllTables()
 
 		//CreateTable("project", tProject);
 		CreateTable("sessions", tSessions);
+		CreateTable("last_session", tLastSession);
 
 		Commit();
 	}
@@ -634,6 +642,7 @@ void amSessionAttributes::MarkSerializableDataMembers()
 	XS_SERIALIZE_INT(nCharacterSashPos, "character-sash-pos");
 	XS_SERIALIZE_INT(nLocationSashPos, "location-sash-pos");
 	XS_SERIALIZE_INT(nItemSashPos, "item-sash-pos");
+	XS_SERIALIZE_INT(nOutlineFilesSashPos, "outline-files-sash-pos");
 }
 
 
@@ -713,66 +722,103 @@ bool amProjectManager::SaveSessionToDb()
 {
 	try
 	{
-		amSessionAttributes attr;
-		attr.nMainFrameSashPos = m_mainFrame->GetMainSplitter()->GetSashPosition();
-		attr.nCharacterSashPos = m_elementNotebook->m_characterPage->GetSashPosition();
-		attr.nLocationSashPos = m_elementNotebook->m_locationPage->GetSashPosition();
-		attr.nItemSashPos = m_elementNotebook->m_itemPage->GetSashPosition();
-
-		wxXmlDocument attrDoc;
-		wxXmlNode* pAttrRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Session-Attributes");
-		attrDoc.SetRoot(pAttrRootNode);
-		pAttrRootNode->AddChild(attr.SerializeObject(nullptr));
-
-		wxStringOutputStream attrStream;
-		attrDoc.Save(attrStream);
-
-		wxXmlDocument doc;
-		wxXmlNode* pDocsRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Recent-Documents");
-		doc.SetRoot(pDocsRootNode);
-
-		for ( Book*& pBook : m_project.books )
+		// Saving last session
 		{
-			wxXmlNode* pBookNode = new wxXmlNode(pDocsRootNode, wxXML_ELEMENT_NODE, "Book");
-			pBookNode->AddAttribute("name", pBook->title);
-			pBookNode->AddAttribute("id", std::to_string(pBook->id));
+			amSessionAttributes attr;
+			attr.nMainFrameSashPos = m_mainFrame->GetMainSplitter()->GetSashPosition();
+			attr.nCharacterSashPos = m_elementNotebook->m_characterPage->GetSashPosition();
+			attr.nLocationSashPos = m_elementNotebook->m_locationPage->GetSashPosition();
+			attr.nItemSashPos = m_elementNotebook->m_itemPage->GetSashPosition();
+			attr.nOutlineFilesSashPos = m_outline->GetOutlineFiles()->GetSashPosition();
 
-			for ( auto it = pBook->vRecentDocuments.rbegin();
-				it != pBook->vRecentDocuments.rend(); it++ )
+			wxXmlDocument attrDoc;
+			wxXmlNode* pAttrRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Session-Attributes");
+			attrDoc.SetRoot(pAttrRootNode);
+			pAttrRootNode->AddChild(attr.SerializeObject(nullptr));
+
+			wxStringOutputStream attrStream;
+			attrDoc.Save(attrStream);
+
+			wxXmlDocument doc;
+			wxXmlNode* pDocsRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Recent-Documents");
+			doc.SetRoot(pDocsRootNode);
+
+			for ( Book*& pBook : m_project.books )
 			{
-				wxXmlNode* pDocNode = new wxXmlNode(pBookNode, wxXML_ELEMENT_NODE, "Document");
-				pDocNode->AddChild(new wxXmlNode(wxXML_TEXT_NODE, (*it)->name));
-				pDocNode->AddAttribute("id", std::to_string((*it)->id));
+				wxXmlNode* pBookNode = new wxXmlNode(wxXML_ELEMENT_NODE, "Book");
+				pBookNode->AddAttribute("name", pBook->title);
+				pBookNode->AddAttribute("id", std::to_string(pBook->id));
+
+				for ( Document*& pDocument : pBook->vRecentDocuments )
+				{
+					wxXmlNode* pDocNode = new wxXmlNode(wxXML_ELEMENT_NODE, "Document");
+					pDocNode->AddChild(new wxXmlNode(wxXML_TEXT_NODE, pDocument->name));
+					pDocNode->AddAttribute("id", std::to_string(pDocument->id));
+
+					pBookNode->AddChild(pDocNode);
+				}
+
+				pDocsRootNode->AddChild(pBookNode);
 			}
+
+			wxStringOutputStream docStream;
+			doc.Save(docStream);
+
+
+			wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT id FROM last_session;");
+			wxSQLite3StatementBuffer sqlBuffer;
+			if ( result.NextRow() )
+			{
+				wxString strUpdate = "UPDATE last_session SET selected_book_id = ";
+				strUpdate << GetCurrentBook()->id << ", recent_documents = '%q', session_attributes = '%q';";
+
+				sqlBuffer.Format((const char*)strUpdate, (const char*)docStream.GetString().ToUTF8(),
+					(const char*)attrStream.GetString().ToUTF8());
+			}
+			else
+			{
+				wxString strInsert = "INSERT INTO last_session (selected_book_id, recent_documents, session_attributes) VALUES (";
+				strInsert << GetCurrentBook()->id << ", '%q', '%q')";
+
+				sqlBuffer.Format((const char*)strInsert, (const char*)docStream.GetString().ToUTF8(),
+					(const char*)attrStream.GetString().ToUTF8());
+			}
+
+			m_storage.ExecuteUpdate(sqlBuffer);
 		}
 
-		wxStringOutputStream docStream;
-		doc.Save(docStream);
-
-		wxString strDate = wxDateTime::Now().FormatDate();
-
-		wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT date FROM sessions WHERE date = '" + strDate + "';");
-		wxSQLite3StatementBuffer sqlBuffer;
-
-		if ( result.NextRow() )
+		// Saving persistent session attributes
 		{
-			wxString strUpdate = "UPDATE sessions SET selected_book_id = ";
-			strUpdate << GetCurrentBook()->id << ", recent_documents = '%q', session_attributes = '%q'"
-				" WHERE date = '" << strDate << "';";
+			int totalWordCount = 0, storyWordCount = 0;
+			for ( Book*& pBook : m_project.books )
+			{
+				for ( Document*& pDocument : pBook->documents )
+				{
+					int wordCount = pDocument->GetWordCount();
+					totalWordCount += wordCount;
+					
+					if ( pDocument->IsStory() )
+						storyWordCount += wordCount;
+				}
+			}
 
-			sqlBuffer.Format((const char*)strUpdate, (const char*)docStream.GetString().ToUTF8(),
-				(const char*)attrStream.GetString().ToUTF8());
+			wxString strDate = wxDateTime::Now().FormatDate();
+			wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT id FROM sessions WHERE date = '" + strDate + "';");
+			wxString update;
+
+			if ( result.NextRow() )
+			{
+				update << "UPDATE sessions SET total_word_count = " << totalWordCount
+					<< ", story_word_count = " << storyWordCount << " WHERE date = '" << strDate << "';";
+			}
+			else
+			{
+				update << "INSERT INTO sessions (total_word_count, story_word_count, date) VALUES (" << totalWordCount
+					<< ", " << storyWordCount << ", '" << strDate << "');";
+			}
+
+			m_storage.ExecuteUpdate(update);
 		}
-		else
-		{
-			wxString strInsert = "INSERT INTO sessions (selected_book_id, recent_documents, session_attributes, date) VALUES (";
-			strInsert << GetCurrentBook()->id << ", '%q', '%q', '%q')";
-
-			sqlBuffer.Format((const char*)strInsert, (const char*)docStream.GetString().ToUTF8(),
-				(const char*)attrStream.GetString().ToUTF8(), (const char*)strDate.ToUTF8());
-		}
-
-		m_storage.ExecuteUpdate(sqlBuffer);
 	}
 	catch ( wxSQLite3Exception& e )
 	{
@@ -1145,7 +1191,7 @@ void amProjectManager::LoadCharacterRelations()
 
 bool amProjectManager::LoadLastSession()
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM sessions ORDER BY rowid DESC;");
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM last_session;");
 	if ( result.NextRow() )
 	{
 		wxStringInputStream sstream(result.GetAsString("recent_documents"));
@@ -1161,7 +1207,7 @@ bool amProjectManager::LoadLastSession()
 			
 			while ( pDocNode )
 			{
-				pBook->vRecentDocuments.push_back(GetDocumentById(wxAtoi(pDocNode->GetAttribute("id"))));
+				pBook->PushRecentDocument(GetDocumentById(wxAtoi(pDocNode->GetAttribute("id"))));
 				pDocNode = pDocNode->GetNext();
 			}
 
@@ -1201,6 +1247,8 @@ void amProjectManager::LoadSessionAttr(const amSessionAttributes& attr)
 	if ( attr.nItemSashPos != -1 )
 		m_elementNotebook->m_itemPage->SetSashPosition(attr.nItemSashPos, false);
 
+	if ( attr.nOutlineFilesSashPos != -1 )
+		m_outline->GetOutlineFiles()->SetSashPosition(attr.nOutlineFilesSashPos, false);
 }
 
 void amProjectManager::SetExecutablePath(const wxString& path)

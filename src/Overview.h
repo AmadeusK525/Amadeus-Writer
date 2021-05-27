@@ -73,8 +73,11 @@ public:
 	amOverview(wxWindow* parent, amProjectManager* manager);
 
 	void SetBookData(Book* book);
+	void LoadRecentDocuments(Book* book);
 
 	void LoadBookContainer();
+
+	void OnRecentDocument(wxDataViewEvent& event);
 };
 
 #endif

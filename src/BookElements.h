@@ -79,8 +79,10 @@ struct Document
 	virtual ~Document();
 
 	void SetId(int id) { this->id = id; }
+	bool IsStory();
 
 	bool HasRedNote();
+	int GetWordCount();
 
 	void Save(wxSQLite3Database* db);
 	bool Update(wxSQLite3Database* db, bool updateContent, bool updateNotes);
