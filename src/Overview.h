@@ -40,7 +40,7 @@ private:
 public:
 	amBookPicker(amOverview* parent);
 
-	void AddButton(Book* book, int index);
+	void AddButton(Book* book, size_t index);
 	void OnBookClicked(wxCommandEvent& event);
 
 	void SetSelectionByBook(Book* book);

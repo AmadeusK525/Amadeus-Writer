@@ -64,7 +64,7 @@ struct Document
 	wxRichTextBuffer* buffer = nullptr;
 	bool bIsDirty = true;
 
-	wxVector<Element*> elements{};
+	wxVector<TangibleElement*> vTangibleElements{};
 	wxVector<Note*> notes{};
 
 	int position = -1;
@@ -166,7 +166,7 @@ struct amProject
 {
 	wxVector<Book*> books{};
 
-	wxVector<Element*> elements;
+	wxVector<StoryElement*> vStoryElements;
 
 	wxFileName amFile{};
 

@@ -40,7 +40,7 @@ amProjectSQLDatabase::amProjectSQLDatabase(wxFileName& path)
 
 bool amProjectSQLDatabase::Init()
 {
-	if ( !TableExists("characters") )
+	if ( !TableExists("books") )
 	{
 		CreateAllTables();
 		return false;
@@ -52,68 +52,12 @@ bool amProjectSQLDatabase::Init()
 
 void amProjectSQLDatabase::CreateAllTables()
 {
-	wxArrayString tCharacters;
-	tCharacters.Add("id INTEGER PRIMARY KEY");
-	tCharacters.Add("name TEXT UNIQUE NOT NULL");
-	tCharacters.Add("age TEXT");
-	tCharacters.Add("sex TEXT NOT NULL");
-	tCharacters.Add("nationality TEXT");
-	tCharacters.Add("height TEXT");
-	tCharacters.Add("nickname TEXT");
-	tCharacters.Add("appearance TEXT");
-	tCharacters.Add("personality TEXT");
-	tCharacters.Add("backstory TEXT");
-	tCharacters.Add("role INTEGER");
-	tCharacters.Add("image BLOB");
-
-	wxArrayString tCharactersCustom;
-	tCharactersCustom.Add("id INTEGER PRIMARY KEY");
-	tCharactersCustom.Add("name TEXT");
-	tCharactersCustom.Add("content TEXT");
-	tCharactersCustom.Add("character_id INTEGER");
-	tCharactersCustom.Add("FOREIGN KEY(character_id) REFERENCES characters(id)");
-
-	wxArrayString tLocations;
-	tLocations.Add("id INTEGER PRIMARY KEY");
-	tLocations.Add("name TEXT UNIQUE NOT NULL");
-	tLocations.Add("general TEXT");
-	tLocations.Add("natural TEXT");
-	tLocations.Add("architecture TEXT");
-	tLocations.Add("politics TEXT");
-	tLocations.Add("economy TEXT");
-	tLocations.Add("culture TEXT");
-	tLocations.Add("role INTEGER");
-	tLocations.Add("image BLOB");
-
-	wxArrayString tLocationsCustom;
-	tLocationsCustom.Add("id INTEGER PRIMARY KEY");
-	tLocationsCustom.Add("name TEXT");
-	tLocationsCustom.Add("content TEXT");
-	tLocationsCustom.Add("location_id INTEGER");
-	tLocationsCustom.Add("FOREIGN KEY(location_id) REFERENCES locations(id)");
-
-	wxArrayString tItems;
-	tItems.Add("id INTEGER PRIMARY KEY");
-	tItems.Add("name TEXT UNIQUE NOT NULL");
-	tItems.Add("general TEXT");
-	tItems.Add("origin TEXT");
-	tItems.Add("backstory TEXT");
-	tItems.Add("appearance TEXT");
-	tItems.Add("usage TEXT");
-	tItems.Add("width TEXT");
-	tItems.Add("height TEXT");
-	tItems.Add("depth TEXT");
-	tItems.Add("isMagic INTEGER");
-	tItems.Add("isManMade INTEGER");
-	tItems.Add("role INTEGER");
-	tItems.Add("image BLOB");
-
-	wxArrayString tItemsCustom;
-	tItemsCustom.Add("id INTEGER PRIMARY KEY");
-	tItemsCustom.Add("name TEXT");
-	tItemsCustom.Add("content TEXT");
-	tItemsCustom.Add("item_id INTEGER");
-	tItemsCustom.Add("FOREIGN KEY(item_id) REFERENCES items(id)");
+	wxArrayString tStoryElements;
+	tStoryElements.Add("id INTEGER PRIMARY KEY");
+	tStoryElements.Add("name TEXT NOT NULL");
+	tStoryElements.Add("serialized TEXT NOT NULL");
+	tStoryElements.Add("image BLOB");
+	tStoryElements.Add("class TEXT NOT NULL");
 
 	wxArrayString tBooks;
 	tBooks.Add("id INTEGER PRIMARY KEY");
@@ -138,7 +82,7 @@ void amProjectSQLDatabase::CreateAllTables()
 	tDocuments.Add("book_id INTEGER");
 	tDocuments.Add("isInTrash INTEGER");
 	tDocuments.Add("FOREIGN KEY (parent_document_id) REFERENCES documents(id)");
-	tDocuments.Add("FOREIGN KEY (character_pov_id) REFERENCES characters(id)");
+	tDocuments.Add("FOREIGN KEY (character_pov_id) REFERENCES story_elements(id)");
 	tDocuments.Add("FOREIGN KEY (book_id) REFERENCES books(id)");
 
 	wxArrayString tDocumentNotes;
@@ -206,14 +150,7 @@ void amProjectSQLDatabase::CreateAllTables()
 	{
 		Begin();
 
-		CreateTable("characters", tCharacters);
-		CreateTable("characters_custom", tCharactersCustom);
-
-		CreateTable("locations", tLocations);
-		CreateTable("locations_custom", tLocationsCustom);
-
-		CreateTable("items", tItems);
-		CreateTable("items_custom", tItemsCustom);
+		CreateTable("story_elements", tStoryElements);
 
 		CreateTable("books", tBooks);
 		CreateTable("documents", tDocuments);
@@ -653,7 +590,6 @@ void amSessionAttributes::MarkSerializableDataMembers()
 
 amProjectManager::amProjectManager()
 {
-
 }
 
 amProjectManager::~amProjectManager()
@@ -856,10 +792,7 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 
 		m_storage.Begin();
 
-		LoadCharacters();
-		LoadLocations();
-		LoadItems();
-
+		LoadStoryElements();
 		LoadBooks();
 
 		LoadStandardRelations();
@@ -948,11 +881,11 @@ void amProjectManager::LoadDocuments(Book* book)
 		{
 			wxClassInfo* elementClass = wxClassInfo::FindClass(results2.GetAsString("element_class"));
 
-			for ( Element*& pElement : GetAllElements() )
+			for ( StoryElement*& pElement : GetAllElements() )
 			{
-				if ( pElement->IsKindOf(elementClass) && pElement->id == results2.GetInt("element_id") )
+				if ( pElement->IsKindOf(elementClass) && pElement->dbID == results2.GetInt("element_id") )
 				{
-					AddElementToDocument(pElement, pDocument, false);
+					AddElementToDocument((TangibleElement*)pElement, pDocument, false);
 				}
 			}
 		}
@@ -983,163 +916,39 @@ void amProjectManager::SetupDocumentHierarchy(Book* book)
 	}
 }
 
-void amProjectManager::LoadCharacters()
+void amProjectManager::LoadStoryElements()
 {
-	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM characters;");
-	int count = table.GetRowCount();
-	m_project.elements.reserve(m_project.elements.size() + count);
+	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM story_elements");
 
-	for ( int i = 0; i < count; i++ )
+	while ( result.NextRow() )
 	{
-		table.SetRow(i);
-		int id = table.GetInt("id");
+		int id = result.GetInt("id");
 
-		Character* pCharacter = new Character();
+		StoryElement* pElement = (StoryElement*)wxClassInfo::FindClass(result.GetAsString("class"))->CreateObject();
+		if ( !pElement )
+			continue;
 
-		pCharacter->name = table.GetAsString("name");
-		pCharacter->sex = table.GetAsString("sex");
-		pCharacter->age = table.GetAsString("age");
-		pCharacter->nat = table.GetAsString("nationality");
-		pCharacter->height = table.GetAsString("height");
-		pCharacter->nick = table.GetAsString("nickname");
-		pCharacter->appearance = table.GetAsString("appearance");
-		pCharacter->personality = table.GetAsString("personality");
-		pCharacter->backstory = table.GetAsString("backstory");
+		pElement->dbID = id;
 
-		pCharacter->role = (Role)table.GetInt("role");
-		pCharacter->id = id;
+		wxStringInputStream sstream(result.GetAsString("serialized"));
+		wxXmlDocument xmlDoc(sstream);
+		pElement->DeserializeObject(xmlDoc.GetRoot());
 
-		if ( !table.IsNull("image") )
+		if ( !result.IsNull("image") )
 		{
-			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "characters");
+			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "story_elements");
 			if ( blob.IsOk() && blob.GetSize() > 12 )
 			{
 				wxMemoryBuffer imageBuf;
 				blob.Read(imageBuf, blob.GetSize(), 0);
 
 				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
-				pCharacter->image.LoadFile(stream, wxBITMAP_TYPE_PNG);
+				pElement->image.LoadFile(stream, wxBITMAP_TYPE_PNG);
 			}
 		}
-
-		wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT name, content FROM characters_custom WHERE character_id = ") <<
-			id << ";");
-
-		while ( result.NextRow() )
-		{
-			pCharacter->custom.push_back(pair<wxString, wxString>(result.GetAsString("name"), result.GetAsString("content")));
-		}
-
-		m_project.elements.push_back(pCharacter);
+	
+		m_project.vStoryElements.push_back(pElement);
 	}
-
-	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
-}
-
-void amProjectManager::LoadLocations()
-{
-	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM locations");
-	int count = table.GetRowCount();
-	m_project.elements.reserve(m_project.elements.size() + count);
-
-	for ( int i = 0; i < count; i++ )
-	{
-		table.SetRow(i);
-		int id = table.GetInt("id");
-
-		Location* pLocation = new Location();
-
-		pLocation->name = table.GetAsString("name");
-		pLocation->general = table.GetAsString("general");
-		pLocation->natural = table.GetAsString("natural");
-		pLocation->architecture = table.GetAsString("architecture");
-		pLocation->politics = table.GetAsString("politics");
-		pLocation->economy = table.GetAsString("economy");
-		pLocation->culture = table.GetAsString("culture");
-
-		pLocation->role = (Role)table.GetInt("role");
-		pLocation->id = id;
-
-		if ( !table.IsNull("image") )
-		{
-			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "locations");
-			if ( blob.IsOk() && blob.GetSize() > 12 )
-			{
-				wxMemoryBuffer imageBuf;
-				blob.Read(imageBuf, blob.GetSize(), 0);
-
-				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
-				pLocation->image.LoadFile(stream, wxBITMAP_TYPE_PNG);
-			}
-		}
-
-		wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT name, content FROM locations_custom WHERE location_id = ") <<
-			id << ";");
-
-		while ( result.NextRow() )
-		{
-			pLocation->custom.push_back(pair<wxString, wxString>(result.GetAsString("name"), result.GetAsString("content")));
-		}
-
-		m_project.elements.push_back(pLocation);
-	}
-
-	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
-}
-
-void amProjectManager::LoadItems()
-{
-	wxSQLite3Table table = m_storage.GetTable("SELECT * FROM items");
-	int count = table.GetRowCount();
-	m_project.elements.reserve(m_project.elements.size() + count);
-
-	for ( int i = 0; i < count; i++ )
-	{
-		table.SetRow(i);
-		int id = table.GetInt("id");
-
-		Item* pItem = new Item();
-
-		pItem->name = table.GetAsString("name");
-		pItem->width = table.GetAsString("width");
-		pItem->height = table.GetAsString("height");
-		pItem->depth = table.GetAsString("depth");
-		pItem->general = table.GetAsString("general");
-		pItem->appearance = table.GetAsString("appearance");
-		pItem->origin = table.GetAsString("origin");
-		pItem->backstory = table.GetAsString("backstory");
-		pItem->usage = table.GetAsString("usage");
-
-		pItem->isManMade = table.GetBool("isManMade");
-		pItem->isMagic = table.GetBool("isMagic");
-		pItem->role = (Role)table.GetInt("role");
-		pItem->id = id;
-
-		if ( !table.IsNull("image") )
-		{
-			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "items");
-			if ( blob.IsOk() && blob.GetSize() > 12 )
-			{
-				wxMemoryBuffer imageBuf;
-				blob.Read(imageBuf, blob.GetSize(), 0);
-
-				wxMemoryInputStream stream(imageBuf.GetData(), imageBuf.GetDataLen());
-				pItem->image.LoadFile(stream, wxBITMAP_TYPE_PNG);
-			}
-		}
-
-		wxSQLite3ResultSet result = m_storage.ExecuteQuery(wxString("SELECT name, content FROM items_custom WHERE item_id = ") <<
-			id << ";");
-
-		while ( result.NextRow() )
-		{
-			pItem->custom.push_back(pair<wxString, wxString>(result.GetAsString("name"), result.GetAsString("content")));
-		}
-
-		m_project.elements.push_back(pItem);
-	}
-
-	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
 }
 
 void amProjectManager::LoadStandardRelations()
@@ -1148,27 +957,27 @@ void amProjectManager::LoadStandardRelations()
 
 	while ( result.NextRow() )
 	{
-		Element* pElement = nullptr;
-		Element* pRelated = nullptr;
+		StoryElement* pElement = nullptr;
+		StoryElement* pRelated = nullptr;
 		int elementID = result.GetInt("element_id");
 		int relatedID = result.GetInt("related_id");
 		wxClassInfo* elementClass = wxClassInfo::FindClass(result.GetAsString("element_class"));
 		wxClassInfo* relatedClass = wxClassInfo::FindClass(result.GetAsString("related_class"));
 
-		wxVector<Element*> vElements = GetAllElements();
+		wxVector<StoryElement*> vElements = GetAllElements();
 
-		for ( Element*& pElementInVector : vElements )
+		for ( StoryElement*& pElementInVector : vElements )
 		{
-			if ( pElementInVector->IsKindOf(elementClass) && pElementInVector->id == elementID )
+			if ( pElementInVector->IsKindOf(elementClass) && pElementInVector->dbID == elementID )
 			{
 				pElement = pElementInVector;
 				break;
 			}
 		}
 	
-		for ( Element*& pRelatedInVector : vElements )
+		for ( StoryElement*& pRelatedInVector : vElements )
 		{
-			if ( pRelatedInVector->IsKindOf(relatedClass) && pRelatedInVector->id == relatedID )
+			if ( pRelatedInVector->IsKindOf(relatedClass) && pRelatedInVector->dbID == relatedID )
 			{
 				pRelated = pRelatedInVector;
 				break;
@@ -1176,10 +985,10 @@ void amProjectManager::LoadStandardRelations()
 		}
 
 		if ( pElement && pRelated )
-			RelateElements(pElement, pRelated, false);
+			RelateStoryElements(pElement, pRelated, false);
 	}
 
-	for ( Element*& pElement : GetAllElements() )
+	for ( StoryElement*& pElement : GetAllElements() )
 	{
 		if ( !pElement->relatedElements.empty() )
 			std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
@@ -1430,58 +1239,22 @@ bool amProjectManager::ScanForDocumentLinear(int toFind, int& current, Document*
 	return false;
 }
 
-void amProjectManager::AddCharacter(Character* character, bool refreshElements)
+void amProjectManager::AddStoryElement(StoryElement* element, bool refreshElements)
 {
 	m_storage.Begin();
-	character->Save(&m_storage);
+	element->Save(&m_storage);
 	m_storage.Commit();
 
-	m_project.elements.push_back(character);
-	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
+	m_project.vStoryElements.push_back(element);
+	this->ResortElements();
 
 	if ( refreshElements )
 	{
-		m_elementNotebook->UpdateCharacterList();
+		m_elementNotebook->GetAppropriatePage(element)->UpdateList();
 		m_elementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
 	}
 
-	m_outline->GetOutlineFiles()->AppendCharacter(character);
-}
-
-void amProjectManager::AddLocation(Location* location, bool refreshElements)
-{
-	m_storage.Begin();
-	location->Save(&m_storage);
-	m_storage.Commit();
-
-	m_project.elements.push_back(location);
-	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
-
-	if ( refreshElements )
-	{
-		m_elementNotebook->UpdateLocationList();
-		m_elementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
-	}
-
-	m_outline->GetOutlineFiles()->AppendLocation(location);
-}
-
-void amProjectManager::AddItem(Item* item, bool refreshElements)
-{
-	m_storage.Begin();
-	item->Save(&m_storage);
-	m_storage.Commit();
-
-	m_project.elements.push_back(item);
-	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
-
-	if ( refreshElements )
-	{
-		m_elementNotebook->UpdateItemList();
-		m_elementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
-	}
-
-	m_outline->GetOutlineFiles()->AppendItem(item);
+	m_outline->GetOutlineFiles()->AppendStoryElement(element);
 }
 
 /// <summary>
@@ -1522,9 +1295,9 @@ void amProjectManager::AddDocument(Document* document, Book* book, int pos)
 
 void amProjectManager::ResortElements()
 {
-	std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
+	std::sort(m_project.vStoryElements.begin(), m_project.vStoryElements.end(), amSortElements);
 
-	for ( Element*& pElement : m_project.elements )
+	for ( StoryElement*& pElement : m_project.vStoryElements )
 	{
 		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
 	}
@@ -1533,12 +1306,12 @@ void amProjectManager::ResortElements()
 	{
 		for ( Document*& pDocument : pBook->documents )
 		{
-			std::sort(pDocument->elements.begin(), pDocument->elements.end(), amSortElements);
+			std::sort(pDocument->vTangibleElements.begin(), pDocument->vTangibleElements.end(), amSortElements);
 		}
 	}
 }
 
-void amProjectManager::StartEditingElement(Element* element)
+void amProjectManager::StartEditingElement(StoryElement* element)
 {
 	wxString strCreatorClass("am" + wxString(element->GetClassInfo()->GetClassName()) + "Creator");
 
@@ -1552,12 +1325,14 @@ void amProjectManager::StartEditingElement(Element* element)
 	pCreator->Show(true);
 }
 
-void amProjectManager::EditCharacter(Character* original, Character& edit, bool sort)
+void amProjectManager::DoEditStoryElement(StoryElement* original, StoryElement& edit, bool sort)
 {
+	wxASSERT(original->GetClassInfo() == edit.GetClassInfo());
+
 	try
 	{
-		m_outline->GetOutlineFiles()->DeleteCharacter(original);
-		*original = edit;
+		m_outline->GetOutlineFiles()->DeleteStoryElement(original);
+		original->EditTo(edit);
 		std::thread thread([&]()
 			{
 				m_storage.Begin();
@@ -1565,99 +1340,26 @@ void amProjectManager::EditCharacter(Character* original, Character& edit, bool 
 				m_storage.Commit();
 			}
 		);
+		thread.detach();
 
 		if ( sort )
 		{
-			std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
-			m_elementNotebook->UpdateCharacterList();
+			ResortElements();
+			m_elementNotebook->GetAppropriatePage(original)->UpdateList();
 		}
-		
-		UpdateElementInGUI(original);
 
-		m_mainFrame->Enable(true);
+		UpdateStoryElementInGUI(original);
 
-		thread.detach();
-
-		m_outline->GetOutlineFiles()->AppendCharacter(original);
+		m_outline->GetOutlineFiles()->AppendStoryElement(original);
 
 	}
-	catch ( wxString& e )
+	catch ( wxSQLite3Exception& e )
 	{
-		wxMessageBox(e);
+		wxMessageBox(e.GetMessage());
 	}
 }
 
-void amProjectManager::EditLocation(Location* original, Location& edit, bool sort)
-{
-	try
-	{
-		m_outline->GetOutlineFiles()->DeleteLocation(original);
-
-		*original = edit;
-		std::thread thread([&]()
-			{
-				m_storage.Begin();
-				original->Update(&m_storage);
-				m_storage.Commit();
-			}
-		);
-
-		if ( sort )
-		{
-			std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
-			m_elementNotebook->UpdateLocationList();
-		}
-
-		UpdateElementInGUI(original);
-
-		m_mainFrame->Enable(true);
-
-		thread.detach();
-
-		m_outline->GetOutlineFiles()->AppendLocation(original);
-	}
-	catch ( wxString& e )
-	{
-		wxMessageBox(e);
-	}
-}
-
-void amProjectManager::EditItem(Item* original, Item& edit, bool sort)
-{
-	try
-	{
-		m_outline->GetOutlineFiles()->DeleteItem(original);
-
-		*original = edit;
-		std::thread thread([&]()
-			{
-				m_storage.Begin();
-				original->Update(&m_storage);
-				m_storage.Commit();
-			}
-		);
-
-		if ( sort )
-		{
-			std::sort(m_project.elements.begin(), m_project.elements.end(), amSortElements);
-			m_elementNotebook->UpdateItemList();
-		}
-	
-		UpdateElementInGUI(original);
-
-		m_mainFrame->Enable(true);
-
-		thread.detach();
-
-		m_outline->GetOutlineFiles()->AppendItem(original);
-	}
-	catch ( wxString& e )
-	{
-		wxMessageBox(e);
-	}
-}
-
-void amProjectManager::UpdateElementInGUI(Element* element)
+void amProjectManager::UpdateStoryElementInGUI(StoryElement* element)
 {
 	bool bShouldShowInNotebook = m_elementNotebook->ShouldShow(element);
 	amElementNotebookPage* pPage = m_elementNotebook->GetAppropriatePage(element);
@@ -1690,19 +1392,19 @@ void amProjectManager::UpdateElementInGUI(Element* element)
 	}
 }
 
-void amProjectManager::GoToElement(Element* element)
+void amProjectManager::GoToStoryElement(StoryElement* element)
 {
 	if ( !element )
 		return;
 
 	m_mainFrame->GetSimplebook()->SetSelection(1);
-	m_elementNotebook->GoToElement(element);
+	m_elementNotebook->GoToStoryElement(element);
 
 	if ( m_storyWriter )
 		m_storyWriter->Iconize();
 }
 
-void amProjectManager::AddElementToDocument(Element* element, Document* document, bool addToDb)
+void amProjectManager::AddElementToDocument(TangibleElement* element, Document* document, bool addToDb)
 {
 	if ( !element || !document )
 		return;
@@ -1727,7 +1429,7 @@ void amProjectManager::AddElementToDocument(Element* element, Document* document
 			try
 			{
 				wxString update("INSERT INTO elements_documents (element_id, document_id, element_class) VALUES (");
-				update << element->id << ", " << document->id << ", '" << element->GetClassInfo()->GetClassName() << "');";
+				update << element->dbID << ", " << document->id << ", '" << element->GetClassInfo()->GetClassName() << "');";
 
 				m_storage.ExecuteUpdate(update);
 			}
@@ -1739,7 +1441,7 @@ void amProjectManager::AddElementToDocument(Element* element, Document* document
 	}
 
 	had = false;
-	for ( Element*& pElementInDoc : document->elements )
+	for ( TangibleElement*& pElementInDoc : document->vTangibleElements )
 	{
 		if ( pElementInDoc == element )
 		{
@@ -1750,14 +1452,14 @@ void amProjectManager::AddElementToDocument(Element* element, Document* document
 
 	if ( !had )
 	{
-		std::sort(document->elements.begin(), document->elements.end(), amSortElements);
-		document->elements.push_back(element);
+		std::sort(document->vTangibleElements.begin(), document->vTangibleElements.end(), amSortElements);
+		document->vTangibleElements.push_back(element);
 	}
 
-	UpdateElementInGUI(element);
+	UpdateStoryElementInGUI(element);
 }
 
-void amProjectManager::RemoveElementFromDocument(Element * element, Document * document)
+void amProjectManager::RemoveElementFromDocument(TangibleElement* element, Document * document)
 {
 	if ( !element || !document )
 		return;
@@ -1769,7 +1471,7 @@ void amProjectManager::RemoveElementFromDocument(Element * element, Document * d
 			element->documents.erase(&pDocInElement);
 
 			wxString update("DELETE FROM elements_documents WHERE element_id = ");
-			update << element->id << " AND document_id = " << document->id <<
+			update << element->dbID << " AND document_id = " << document->id <<
 				" AND element_class = '" << element->GetClassInfo()->GetClassName() << "';";
 
 			m_storage.ExecuteUpdate(update);
@@ -1777,22 +1479,22 @@ void amProjectManager::RemoveElementFromDocument(Element * element, Document * d
 		}
 	}
 
-	for ( Element*& pElementInDoc : document->elements)
+	for ( TangibleElement*& pElementInDoc : document->vTangibleElements)
 	{
 		if ( pElementInDoc == element)
 		{
-			document->elements.erase(&pElementInDoc);
+			document->vTangibleElements.erase(&pElementInDoc);
 			break;
 		}
 	}
 
-	UpdateElementInGUI(element);
+	UpdateStoryElementInGUI(element);
 }
 
-void amProjectManager::RelateElements(Element* element1, Element* element2, bool addToDb)
+void amProjectManager::RelateStoryElements(StoryElement* element1, StoryElement* element2, bool addToDb)
 {
 	bool had1 = false;
-	for ( Element*& pPresent : element1->relatedElements )
+	for ( StoryElement*& pPresent : element1->relatedElements )
 	{
 		if ( pPresent == element2 )
 		{
@@ -1808,7 +1510,7 @@ void amProjectManager::RelateElements(Element* element1, Element* element2, bool
 	}
 
 	bool had2 = false;
-	for ( Element*& pPresent : element2->relatedElements )
+	for ( StoryElement*& pPresent : element2->relatedElements )
 	{
 		if ( pPresent == element1 )
 		{
@@ -1826,20 +1528,20 @@ void amProjectManager::RelateElements(Element* element1, Element* element2, bool
 	if ( addToDb && !had1 && !had2 )
 	{
 		wxString update("INSERT INTO elements_elements (element_id, related_id, element_class, related_class) VALUES (");
-		update << element1->id << "," << element2->id << ", '" <<
+		update << element1->dbID << "," << element2->dbID << ", '" <<
 			element1->GetClassInfo()->GetClassName() << "', '" << element2->GetClassInfo()->GetClassName() << "');";
 
 		m_storage.ExecuteUpdate(update);
 	}
 
-	UpdateElementInGUI(element1);
-	UpdateElementInGUI(element2);
+	UpdateStoryElementInGUI(element1);
+	UpdateStoryElementInGUI(element2);
 }
 
-void amProjectManager::UnrelateElements(Element* element1, Element* element2, bool removeFromDb)
+void amProjectManager::UnrelateStoryElements(StoryElement* element1, StoryElement* element2, bool removeFromDb)
 {
 	bool had1 = false;
-	for ( Element*& pPresent : element1->relatedElements )
+	for ( StoryElement*& pPresent : element1->relatedElements )
 	{
 		if ( pPresent == element2 )
 		{
@@ -1850,7 +1552,7 @@ void amProjectManager::UnrelateElements(Element* element1, Element* element2, bo
 	}
 
 	bool had2 = false;
-	for ( Element*& pPresent : element2->relatedElements )
+	for ( StoryElement*& pPresent : element2->relatedElements )
 	{
 		if ( pPresent == element1 )
 		{
@@ -1863,27 +1565,27 @@ void amProjectManager::UnrelateElements(Element* element1, Element* element2, bo
 	if ( removeFromDb && !had1 && !had2 )
 	{
 		wxString update("DELETE FROM elements_elements WHERE element_id = ");
-		update << element1->id << " AND related_id = " << element2->id << 
+		update << element1->dbID << " AND related_id = " << element2->dbID <<
 			" AND element_class = '" << element1->GetClassInfo()->GetClassName() << 
 			"' AND related_class = '" << element2->GetClassInfo()->GetClassName() << "';";
 
 		m_storage.ExecuteUpdate(update);
 
 		update = "DELETE FROM elements_elements WHERE element_id = ";
-		update << element2->id << " AND related_id = " << element1->id <<
+		update << element2->dbID << " AND related_id = " << element1->dbID <<
 			" AND element_class = '" << element2->GetClassInfo()->GetClassName() <<
 			"' AND related_class = '" << element1->GetClassInfo()->GetClassName() << "';";
 
 		m_storage.ExecuteUpdate(update);
 	}
 
-	UpdateElementInGUI(element1);
-	UpdateElementInGUI(element2);
+	UpdateStoryElementInGUI(element1);
+	UpdateStoryElementInGUI(element2);
 }
 
-Element* amProjectManager::GetElementByName(const wxString& name)
+StoryElement* amProjectManager::GetStoryElementByName(const wxString& name)
 {
-	for ( Element* pElement : GetAllElements() )
+	for ( StoryElement* pElement : GetAllElements() )
 	{
 		if ( pElement->name == name )
 			return pElement;
@@ -1903,11 +1605,16 @@ Book* amProjectManager::GetBookByName(const wxString& name)
 	return nullptr;
 }
 
-void amProjectManager::DeleteElement(Element* element)
+void amProjectManager::DeleteElement(StoryElement* element)
 {
 	wxBusyCursor cursor;
-	for ( Document*& pDocument : element->documents )
-		RemoveElementFromDocument(element, pDocument);
+
+	TangibleElement* pTangible = dynamic_cast<TangibleElement*>(element);
+	if ( pTangible )
+	{
+		for ( Document*& pDocument : pTangible->documents )
+			RemoveElementFromDocument(pTangible, pDocument);
+	}
 
 	if ( element->IsKindOf(wxCLASSINFO(Character)) )
 	{
@@ -1925,11 +1632,11 @@ void amProjectManager::DeleteElement(Element* element)
 	}
 
 	m_storage.DeleteSQLEntry(sqlEntry);
-	for ( Element*& pElement : m_project.elements )
+	for ( StoryElement*& pElement : m_project.vStoryElements )
 	{
 		if ( pElement == element )
 		{
-			m_project.elements.erase(&pElement);
+			m_project.vStoryElements.erase(&pElement);
 			delete element;
 			break;
 		}
@@ -1943,7 +1650,7 @@ void amProjectManager::DeleteDocument(Document* document)
 		DeleteDocument(document);
 	}
 
-	for ( Element*& pElement : document->elements )
+	for ( TangibleElement*& pElement : document->vTangibleElements )
 		RemoveElementFromDocument(pElement, document);
 
 	m_storyNotebook->DeleteDocument(document);

@@ -245,6 +245,8 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 	// Initialize maximized
 	Layout();
+
+	XS_REGISTER_IO_HANDLER(wxT("unordered_string_map"), xsStringMultimapIO);
 }
 
 void amMainFrame::OnNewFile(wxCommandEvent& event)
@@ -482,30 +484,30 @@ void amMainFrame::OnNewDocument(wxCommandEvent& event)
 
 void amMainFrame::OnNewCharacter(wxCommandEvent& event)
 {
-	amCharacterCreator* create = new amCharacterCreator(this, m_manager, -1,
-		"Create character", wxDefaultPosition, FromDIP(wxSize(650, 650)));
-	create->Show();
-	create->SetFocus();
+	amCharacterCreator* pCreator = new amCharacterCreator;
+	pCreator->Create(this, m_manager, -1, "Create character", wxDefaultPosition, pCreator->GetBestSize());
+	pCreator->Show();
+	pCreator->SetFocus();
 	Enable(false);
 	event.Skip();
 }
 
 void amMainFrame::OnNewLocation(wxCommandEvent& event)
 {
-	amLocationCreator* create = new amLocationCreator(this, m_manager, -1, "Create location",
-		wxDefaultPosition, FromDIP(wxSize(900, 650)));
-	create->Show();
-	create->SetFocus();
+	amLocationCreator* pCreator = new amLocationCreator;
+	pCreator->Create(this, m_manager, -1, "Create location", wxDefaultPosition, pCreator->GetBestSize());
+	pCreator->Show();
+	pCreator->SetFocus();
 	Enable(false);
 	event.Skip();
 }
 
 void amMainFrame::OnNewItem(wxCommandEvent& event)
 {
-	amItemCreator* create = new amItemCreator(this, m_manager, -1, "Create item",
-		wxDefaultPosition, FromDIP(wxSize(900, 720)));
-	create->Show();
-	create->SetFocus();
+	amItemCreator* pCreator = new amItemCreator;
+	pCreator->Create(this, m_manager, -1, "Create item", wxDefaultPosition, pCreator->GetBestSize());
+	pCreator->Show();
+	pCreator->SetFocus();
 	Enable(false);
 	event.Skip();
 }

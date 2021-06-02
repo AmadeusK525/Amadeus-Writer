@@ -38,14 +38,14 @@ private:
 public:
 	amElementNotebookPage(wxWindow* parent, wxClassInfo* showcaseType, const wxArrayString& sortByChoices);
 
-	bool ShouldShow(Element* element);
+	bool ShouldShow(StoryElement* element);
 	void ClearAll();
 	void InitShowChoices();
 
-	void GoToElement(Element* element);
+	void GoToStoryElement(StoryElement* element);
 
 	void UpdateList();
-	void UpdateElementInList(int n, Element* element);
+	void UpdateElementInList(int n, StoryElement* element);
 
 	inline wxListView* GetList() { return m_elementList; }
 	inline amElementShowcase* GetShowcase() { return m_elementShowcase; }
@@ -77,8 +77,8 @@ public:
 
 	void InitShowChoices();
 
-	wxListView* GetAppropriateList(Element* element);
-	amElementNotebookPage* GetAppropriatePage(Element* element);
+	wxListView* GetAppropriateList(StoryElement* element);
+	amElementNotebookPage* GetAppropriatePage(StoryElement* element);
 
 	inline amElementShowcase* GetCharacterShowcase() { return m_characterPage->GetShowcase(); }
 	inline amElementShowcase* GetLocationShowcase() { return m_locationPage->GetShowcase(); }
@@ -90,15 +90,15 @@ public:
 
 	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 
-	void GoToElement(Element* element);
-	bool ShouldShow(Element* element) const;
+	void GoToStoryElement(StoryElement* element);
+	bool ShouldShow(StoryElement* element) const;
 
 	void UpdateSearchAutoComplete(wxBookCtrlEvent& event);
 
 	void ClearAll();
 
-	void RemoveElementFromList(Element* element);
-	void UpdateElementInList(int n, Element* element);
+	void RemoveElementFromList(StoryElement* element);
+	void UpdateElementInList(int n, StoryElement* element);
 
 	inline void UpdateCharacterList() { m_characterPage->UpdateList(); }
 	inline void UpdateLocationList() { m_locationPage->UpdateList(); }

@@ -130,7 +130,6 @@ void wxSwitchCtrl::DoSwitch(bool state, bool sendEvent)
 	}
 
 	m_bIsOn = state;
-	m_szCacheSize = GetClientSize();
 	m_tAnimationTimer.Start(1);
 
 	if ( sendEvent )
@@ -168,7 +167,6 @@ void wxSwitchCtrl::OnAnimationTimer(wxTimerEvent& event)
 		}
 	}
 
-	m_nCurrentButtonPos = ((double)(m_nCurrentUnit * (m_szCacheSize.x - (m_radius * 2))) / m_nUnitCount);
 	Refresh(true);
 	Update();
 }
@@ -184,6 +182,8 @@ void wxSwitchCtrl::OnPaint(wxPaintEvent& event)
 	gdc.SetBrush(wxBrush(slideColour));
 	gdc.SetPen(*wxTRANSPARENT_PEN);
 	gdc.DrawRoundedRectangle(wxPoint(0, m_yOrigin), clientSize - wxSize(0, m_yOrigin), m_radius);
+
+	m_nCurrentButtonPos = ((double)(m_nCurrentUnit * (clientSize.x - (m_radius * 2))) / m_nUnitCount);
 
 	gdc.SetBrush(wxBrush(m_buttonColour));
 	gdc.SetPen(*wxTRANSPARENT_PEN);
@@ -205,8 +205,7 @@ void wxSwitchCtrl::OnSize(wxSizeEvent& event)
 	}
 
 	m_radius = (double)size.y / 2.0;
-	m_nCurrentButtonPos = ((double)(m_nCurrentUnit * (size.x - (m_radius * 2))) / m_nUnitCount);
-
+	Refresh();
 	event.Skip();
 }
 

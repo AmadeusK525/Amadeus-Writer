@@ -228,12 +228,16 @@ public:
 
 	wxObjectDataPtr<OutlineTreeModel>& GetOutlineTreeModel() { return m_outlineTreeModel; }
 
-	void GenerateCharacterBuffer(Character* character, wxRichTextBuffer* buffer);
+	void AppendStoryElement(StoryElement* element);
+	void DeleteStoryElement(StoryElement* element);
+
+	void GenerateElementBuffer(StoryElement* element, wxRichTextBuffer* buffer);
+	/*void GenerateCharacterBuffer(Character* character, wxRichTextBuffer* buffer);
 	void GenerateLocationBuffer(Location* location, wxRichTextBuffer* buffer);
-	void GenerateItemBuffer(Item* item, wxRichTextBuffer* buffer);
-	void AppendCharacter(Character* character);
+	void GenerateItemBuffer(Item* item, wxRichTextBuffer* buffer);*/
+	/*void AppendCharacter(Character* character);
 	void AppendLocation(Location* location);
-	void AppendItem(Item* item);
+	void AppendItem(Item* item);*/
 
 	void DeleteCharacter(Character* character);
 	void DeleteLocation(Location* location);

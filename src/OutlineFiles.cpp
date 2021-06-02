@@ -483,30 +483,51 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 
 void amOutlineFilesPanel::Init()
 {
-	wxVector<Character*> charList = amGetManager()->GetCharacters();
-	wxVector<Location*> locList = amGetManager()->GetLocations();
-	wxVector<Item*> itemList = amGetManager()->GetItems();
-
-	for ( Character*& character : charList )
-		AppendCharacter(character);
-
-	for ( Location*& location : locList )
-		AppendLocation(location);
-
-	for ( Item*& item : itemList )
-		AppendItem(item);
+	for ( StoryElement*& pElement : amGetManager()->GetAllElements() )
+	{
+		AppendStoryElement(pElement);
+	}
 }
 
-void amOutlineFilesPanel::GenerateCharacterBuffer(Character* character, wxRichTextBuffer* buffer)
+void amOutlineFilesPanel::AppendStoryElement(StoryElement* element)
 {
+	if ( !element )
+		return;
+
+	wxDataViewItem item;
+	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+		item = m_outlineTreeModel->AddToCharacters(element->name.ToStdString());
+	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+		item = m_outlineTreeModel->AddToLocations(element->name.ToStdString());
+	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+		item = m_outlineTreeModel->AddToItems(element->name.ToStdString());
+
+	GenerateElementBuffer(element, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
+}
+
+void amOutlineFilesPanel::DeleteStoryElement(StoryElement* element)
+{
+	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+		DeleteCharacter((Character*)element);
+	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+		DeleteLocation((Location*)element);
+	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+		DeleteItem((Item*)element);
+}
+
+void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTextBuffer* buffer)
+{
+	if ( !element || !buffer )
+		return;
+
 	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
 	buffer->BeginSuppressUndo();
 
 	int begin = 0;
 
-	if ( character->image.IsOk() )
+	if ( element->image.IsOk() )
 	{
-		wxImage image = character->image;
+		wxImage image = element->image;
 		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
 
 		if ( ratio > 1 )
@@ -525,270 +546,328 @@ void amOutlineFilesPanel::GenerateCharacterBuffer(Character* character, wxRichTe
 	buffer->BeginBold();
 	buffer->InsertTextWithUndo(begin, "\n" + _("Name: "), nullptr);
 	buffer->EndBold();
-	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + character->name, nullptr);
+	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + element->name, nullptr);
 	buffer->EndFontSize();
+
+	if ( element->IsKindOf(wxCLASSINFO(Item)) )
+	{
+
+	}
 
 	wxString separator("\n\n");
 
-	if ( !character->age.IsEmpty() )
+	for ( auto& it : element->mShortAttributes )
 	{
 		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Age: "), nullptr);
+		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + it.first, nullptr);
 		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->age, nullptr);
+		buffer->InsertTextWithUndo(buffer->GetText().size(), it.second, nullptr);
 		separator = "\n";
 	}
 
-	if ( character->sex != "" )
+	for ( auto& it : element->mLongAttributes )
 	{
 		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Sex: "), nullptr);
+		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + it.first + "\n", nullptr);
 		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->sex, nullptr);
-		separator = "\n";
+		buffer->InsertTextWithUndo(buffer->GetText().size(), it.second, nullptr);
 	}
 
-	if ( character->height != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Height: "), nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->height, nullptr);
-		separator = "\n";
-	}
-
-	if ( character->nick != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Nickname: "), nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->nick, nullptr);
-		separator = "\n";
-	}
-
-	if ( character->nat != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Nationality: "), nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->nat, nullptr);
-		separator = "\n";
-	}
-
-	if ( character->appearance != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + _("Appearance:") + "\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->appearance, nullptr);
-	}
-
-	if ( character->personality != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + _("Personality:") + "\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->personality, nullptr);
-	}
-
-	if ( character->backstory != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + _("Backstory:") + "\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), character->backstory, nullptr);
-	}
-
-	for ( pair<wxString, wxString>& it : character->custom )
-	{
-		if ( it.second != "" )
-		{
-			buffer->BeginBold();
-			buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
-			buffer->EndBold();
-			buffer->InsertTextWithUndo(buffer->GetText().size(), it.second, nullptr);
-		}
-	}
-
-	buffer->SetName(character->name);
+	buffer->SetName(element->name);
 }
 
-void amOutlineFilesPanel::GenerateLocationBuffer(Location* location, wxRichTextBuffer* buffer)
-{
-	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
-	buffer->BeginSuppressUndo();
-
-	if ( location->image.IsOk() )
-	{
-		wxImage image = location->image;
-		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
-
-		if ( ratio > 1 )
-			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
-		else
-			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
-
-		buffer->BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
-		buffer->AddImage(image);
-		buffer->EndAlignment();
-	}
-
-	buffer->BeginFontSize(16);
-	buffer->BeginBold();
-	buffer->InsertTextWithUndo(2, "\nName: ", nullptr);
-	buffer->EndBold();
-	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + location->name, nullptr);
-	buffer->EndFontSize();
-
-	buffer->BeginBold();
-	buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\nImportance: ", nullptr);
-	buffer->EndBold();
-	wxString role;
-	switch ( location->role )
-	{
-	case lHigh:
-		role = "High";
-		break;
-
-	case lLow:
-		role = "Low";
-		break;
-
-	default:
-		role = "--/--";
-		break;
-	}
-	buffer->InsertTextWithUndo(buffer->GetText().size(), role, nullptr);
-
-	if ( location->general != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nGeneral:\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), location->general, nullptr);
-	}
-
-	if ( location->natural != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nNatural characteristics:\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), location->natural, nullptr);
-	}
-
-	if ( location->architecture != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nArchitecture:\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), location->architecture, nullptr);
-	}
-
-	if ( location->politics != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nPolitics:\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), location->politics, nullptr);
-	}
-
-	if ( location->economy != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nEconomy:\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), location->economy, nullptr);
-	}
-
-	if ( location->culture != "" )
-	{
-		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nCulture:\n", nullptr);
-		buffer->EndBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), location->culture, nullptr);
-	}
-
-	for ( pair<wxString, wxString>& it : location->custom )
-	{
-		if ( it.second != "" )
-		{
-			buffer->BeginBold();
-			buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
-			buffer->EndBold();
-			buffer->InsertTextWithUndo(buffer->GetText().size(), it.second, nullptr);
-		}
-	}
-
-	buffer->SetName(location->name);
-}
-
-void amOutlineFilesPanel::GenerateItemBuffer(Item* item, wxRichTextBuffer* buffer)
-{
-	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
-	buffer->BeginSuppressUndo();
-
-	if ( item->image.IsOk() )
-	{
-		wxImage image = item->image;
-		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
-
-		if ( ratio > 1 )
-			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
-		else
-			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
-
-		buffer->BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
-		buffer->AddImage(image);
-		buffer->EndAlignment();
-	}
-
-	buffer->BeginFontSize(16);
-	buffer->BeginBold();
-	buffer->InsertTextWithUndo(2, "\nName: ", nullptr);
-	buffer->EndBold();
-	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + item->name, nullptr);
-	buffer->EndFontSize();
-
-	buffer->BeginBold();
-	buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\nImportance: ", nullptr);
-	buffer->EndBold();
-	wxString role;
-	switch ( item->role )
-	{
-	case iHigh:
-		role = "High";
-		break;
-
-	case iLow:
-		role = "Low";
-		break;
-
-	default:
-		role = "--/--";
-		break;
-	}
-	buffer->InsertTextWithUndo(buffer->GetText().size(), role, nullptr);
-
-	buffer->SetName(item->name);
-}
-
-void amOutlineFilesPanel::AppendCharacter(Character* character)
-{
-	wxDataViewItem item = m_outlineTreeModel->AddToCharacters(character->name.ToStdString());
-	GenerateCharacterBuffer(character, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
-}
-
-void amOutlineFilesPanel::AppendLocation(Location* location)
-{
-	wxDataViewItem item = m_outlineTreeModel->AddToLocations(location->name.ToStdString());
-	GenerateLocationBuffer(location, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
-}
-
-void amOutlineFilesPanel::AppendItem(Item* item)
-{
-	wxDataViewItem dvitem = m_outlineTreeModel->AddToItems(item->name.ToStdString());
-	GenerateItemBuffer(item, ((OutlineTreeModelNode*)dvitem.GetID())->GetBuffer());
-}
+//void amOutlineFilesPanel::GenerateCharacterBuffer(Character* character, wxRichTextBuffer* buffer)
+//{
+//	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
+//	buffer->BeginSuppressUndo();
+//
+//	int begin = 0;
+//
+//	if ( character->image.IsOk() )
+//	{
+//		wxImage image = character->image;
+//		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
+//
+//		if ( ratio > 1 )
+//			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
+//		else
+//			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
+//
+//		buffer->BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
+//		buffer->AddImage(image);
+//		buffer->EndAlignment();
+//
+//		begin += 2;
+//	}
+//
+//	buffer->BeginFontSize(16);
+//	buffer->BeginBold();
+//	buffer->InsertTextWithUndo(begin, "\n" + _("Name: "), nullptr);
+//	buffer->EndBold();
+//	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + character->name, nullptr);
+//	buffer->EndFontSize();
+//
+//	wxString separator("\n\n");
+//
+//	if ( !character->age.IsEmpty() )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Age: "), nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->age, nullptr);
+//		separator = "\n";
+//	}
+//
+//	if ( character->sex != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Sex: "), nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->sex, nullptr);
+//		separator = "\n";
+//	}
+//
+//	if ( character->height != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Height: "), nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->height, nullptr);
+//		separator = "\n";
+//	}
+//
+//	if ( character->nick != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Nickname: "), nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->nick, nullptr);
+//		separator = "\n";
+//	}
+//
+//	if ( character->nat != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + _("Nationality: "), nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->nat, nullptr);
+//		separator = "\n";
+//	}
+//
+//	if ( character->appearance != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + _("Appearance:") + "\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->appearance, nullptr);
+//	}
+//
+//	if ( character->personality != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + _("Personality:") + "\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->personality, nullptr);
+//	}
+//
+//	if ( character->backstory != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + _("Backstory:") + "\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), character->backstory, nullptr);
+//	}
+//
+//	for ( pair<wxString, wxString>& it : character->custom )
+//	{
+//		if ( it.second != "" )
+//		{
+//			buffer->BeginBold();
+//			buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
+//			buffer->EndBold();
+//			buffer->InsertTextWithUndo(buffer->GetText().size(), it.second, nullptr);
+//		}
+//	}
+//
+//	buffer->SetName(character->name);
+//}
+//
+//void amOutlineFilesPanel::GenerateLocationBuffer(Location* location, wxRichTextBuffer* buffer)
+//{
+//	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
+//	buffer->BeginSuppressUndo();
+//
+//	if ( location->image.IsOk() )
+//	{
+//		wxImage image = location->image;
+//		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
+//
+//		if ( ratio > 1 )
+//			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
+//		else
+//			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
+//
+//		buffer->BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
+//		buffer->AddImage(image);
+//		buffer->EndAlignment();
+//	}
+//
+//	buffer->BeginFontSize(16);
+//	buffer->BeginBold();
+//	buffer->InsertTextWithUndo(2, "\nName: ", nullptr);
+//	buffer->EndBold();
+//	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + location->name, nullptr);
+//	buffer->EndFontSize();
+//
+//	buffer->BeginBold();
+//	buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\nImportance: ", nullptr);
+//	buffer->EndBold();
+//	wxString role;
+//	switch ( location->role )
+//	{
+//	case lHigh:
+//		role = "High";
+//		break;
+//
+//	case lLow:
+//		role = "Low";
+//		break;
+//
+//	default:
+//		role = "--/--";
+//		break;
+//	}
+//	buffer->InsertTextWithUndo(buffer->GetText().size(), role, nullptr);
+//
+//	if ( location->general != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nGeneral:\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), location->general, nullptr);
+//	}
+//
+//	if ( location->natural != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nNatural characteristics:\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), location->natural, nullptr);
+//	}
+//
+//	if ( location->architecture != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nArchitecture:\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), location->architecture, nullptr);
+//	}
+//
+//	if ( location->politics != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nPolitics:\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), location->politics, nullptr);
+//	}
+//
+//	if ( location->economy != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nEconomy:\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), location->economy, nullptr);
+//	}
+//
+//	if ( location->culture != "" )
+//	{
+//		buffer->BeginBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\nCulture:\n", nullptr);
+//		buffer->EndBold();
+//		buffer->InsertTextWithUndo(buffer->GetText().size(), location->culture, nullptr);
+//	}
+//
+//	for ( pair<wxString, wxString>& it : location->custom )
+//	{
+//		if ( it.second != "" )
+//		{
+//			buffer->BeginBold();
+//			buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\n\n\n" + it.first + ":\n", nullptr);
+//			buffer->EndBold();
+//			buffer->InsertTextWithUndo(buffer->GetText().size(), it.second, nullptr);
+//		}
+//	}
+//
+//	buffer->SetName(location->name);
+//}
+//
+//void amOutlineFilesPanel::GenerateItemBuffer(Item* item, wxRichTextBuffer* buffer)
+//{
+//	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
+//	buffer->BeginSuppressUndo();
+//
+//	if ( item->image.IsOk() )
+//	{
+//		wxImage image = item->image;
+//		double ratio = (double)image.GetWidth() / (double)image.GetHeight();
+//
+//		if ( ratio > 1 )
+//			image.Rescale(180 * ratio, 180, wxIMAGE_QUALITY_HIGH);
+//		else
+//			image.Rescale(220 * ratio, 220, wxIMAGE_QUALITY_HIGH);
+//
+//		buffer->BeginAlignment(wxTEXT_ALIGNMENT_CENTER);
+//		buffer->AddImage(image);
+//		buffer->EndAlignment();
+//	}
+//
+//	buffer->BeginFontSize(16);
+//	buffer->BeginBold();
+//	buffer->InsertTextWithUndo(2, "\nName: ", nullptr);
+//	buffer->EndBold();
+//	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + item->name, nullptr);
+//	buffer->EndFontSize();
+//
+//	buffer->BeginBold();
+//	buffer->InsertTextWithUndo(buffer->GetText().size(), "\n\nImportance: ", nullptr);
+//	buffer->EndBold();
+//	wxString role;
+//	switch ( item->role )
+//	{
+//	case iHigh:
+//		role = "High";
+//		break;
+//
+//	case iLow:
+//		role = "Low";
+//		break;
+//
+//	default:
+//		role = "--/--";
+//		break;
+//	}
+//	buffer->InsertTextWithUndo(buffer->GetText().size(), role, nullptr);
+//
+//	buffer->SetName(item->name);
+//}
+//
+//void amOutlineFilesPanel::AppendCharacter(Character* character)
+//{
+//	wxDataViewItem item = m_outlineTreeModel->AddToCharacters(character->name.ToStdString());
+//	GenerateCharacterBuffer(character, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
+//}
+//
+//void amOutlineFilesPanel::AppendLocation(Location* location)
+//{
+//	wxDataViewItem item = m_outlineTreeModel->AddToLocations(location->name.ToStdString());
+//	GenerateLocationBuffer(location, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
+//}
+//
+//void amOutlineFilesPanel::AppendItem(Item* item)
+//{
+//	wxDataViewItem dvitem = m_outlineTreeModel->AddToItems(item->name.ToStdString());
+//	GenerateItemBuffer(item, ((OutlineTreeModelNode*)dvitem.GetID())->GetBuffer());
+//}
 
 void amOutlineFilesPanel::DeleteCharacter(Character* character)
 {

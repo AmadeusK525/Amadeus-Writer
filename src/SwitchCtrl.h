@@ -80,7 +80,6 @@ private:
 	bool m_bIsDragging = false;
 
 	wxTimer m_tAnimationTimer;
-	wxSize m_szCacheSize;
 };
 
 wxDECLARE_EVENT(wxEVT_SWITCH, wxCommandEvent);

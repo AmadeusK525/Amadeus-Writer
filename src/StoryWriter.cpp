@@ -915,7 +915,7 @@ void amStoryWriter::AddCharacter(wxCommandEvent& event)
 {
 	wxString name = event.GetString();
 	if ( m_charInChap->FindItem(-1, name) == -1 )
-		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_activeTab.document);
+		m_manager->AddElementToDocument((TangibleElement*)m_manager->GetStoryElementByName(name), m_activeTab.document);
 }
 
 void amStoryWriter::AddLocation(wxCommandEvent& event)
@@ -923,7 +923,7 @@ void amStoryWriter::AddLocation(wxCommandEvent& event)
 	wxString name = event.GetString();
 
 	if ( m_locInChap->FindItem(-1, name) == -1 )
-		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_activeTab.document);
+		m_manager->AddElementToDocument((TangibleElement*)m_manager->GetStoryElementByName(name), m_activeTab.document);
 }
 
 void amStoryWriter::AddItem(wxCommandEvent& event)
@@ -931,7 +931,7 @@ void amStoryWriter::AddItem(wxCommandEvent& event)
 	wxString name = event.GetString();
 
 	if ( m_itemsInChap->FindItem(-1, name) == -1 )
-		m_manager->AddElementToDocument(m_manager->GetElementByName(name), m_activeTab.document);
+		m_manager->AddElementToDocument((TangibleElement*)m_manager->GetStoryElementByName(name), m_activeTab.document);
 }
 
 void amStoryWriter::UpdateCharacterList()
@@ -940,7 +940,7 @@ void amStoryWriter::UpdateCharacterList()
 	m_charInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Element*& pElement : m_activeTab.document->elements )
+	for ( TangibleElement*& pElement : m_activeTab.document->vTangibleElements )
 	{
 		Character* pCharacter = dynamic_cast<Character*>(pElement);
 
@@ -957,7 +957,7 @@ void amStoryWriter::UpdateLocationList()
 	m_locInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Element*& pElement: m_activeTab.document->elements )
+	for ( TangibleElement*& pElement: m_activeTab.document->vTangibleElements )
 	{
 		Location* pLocation= dynamic_cast<Location*>(pElement);
 
@@ -973,7 +973,7 @@ void amStoryWriter::UpdateItemList()
 	m_itemsInChap->DeleteAllItems();
 
 	int i = 0;
-	for ( Element*& pElement : m_activeTab.document->elements )
+	for ( TangibleElement*& pElement : m_activeTab.document->vTangibleElements )
 	{
 		Item* pItem= dynamic_cast<Item*>(pElement);
 
@@ -986,11 +986,11 @@ void amStoryWriter::UpdateItemList()
 
 void amStoryWriter::OnElementActivated(wxListEvent& event)
 {
-	Element* pElement = m_manager->GetElementByName(event.GetLabel());
+	StoryElement* pElement = m_manager->GetStoryElementByName(event.GetLabel());
 	if ( !pElement )
 		return;
 
-	m_manager->GoToElement(pElement);
+	m_manager->GoToStoryElement(pElement);
 }
 
 void amStoryWriter::OnRemoveCharacter(wxCommandEvent& event)
@@ -1003,7 +1003,7 @@ void amStoryWriter::OnRemoveCharacter(wxCommandEvent& event)
 		wxString name = m_charInChap->GetItemText(sel);
 		m_charInChap->DeleteItem(sel);
 
-		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_activeTab.document);
+		m_manager->RemoveElementFromDocument((TangibleElement*)m_manager->GetStoryElementByName(name), m_activeTab.document);
 
 		sel = m_charInChap->GetNextSelected(sel - 1);
 	}
@@ -1022,7 +1022,7 @@ void amStoryWriter::OnRemoveLocation(wxCommandEvent& event)
 		wxString name = m_locInChap->GetItemText(sel);
 		m_locInChap->DeleteItem(sel);
 
-		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_activeTab.document);
+		m_manager->RemoveElementFromDocument((TangibleElement*)m_manager->GetStoryElementByName(name), m_activeTab.document);
 
 		sel = m_locInChap->GetNextSelected(sel + 1);
 	}
@@ -1041,7 +1041,7 @@ void amStoryWriter::OnRemoveItem(wxCommandEvent& event)
 		wxString name = m_itemsInChap->GetItemText(sel);
 		m_itemsInChap->DeleteItem(sel);
 
-		m_manager->RemoveElementFromDocument(m_manager->GetElementByName(name), m_activeTab.document);
+		m_manager->RemoveElementFromDocument((TangibleElement*)m_manager->GetStoryElementByName(name), m_activeTab.document);
 
 		sel = m_itemsInChap->GetNextSelected(sel + 1);
 	}

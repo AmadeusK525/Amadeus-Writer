@@ -126,19 +126,6 @@ bool amElementCreator::Create(wxWindow* parent, amProjectManager* manager, long 
 	return true;
 }
 
-wxVector<pair<wxString, wxString>> amElementCreator::GetCustom()
-{
-	wxVector<pair<wxString, wxString>> vec;
-
-	for ( auto& it : m_custom )
-	{
-		pair<wxString, wxString> pair(it.first->GetValue(), it.second->GetValue());
-		vec.push_back(pair);
-	}
-
-	return vec;
-}
-
 void amElementCreator::RemoveCustomAttr(wxCommandEvent& event)
 {
 	Freeze();
@@ -155,11 +142,19 @@ void amElementCreator::RemoveCustomAttr(wxCommandEvent& event)
 		it1++;
 	}
 
-	it1->first->Destroy();
-	it1->second->Destroy();
-	m_custom.erase(it1);
+	if ( minus->GetParent() == m_panel2 )
+	{
+		it1->first->Destroy();
+		it1->second->Destroy();
+		minus->Destroy();
+	}
+	else
+	{
+		minus->GetParent()->Destroy();
+	}
 
-	(*it2)->Destroy();
+	m_mLongAttr.erase(it1->first);
+	m_custom.erase(it1);
 	m_minusButtons.erase(it2);
 
 	m_mainSizer->Layout();
@@ -291,6 +286,44 @@ void amElementCreator::RemoveImage(wxCommandEvent& event)
 	event.Skip();
 }
 
+wxVector<std::pair<wxString, wxString>> amElementCreator::GetShortAttributes()
+{
+	wxVector<std::pair<wxString, wxString>> vShortAttr;
+
+	for ( auto& it : m_mShortAttr )
+	{
+		if ( it.second->GetValue().IsEmpty() )
+			continue;
+
+		vShortAttr.push_back(std::make_pair(it.first->GetLabel().BeforeLast(':'), it.second->GetValue()));
+	}
+
+	return vShortAttr;
+}
+
+wxVector<std::pair<wxString, wxString>> amElementCreator::GetLongAttributes()
+{
+	wxVector<std::pair<wxString, wxString>> vLongAttr;
+
+	for ( auto& it : m_mPreDefLongAttr )
+	{
+		if ( it.second->GetValue().IsEmpty() )
+			continue;
+
+		vLongAttr.push_back(std::make_pair(it.first->GetLabel(), it.second->GetValue()));
+	}
+
+	for ( auto& it : m_mLongAttr )
+	{
+		if ( it.second->GetValue().IsEmpty() )
+			continue;
+
+		vLongAttr.push_back(std::make_pair(it.first->GetValue(), it.second->GetValue()));
+	}
+
+	return vLongAttr;
+}
+
 void amElementCreator::OnClose(wxCloseEvent& event)
 {
 	m_manager->GetMainFrame()->Enable();
@@ -350,11 +383,13 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	ncSex->SetForegroundColour(wxColour(250, 250, 250));
 	ncSex->SetFont(font10);
 	ncSex->SetMinSize(FromDIP(wxSize(55, -1)));
-	wxStaticText* label2 = new wxStaticText(m_panel1, wxID_ANY, "Sex:", wxDefaultPosition, wxDefaultSize,
+	wxStaticText* sexLabel = new wxStaticText(m_panel1, wxID_ANY, "Sex:", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
-	label2->SetBackgroundColour(darker);
-	label2->SetForegroundColour(txtCol);
-	label2->SetFont(wxFont(wxFontInfo(13)));
+	sexLabel->SetBackgroundColour(darker);
+	sexLabel->SetForegroundColour(txtCol);
+	sexLabel->SetFont(wxFont(wxFontInfo(13)));
+	
+	m_mShortAttr[sexLabel] = ncSex;
 
 	ncHeight = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
@@ -362,33 +397,37 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	ncHeight->SetForegroundColour(wxColour(250, 250, 250));
 	ncHeight->SetFont(font10);
 	ncHeight->SetMinSize(FromDIP(wxSize(45, -1)));
-	wxStaticText* label3 = new wxStaticText(m_panel1, wxID_ANY, "Height: ", wxDefaultPosition, wxDefaultSize,
+	wxStaticText* heightLabel = new wxStaticText(m_panel1, wxID_ANY, "Height: ", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
-	label3->SetBackgroundColour(darker);
-	label3->SetForegroundColour(txtCol);
-	label3->SetFont(wxFont(wxFontInfo(12)));
+	heightLabel->SetBackgroundColour(darker);
+	heightLabel->SetForegroundColour(txtCol);
+	heightLabel->SetFont(wxFont(wxFontInfo(12)));
+
+	m_mShortAttr[heightLabel] = ncHeight;
 
 	ncNationality = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
 	ncNationality->SetBackgroundColour(dark);
 	ncNationality->SetForegroundColour(wxColour(250, 250, 250));
 	ncNationality->SetFont(font10);
-	wxStaticText* label4 = new wxStaticText(m_panel1, wxID_ANY, "Nationality: ", wxDefaultPosition, wxDefaultSize,
+	wxStaticText* nationalityLabel = new wxStaticText(m_panel1, wxID_ANY, "Nationality: ", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
-	label4->SetBackgroundColour(darker);
-	label4->SetForegroundColour(txtCol);
-	label4->SetFont(wxFont(wxFontInfo(12)));
+	nationalityLabel->SetBackgroundColour(darker);
+	nationalityLabel->SetForegroundColour(txtCol);
+	nationalityLabel->SetFont(wxFont(wxFontInfo(12)));
+
+	m_mShortAttr[nationalityLabel] = ncNationality;
 
 	wxBoxSizer* secondLine = new wxBoxSizer(wxHORIZONTAL);
-	secondLine->Add(label2, wxSizerFlags(0).CenterVertical());
+	secondLine->Add(sexLabel, wxSizerFlags(0).CenterVertical());
 	secondLine->AddSpacer(6);
 	secondLine->Add(ncSex, wxSizerFlags(1).CenterVertical());
 	secondLine->AddSpacer(10);
-	secondLine->Add(label3, wxSizerFlags(0).CenterVertical());
+	secondLine->Add(heightLabel, wxSizerFlags(0).CenterVertical());
 	secondLine->AddSpacer(6);
 	secondLine->Add(ncHeight, wxSizerFlags(1).CenterVertical());
 	secondLine->AddSpacer(10);
-	secondLine->Add(label4, wxSizerFlags(0).CenterVertical());
+	secondLine->Add(nationalityLabel, wxSizerFlags(0).CenterVertical());
 	secondLine->AddSpacer(6);
 	secondLine->Add(ncNationality, wxSizerFlags(3).CenterVertical());
 
@@ -398,22 +437,26 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	ncAge->SetForegroundColour(wxColour(250, 250, 250));
 	ncAge->SetFont(font10);
 	ncAge->SetMinSize(FromDIP(wxSize(45, -1)));
-	wxStaticText* label5 = new wxStaticText(m_panel1, wxID_ANY, "Age:", wxDefaultPosition, wxDefaultSize,
+	wxStaticText* ageLabel = new wxStaticText(m_panel1, wxID_ANY, "Age:", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
-	label5->SetBackgroundColour(darker);
-	label5->SetForegroundColour(txtCol);
-	label5->SetFont(wxFont(wxFontInfo(12)));
+	ageLabel->SetBackgroundColour(darker);
+	ageLabel->SetForegroundColour(txtCol);
+	ageLabel->SetFont(wxFont(wxFontInfo(12)));
+
+	m_mShortAttr[ageLabel] = ncAge;
 
 	ncNickname = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE);
 	ncNickname->SetBackgroundColour(dark);
 	ncNickname->SetForegroundColour(wxColour(250, 250, 250));
 	ncNickname->SetFont(font10);
-	wxStaticText* label6 = new wxStaticText(m_panel1, wxID_ANY, "Nickname: ", wxDefaultPosition, wxDefaultSize,
+	wxStaticText* nicknameLabel = new wxStaticText(m_panel1, wxID_ANY, "Nickname: ", wxDefaultPosition, wxDefaultSize,
 		wxNO_BORDER | wxALIGN_LEFT);
-	label6->SetBackgroundColour(darker);
-	label6->SetForegroundColour(txtCol);
-	label6->SetFont(wxFont(wxFontInfo(12)));
+	nicknameLabel->SetBackgroundColour(darker);
+	nicknameLabel->SetForegroundColour(txtCol);
+	nicknameLabel->SetFont(wxFont(wxFontInfo(12)));
+
+	m_mShortAttr[nicknameLabel] = ncNickname;
 
 	ncMain = new wxRadioButton(m_panel1, wxID_ANY, "Protagonist", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
 	ncMain->SetFont(font10);
@@ -441,9 +484,9 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	btnHolderSizer2->Add(ncSecon);
 
 	wxBoxSizer* thirdLine = new wxBoxSizer(wxHORIZONTAL);
-	thirdLine->Add(label5, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 8));
+	thirdLine->Add(ageLabel, wxSizerFlags(0).CenterVertical().Border(wxRIGHT, 8));
 	thirdLine->Add(ncAge, wxSizerFlags(1).CenterVertical().Border(wxRIGHT, 16));
-	thirdLine->Add(label6, wxSizerFlags(0).CenterVertical());
+	thirdLine->Add(nicknameLabel, wxSizerFlags(0).CenterVertical());
 	thirdLine->Add(ncNickname, wxSizerFlags(3).CenterVertical().Border(wxRIGHT, 16));
 	thirdLine->Add(label7, wxSizerFlags(0).CenterVertical());
 	thirdLine->Add(btnHolderSizer2, wxSizerFlags(0).CenterVertical());
@@ -457,6 +500,8 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	ncAppearance->SetBackgroundColour(dark);
 	ncAppearance->SetForegroundColour(wxColour(250, 250, 250));
 
+	m_mPreDefLongAttr[label8] = ncAppearance;
+
 	wxStaticText* label9 = new wxStaticText(m_panel1, wxID_ANY, "Personality", wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
 	label9->SetBackgroundColour(wxColour(230, 0, 20));
@@ -466,6 +511,8 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	ncPersonality->SetBackgroundColour(dark);
 	ncPersonality->SetForegroundColour(wxColour(250, 250, 250));
 
+	m_mPreDefLongAttr[label9] = ncPersonality;
+
 	wxStaticText* label10 = new wxStaticText(m_panel1, wxID_ANY, "Backstory", wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
 	label10->SetBackgroundColour(wxColour(230, 0, 20));
@@ -474,6 +521,8 @@ bool amCharacterCreator::Create(wxWindow* parent,
 		wxTE_MULTILINE | wxBORDER_SIMPLE);
 	ncBackstory->SetBackgroundColour(dark);
 	ncBackstory->SetForegroundColour(wxColour(250, 250, 250));
+
+	m_mPreDefLongAttr[label10] = ncBackstory;
 
 	wxBoxSizer* verSizer1 = new wxBoxSizer(wxVERTICAL);
 	verSizer1->AddSpacer(15);
@@ -501,35 +550,7 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	return true;
 }
 
-wxVector<wxString> amCharacterCreator::GetValues()
-{
-	wxVector<wxString> vec;
-
-	vec.push_back(ncFullName->GetValue());
-
-	vec.push_back(ncSex->GetValue());
-	vec.push_back(ncAge->GetValue());
-	vec.push_back(ncNationality->GetValue());
-	vec.push_back(ncHeight->GetValue());
-	vec.push_back(ncNickname->GetValue());
-
-	if ( ncMain->GetValue() )
-		vec.push_back("Protagonist");
-	else if ( ncSupp->GetValue() )
-		vec.push_back("Supporting");
-	else if ( ncVillian->GetValue() )
-		vec.push_back("Villian");
-	else if ( ncSecon->GetValue() )
-		vec.push_back("Secondary");
-
-	vec.push_back(ncAppearance->GetValue());
-	vec.push_back(ncPersonality->GetValue());
-	vec.push_back(ncBackstory->GetValue());
-
-	return vec;
-}
-
-void amCharacterCreator::StartEditing(Element* editChar)
+void amCharacterCreator::StartEditing(StoryElement* editChar)
 {
 	Character* character = dynamic_cast<Character*>(editChar);
 	if ( !character )
@@ -543,11 +564,36 @@ void amCharacterCreator::StartEditing(Element* editChar)
 	m_back->SetId(BUTTON_BackEdit1);
 
 	ncFullName->SetValue(character->name);
-	ncSex->SetValue(character->sex);
-	ncAge->SetValue(character->age);
-	ncNationality->SetValue(character->nat);
-	ncHeight->SetValue(character->height);
-	ncNickname->SetValue(character->nick);
+
+	auto& it = character->mShortAttributes.find(_("Sex"));
+	if ( it != character->mShortAttributes.end() )
+	{
+		ncSex->SetValue(it->second);
+	}
+
+	it = character->mShortAttributes.find(_("Age"));
+	if ( it != character->mShortAttributes.end() )
+	{
+		ncAge->SetValue(it->second);
+	}
+
+	it = character->mShortAttributes.find(_("Nationality"));
+	if ( it != character->mShortAttributes.end() )
+	{
+		ncNationality->SetValue(it->second);
+	}
+
+	it = character->mShortAttributes.find(_("Height"));
+	if ( it != character->mShortAttributes.end() )
+	{
+		ncHeight->SetValue(it->second);
+	}
+
+	it = character->mShortAttributes.find(_("Nickname"));
+	if ( it != character->mShortAttributes.end() )
+	{
+		ncNickname->SetValue(it->second);
+	}
 
 	switch ( character->role )
 	{
@@ -567,18 +613,35 @@ void amCharacterCreator::StartEditing(Element* editChar)
 		break;
 	}
 
-	ncAppearance->SetValue(character->appearance);
-	ncPersonality->SetValue(character->personality);
-	ncBackstory->SetValue(character->backstory);
-
-	int i = 0;
-	for ( auto& it : character->custom )
+	it = character->mLongAttributes.find(_("Appearance"));
+	if ( it != character->mLongAttributes.end() )
 	{
-		AddCustomAttr(wxCommandEvent());
-		m_custom[i].first->SetValue(it.first);
-		m_custom[i].second->SetValue(it.second);
+		ncAppearance->SetValue(it->second);
+	}
 
-		i++;
+	it = character->mLongAttributes.find(_("Personality"));
+	if ( it != character->mLongAttributes.end() )
+	{
+		ncPersonality->SetValue(it->second);
+	}
+
+	it = character->mLongAttributes.find(_("Backstory"));
+	if ( it != character->mLongAttributes.end() )
+	{
+		ncBackstory->SetValue(it->second);
+	}
+	
+	int i = 0;
+	for ( auto& it : character->mLongAttributes )
+	{
+		if ( it.first != _("Appearance") && it.first != _("Personality") && it.first != _("Backstory") )
+		{
+			AddCustomAttr(wxCommandEvent());
+			m_custom[i].first->SetValue(it.first);
+			m_custom[i].second->SetValue(it.second);
+
+			i++;
+		}
 	}
 
 	wxImage& image = m_imagePanel->GetImage();
@@ -592,43 +655,44 @@ void amCharacterCreator::StartEditing(Element* editChar)
 
 void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
 {
-	wxVector<wxString> vec = GetValues();
-
 	Role newRole;
-	if ( vec[6] == "Protagonist" )
+	if ( ncMain->GetValue() )
 		newRole = cProtagonist;
-	else if ( vec[6] == "Supporting" )
+	else if ( ncSupp->GetValue() )
 		newRole = cSupporting;
-	else if ( vec[6] == "Secondary" )
+	else if ( ncSecon->GetValue() )
 		newRole = cSecondary;
-	else if ( vec[6] == "Villian" )
+	else if ( ncVillian->GetValue() )
 		newRole = cVillian;
 
 	Character character;
 
-	character.name = vec[0];
-	character.sex = vec[1];
-	character.age = vec[2];
-	character.nat = vec[3];
-	character.height = vec[4];
-	character.nick = vec[5];
+	character.name = ncFullName->GetValue();
 	character.role = newRole;
-	character.appearance = vec[7];
-	character.personality = vec[8];
-	character.backstory = vec[9];
+
+	for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
+	{
+		character.mShortAttributes.insert({ it.first, it.second });
+	}
+
+	for ( std::pair<wxString, wxString>& it : GetLongAttributes() )
+	{
+		character.mLongAttributes.insert({ it.first, it.second });
+	}
 
 	character.image = m_imagePanel->GetImage();
-	character.custom = GetCustom();
 
-	character.documents = m_elementEdit->documents;
-	character.id = m_elementEdit->id;
+	character.documents = ((Character*)m_elementEdit)->documents;
+	character.aliases = m_elementEdit->aliases;
+	character.relatedElements = m_elementEdit->relatedElements;
+	character.dbID = m_elementEdit->dbID;
 
 	Character* pCharacterToEdit = (Character*)m_elementEdit;
-	bool dif = pCharacterToEdit->name != vec[0] || pCharacterToEdit->role != newRole;
+	bool dif = pCharacterToEdit->name != ncFullName->GetValue() || pCharacterToEdit->role != newRole;
 
 	Hide();
 	m_manager->GetMainFrame()->Enable();
-	m_manager->EditCharacter(pCharacterToEdit, character, dif);
+	m_manager->DoEditStoryElement(pCharacterToEdit, character, dif);
 
 	Destroy();
 }
@@ -642,6 +706,8 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event)
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
 	wxTextCtrl* content = new wxTextCtrl(m_panel2, -1, "", wxDefaultPosition,
 		wxSize(-1, ncAppearance->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
+
+	m_mLongAttr[label] = content;
 
 	content->SetBackgroundColour(wxColour(60, 60, 60));
 	content->SetForegroundColour(wxColour(255, 255, 255));
@@ -674,36 +740,33 @@ void amCharacterCreator::OnCreateElement(wxCommandEvent& event)
 {
 	if ( !ncFullName->IsEmpty() )
 	{
-		wxVector<wxString> vec = GetValues();
-
 		Character* pCharacter = new Character;
-		pCharacter->name = vec[0];
-		pCharacter->sex = vec[1];
-		pCharacter->age = vec[2];
-		pCharacter->nat = vec[3];
-		pCharacter->height = vec[4];
-		pCharacter->nick = vec[5];
+		pCharacter->name = ncFullName->GetValue();
 
-		if ( vec[6] == "Protagonist" )
+		if ( ncMain->GetValue() )
 			pCharacter->role = cProtagonist;
-		else if ( vec[6] == "Supporting" )
+		else if ( ncSupp->GetValue() )
 			pCharacter->role = cSupporting;
-		else if ( vec[6] == "Villian" )
+		else if ( ncVillian->GetValue() )
 			pCharacter->role = cVillian;
-		else if ( vec[6] == "Secondary" )
+		else if ( ncSecon->GetValue() )
 			pCharacter->role = cSecondary;
 
-		pCharacter->appearance = vec[7];
-		pCharacter->personality = vec[8];
-		pCharacter->backstory = vec[9];
+		for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
+		{
+			pCharacter->mShortAttributes.insert({ it.first, it.second });
+		}
+
+		for ( std::pair<wxString, wxString>& it : GetLongAttributes() )
+		{
+			pCharacter->mLongAttributes.insert({ it.first, it.second });
+		}
 
 		pCharacter->image = m_imagePanel->GetImage();
 
-		pCharacter->custom = GetCustom();
-
 		Hide();
 		m_manager->GetMainFrame()->Enable();
-		m_manager->AddCharacter(pCharacter, true);
+		m_manager->AddStoryElement(pCharacter, true);
 	}
 	else
 	{
@@ -728,6 +791,7 @@ void amCharacterCreator::OnClose(wxCloseEvent& event)
 			return;
 	}
 
+	m_manager->GetMainFrame()->Enable(true);
 	event.Skip();
 }
 
@@ -782,10 +846,10 @@ bool amLocationCreator::Create(wxWindow* parent,
 
 	nlName->SetFont(wxFont(wxFontInfo(10)));
 
-	wxStaticText* label8 = new wxStaticText(m_panel1, wxID_ANY, "Importance:",
+	wxStaticText* pImportanceLabel = new wxStaticText(m_panel1, wxID_ANY, "Importance:",
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER | wxBORDER_SIMPLE);
-	label8->SetBackgroundColour(grey);
-	label8->SetFont(wxFont(wxFontInfo(12).Bold()));
+	pImportanceLabel->SetBackgroundColour(grey);
+	pImportanceLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 
 	nlHigh = new wxRadioButton(m_panel1, wxID_ANY, "High", wxPoint(115, 545), wxSize(60, 20), wxRB_GROUP);
 	nlHigh->SetFont(wxFont(wxFontInfo(10)));
@@ -800,7 +864,7 @@ bool amLocationCreator::Create(wxWindow* parent,
 	hlSizer->Add(nlLow, wxSizerFlags(0));
 
 	wxBoxSizer* imSizer = new wxBoxSizer(wxHORIZONTAL);
-	imSizer->Add(label8, wxSizerFlags(0).CenterVertical());
+	imSizer->Add(pImportanceLabel, wxSizerFlags(0).CenterVertical());
 	imSizer->AddSpacer(5);
 	imSizer->Add(hlSizer, wxSizerFlags(0).Expand());
 
@@ -814,85 +878,97 @@ bool amLocationCreator::Create(wxWindow* parent,
 	firstLine->AddSpacer(30);
 	firstLine->Add(imSizer, wxSizerFlags(0).CenterVertical());
 
-	wxStaticText* label2 = new wxStaticText(m_panel1, wxID_ANY, "General",
+	wxStaticText* pGeneralLabel = new wxStaticText(m_panel1, wxID_ANY, "General",
 		wxPoint(10, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
-	label2->SetBackgroundColour(red);
-	label2->SetFont(wxFont(wxFontInfo(12).Bold()));
+	pGeneralLabel->SetBackgroundColour(red);
+	pGeneralLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 	nlGeneral = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(10, 95),
 		wxSize(200, 205), wxTE_MULTILINE | wxBORDER_SIMPLE);
 	nlGeneral->SetBackgroundColour(dark);
 	nlGeneral->SetForegroundColour(txtCol);
 	nlGeneral->SetFont(font);
 
-	wxStaticText* label3 = new wxStaticText(m_panel1, wxID_ANY, "Natural characteristics",
+	m_mPreDefLongAttr[pGeneralLabel] = nlGeneral;
+
+	wxStaticText* pNaturalLabel = new wxStaticText(m_panel1, wxID_ANY, "Natural characteristics",
 		wxPoint(220, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
-	label3->SetBackgroundColour(grey);
-	label3->SetFont(wxFont(wxFontInfo(12).Bold()));
+	pNaturalLabel->SetBackgroundColour(grey);
+	pNaturalLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 	nlNatural = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(220, 95),
 		wxSize(200, 205), wxTE_MULTILINE | wxBORDER_SIMPLE);
 	nlNatural->SetBackgroundColour(dark);
 	nlNatural->SetForegroundColour(txtCol);
 	nlNatural->SetFont(font);
 
-	wxStaticText* label4 = new wxStaticText(m_panel1, wxID_ANY, "Architecture",
+	m_mPreDefLongAttr[pNaturalLabel] = nlNatural;
+
+	wxStaticText* pArchitectureLabel = new wxStaticText(m_panel1, wxID_ANY, "Architecture",
 		wxPoint(430, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
-	label4->SetBackgroundColour(wxColor(230, 0, 20, 0));
-	label4->SetFont(wxFont(wxFontInfo(12).Bold()));
+	pArchitectureLabel->SetBackgroundColour(wxColor(230, 0, 20, 0));
+	pArchitectureLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 	nlArchitecture = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(430, 95),
 		wxSize(200, 205), wxTE_MULTILINE | wxBORDER_SIMPLE);
 	nlArchitecture->SetBackgroundColour(dark);
 	nlArchitecture->SetForegroundColour(txtCol);
 	nlArchitecture->SetFont(font);
 
-	wxStaticText* label5 = new wxStaticText(m_panel1, wxID_ANY, "Politics",
+	m_mPreDefLongAttr[pArchitectureLabel] = nlArchitecture;
+
+	wxStaticText* pPoliticsLabel = new wxStaticText(m_panel1, wxID_ANY, "Politics",
 		wxPoint(10, 310), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
-	label5->SetBackgroundColour(grey);
-	label5->SetFont(wxFont(wxFontInfo(12).Bold()));
+	pPoliticsLabel->SetBackgroundColour(grey);
+	pPoliticsLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 	nlPolitics = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition,
 		wxDefaultSize, wxTE_MULTILINE | wxBORDER_SIMPLE);
 	nlPolitics->SetBackgroundColour(dark);
 	nlPolitics->SetForegroundColour(txtCol);
 	nlPolitics->SetFont(font);
 
-	label6 = new wxStaticText(m_panel1, wxID_ANY, "Economy",
+	m_mPreDefLongAttr[pPoliticsLabel] = nlPolitics;
+
+	pEconomyLabel = new wxStaticText(m_panel1, wxID_ANY, "Economy",
 		wxPoint(220, 310), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
-	label6->SetBackgroundColour(red);
-	label6->SetFont(wxFont(wxFontInfo(12).Bold()));
+	pEconomyLabel->SetBackgroundColour(red);
+	pEconomyLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 	nlEconomy = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(220, 335),
 		wxSize(200, 205), wxTE_MULTILINE | wxBORDER_SIMPLE);
 	nlEconomy->SetBackgroundColour(dark);
 	nlEconomy->SetForegroundColour(txtCol);
 	nlEconomy->SetFont(font);
 
-	wxStaticText* label7 = new wxStaticText(m_panel1, wxID_ANY, "Culture",
+	m_mPreDefLongAttr[pEconomyLabel] = nlEconomy;
+
+	wxStaticText* pCultureLabel = new wxStaticText(m_panel1, wxID_ANY, "Culture",
 		wxPoint(430, 310), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
-	label7->SetBackgroundColour(grey);
-	label7->SetFont(wxFont(wxFontInfo(12).Bold()));
+	pCultureLabel->SetBackgroundColour(grey);
+	pCultureLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 	nlCulture = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(430, 335),
 		wxSize(200, 205), wxTE_MULTILINE | wxBORDER_SIMPLE);
 	nlCulture->SetBackgroundColour(dark);
 	nlCulture->SetForegroundColour(txtCol);
 	nlCulture->SetFont(font);
 
+	m_mPreDefLongAttr[pCultureLabel] = nlCulture;
+
 	wxBoxSizer* firstColumn = new wxBoxSizer(wxVERTICAL);
-	firstColumn->Add(label2, wxSizerFlags(0).Expand());
+	firstColumn->Add(pGeneralLabel, wxSizerFlags(0).Expand());
 	firstColumn->Add(nlGeneral, wxSizerFlags(1).Expand());
 	firstColumn->AddSpacer(10);
-	firstColumn->Add(label5, wxSizerFlags(0).Expand());
+	firstColumn->Add(pPoliticsLabel, wxSizerFlags(0).Expand());
 	firstColumn->Add(nlPolitics, wxSizerFlags(1).Expand());
 
 	wxBoxSizer* secondColumn = new wxBoxSizer(wxVERTICAL);
-	secondColumn->Add(label3, wxSizerFlags(0).Expand());
+	secondColumn->Add(pNaturalLabel, wxSizerFlags(0).Expand());
 	secondColumn->Add(nlNatural, wxSizerFlags(1).Expand());
 	secondColumn->AddSpacer(10);
-	secondColumn->Add(label6, wxSizerFlags(0).Expand());
+	secondColumn->Add(pEconomyLabel, wxSizerFlags(0).Expand());
 	secondColumn->Add(nlEconomy, wxSizerFlags(1).Expand());
 
 	wxBoxSizer* thirdColumn = new wxBoxSizer(wxVERTICAL);
-	thirdColumn->Add(label4, wxSizerFlags(0).Expand());
+	thirdColumn->Add(pArchitectureLabel, wxSizerFlags(0).Expand());
 	thirdColumn->Add(nlArchitecture, wxSizerFlags(1).Expand());
 	thirdColumn->AddSpacer(10);
-	thirdColumn->Add(label7, wxSizerFlags(0).Expand());
+	thirdColumn->Add(pCultureLabel, wxSizerFlags(0).Expand());
 	thirdColumn->Add(nlCulture, wxSizerFlags(1).Expand());
 
 	wxBoxSizer* horSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -921,34 +997,7 @@ bool amLocationCreator::Create(wxWindow* parent,
 	return true;
 }
 
-wxVector<wxString> amLocationCreator::GetValues()
-{
-	wxVector<wxString> vec;
-
-	vec.push_back((wxString)nlName->GetValue());
-	vec.push_back((wxString)nlGeneral->GetValue());
-	vec.push_back((wxString)nlNatural->GetValue());
-	vec.push_back((wxString)nlArchitecture->GetValue());
-	vec.push_back((wxString)nlPolitics->GetValue());
-	vec.push_back((wxString)nlEconomy->GetValue());
-	vec.push_back((wxString)nlCulture->GetValue());
-
-	wxString importance;
-	if ( nlHigh->GetValue() )
-	{
-		importance = nlHigh->GetLabel();
-	}
-	else
-	{
-		importance = nlLow->GetLabel();
-	}
-
-	vec.push_back((wxString)importance);
-
-	return vec;
-}
-
-void amLocationCreator::StartEditing(Element* editLoc)
+void amLocationCreator::StartEditing(StoryElement* editLoc)
 {
 	Location* location = dynamic_cast<Location*>(editLoc);
 	if ( !location )
@@ -962,12 +1011,42 @@ void amLocationCreator::StartEditing(Element* editLoc)
 	m_back->SetId(BUTTON_BackEdit1);
 
 	nlName->SetValue(location->name);
-	nlGeneral->SetValue(location->general);
-	nlNatural->SetValue(location->natural);
-	nlArchitecture->SetValue(location->architecture);
-	nlPolitics->SetValue(location->politics);
-	nlEconomy->SetValue(location->economy);
-	nlCulture->SetValue(location->culture);
+
+	auto& it = location->mLongAttributes.find(_("General"));
+	if ( it != location->mLongAttributes.end() )
+	{
+		nlGeneral->SetValue(it->second);
+	}
+
+	it = location->mLongAttributes.find(_("Natural characteristics"));
+	if ( it != location->mLongAttributes.end() )
+	{
+		nlNatural->SetValue(it->second);
+	}
+
+	it = location->mLongAttributes.find(_("Architecture"));
+	if ( it != location->mLongAttributes.end() )
+	{
+		nlArchitecture->SetValue(it->second);
+	}
+
+	it = location->mLongAttributes.find(_("Politics"));
+	if ( it != location->mLongAttributes.end() )
+	{
+		nlPolitics->SetValue(it->second);
+	}
+
+	it = location->mLongAttributes.find(_("Economy"));
+	if ( it != location->mLongAttributes.end() )
+	{
+		nlEconomy->SetValue(it->second);
+	}
+
+	it = location->mLongAttributes.find(_("Culture"));
+	if ( it != location->mLongAttributes.end() )
+	{
+		nlCulture->SetValue(it->second);
+	}
 
 	switch ( location->role )
 	{
@@ -984,13 +1063,17 @@ void amLocationCreator::StartEditing(Element* editLoc)
 	}
 
 	int i = 0;
-	for ( auto& it : location->custom )
+	for ( auto& it : location->mLongAttributes )
 	{
-		AddCustomAttr(wxCommandEvent());
-		m_custom[i].first->SetValue(it.first);
-		m_custom[i].second->SetValue(it.second);
+		if ( it.first != _("General") && it.first != _("Natural characteristics") && it.first != _("Architecture") &&
+			it.first != _("Politics") && it.first != _("Economy") && it.first != _("Culture") )
+		{
+			AddCustomAttr(wxCommandEvent());
+			m_custom[i].first->SetValue(it.first);
+			m_custom[i].second->SetValue(it.second);
 
-		i++;
+			i++;
+		}
 	}
 
 	wxImage& image = m_imagePanel->GetImage();
@@ -1004,37 +1087,39 @@ void amLocationCreator::StartEditing(Element* editLoc)
 
 void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
 {
-	wxVector<wxString> vec = GetValues();
-
 	Location location;
+	location.name = nlName->GetValue();
 
-	location.name = vec[0];
-	location.general = vec[1];
-	location.natural = vec[2];
-	location.architecture = vec[3];
-	location.politics = vec[4];
-	location.economy = vec[5];
-	location.culture = vec[6];
+	for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
+	{
+		location.mShortAttributes.insert({ it.first, it.second });
+	}
 
-	if ( vec[7] == "High" )
+	for ( std::pair<wxString, wxString>& it : GetLongAttributes() )
+	{
+		location.mLongAttributes.insert({ it.first, it.second });
+	}
+
+	if ( nlHigh->GetValue() )
 		location.role = lHigh;
-	else if ( vec[7] == "Low" )
+	else if ( nlLow->GetValue() )
 		location.role = lLow;
 	else
 		location.role = None;
 
 	location.image = m_imagePanel->GetImage();
-	location.custom = GetCustom();
 
-	location.documents = m_elementEdit->documents;
-	location.id = m_elementEdit->id;
+	location.documents = ((Location*)m_elementEdit)->documents;
+	location.aliases = m_elementEdit->aliases;
+	location.relatedElements = m_elementEdit->relatedElements;
+	location.dbID = m_elementEdit->dbID;
 
 	Location* pLocationToEdit = (Location*)m_elementEdit;
-	bool dif = pLocationToEdit->name != vec[0] || pLocationToEdit->role != location.role;
+	bool dif = pLocationToEdit->name != nlName->GetValue() || pLocationToEdit->role != location.role;
 
 	Hide();
 	m_manager->GetMainFrame()->Enable();
-	m_manager->EditLocation(pLocationToEdit, location, dif);
+	m_manager->DoEditStoryElement(pLocationToEdit, location, dif);
 	Destroy();
 }
 
@@ -1042,13 +1127,15 @@ void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event))
 {
 	Freeze();
 	wxPanel* panel = new wxPanel(m_panel2);
-	wxSize size(label6->GetSize());
+	wxSize size(pEconomyLabel->GetSize());
 	wxSize size2(nlArchitecture->GetSize());
 
 	wxTextCtrl* label = new wxTextCtrl(panel, -1, "Title " + std::to_string(m_custom.size() + 1),
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE | wxTE_CENTER);
 	wxTextCtrl* content = new wxTextCtrl(panel, -1, "", wxDefaultPosition,
 		wxSize(size2.x - 10, size2.y), wxTE_MULTILINE | wxBORDER_SIMPLE);
+
+	m_mLongAttr[label] = content;
 
 	content->SetBackgroundColour(wxColour(60, 60, 60));
 	content->SetForegroundColour(wxColour(250, 250, 250));
@@ -1084,25 +1171,7 @@ void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event))
 void amLocationCreator::RemoveCustomAttr(wxCommandEvent& event)
 {
 	Freeze();
-	wxButton* minus = (wxButton*)event.GetEventObject();
-
-	auto it1 = m_custom.begin();
-	auto it2 = m_minusButtons.begin();
-
-	for ( it2 = m_minusButtons.begin(); it2 != m_minusButtons.end(); it2++ )
-	{
-		if ( *it2 == minus )
-			break;
-
-		it1++;
-	}
-
-	m_custom.erase(it1);
-	m_minusButtons.erase(it2);
-
-	minus->GetParent()->Destroy();
-	m_mainSizer->Layout();
-
+	amElementCreator::RemoveCustomAttr(event);
 	RecolorCustoms();
 	Thaw();
 }
@@ -1128,32 +1197,34 @@ void amLocationCreator::OnCreateElement(wxCommandEvent& WXUNUSED(event))
 {
 	if ( !nlName->IsEmpty() )
 	{
-		wxVector<wxString> vec = GetValues();
-
 		Location* pLocation = new Location;
 
-		pLocation->name = vec[0];
-		pLocation->general = vec[1];
-		pLocation->natural = vec[2];
-		pLocation->architecture = vec[3];
-		pLocation->politics = vec[4];
-		pLocation->economy = vec[5];
-		pLocation->culture = vec[6];
+		pLocation->name = nlName->GetValue();
 
-		if ( vec[7] == "High" )
+		for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
+		{
+			pLocation->mShortAttributes.insert({ it.first, it.second });
+		}
+
+		for ( std::pair<wxString, wxString>& it : GetLongAttributes() )
+		{
+			pLocation->mLongAttributes.insert({ it.first, it.second });
+		}
+
+		if ( nlHigh->GetValue() )
 			pLocation->role = lHigh;
-		else if ( vec[7] == "Low" )
+		else if ( nlLow->GetValue() )
 			pLocation->role = lLow;
 		else
 			pLocation->role = None;
 
 		pLocation->image = m_imagePanel->GetImage();
 
-		pLocation->custom = GetCustom();
+		//pLocation->custom = GetCustom();
 
 		Hide();
 		m_manager->GetMainFrame()->Enable();
-		m_manager->AddLocation(pLocation, true);
+		m_manager->AddStoryElement(pLocation, true);
 	}
 	else
 	{
@@ -1175,6 +1246,7 @@ void amLocationCreator::OnClose(wxCloseEvent& event)
 			return;
 	}
 
+	m_manager->GetMainFrame()->Enable(true);
 	event.Skip();
 }
 
@@ -1314,6 +1386,10 @@ bool amItemCreator::Create(wxWindow* parent,
 	niDepth->SetBackgroundColour(dark);
 	niDepth->SetForegroundColour(txtCol);
 
+	m_mShortAttr[widthLabel] = niWidth;
+	m_mShortAttr[heightLabel] = niHeight;
+	m_mShortAttr[depthLabel] = niDepth;
+
 	wxBoxSizer* secondColumn = new wxBoxSizer(wxVERTICAL);
 	secondColumn->Add(niWidth);
 	secondColumn->AddStretchSpacer(1);
@@ -1432,6 +1508,12 @@ bool amItemCreator::Create(wxWindow* parent,
 	niGeneral->SetBackgroundColour(dark);
 	niGeneral->SetForegroundColour(txtCol);
 
+	m_mPreDefLongAttr[generalLabel] = niGeneral;
+	m_mPreDefLongAttr[appLabel] = niAppearance;
+	m_mPreDefLongAttr[originLabel] = niOrigin;
+	m_mPreDefLongAttr[backLabel] = niBackstory;
+	m_mPreDefLongAttr[usageLabel] = niUsage;
+
 	wxBoxSizer* mainVer = new wxBoxSizer(wxVERTICAL);
 	mainVer->AddSpacer(10);
 	mainVer->Add(mainHor, wxSizerFlags(4).Expand().Border(wxLEFT | wxRIGHT, 20));
@@ -1446,42 +1528,7 @@ bool amItemCreator::Create(wxWindow* parent,
 	return true;
 }
 
-wxVector<wxString> amItemCreator::GetValues()
-{
-	wxVector<wxString> vec;
-
-	vec.push_back(niName->GetValue().ToStdString());
-
-	if ( niNatural->GetValue() )
-		vec.push_back(niNatural->GetLabel().ToStdString());
-	else
-		vec.push_back(niManMade->GetLabel().ToStdString());
-
-
-	if ( niMagic->GetValue() )
-		vec.push_back(niMagic->GetLabel().ToStdString());
-	else
-		vec.push_back(niNonMagic->GetLabel().ToStdString());
-
-	if ( niHigh->GetValue() )
-		vec.push_back(niHigh->GetLabel().ToStdString());
-	else
-		vec.push_back(niLow->GetLabel().ToStdString());
-
-	vec.push_back(niWidth->GetValue().ToStdString());
-	vec.push_back(niHeight->GetValue().ToStdString());
-	vec.push_back(niDepth->GetValue().ToStdString());
-
-	vec.push_back(niAppearance->GetValue().ToStdString());;
-	vec.push_back(niOrigin->GetValue().ToStdString());
-	vec.push_back(niBackstory->GetValue().ToStdString());
-	vec.push_back(niUsage->GetValue().ToStdString());
-	vec.push_back(niGeneral->GetValue().ToStdString());
-
-	return vec;
-}
-
-void amItemCreator::StartEditing(Element* editItem)
+void amItemCreator::StartEditing(StoryElement* editItem)
 {
 	Item* item = dynamic_cast<Item*>(editItem);
 	if ( !item )
@@ -1505,24 +1552,66 @@ void amItemCreator::StartEditing(Element* editItem)
 	if ( item->role == iLow )
 		niLow->SetValue(true);
 
-	niWidth->SetValue(item->width);
-	niHeight->SetValue(item->height);
-	niDepth->SetValue(item->depth);
+	auto& it = item->mShortAttributes.find(_("Width"));
+	if ( it != item->mShortAttributes.end() )
+	{
+		niWidth->SetValue(it->second);
+	}
 
-	niAppearance->SetValue(item->appearance);
-	niOrigin->SetValue(item->origin);
-	niBackstory->SetValue(item->backstory);
-	niUsage->SetValue(item->usage);
-	niGeneral->SetValue(item->general);
+	it = item->mShortAttributes.find(_("Height"));
+	if ( it != item->mShortAttributes.end() )
+	{
+		niHeight->SetValue(it->second);
+	}
+
+	it = item->mShortAttributes.find(_("Depth"));
+	if ( it != item->mShortAttributes.end() )
+	{
+		niDepth->SetValue(it->second);
+	}
+
+	it = item->mLongAttributes.find(_("Appearance"));
+	if ( it != item->mLongAttributes.end() )
+	{
+		niAppearance->SetValue(it->second);
+	}
+
+	it = item->mLongAttributes.find(_("Origin"));
+	if ( it != item->mLongAttributes.end() )
+	{
+		niOrigin->SetValue(it->second);
+	}
+
+	it = item->mLongAttributes.find(_("Backstory"));
+	if ( it != item->mLongAttributes.end() )
+	{
+		niBackstory->SetValue(it->second);
+	}
+
+	it = item->mLongAttributes.find(_("Usage"));
+	if ( it != item->mLongAttributes.end() )
+	{
+		niUsage->SetValue(it->second);
+	}
+
+	it = item->mLongAttributes.find(_("General"));
+	if ( it != item->mLongAttributes.end() )
+	{
+		niGeneral->SetValue(it->second);
+	}
 
 	int i = 0;
-	for ( auto& it : item->custom )
+	for ( auto& it : item->mLongAttributes )
 	{
-		AddCustomAttr(wxCommandEvent());
-		m_custom[i].first->SetValue(it.first);
-		m_custom[i].second->SetValue(it.second);
+		if ( it.first != _("General") && it.first != _("Appearance") && it.first != _("Origin") &&
+			it.first != _("Backstory") && it.first != _("Usage") )
+		{
+			AddCustomAttr(wxCommandEvent());
+			m_custom[i].first->SetValue(it.first);
+			m_custom[i].second->SetValue(it.second);
 
-		i++;
+			i++;
+		}
 	}
 
 	m_removeImage->Show(m_imagePanel->SetImage(item->image));
@@ -1533,47 +1622,47 @@ void amItemCreator::StartEditing(Element* editItem)
 
 void amItemCreator::DoEdit(wxCommandEvent& event)
 {
-	wxVector<wxString> vec = GetValues();
-
 	Item item;
-	item.name = vec[0];
+	item.name = niName->GetValue();
 
-	if ( vec[1] == "Natural" )
+	if ( niNatural->GetValue() )
 		item.isManMade = false;
 	else
 		item.isManMade = true;
 
-	if ( vec[2] == "Yes" )
+	if ( niMagic->GetValue() )
 		item.isMagic = true;
 	else
 		item.isMagic = false;
 
-	if ( vec[3] == "High" )
+	if ( niHigh->GetValue() )
 		item.role = iHigh;
 	else
 		item.role = iLow;
 
-	item.width = vec[4];
-	item.height = vec[5];
-	item.depth = vec[6];
-	item.appearance = vec[7];
-	item.origin = vec[8];
-	item.backstory = vec[9];
-	item.usage = vec[10];
-	item.general = vec[11];
+	for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
+	{
+		item.mShortAttributes.insert({ it.first, it.second });
+	}
+
+	for ( std::pair<wxString, wxString>& it : GetLongAttributes() )
+	{
+		item.mLongAttributes.insert({ it.first, it.second });
+	}
 
 	item.image = m_imagePanel->GetImage();
-	item.custom = GetCustom();
 
-	item.documents = m_elementEdit->documents;
-	item.id = m_elementEdit->id;
+	item.documents = ((Item*)m_elementEdit)->documents;
+	item.aliases = m_elementEdit->aliases;
+	item.relatedElements = m_elementEdit->relatedElements;
+	item.dbID = m_elementEdit->dbID;
 
 	Item* pItemToEdit = (Item*)m_elementEdit;
-	bool dif = pItemToEdit->name != vec[0] || pItemToEdit->role != item.role;
+	bool dif = pItemToEdit->name != niName->GetValue() || pItemToEdit->role != item.role;
 
 	Hide();
 	m_manager->GetMainFrame()->Enable();
-	m_manager->EditItem(pItemToEdit, item, dif);
+	m_manager->DoEditStoryElement(pItemToEdit, item, dif);
 
 	Destroy();
 }
@@ -1587,6 +1676,8 @@ void amItemCreator::AddCustomAttr(wxCommandEvent& event)
 		wxDefaultPosition, wxSize(-1, size.y), wxTE_NO_VSCROLL | wxBORDER_SIMPLE);
 	wxTextCtrl* content = new wxTextCtrl(m_panel2, -1, "", wxDefaultPosition,
 		wxSize(-1, niGeneral->GetSize().y), wxTE_MULTILINE | wxBORDER_SIMPLE);
+
+	m_mLongAttr[label] = content;
 
 	content->SetBackgroundColour(wxColour(60, 60, 60));
 	content->SetForegroundColour(wxColour(255, 255, 255));
@@ -1616,41 +1707,39 @@ void amItemCreator::OnCreateElement(wxCommandEvent& event)
 {
 	if ( !niName->IsEmpty() )
 	{
-		wxVector<wxString> vec = GetValues();
-
 		Item* pItem = new Item;
-		pItem->name = vec[0];
+		pItem->name = niName->GetValue();
 
-		if ( vec[1] == "Natural" )
+		if ( niNatural->GetValue() )
 			pItem->isManMade = false;
 		else
 			pItem->isManMade = true;
 
-		if ( vec[2] == "Yes" )
+		if ( niMagic->GetValue() )
 			pItem->isMagic = true;
 		else
 			pItem->isMagic = false;
 
-		if ( vec[3] == "High" )
+		if ( niHigh->GetValue() )
 			pItem->role = iHigh;
 		else
 			pItem->role = iLow;
 
-		pItem->width = vec[4];
-		pItem->height = vec[5];
-		pItem->depth = vec[6];
-		pItem->appearance = vec[7];
-		pItem->origin = vec[8];
-		pItem->backstory = vec[9];
-		pItem->usage = vec[10];
-		pItem->general = vec[11];
+		for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
+		{
+			pItem->mShortAttributes.insert({ it.first, it.second });
+		}
+
+		for ( std::pair<wxString, wxString>& it : GetLongAttributes() )
+		{
+			pItem->mLongAttributes.insert({ it.first, it.second });
+		}
 
 		pItem->image = m_imagePanel->GetImage();
-		pItem->custom = GetCustom();
 
 		Hide();
 		m_manager->GetMainFrame()->Enable();
-		m_manager->AddItem(pItem, true);
+		m_manager->AddStoryElement(pItem, true);
 	}
 	else
 	{
@@ -1672,6 +1761,7 @@ void amItemCreator::OnClose(wxCloseEvent& event)
 			return;
 	}
 
+	m_manager->GetMainFrame()->Enable(true);
 	event.Skip();
 }
 

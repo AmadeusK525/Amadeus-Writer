@@ -24,7 +24,7 @@ inline bool amSortDocuments(Document* document1, Document* document2)
 	return (*document1 < *document2);
 }
 
-inline bool amSortElements(Element* element1, Element* element2)
+inline bool amSortElements(StoryElement* element1, StoryElement* element2)
 {
 	Character* pCharacter1 = dynamic_cast<Character*>(element1);
 	Character* pCharacter2 = dynamic_cast<Character*>(element2);

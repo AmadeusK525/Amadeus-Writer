@@ -144,9 +144,7 @@ public:
 	void LoadDocuments(Book* book);
 	void SetupDocumentHierarchy(Book* book);
 
-	void LoadCharacters();
-	void LoadLocations();
-	void LoadItems();
+	void LoadStoryElements();
 
 	void LoadStandardRelations();
 	void LoadCharacterRelations();
@@ -188,32 +186,27 @@ public:
 	bool ScanForDocumentLinear(int toFind, int& current, Document* scanBegin, Document*& emptyPointer);
 	void NullifyStoryWriter() { m_storyWriter = nullptr; }
 
-	void AddCharacter(Character* character, bool refreshElements);
-	void AddLocation(Location* location, bool refreshElements);
-	void AddItem(Item* item, bool refreshElements);
+	void AddStoryElement(StoryElement* element, bool refreshElements);
 	void AddDocument(Document* document, Book* book, int pos = -1);
 
 	void ResortElements();
 
-	void StartEditingElement(Element* element);
+	void StartEditingElement(StoryElement* element);
+	void DoEditStoryElement(StoryElement* original, StoryElement& edit, bool sort = false);
 
-	void EditCharacter(Character* original, Character& edit, bool sort = false);
-	void EditLocation(Location* original, Location& edit, bool sort = false);
-	void EditItem(Item* original, Item& edit, bool sort = false);
+	void UpdateStoryElementInGUI(StoryElement* element);
+	void GoToStoryElement(StoryElement* element);
 
-	void UpdateElementInGUI(Element* element);
-	void GoToElement(Element* element);
+	void AddElementToDocument(TangibleElement* element, Document* document, bool addToDb = true);
+	void RemoveElementFromDocument(TangibleElement* element, Document* document);
 
-	void AddElementToDocument(Element* element, Document* document, bool addToDb = true);
-	void RemoveElementFromDocument(Element* element, Document* document);
+	void RelateStoryElements(StoryElement* element1, StoryElement* element2, bool addToDb = true);
+	void UnrelateStoryElements(StoryElement* element1, StoryElement* element2, bool removeFromDb = true);
 
-	void RelateElements(Element* element1, Element* element2, bool addToDb = true);
-	void UnrelateElements(Element* element1, Element* element2, bool removeFromDb = true);
-
-	Element* GetElementByName(const wxString& name);
+	StoryElement* GetStoryElementByName(const wxString& name);
 	Book* GetBookByName(const wxString& name);
 
-	void DeleteElement(Element* element);
+	void DeleteElement(StoryElement* element);
 	void DeleteDocument(Document* document);
 
 	inline amProject* GetProject() { return &m_project; }
@@ -225,7 +218,7 @@ public:
 	inline wxVector<Character*> GetCharacters() { return m_project.GetCharacters(); }
 	inline wxVector<Location*> GetLocations() { return m_project.GetLocations(); }
 	inline wxVector<Item*> GetItems() { return m_project.GetItems(); }
-	inline wxVector<Element*>& GetAllElements() { return m_project.elements; }
+	inline wxVector<StoryElement*>& GetAllElements() { return m_project.vStoryElements; }
 
 	wxVector<Document*>& GetDocumentsInCurrentBook();
 	Document* GetDocumentById(int id);

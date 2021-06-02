@@ -3,15 +3,19 @@
 #pragma once
 
 #include <wx/bitmap.h>
-#include <wx\wxsqlite3.h>
+#include <wx/wxsqlite3.h>
+#include <wx/wxxmlserializer/XmlSerializer.h>
+
+#include <map>
 
 #include "SQLEntry.h"
 
-struct Element;
+struct StoryElement;
 struct Document;
 struct Book;
 struct Location;
 struct Item;
+class amProjectSQLDatabase;
 
 using std::pair;
 
@@ -41,48 +45,63 @@ enum Role
 	None
 };
 
-struct Element : public wxObject
+typedef std::multimap<wxString, wxString> wxStringMultimap;
+XS_DECLARE_IO_HANDLER(wxStringMultimap, xsStringMultimapIO);
+
+struct StoryElement : public xsSerializable
 {
-	wxDECLARE_DYNAMIC_CLASS(Element);
+	wxDECLARE_DYNAMIC_CLASS(StoryElement);
 
 	wxString name{ "" };
 	Role role{ None };
+	
+	wxStringMultimap mShortAttributes;
+	wxStringMultimap mLongAttributes;
 
-	wxVector<pair<wxString, wxString>> custom{ 0 };
+	wxArrayString aliases{};
 
-	wxVector<wxString> aliases{};
-
-	wxVector<Document*> documents{};
 	wxImage image{};
 
-	wxVector<Element*> relatedElements{};
+	wxVector<StoryElement*> relatedElements{};
 
 	static CompType elCompType;
 
-	int id = -1;
+	int dbID = -1;
 
-	Element() = default;
-	virtual ~Element();
+	StoryElement();
+
+	virtual void Save(amProjectSQLDatabase* db);
+	virtual bool Update(amProjectSQLDatabase* db);
+
+	virtual wxString GetXMLString();
+
+	virtual void EditTo(const StoryElement& other);
+
+	virtual amSQLEntry GenerateSQLEntrySimple();
+	virtual amSQLEntry GenerateSQLEntry();
+	virtual amSQLEntry GenerateSQLEntryForId();
+
+	virtual bool operator<(const StoryElement& other) const;
+	virtual bool operator==(const StoryElement& other) const;
+	virtual void operator=(const StoryElement& other) = delete;
+};
+
+struct TangibleElement : StoryElement
+{
+	virtual ~TangibleElement();
+	wxVector<Document*> documents{};
+
+	bool IsInBook(Book* book) const;
 
 	Document* GetFirstDocument() const;
 	Document* GetLastDocument() const;
 	Document* GetFirstDocumentInBook(Book* book) const;
 	Document* GetLastDocumentInBook(Book* book) const;
 
-	bool IsInBook(Book* book) const;
+	virtual void EditTo(const StoryElement& other);
 
-	virtual void Save(wxSQLite3Database* db) = 0;
-	virtual bool Update(wxSQLite3Database* db) = 0;
-
-	virtual amSQLEntry GenerateSQLEntrySimple() = 0;
-	virtual amSQLEntry GenerateSQLEntry() = 0;
-	virtual amSQLEntry GenerateSQLEntryForId() = 0;
-
-	void SetId(int id) { this->id = id; }
-
-	bool operator<(const Element& other) const;
-	bool operator==(const Element& other) const;
-	void operator=(const Element& other);
+	virtual bool operator<(const TangibleElement& other) const;
+	wxDECLARE_DYNAMIC_CLASS(TangibleElement);
 };
 
 
@@ -107,29 +126,18 @@ enum CharacterRelation
 	CR_Other
 };
 
-struct Character : public Element
+struct Character : public TangibleElement
 {
 	wxDECLARE_DYNAMIC_CLASS(Character);
 
-	wxString sex{ "" }, age{ "" }, nat{ "" },
-		height{ "" }, nick{ "" }, appearance{ "" },
-		personality{ "" }, backstory{ "" };
-
 	bool isAlive = true;
-
 	static CompType cCompType;
 
-	Character() = default;
+	Character();
 
-	virtual void Save(wxSQLite3Database* db);
-	virtual bool Update(wxSQLite3Database* db);
-
-	virtual amSQLEntry GenerateSQLEntrySimple();
-	virtual amSQLEntry GenerateSQLEntry();
-	virtual amSQLEntry GenerateSQLEntryForId();
-
-	bool operator<(const Character& other) const;
-	void operator=(const Character& other);
+	virtual void EditTo(const StoryElement& other);
+	
+	virtual bool operator<(const Character& other) const;
 };
 
 
@@ -147,32 +155,25 @@ enum LocationType
 	LOCATION_District,
 	LOCATION_Neighborhood,
 	LOCATION_Street,
+	LOCATION_Building,
 	LOCATION_House,
 
 	LOCATION_Area,
 	LOCATION_Other
 };
 
-struct Location : public Element
+struct Location : public TangibleElement
 {
 	wxDECLARE_DYNAMIC_CLASS(Location);
 
-	wxString general{ "" }, natural{ "" }, architecture{ "" },
-		politics{ "" }, economy{ "" }, culture{ "" };
-
+	LocationType type = LOCATION_Other;
 	static CompType lCompType;
 
-	Location() = default;
+	Location();
 
-	virtual void Save(wxSQLite3Database* db);
-	virtual bool Update(wxSQLite3Database* db);
-
-	virtual amSQLEntry GenerateSQLEntrySimple();
-	virtual amSQLEntry GenerateSQLEntry();
-	virtual amSQLEntry GenerateSQLEntryForId();
-
-	bool operator<(const Location& other) const;
-	void operator=(const Location& other);
+	virtual void EditTo(const StoryElement& other);
+	
+	virtual bool operator<(const Location& other) const;
 };
 
 
@@ -181,29 +182,20 @@ struct Location : public Element
 //////////////////////////////////////////////////////////////////////////
 
 
-struct Item : public Element
+struct Item : public TangibleElement
 {
 	wxDECLARE_DYNAMIC_CLASS(Item);
 
-	wxString origin{ "" }, backstory{ "" }, appearance{ "" },
-		usage{ "" }, general{ "" };
-
-	wxString width{ "" }, height{ "" }, depth{ "" };
-
-	bool isMagic{ false };
-	bool isManMade{ true };
+	bool isMagic = false ;
+	bool isManMade = true;
 
 	static CompType iCompType;
 
-	virtual void Save(wxSQLite3Database* db);
-	virtual bool Update(wxSQLite3Database* db);
+	Item();
 
-	virtual amSQLEntry GenerateSQLEntrySimple();
-	virtual amSQLEntry GenerateSQLEntry();
-	virtual amSQLEntry GenerateSQLEntryForId();
-
-	bool operator<(const Item& other) const;
-	void operator=(const Item& other);
+	virtual void EditTo(const StoryElement& other);
+	
+	virtual bool operator<(const Item& other) const;
 };
 
 #endif

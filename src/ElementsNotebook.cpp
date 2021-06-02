@@ -75,29 +75,38 @@ amElementNotebookPage::amElementNotebookPage(wxWindow* parent, wxClassInfo* show
 	leftSizer->Add(footerSizer, wxSizerFlags(0).Expand().Border(wxLEFT | wxBOTTOM, 5));
 	left->SetSizer(leftSizer);
 
-	m_elementShowcase = (amElementShowcase*)showcaseType->CreateObject();
-	m_elementShowcase->Create(this);
+ 	m_elementShowcase = (amElementShowcase*)showcaseType->CreateObject();
+	m_elementShowcase->Create(this, amGetManager());
 
 	SplitVertically(left, m_elementShowcase);
 }
 
-bool amElementNotebookPage::ShouldShow(Element* element)
+bool amElementNotebookPage::ShouldShow(StoryElement* element)
 {
 	if ( !element )
 		return false;
 
-	bool bShouldShow = false;
+	bool bShouldShow;
 
-	if ( m_vBooksToShow.empty() )
-		return true;
-
-	for ( Book* const& pBook : m_vBooksToShow )
+	if ( element->IsKindOf(wxCLASSINFO(TangibleElement)) )
 	{
-		if ( element->IsInBook(pBook) )
+		bShouldShow = false;
+
+		if ( m_vBooksToShow.empty() )
+			return true;
+
+		for ( Book* const& pBook : m_vBooksToShow )
 		{
-			bShouldShow = true;
-			break;
+			if ( ((TangibleElement*)element)->IsInBook(pBook) )
+			{
+				bShouldShow = true;
+				break;
+			}
 		}
+	}
+	else
+	{
+		bShouldShow = true;
 	}
 
 	return bShouldShow;
@@ -115,7 +124,7 @@ void amElementNotebookPage::InitShowChoices()
 	m_show->SetText(_("All"));
 }
 
-void amElementNotebookPage::GoToElement(Element * element)
+void amElementNotebookPage::GoToStoryElement(StoryElement * element)
 {
 	m_elementShowcase->Freeze();
 
@@ -145,7 +154,7 @@ void amElementNotebookPage::UpdateList()
 
 	size_t sizeBefore = m_elementList->GetItemCount();
 
-	wxVector<Element*> vElements;
+	wxVector<StoryElement*> vElements;
 	if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amCharacterShowcase)) )
 	{
 		for ( Character*& pCharacter : pManager->GetCharacters() )
@@ -163,7 +172,7 @@ void amElementNotebookPage::UpdateList()
 	}
 
 	int i = 0;
-	for ( Element* const& pElement : vElements )
+	for ( StoryElement* const& pElement : vElements )
 	{
 		if ( !ShouldShow(pElement) )
 			continue;
@@ -182,7 +191,7 @@ void amElementNotebookPage::UpdateList()
 	m_elementList->Thaw();
 }
 
-void amElementNotebookPage::UpdateElementInList(int n, Element* element)
+void amElementNotebookPage::UpdateElementInList(int n, StoryElement* element)
 {
 	m_elementList->SetItem(n, 0, element->name);
 
@@ -190,19 +199,19 @@ void amElementNotebookPage::UpdateElementInList(int n, Element* element)
 	switch ( element->role )
 	{
 	case Role::cProtagonist:
-		role = "Protagonist";
+		role = _("Protagonist");
 		break;
 
 	case Role::cSupporting:
-		role = "Supporting";
+		role = _("Supporting");
 		break;
 
 	case Role::cVillian:
-		role = "Villian";
+		role = _("Villian");
 		break;
 
 	case Role::cSecondary:
-		role = "Secondary";
+		role = _("Secondary");
 		break;
 
 	case Role::lHigh:
@@ -218,19 +227,24 @@ void amElementNotebookPage::UpdateElementInList(int n, Element* element)
 
 	m_elementList->SetItem(n, 1, role);
 
-	Document* pFirstDocument = element->GetFirstDocument();
-	if ( pFirstDocument )
-		m_elementList->SetItem(n, 2, wxString(_("Book ")) << pFirstDocument->book->pos << _(", Document ") << pFirstDocument->position);
-	else
-		m_elementList->SetItem(n, 2, "-");
+	if ( element->IsKindOf(wxCLASSINFO(TangibleElement)) )
+	{
+		TangibleElement* pTangible = (TangibleElement*)element;
 
-	Document* pLastDocument = element->GetLastDocument();
-	if ( pLastDocument )
-		m_elementList->SetItem(n, 3, wxString(_("Book ")) << pLastDocument->book->pos << _(", Document ") << pLastDocument->position);
-	else
-		m_elementList->SetItem(n, 3, "-");
+		Document* pFirstDocument = pTangible->GetFirstDocument();
+		if ( pFirstDocument )
+			m_elementList->SetItem(n, 2, wxString(_("Book ")) << pFirstDocument->book->pos << _(", Document ") << pFirstDocument->position);
+		else
+			m_elementList->SetItem(n, 2, "-");
 
-	m_elementList->SetItem(n, 4, std::to_string(element->documents.size()));
+		Document* pLastDocument = pTangible->GetLastDocument();
+		if ( pLastDocument )
+			m_elementList->SetItem(n, 3, wxString(_("Book ")) << pLastDocument->book->pos << _(", Document ") << pLastDocument->position);
+		else
+			m_elementList->SetItem(n, 3, "-");
+
+		m_elementList->SetItem(n, 4, std::to_string(pTangible->documents.size()));
+	}
 
 	if ( element->image.IsOk() )
 		m_elementList->SetItemColumnImage(n, 0, m_imageList->Add(wxBitmap(amGetScaledImage(24, 24, element->image))));
@@ -244,7 +258,7 @@ void amElementNotebookPage::OnEditElement(wxCommandEvent& event)
 	if ( n != -1 )
 	{
 		amProjectManager* pManager = amGetManager();
-		Element* pElement = pManager->GetElementByName(m_elementList->GetItemText(n));
+		StoryElement* pElement = pManager->GetStoryElementByName(m_elementList->GetItemText(n));
 		
 		if ( pElement )
 			pManager->StartEditingElement(pElement);
@@ -264,14 +278,14 @@ void amElementNotebookPage::OnDeleteElement(wxCommandEvent& event)
 	if ( deleteCheck.ShowModal() == wxID_YES )
 	{
 		m_elementList->DeleteItem(sel);
-		pManager->DeleteElement(pManager->GetElementByName(m_elementList->GetItemText(sel)));
+		pManager->DeleteElement(pManager->GetStoryElementByName(m_elementList->GetItemText(sel)));
 	}
 }
 
 void amElementNotebookPage::OnElementsSortBy(wxCommandEvent& event)
 {
 	amProjectManager* pManager = amGetManager();
-	wxVector<Element*> vElements;
+	wxVector<StoryElement*> vElements;
 
 	if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amCharacterShowcase)) )
 	{
@@ -305,7 +319,7 @@ void amElementNotebookPage::OnElementsSortBy(wxCommandEvent& event)
 
 	m_elementList->SetFocus();
 
-	Element* pCurElement = m_elementShowcase->GetElement();
+	StoryElement* pCurElement = m_elementShowcase->GetElement();
 
 	if ( pCurElement )
 	{
@@ -329,7 +343,7 @@ void amElementNotebookPage::OnCheckListBox(wxCommandEvent & event)
 
 	UpdateList();
 
-	Element* pDisplayedElement = m_elementShowcase->GetElement();
+	StoryElement* pDisplayedElement = m_elementShowcase->GetElement();
 	if ( !ShouldShow(pDisplayedElement) )
 	{
 		m_elementShowcase->SetData(nullptr);
@@ -343,7 +357,7 @@ void amElementNotebookPage::OnElementSelected(wxListEvent& event)
 	long sel = m_elementList->GetFirstSelected();
 
 	if ( sel != -1 )
-		m_elementShowcase->SetData(amGetManager()->GetElementByName(m_elementList->GetItemText(sel)));
+		m_elementShowcase->SetData(amGetManager()->GetStoryElementByName(m_elementList->GetItemText(sel)));
 	else
 		m_elementShowcase->SetData(nullptr);
 }
@@ -404,26 +418,26 @@ void amElementNotebook::InitShowChoices()
 	m_itemPage->InitShowChoices();
 }
 
-void amElementNotebook::GoToElement(Element* element)
+void amElementNotebook::GoToStoryElement(StoryElement* element)
 {
 	if ( element->IsKindOf(wxCLASSINFO(Character)) )
 	{
 		SetSelection(0);
-		m_characterPage->GoToElement(element);
+		m_characterPage->GoToStoryElement(element);
 	}
 	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
 	{
 		SetSelection(1);
-		m_locationPage->GoToElement(element);
+		m_locationPage->GoToStoryElement(element);
 	}
 	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
 	{
 		SetSelection(2);
-		m_itemPage->GoToElement(element);
+		m_itemPage->GoToStoryElement(element);
 	}
 }
 
-bool amElementNotebook::ShouldShow(Element* element) const
+bool amElementNotebook::ShouldShow(StoryElement* element) const
 {
 	if ( element->IsKindOf(wxCLASSINFO(Character)) )
 		return m_characterPage->ShouldShow(element);
@@ -442,7 +456,7 @@ void amElementNotebook::ClearAll()
 	m_itemPage->ClearAll();
 }
 
-void amElementNotebook::RemoveElementFromList(Element* element)
+void amElementNotebook::RemoveElementFromList(StoryElement* element)
 {
 	wxListView* list = GetAppropriateList(element);
 
@@ -454,7 +468,7 @@ void amElementNotebook::RemoveElementFromList(Element* element)
 	}
 }
 
-void amElementNotebook::UpdateElementInList(int n, Element* element)
+void amElementNotebook::UpdateElementInList(int n, StoryElement* element)
 {
 	amElementNotebookPage* page = GetAppropriatePage(element);
 
@@ -469,7 +483,7 @@ void amElementNotebook::UpdateAll()
 	UpdateItemList();
 }
 
-wxListView* amElementNotebook::GetAppropriateList(Element* element)
+wxListView* amElementNotebook::GetAppropriateList(StoryElement* element)
 {
 	wxListView* list = nullptr;
 	amElementNotebookPage* page = GetAppropriatePage(element);
@@ -480,7 +494,7 @@ wxListView* amElementNotebook::GetAppropriateList(Element* element)
 	return list;
 }
 
-amElementNotebookPage* amElementNotebook::GetAppropriatePage(Element* element)
+amElementNotebookPage* amElementNotebook::GetAppropriatePage(StoryElement* element)
 {
 	amElementNotebookPage* page = nullptr;
 

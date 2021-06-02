@@ -41,7 +41,7 @@ amBookPicker::amBookPicker(amOverview* parent) :
 	SetSizerAndFit(vertical);
 }
 
-void amBookPicker::AddButton(Book* book, int index)
+void amBookPicker::AddButton(Book* book, size_t index)
 {
 	amBookButton* button = new amBookButton(m_mainWindow, book,
 		amGetScaledImage(m_bookCoverSize.x, m_bookCoverSize.y, book->cover),
@@ -81,7 +81,7 @@ void amBookPicker::OnBookClicked(wxCommandEvent& event)
 
 void amBookPicker::SetSelectionByBook(Book* book)
 {
-	for ( int i = 0; i < m_bookButtons.size(); i++ )
+	for ( size_t i = 0; i < m_bookButtons.size(); i++ )
 	{
 		if ( book == m_bookButtons[i]->book )
 			m_bookButtons[i]->SetValue(true);

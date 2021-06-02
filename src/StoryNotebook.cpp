@@ -57,7 +57,7 @@ void amStoryNotebook::AddToList(Document* document, int pos)
 		pos = m_list->GetItemCount();
 
 	size_t characterCount = 0, locationCount = 0, itemCount = 0;
-	for ( Element*& pElement : document->elements )
+	for ( TangibleElement*& pElement : document->vTangibleElements )
 	{
 		if ( dynamic_cast<Character*>(pElement) )
 			characterCount++;

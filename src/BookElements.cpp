@@ -17,7 +17,7 @@
 
 Document::~Document()
 {
-	for ( Element*& pElement : elements )
+	for ( TangibleElement*& pElement : vTangibleElements )
 	{
 		for ( Document*& pDocument : pElement->documents )
 		{
@@ -634,7 +634,7 @@ amSQLEntry Book::GenerateSQLEntryForId()
 
 amProject::~amProject()
 {
-	for ( Element*& pElement : elements )
+	for ( StoryElement*& pElement : vStoryElements )
 		delete pElement;
 
 	for ( Book*& pBook : books )
@@ -644,7 +644,7 @@ amProject::~amProject()
 wxVector<Character*> amProject::GetCharacters()
 {
 	wxVector<Character*> characters;
-	for ( Element*& pElement : elements )
+	for ( StoryElement*& pElement : vStoryElements )
 	{
 		Character* pCharacter = dynamic_cast<Character*>(pElement);
 		if ( pCharacter )
@@ -657,7 +657,7 @@ wxVector<Character*> amProject::GetCharacters()
 wxVector<Location*> amProject::GetLocations()
 {
 	wxVector<Location*> locations;
-	for ( Element*& pElement : elements )
+	for ( StoryElement*& pElement : vStoryElements )
 	{
 		Location* pLocation = dynamic_cast<Location*>(pElement);
 		if ( pLocation )
@@ -670,7 +670,7 @@ wxVector<Location*> amProject::GetLocations()
 wxVector<Item*> amProject::GetItems()
 {
 	wxVector<Item*> items;
-	for ( Element*& pElement : elements )
+	for ( StoryElement*& pElement : vStoryElements )
 	{
 		Item* pItem = dynamic_cast<Item*>(pElement);
 		if ( pItem )

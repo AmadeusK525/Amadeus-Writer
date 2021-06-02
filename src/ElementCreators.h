@@ -23,6 +23,9 @@ protected:
 
 	ImagePanel* m_imagePanel = nullptr;
 
+	std::unordered_map<wxStaticText*, wxTextCtrl*> m_mShortAttr;
+	std::unordered_map<wxStaticText*, wxTextCtrl*> m_mPreDefLongAttr;
+	std::unordered_map<wxTextCtrl*, wxTextCtrl*> m_mLongAttr;
 	wxVector<pair<wxTextCtrl*, wxTextCtrl*>> m_custom{};
 	wxVector<wxButton*> m_minusButtons{};
 
@@ -37,7 +40,7 @@ protected:
 	wxButton* m_removeImage = nullptr;
 
 	wxBoxSizer* m_mainSizer = nullptr;
-	Element* m_elementEdit = nullptr;
+	StoryElement* m_elementEdit = nullptr;
 
 public:
 	amElementCreator() = default;
@@ -59,10 +62,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-	virtual wxVector<wxString> GetValues() = 0;
-	wxVector<pair<wxString, wxString>> GetCustom();
-
-	virtual void StartEditing(Element* element) = 0;
+	virtual void StartEditing(StoryElement* element) = 0;
 	virtual void DoEdit(wxCommandEvent& event) = 0;
 
 	virtual void AddCustomAttr(wxCommandEvent& event) = 0;
@@ -74,6 +74,9 @@ public:
 
 	void SetImage(wxCommandEvent& event);
 	void RemoveImage(wxCommandEvent& event);
+
+	virtual wxVector<std::pair<wxString, wxString>> GetShortAttributes();
+	virtual wxVector<std::pair<wxString, wxString>>  GetLongAttributes();
 
 	virtual void OnCreateElement(wxCommandEvent& event) = 0;
 	virtual void OnClose(wxCloseEvent& event);
@@ -152,9 +155,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
-	virtual wxVector<wxString> GetValues();
-
-	virtual void StartEditing(Element* editChar);
+	virtual void StartEditing(StoryElement* editChar);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
@@ -187,7 +188,7 @@ private:
 	wxRadioButton* nlHigh = nullptr,
 		* nlLow = nullptr;
 
-	wxStaticText* label6 = nullptr;
+	wxStaticText* pEconomyLabel = nullptr;
 	wxWrapSizer* m_nlcustomSizer = nullptr;
 
 public:
@@ -210,9 +211,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
-	virtual wxVector<wxString> GetValues();
-
-	virtual void StartEditing(Element* editLoc);
+	virtual void StartEditing(StoryElement* editLoc);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
@@ -277,9 +276,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
-	virtual wxVector<wxString> GetValues();
-
-	virtual void StartEditing(Element* editItem);
+	virtual void StartEditing(StoryElement* editItem);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
