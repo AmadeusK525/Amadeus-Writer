@@ -409,27 +409,22 @@ public:
 	inline virtual bool GetAttr(const wxDataViewItem& item, unsigned int col, wxDataViewItemAttr& attr) const
 	{
 		amTreeModelNode* node = (amTreeModelNode*)item.GetID();
-
-		if ( node )
+		if ( !node )
+			return false;
+		
+		if ( m_itemForDnD == item )
 		{
-			if ( m_itemForDnD == item )
-			{
-				attr.SetColour(wxColour(0, 0, 0));
-			}
-			else
-			{
-				if ( node->IsHovering() )
-					attr = node->GetHoverAttr();
-				else
-					attr = node->GetAttr();
-			}
-
-			return true;
+			attr.SetColour(wxColour(0, 0, 0));
 		}
 		else
 		{
-			return false;
+			if ( node->IsHovering() )
+				attr = node->GetHoverAttr();
+			else
+					attr = node->GetAttr();
 		}
+
+		return true;
 	}
 
 	////////////////////////////// DragEventHandlers ////////////////////////////

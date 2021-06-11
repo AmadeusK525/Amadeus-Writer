@@ -15,6 +15,14 @@ amRelease::amRelease(wxWindow* parent) :
 	wxPanel(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
 	SetBackgroundColour(wxColour(20, 20, 20));
+	wxStaticText* pWIP = new wxStaticText(this, -1, "Work in Progress");
+	pWIP->SetFont(wxFontInfo(15).Bold());
+	pWIP->SetForegroundColour(wxColour(255, 255, 255));
+
+	wxBoxSizer* pSizer = new wxBoxSizer(wxHORIZONTAL);
+	pSizer->Add(pWIP, wxSizerFlags(0).Bottom().Border(wxALL, 5));
+
+	SetSizer(pSizer);
 }
 
 amRelease::~amRelease()

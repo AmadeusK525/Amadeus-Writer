@@ -47,6 +47,8 @@ amElementNotebookPage::amElementNotebookPage(wxWindow* parent, wxClassInfo* show
 	sortByLabel->SetFont(wxFontInfo(11).Bold());
 
 	m_sortBy = new wxChoice(left, -1, wxDefaultPosition, wxDefaultSize, sortByChoices);
+	m_sortBy->SetBackgroundColour(wxColour(20, 20, 20));
+	m_sortBy->SetForegroundColour(wxColour(255, 255, 255));
 	m_sortBy->Bind(wxEVT_CHOICE, &amElementNotebookPage::OnElementsSortBy, this);
 	m_sortBy->SetSelection(0);
 

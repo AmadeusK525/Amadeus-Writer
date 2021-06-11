@@ -145,10 +145,15 @@ amOverview::amOverview(wxWindow* parent, amProjectManager* manager) : wxPanel(pa
 	pRecentDocumentsSizer->Add(pRecentDocumentsLabel, wxSizerFlags(0).Expand());
 	pRecentDocumentsSizer->Add(m_recentDocumentsDVC, wxSizerFlags(1));
 
+	wxStaticText* pWIP = new wxStaticText(this, -1, "Work in Progress");
+	pWIP->SetFont(wxFontInfo(15).Bold());
+	pWIP->SetForegroundColour(wxColour(255, 255, 255));
+
 	m_mainSizer = new wxBoxSizer(wxVERTICAL);
 	m_mainSizer->Add(sizer, wxSizerFlags(0).Expand());
 	m_mainSizer->AddSpacer(10);
 	m_mainSizer->Add(pRecentDocumentsSizer, wxSizerFlags(1).Left());
+	m_mainSizer->Add(pWIP, wxSizerFlags(0).Left().Border(wxALL, 5));
 
 	SetSizer(m_mainSizer);
 	Layout();
@@ -176,9 +181,9 @@ void amOverview::LoadRecentDocuments(Book* book)
 
 	m_recentDocumentsModel->ClearAll();
 
-	for ( Document*& pDocument : book->vRecentDocuments )
+	for ( int i = book->vRecentDocuments.size() - 1; i >= 0; i-- )
 	{
-		wxDataViewItem docItem = m_recentDocumentsModel->AddDocument(pDocument, wxDataViewItem(nullptr));
+		wxDataViewItem docItem = m_recentDocumentsModel->AddDocument(book->vRecentDocuments[i], wxDataViewItem(nullptr));
 	}
 
 	Thaw();

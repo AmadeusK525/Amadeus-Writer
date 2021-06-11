@@ -20,7 +20,9 @@ amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
 	m_grid = new StoryGrid(this, m_manager);
 	m_grid->SetBackgroundColour(wxColour(150, 0, 0));
 
-	m_list = new wxListView(this, -1, wxDefaultPosition, wxDefaultSize,
+	wxPanel* pListPanel = new wxPanel(this);
+
+	m_list = new wxListView(pListPanel, -1, wxDefaultPosition, wxDefaultSize,
 		wxLC_REPORT | wxLC_EDIT_LABELS | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
 	m_list->InsertColumn(0, "Name", wxLIST_FORMAT_LEFT, FromDIP(180));
 	m_list->InsertColumn(1, "Characters", wxLIST_FORMAT_CENTER);
@@ -31,8 +33,18 @@ amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
 	m_list->SetBackgroundColour(wxColour(45, 45, 45));
 	m_list->SetForegroundColour(wxColour(245, 245, 245));
 
+	wxStaticText* pWIP = new wxStaticText(pListPanel, -1, "Work in Progress");
+	pWIP->SetFont(wxFontInfo(15).Bold());
+	pWIP->SetForegroundColour(wxColour(255, 255, 255));
+
+	wxBoxSizer* pListSizer = new wxBoxSizer(wxVERTICAL);
+	pListSizer->Add(m_list, wxSizerFlags(1).Expand());
+	pListSizer->Add(pWIP, wxSizerFlags(0).Left().Border(wxALL, 5));
+
+	pListPanel->SetSizer(pListSizer);
+
 	AddPage(m_grid, "Grid");
-	AddPage(m_list, "List");
+	AddPage(pListPanel, "List");
 }
 
 void amStoryNotebook::SetBookData(Book* book)
@@ -110,7 +122,16 @@ StoryGrid::StoryGrid(wxWindow* parent, amProjectManager* manager) : wxScrolledWi
 
 	m_btnSizer = new wxWrapSizer(wxHORIZONTAL);
 	m_btnSizer->SetMinSize(wxSize(300, 300));
-	SetSizer(m_btnSizer);
+
+	wxStaticText* pWIP = new wxStaticText(this, -1, "Work in Progress");
+	pWIP->SetFont(wxFontInfo(15).Bold());
+	pWIP->SetForegroundColour(wxColour(255, 255, 255));
+
+	wxBoxSizer* pSizer = new wxBoxSizer(wxVERTICAL);
+	pSizer->Add(m_btnSizer, wxSizerFlags(1).Expand());
+	pSizer->Add(pWIP, wxSizerFlags(0).Left().Border(wxALL, 5));
+	
+	SetSizer(pSizer);
 	FitInside();
 	SetScrollRate(15, 15);
 }

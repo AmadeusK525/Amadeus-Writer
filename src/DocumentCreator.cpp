@@ -97,7 +97,7 @@ DocumentCreator::DocumentCreator(wxWindow* parent, amProjectManager* manager) :
 	mainVer->Add(m_btnPanel, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 10));
 	mainVer->AddSpacer(5);
 
-	wxStaticText* mainLabel = new wxStaticText(this, wxID_ANY, "C\nH\nA\nP\nT\nE\nR",
+	wxStaticText* mainLabel = new wxStaticText(this, wxID_ANY, "D\nO\nC\nU\nM\nE\nN\nT",
 		wxPoint(10, 55), wxSize(25, 200), wxBORDER_NONE);
 	mainLabel->SetBackgroundColour(wxColour(40, 40, 40));
 	mainLabel->SetForegroundColour(wxColour(210, 210, 210));
