@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "MyApp.h"
+#include "ProjectManaging.h"
 
 #include "wxmemdbg.h"
 
@@ -15,11 +16,11 @@
 /////////////////////////////////////////////////////////////////
 
 
-Document::~Document()
+am::Document::~Document()
 {
 	for ( TangibleElement*& pElement : vTangibleElements )
 	{
-		for ( Document*& pDocument : pElement->documents )
+		for ( am::Document*& pDocument : pElement->documents )
 		{
 			if ( pDocument == this )
 			{
@@ -32,12 +33,12 @@ Document::~Document()
 	CleanUp();
 }
 
-bool Document::IsStory()
+bool am::Document::IsStory()
 {
 	return type == Document_Chapter || type == Document_Scene || type == Document_Other;
 }
 
-bool Document::HasRedNote()
+bool am::Document::HasRedNote()
 {
 	for ( Note*& pNote : notes )
 	{
@@ -48,11 +49,11 @@ bool Document::HasRedNote()
 	return false;
 }
 
-int Document::GetWordCount()
+int am::Document::GetWordCount()
 {
 	if ( bIsDirty )
 	{
-		amProjectSQLDatabase* pDb = amGetManager()->GetStorage();
+		ProjectSQLDatabase* pDb = GetProjectDatabase();
 		wxSQLite3ResultSet result = pDb->ExecuteQuery("SELECT plain_text FROM documents WHERE id = " + std::to_string(id));
 
 		int count = 0;
@@ -75,12 +76,10 @@ int Document::GetWordCount()
 	return nWordCount;
 }
 
-void Document::Save(wxSQLite3Database* db)
+void am::Document::Save(ProjectSQLDatabase* db)
 {
 	try
 	{
-		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
-
 		wxSQLite3StatementBuffer buffer;
 
 		wxString insert("INSERT INTO documents (name, synopsys, content, position, type, book_id, isInTrash"
@@ -105,8 +104,8 @@ void Document::Save(wxSQLite3Database* db)
 		buffer.Format((const char*)insert, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8(),
 			(const char*)content.ToUTF8(), (const char*)parentId, "NULL");
 
-		storage->ExecuteUpdate(buffer);
-		SetId(storage->GetSQLEntryId(GenerateSQLEntryForId()));
+		db->ExecuteUpdate(buffer);
+		SetId(db->GetSQLEntryId(GenerateSQLEntryForId()));
 	}
 	catch ( wxSQLite3Exception& e )
 	{
@@ -114,15 +113,13 @@ void Document::Save(wxSQLite3Database* db)
 	}
 }
 
-bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNotes)
+bool am::Document::Update(ProjectSQLDatabase* db, bool updateContent, bool updateNotes)
 {
 	if ( id == -1 )
 		return false;
 
 	try
 	{
-		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
-
 		wxSQLite3StatementBuffer buffer;
 
 		wxString update("UPDATE documents SET name = '%q', synopsys = '%q', position = ");
@@ -161,11 +158,11 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 			buffer.Format((const char*)update, (const char*)name.ToUTF8(), (const char*)synopsys.ToUTF8());
 		}
 
-		storage->ExecuteUpdate(buffer);
+		db->ExecuteUpdate(buffer);
 
 		if ( updateNotes )
 		{
-			wxSQLite3Table customTable = storage->GetTable("SELECT * FROM document_notes WHERE document_id = " + std::to_string(id) + ";");
+			wxSQLite3Table customTable = db->GetTable("SELECT * FROM document_notes WHERE document_id = " + std::to_string(id) + ";");
 
 			int prevSize = customTable.GetRowCount();
 			int newSize = notes.size();
@@ -181,7 +178,7 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 					update << notes[i]->isDone << ", document_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
 
 					buffer.Format((const char*)update, (const char*)notes[i]->name.ToUTF8(), (const char*)notes[i]->content.ToUTF8());
-					storage->ExecuteUpdate(buffer);
+					db->ExecuteUpdate(buffer);
 				}
 
 				for ( i; i < newSize; i++ )
@@ -190,7 +187,7 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 					update << notes[i]->isDone << ", " << id << ");";
 
 					buffer.Format((const char*)update, (const char*)notes[i]->name.ToUTF8(), (const char*)notes[i]->content.ToUTF8());
-					storage->ExecuteUpdate(buffer);
+					db->ExecuteUpdate(buffer);
 				}
 			}
 			else
@@ -204,7 +201,7 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 					update << notes[i]->isDone << ", document_id = " << id << " WHERE id = " << customTable.GetInt("id") << ";";
 
 					buffer.Format((const char*)update, (const char*)notes[i]->name.ToUTF8(), (const char*)notes[i]->content.ToUTF8());
-					storage->ExecuteUpdate(buffer);
+					db->ExecuteUpdate(buffer);
 				}
 
 				if ( newSize < prevSize )
@@ -214,7 +211,7 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 						update = "DELETE FROM document_notes WHERE id = ";
 						update << customTable.GetInt("id") << ";";
 
-						storage->ExecuteUpdate(update);
+						db->ExecuteUpdate(update);
 					}
 			}
 		}
@@ -228,7 +225,7 @@ bool Document::Update(wxSQLite3Database* db, bool updateContent, bool updateNote
 	return true;
 }
 
-void Document::LoadSelf(wxSQLite3Database* db, wxRichTextCtrl* targetRtc)
+void am::Document::LoadSelf(ProjectSQLDatabase* db, wxRichTextCtrl* targetRtc)
 {
 	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM document_notes WHERE document_id = " + std::to_string(id) + ";");
 
@@ -236,7 +233,7 @@ void Document::LoadSelf(wxSQLite3Database* db, wxRichTextCtrl* targetRtc)
 	{
 		Note* pNote = new Note(result.GetAsString("content"), result.GetAsString("name"));
 		pNote->isDone = result.GetInt("isDone");
-		
+
 		notes.push_back(pNote);
 	}
 
@@ -254,7 +251,7 @@ void Document::LoadSelf(wxSQLite3Database* db, wxRichTextCtrl* targetRtc)
 	}
 }
 
-void Document::CleanUp()
+void am::Document::CleanUp()
 {
 	for ( Note*& pNote : notes )
 	{
@@ -265,9 +262,9 @@ void Document::CleanUp()
 	buffer = nullptr;
 }
 
-amSQLEntry Document::GenerateSQLEntrySimple()
+am::SQLEntry am::Document::GenerateSQLEntrySimple()
 {
-	amSQLEntry sqlEntry;
+	am::SQLEntry sqlEntry;
 	sqlEntry.tableName = "documents";
 	sqlEntry.name = name;
 
@@ -280,16 +277,16 @@ amSQLEntry Document::GenerateSQLEntrySimple()
 	return sqlEntry;
 }
 
-amSQLEntry Document::GenerateSQLEntry()
+am::SQLEntry am::Document::GenerateSQLEntry()
 {
-	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
+	am::SQLEntry sqlEntry = GenerateSQLEntrySimple();
 
 	sqlEntry.strings["content"] = wxString();
 
 
 	for ( Note*& pNote : notes )
 	{
-		amSQLEntry noteDoc;
+		am::SQLEntry noteDoc;
 		noteDoc.tableName = "document_notes";
 
 		noteDoc.name = pNote->name;
@@ -306,9 +303,9 @@ amSQLEntry Document::GenerateSQLEntry()
 	return sqlEntry;
 }
 
-amSQLEntry Document::GenerateSQLEntryForId()
+am::SQLEntry am::Document::GenerateSQLEntryForId()
 {
-	amSQLEntry sqlEntry;
+	am::SQLEntry sqlEntry;
 	sqlEntry.name = name;
 	sqlEntry.tableName = "documents";
 
@@ -321,7 +318,7 @@ amSQLEntry Document::GenerateSQLEntryForId()
 	return sqlEntry;
 }
 
-bool Document::operator<(const Document& other) const
+bool am::Document::operator<(const am::Document& other) const
 {
 	if ( book->pos == other.book->pos )
 		return position < other.position;
@@ -329,21 +326,21 @@ bool Document::operator<(const Document& other) const
 	return book->pos < other.book->pos;
 }
 
-bool Document::operator==(const Document& other) const
+bool am::Document::operator==(const am::Document& other) const
 {
 	return book->id == other.book->id && position == other.position;
 }
 
-Note::Note(wxString content, wxString name)
+am::Note::Note(wxString content, wxString name)
 {
 	this->content = content;
 	this->name = name;
 }
 
-amSQLEntry Note::GenerateSQLEntry()
+am::SQLEntry am::Note::GenerateSQLEntry()
 {
 
-	return amSQLEntry();
+	return am::SQLEntry();
 }
 
 
@@ -352,14 +349,14 @@ amSQLEntry Note::GenerateSQLEntry()
 /////////////////////////////////////////////////////////////////
 
 
-wxSize Book::coverSize{ 660, 900 };
+wxSize am::Book::coverSize{ 660, 900 };
 
-Book::~Book()
+am::Book::~Book()
 {
 	CleanUpDocuments();
 }
 
-bool Book::Init()
+bool am::Book::Init()
 {
 	if ( id == -1 )
 		return false;
@@ -368,7 +365,7 @@ bool Book::Init()
 	return true;
 }
 
-void Book::InitCover()
+void am::Book::InitCover()
 {
 	wxBitmap bitmapCover(cover);
 	wxMemoryDC dc(bitmapCover);
@@ -434,19 +431,19 @@ void Book::InitCover()
 	cover = bitmapCover.ConvertToImage();
 }
 
-void Book::CleanUpDocuments()
+void am::Book::CleanUpDocuments()
 {
-	for ( Document*& pDocument : documents )
+	for ( am::Document*& pDocument : documents )
 		delete pDocument;
 
 	documents.clear();
 }
 
-void Book::PushRecentDocument(Document* document)
+void am::Book::PushRecentDocument(am::Document* document)
 {
 	if ( document->book != this || (!vRecentDocuments.empty() && vRecentDocuments.back() == document) )
 		return;
-	
+
 	for ( auto it = vRecentDocuments.begin(); it != vRecentDocuments.end(); it++ )
 	{
 		if ( *it == document )
@@ -461,17 +458,15 @@ void Book::PushRecentDocument(Document* document)
 	{
 		vRecentDocuments.erase(vRecentDocuments.begin());
 	}
-		
+
 	vRecentDocuments.push_back(document);
 	return;
 }
 
-void Book::Save(wxSQLite3Database* db)
+void am::Book::Save(ProjectSQLDatabase* db)
 {
 	try
 	{
-		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
-
 		wxSQLite3StatementBuffer buffer;
 		bool doCover = cover.IsOk();
 
@@ -487,7 +482,7 @@ void Book::Save(wxSQLite3Database* db)
 		buffer.Format((const char*)insert, (const char*)title.ToUTF8(), (const char*)author.ToUTF8(),
 			(const char*)genre.ToUTF8(), (const char*)description.ToUTF8(), (const char*)synopsys.ToUTF8());
 
-		wxSQLite3Statement statement = storage->PrepareStatement(buffer);
+		wxSQLite3Statement statement = db->PrepareStatement(buffer);
 
 		if ( doCover )
 		{
@@ -504,7 +499,7 @@ void Book::Save(wxSQLite3Database* db)
 		}
 
 		statement.ExecuteUpdate();
-		SetId(storage->GetSQLEntryId(GenerateSQLEntryForId()));
+		SetId(db->GetSQLEntryId(GenerateSQLEntryForId()));
 
 		Init();
 	}
@@ -514,14 +509,14 @@ void Book::Save(wxSQLite3Database* db)
 	}
 }
 
-bool Book::Update(wxSQLite3Database* db, bool updateDocuments)
+bool am::Book::Update(am::ProjectSQLDatabase* db, bool updateDocuments)
 {
 	if ( id == -1 )
 		return false;
 
 	try
 	{
-		amProjectSQLDatabase* storage = (amProjectSQLDatabase*)db;
+		ProjectSQLDatabase* storage = (ProjectSQLDatabase*)db;
 
 		wxSQLite3StatementBuffer buffer;
 		bool doCover = cover.IsOk();
@@ -560,7 +555,7 @@ bool Book::Update(wxSQLite3Database* db, bool updateDocuments)
 
 		if ( updateDocuments )
 		{
-			for ( Document*& pDocument : documents )
+			for ( am::Document*& pDocument : documents )
 			{
 				pDocument->Update(db, true, true);
 			}
@@ -574,9 +569,9 @@ bool Book::Update(wxSQLite3Database* db, bool updateDocuments)
 	return true;
 }
 
-amSQLEntry Book::GenerateSQLEntrySimple()
+am::SQLEntry am::Book::GenerateSQLEntrySimple()
 {
-	amSQLEntry sqlEntry;
+	am::SQLEntry sqlEntry;
 	sqlEntry.name = title;
 	sqlEntry.tableName = "books";
 
@@ -590,14 +585,14 @@ amSQLEntry Book::GenerateSQLEntrySimple()
 	return sqlEntry;
 }
 
-amSQLEntry Book::GenerateSQLEntry(wxVector<int>* documentsToInclude)
+am::SQLEntry am::Book::GenerateSQLEntry(wxVector<int>* documentsToInclude)
 {
-	amSQLEntry sqlEntry = GenerateSQLEntrySimple();
+	am::SQLEntry sqlEntry = GenerateSQLEntrySimple();
 
 	if ( !documentsToInclude )
 	{
 		sqlEntry.childEntries.reserve(documents.size());
-		for ( Document*& pDocument : documents )
+		for ( am::Document*& pDocument : documents )
 			sqlEntry.childEntries.push_back(pDocument->GenerateSQLEntry());
 
 	}
@@ -617,9 +612,9 @@ amSQLEntry Book::GenerateSQLEntry(wxVector<int>* documentsToInclude)
 	return sqlEntry;
 }
 
-amSQLEntry Book::GenerateSQLEntryForId()
+am::SQLEntry am::Book::GenerateSQLEntryForId()
 {
-	amSQLEntry sqlEntry;
+	am::SQLEntry sqlEntry;
 	sqlEntry.name = title;
 	sqlEntry.tableName = "books";
 
@@ -632,21 +627,21 @@ amSQLEntry Book::GenerateSQLEntryForId()
 /////////////////////////////////////////////////////////////////
 
 
-amProject::~amProject()
+am::Project::~Project()
 {
-	for ( StoryElement*& pElement : vStoryElements )
+	for ( am::StoryElement*& pElement : vStoryElements )
 		delete pElement;
 
-	for ( Book*& pBook : books )
+	for ( am::Book*& pBook : books )
 		delete pBook;
 }
 
-wxVector<Character*> amProject::GetCharacters()
+wxVector<am::Character*> am::Project::GetCharacters()
 {
-	wxVector<Character*> characters;
-	for ( StoryElement*& pElement : vStoryElements )
+	wxVector<am::Character*> characters;
+	for ( am::StoryElement*& pElement : vStoryElements )
 	{
-		Character* pCharacter = dynamic_cast<Character*>(pElement);
+		am::Character* pCharacter = dynamic_cast<am::Character*>(pElement);
 		if ( pCharacter )
 			characters.push_back(pCharacter);
 	}
@@ -654,12 +649,12 @@ wxVector<Character*> amProject::GetCharacters()
 	return characters;
 }
 
-wxVector<Location*> amProject::GetLocations()
+wxVector<am::Location*> am::Project::GetLocations()
 {
-	wxVector<Location*> locations;
-	for ( StoryElement*& pElement : vStoryElements )
+	wxVector<am::Location*> locations;
+	for ( am::StoryElement*& pElement : vStoryElements )
 	{
-		Location* pLocation = dynamic_cast<Location*>(pElement);
+		am::Location* pLocation = dynamic_cast<am::Location*>(pElement);
 		if ( pLocation )
 			locations.push_back(pLocation);
 	}
@@ -667,12 +662,12 @@ wxVector<Location*> amProject::GetLocations()
 	return locations;
 }
 
-wxVector<Item*> amProject::GetItems()
+wxVector<am::Item*> am::Project::GetItems()
 {
-	wxVector<Item*> items;
-	for ( StoryElement*& pElement : vStoryElements )
+	wxVector<am::Item*> items;
+	for ( am::StoryElement*& pElement : vStoryElements )
 	{
-		Item* pItem = dynamic_cast<Item*>(pElement);
+		am::Item* pItem = dynamic_cast<am::Item*>(pElement);
 		if ( pItem )
 			items.push_back(pItem);
 	}
@@ -680,7 +675,7 @@ wxVector<Item*> amProject::GetItems()
 	return items;
 }
 
-wxVector<Document*>& amProject::GetDocuments(int bookPos)
+wxVector<am::Document*>& am::Project::GetDocuments(int bookPos)
 {
 	return books[bookPos - 1]->documents;
 }

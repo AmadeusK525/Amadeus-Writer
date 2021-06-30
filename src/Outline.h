@@ -9,7 +9,7 @@
 
 #include <wx/sstream.h>
 
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 
 class amOutline;
 class amCorkboard;
@@ -35,7 +35,7 @@ public:
 	amOutline(wxWindow* parent);
 
 	void SaveOutline();
-	void LoadOutline(amProjectSQLDatabase* db);
+	void LoadOutline(am::ProjectSQLDatabase* db);
 
 	inline amCorkboard* GetCorkboard() { return m_corkboard; }
 	inline amTLTimeline* GetTimeline() { return m_timeline; }

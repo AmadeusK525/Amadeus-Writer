@@ -5,23 +5,23 @@
 #include <wx/richtext/richtextctrl.h>
 #include <wx/richtext/richtextprint.h>
 
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 
 
 class amRelease : public wxPanel
 {
 private:
-	amProjectManager* m_manager = nullptr;
-
 	//wxRichTextPrinting* print = nullptr;
 	wxPanel* m_panel = nullptr;
 	wxBoxSizer* m_pagesSizer = nullptr;
 
 public:
 	amRelease(wxWindow* parent);
-	~amRelease();
+	virtual ~amRelease();
 
-	void SetBookData(Book* book);
+	void ClearAll();
+
+	void SetBookData(am::Book* book);
 	void UpdateContent();
 
 	void OnNext(wxCommandEvent& event);

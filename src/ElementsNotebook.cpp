@@ -78,28 +78,28 @@ amElementNotebookPage::amElementNotebookPage(wxWindow* parent, wxClassInfo* show
 	left->SetSizer(leftSizer);
 
  	m_elementShowcase = (amElementShowcase*)showcaseType->CreateObject();
-	m_elementShowcase->Create(this, amGetManager());
+	m_elementShowcase->Create(this);
 
 	SplitVertically(left, m_elementShowcase);
 }
 
-bool amElementNotebookPage::ShouldShow(StoryElement* element)
+bool amElementNotebookPage::ShouldShow(am::StoryElement* element)
 {
 	if ( !element )
 		return false;
 
 	bool bShouldShow;
 
-	if ( element->IsKindOf(wxCLASSINFO(TangibleElement)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::TangibleElement)) )
 	{
 		bShouldShow = false;
 
 		if ( m_vBooksToShow.empty() )
 			return true;
 
-		for ( Book* const& pBook : m_vBooksToShow )
+		for ( am::Book* const& pBook : m_vBooksToShow )
 		{
-			if ( ((TangibleElement*)element)->IsInBook(pBook) )
+			if ( ((am::TangibleElement*)element)->IsInBook(pBook) )
 			{
 				bShouldShow = true;
 				break;
@@ -122,11 +122,12 @@ void amElementNotebookPage::ClearAll()
 
 void amElementNotebookPage::InitShowChoices()
 {
-	m_bookCheckList->InsertItems(amGetManager()->GetBookTitles(), 0);
+	m_bookCheckList->Clear();
+	m_bookCheckList->InsertItems(am::GetBookTitles(), 0);
 	m_show->SetText(_("All"));
 }
 
-void amElementNotebookPage::GoToStoryElement(StoryElement * element)
+void amElementNotebookPage::GoToStoryElement(am::StoryElement * element)
 {
 	m_elementShowcase->Freeze();
 
@@ -149,32 +150,30 @@ void amElementNotebookPage::GoToStoryElement(StoryElement * element)
 
 void amElementNotebookPage::UpdateList()
 {
-	amProjectManager* pManager = amGetManager();
-
 	m_elementList->Freeze();
 	m_imageList->RemoveAll();
 
 	size_t sizeBefore = m_elementList->GetItemCount();
 
-	wxVector<StoryElement*> vElements;
+	wxVector<am::StoryElement*> vElements;
 	if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amCharacterShowcase)) )
 	{
-		for ( Character*& pCharacter : pManager->GetCharacters() )
+		for ( am::Character*& pCharacter : am::GetCharacters() )
 			vElements.push_back(pCharacter);
 	}
 	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amLocationShowcase)) )
 	{
-		for ( Location*& pLocation : pManager->GetLocations() )
+		for ( am::Location*& pLocation : am::GetLocations() )
 			vElements.push_back(pLocation);
 	}
 	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amItemShowcase)) )
 	{
-		for ( Item*& pItem : pManager->GetItems() )
+		for ( am::Item*& pItem : am::GetItems() )
 			vElements.push_back(pItem);
 	}
 
 	int i = 0;
-	for ( StoryElement* const& pElement : vElements )
+	for ( am::StoryElement* const& pElement : vElements )
 	{
 		if ( !ShouldShow(pElement) )
 			continue;
@@ -193,53 +192,53 @@ void amElementNotebookPage::UpdateList()
 	m_elementList->Thaw();
 }
 
-void amElementNotebookPage::UpdateElementInList(int n, StoryElement* element)
+void amElementNotebookPage::UpdateElementInList(int n, am::StoryElement* element)
 {
 	m_elementList->SetItem(n, 0, element->name);
 
 	wxString role;
 	switch ( element->role )
 	{
-	case Role::cProtagonist:
+	case am::Role::cProtagonist:
 		role = _("Protagonist");
 		break;
 
-	case Role::cSupporting:
+	case am::Role::cSupporting:
 		role = _("Supporting");
 		break;
 
-	case Role::cVillian:
+	case am::Role::cVillian:
 		role = _("Villian");
 		break;
 
-	case Role::cSecondary:
+	case am::Role::cSecondary:
 		role = _("Secondary");
 		break;
 
-	case Role::lHigh:
-	case Role::iHigh:
+	case am::Role::lHigh:
+	case am::Role::iHigh:
 		role = _("High");
 		break;
 
-	case Role::lLow:
-	case Role::iLow:
+	case am::Role::lLow:
+	case am::Role::iLow:
 		role = _("Low");
 		break;
 	}
 
 	m_elementList->SetItem(n, 1, role);
 
-	if ( element->IsKindOf(wxCLASSINFO(TangibleElement)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::TangibleElement)) )
 	{
-		TangibleElement* pTangible = (TangibleElement*)element;
+		am::TangibleElement* pTangible = (am::TangibleElement*)element;
 
-		Document* pFirstDocument = pTangible->GetFirstDocument();
+		am::Document* pFirstDocument = pTangible->GetFirstDocument();
 		if ( pFirstDocument )
 			m_elementList->SetItem(n, 2, wxString(_("Book ")) << pFirstDocument->book->pos << _(", Document ") << pFirstDocument->position);
 		else
 			m_elementList->SetItem(n, 2, "-");
 
-		Document* pLastDocument = pTangible->GetLastDocument();
+		am::Document* pLastDocument = pTangible->GetLastDocument();
 		if ( pLastDocument )
 			m_elementList->SetItem(n, 3, wxString(_("Book ")) << pLastDocument->book->pos << _(", Document ") << pLastDocument->position);
 		else
@@ -249,7 +248,7 @@ void amElementNotebookPage::UpdateElementInList(int n, StoryElement* element)
 	}
 
 	if ( element->image.IsOk() )
-		m_elementList->SetItemColumnImage(n, 0, m_imageList->Add(wxBitmap(amGetScaledImage(24, 24, element->image))));
+		m_elementList->SetItemColumnImage(n, 0, m_imageList->Add(wxBitmap(am::GetScaledImage(24, 24, element->image))));
 	else
 		m_elementList->SetItemColumnImage(n, 0, -1);
 }
@@ -259,69 +258,66 @@ void amElementNotebookPage::OnEditElement(wxCommandEvent& event)
 	int n = m_elementList->GetFirstSelected();
 	if ( n != -1 )
 	{
-		amProjectManager* pManager = amGetManager();
-		StoryElement* pElement = pManager->GetStoryElementByName(m_elementList->GetItemText(n));
+		am::StoryElement* pElement = am::GetStoryElementByName(m_elementList->GetItemText(n));
 		
 		if ( pElement )
-			pManager->StartEditingElement(pElement);
+			am::StartEditingElement(pElement);
 	}
 }
 
 void amElementNotebookPage::OnDeleteElement(wxCommandEvent& event)
 {
-	amProjectManager* pManager = amGetManager();
 	long sel = m_elementList->GetFirstSelected();
 
-	wxMessageDialog deleteCheck(pManager->GetMainFrame(), "Are you sure you want to delete '" +
+	wxMessageDialog deleteCheck(am::GetMainFrame(), "Are you sure you want to delete '" +
 		m_elementList->GetItemText(sel) + "'?"
-		"\nAll ties to this Element in other parts of the program (Outline files, Timeline, Document bindings...) will be permantely deleted as well.",
+		"\nAll ties to this Element in other parts of the program (Outline files, Timeline, am::Document bindings...) will be permantely deleted as well.",
 		"Delete element", wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION);
 
 	if ( deleteCheck.ShowModal() == wxID_YES )
 	{
 		m_elementList->DeleteItem(sel);
-		pManager->DeleteElement(pManager->GetStoryElementByName(m_elementList->GetItemText(sel)));
+		am::DeleteElement(am::GetStoryElementByName(m_elementList->GetItemText(sel)));
 	}
 }
 
 void amElementNotebookPage::OnElementsSortBy(wxCommandEvent& event)
 {
-	amProjectManager* pManager = amGetManager();
-	wxVector<StoryElement*> vElements;
+	wxVector<am::StoryElement*> vElements;
 
 	if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amCharacterShowcase)) )
 	{
 		m_sortBy->SetSelection(event.GetInt());
-		Character::cCompType = (CompType)event.GetInt();
+		am::Character::cCompType = (am::CompType)event.GetInt();
 
-		for ( Character*& pCharacter : pManager->GetCharacters() )
+		for ( am::Character*& pCharacter : am::GetCharacters() )
 			vElements.push_back(pCharacter);
 	}
 	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amLocationShowcase)) )
 	{
 		m_sortBy->SetSelection(event.GetInt());
-		Location::lCompType = (CompType)event.GetInt();
+		am::Location::lCompType = (am::CompType)event.GetInt();
 
-		for ( Location*& pLocation : pManager->GetLocations() )
+		for ( am::Location*& pLocation : am::GetLocations() )
 			vElements.push_back(pLocation);
 	}
 	else if ( m_elementShowcase->IsKindOf(wxCLASSINFO(amItemShowcase)) )
 	{
 		m_sortBy->SetSelection(event.GetInt());
-		Item::iCompType = (CompType)event.GetInt();
+		am::Item::iCompType = (am::CompType)event.GetInt();
 
-		for ( Item*& pItem : pManager->GetItems() )
+		for ( am::Item*& pItem : am::GetItems() )
 			vElements.push_back(pItem);
 	}
 
 	int currentSelection = m_elementList->GetFirstSelected();
 
-	amGetManager()->ResortElements();
+	am::ResortElements();
 	UpdateList();
 
 	m_elementList->SetFocus();
 
-	StoryElement* pCurElement = m_elementShowcase->GetElement();
+	am::StoryElement* pCurElement = m_elementShowcase->GetElement();
 
 	if ( pCurElement )
 	{
@@ -340,12 +336,12 @@ void amElementNotebookPage::OnCheckListBox(wxCommandEvent & event)
 
 	for ( int& sel : selections )
 	{
-		m_vBooksToShow.push_back(amGetManager()->GetBooks()[sel]);
+		m_vBooksToShow.push_back(am::GetBooks()[sel]);
 	}
 
 	UpdateList();
 
-	StoryElement* pDisplayedElement = m_elementShowcase->GetElement();
+	am::StoryElement* pDisplayedElement = m_elementShowcase->GetElement();
 	if ( !ShouldShow(pDisplayedElement) )
 	{
 		m_elementShowcase->SetData(nullptr);
@@ -359,7 +355,7 @@ void amElementNotebookPage::OnElementSelected(wxListEvent& event)
 	long sel = m_elementList->GetFirstSelected();
 
 	if ( sel != -1 )
-		m_elementShowcase->SetData(amGetManager()->GetStoryElementByName(m_elementList->GetItemText(sel)));
+		m_elementShowcase->SetData(am::GetStoryElementByName(m_elementList->GetItemText(sel)));
 	else
 		m_elementShowcase->SetData(nullptr);
 }
@@ -381,8 +377,6 @@ void amElementNotebookPage::OnElementRightClick(wxListEvent & event)
 amElementNotebook::amElementNotebook(wxWindow* parent) :
 	wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
-	m_manager = amGetManager();
-
 	wxAuiSimpleTabArt* pArt = new wxAuiSimpleTabArt();
 	pArt->SetColour(wxColour(50, 50, 50));
 	pArt->SetActiveColour(wxColour(30, 30, 30));
@@ -420,32 +414,32 @@ void amElementNotebook::InitShowChoices()
 	m_itemPage->InitShowChoices();
 }
 
-void amElementNotebook::GoToStoryElement(StoryElement* element)
+void amElementNotebook::GoToStoryElement(am::StoryElement* element)
 {
-	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::Character)) )
 	{
 		SetSelection(0);
 		m_characterPage->GoToStoryElement(element);
 	}
-	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Location)) )
 	{
 		SetSelection(1);
 		m_locationPage->GoToStoryElement(element);
 	}
-	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Item)) )
 	{
 		SetSelection(2);
 		m_itemPage->GoToStoryElement(element);
 	}
 }
 
-bool amElementNotebook::ShouldShow(StoryElement* element) const
+bool amElementNotebook::ShouldShow(am::StoryElement* element) const
 {
-	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::Character)) )
 		return m_characterPage->ShouldShow(element);
-	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Location)) )
 		return m_locationPage->ShouldShow(element);
-	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Item)) )
 		return m_itemPage->ShouldShow(element);
 
 	return false;
@@ -458,7 +452,7 @@ void amElementNotebook::ClearAll()
 	m_itemPage->ClearAll();
 }
 
-void amElementNotebook::RemoveElementFromList(StoryElement* element)
+void amElementNotebook::RemoveElementFromList(am::StoryElement* element)
 {
 	wxListView* list = GetAppropriateList(element);
 
@@ -470,7 +464,7 @@ void amElementNotebook::RemoveElementFromList(StoryElement* element)
 	}
 }
 
-void amElementNotebook::UpdateElementInList(int n, StoryElement* element)
+void amElementNotebook::UpdateElementInList(int n, am::StoryElement* element)
 {
 	amElementNotebookPage* page = GetAppropriatePage(element);
 
@@ -485,7 +479,7 @@ void amElementNotebook::UpdateAll()
 	UpdateItemList();
 }
 
-wxListView* amElementNotebook::GetAppropriateList(StoryElement* element)
+wxListView* amElementNotebook::GetAppropriateList(am::StoryElement* element)
 {
 	wxListView* list = nullptr;
 	amElementNotebookPage* page = GetAppropriatePage(element);
@@ -496,15 +490,15 @@ wxListView* amElementNotebook::GetAppropriateList(StoryElement* element)
 	return list;
 }
 
-amElementNotebookPage* amElementNotebook::GetAppropriatePage(StoryElement* element)
+amElementNotebookPage* amElementNotebook::GetAppropriatePage(am::StoryElement* element)
 {
 	amElementNotebookPage* page = nullptr;
 
-	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::Character)) )
 		page = m_characterPage;
-	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Location)) )
 		page = m_locationPage;
-	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Item)) )
 		page = m_itemPage;
 
 	return page;
@@ -517,17 +511,17 @@ void amElementNotebook::UpdateSearchAutoComplete(wxBookCtrlEvent& WXUNUSED(event
 	switch ( sel )
 	{
 	case 0:
-		m_searchBar->AutoComplete(m_manager->GetCharacterNames());
+		m_searchBar->AutoComplete(am::GetCharacterNames());
 		m_searchBar->SetDescriptiveText("Search character");
 		break;
 
 	case 1:
-		m_searchBar->AutoComplete(m_manager->GetLocationNames());
+		m_searchBar->AutoComplete(am::GetLocationNames());
 		m_searchBar->SetDescriptiveText("Search location");
 		break;
 
 	case 2:
-		m_searchBar->AutoComplete(m_manager->GetItemNames());
+		m_searchBar->AutoComplete(am::GetItemNames());
 		m_searchBar->SetDescriptiveText("Search item");
 		break;
 	}

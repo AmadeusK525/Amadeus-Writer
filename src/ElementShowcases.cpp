@@ -52,7 +52,7 @@ amRelatedElementsContainer::amRelatedElementsContainer(wxWindow* parent, amTangi
 
 void amRelatedElementsContainer::OnAddElement(wxCommandEvent& event)
 {
-	amRelatedElementsDialog* addDialog = new amRelatedElementsDialog((wxWindow*)amGetManager()->GetMainFrame(),
+	amRelatedElementsDialog* addDialog = new amRelatedElementsDialog((wxWindow*)am::GetMainFrame(),
 		m_owner, this, amRelatedElementsDialog::MODE::ADD);
 	addDialog->CenterOnScreen();
 	addDialog->Show();
@@ -60,7 +60,7 @@ void amRelatedElementsContainer::OnAddElement(wxCommandEvent& event)
 
 void amRelatedElementsContainer::OnRemoveElement(wxCommandEvent& event)
 {
-	amRelatedElementsDialog* addDialog = new amRelatedElementsDialog((wxWindow*)amGetManager()->GetMainFrame(),
+	amRelatedElementsDialog* addDialog = new amRelatedElementsDialog((wxWindow*)am::GetMainFrame(),
 		m_owner, this, amRelatedElementsDialog::MODE::REMOVE);
 	addDialog->CenterOnScreen();
 	addDialog->Show();
@@ -69,33 +69,33 @@ void amRelatedElementsContainer::OnRemoveElement(wxCommandEvent& event)
 void amRelatedElementsContainer::OnElementButtons(wxCommandEvent& event)
 {
 	amElementButton* button = (amElementButton*)event.GetEventObject();
-	amGetManager()->GetElementsNotebook()->GoToStoryElement(button->element);
+	am::GetElementsNotebook()->GoToStoryElement(button->element);
 }
 
-void amRelatedElementsContainer::LoadAllElements(StoryElement* element)
+void amRelatedElementsContainer::LoadAllElements(am::StoryElement* element)
 {
-	DoLoad(element, [](StoryElement* related) { return true; });
+	DoLoad(element, [](am::StoryElement* related) { return true; });
 }
 
-void amRelatedElementsContainer::LoadCharacters(StoryElement* element)
+void amRelatedElementsContainer::LoadCharacters(am::StoryElement* element)
 {
-	DoLoad(element, [](StoryElement* related) { return dynamic_cast<Character*>(related) != nullptr; });
+	DoLoad(element, [](am::StoryElement* related) { return dynamic_cast<am::Character*>(related) != nullptr; });
 }
 
-void amRelatedElementsContainer::LoadLocations(StoryElement* element)
+void amRelatedElementsContainer::LoadLocations(am::StoryElement* element)
 {
-	DoLoad(element, [](StoryElement* related) { return dynamic_cast<Location*>(related) != nullptr; });
+	DoLoad(element, [](am::StoryElement* related) { return dynamic_cast<am::Location*>(related) != nullptr; });
 }
 
-void amRelatedElementsContainer::LoadLocationsByType(StoryElement* element)
+void amRelatedElementsContainer::LoadLocationsByType(am::StoryElement* element)
 {}
 
-void amRelatedElementsContainer::LoadItems(StoryElement* element)
+void amRelatedElementsContainer::LoadItems(am::StoryElement* element)
 {
-	DoLoad(element, [](StoryElement* related) { return dynamic_cast<Item*>(related) != nullptr; });
+	DoLoad(element, [](am::StoryElement* related) { return dynamic_cast<am::Item*>(related) != nullptr; });
 }
 
-void amRelatedElementsContainer::DoLoad(StoryElement* element, bool(*ShouldAdd)(StoryElement*))
+void amRelatedElementsContainer::DoLoad(am::StoryElement* element, bool(*ShouldAdd)(am::StoryElement*))
 {
 	m_owner = element;
 
@@ -103,7 +103,7 @@ void amRelatedElementsContainer::DoLoad(StoryElement* element, bool(*ShouldAdd)(
 	int relatedCount = element->relatedElements.size();
 
 	int i = 0;
-	for ( StoryElement*& pRelated : element->relatedElements )
+	for ( am::StoryElement*& pRelated : element->relatedElements )
 	{
 		if ( ShouldAdd(pRelated) )
 		{
@@ -147,7 +147,7 @@ void amRelatedElementsContainer::ClearAll()
 ///////////////////////////////////////////////////////////////////
 
 
-amRelatedElementsDialog::amRelatedElementsDialog(wxWindow* parent, StoryElement* element, amRelatedElementsContainer* container, MODE mode) :
+amRelatedElementsDialog::amRelatedElementsDialog(wxWindow* parent, am::StoryElement* element, amRelatedElementsContainer* container, MODE mode) :
 	wxFrame(parent, -1, "", wxDefaultPosition, wxSize(500, 500), wxCAPTION | wxSYSTEM_MENU | wxFRAME_FLOAT_ON_PARENT)
 {
 	m_element = element;
@@ -257,16 +257,14 @@ void amRelatedElementsDialog::LoadPossibleCharacters()
 {
 	if ( m_mode == ADD )
 	{
-		amProjectManager* manager = amGetManager();
-
 		int i = 0;
-		for ( Character*& pCharacter : manager->GetCharacters() )
+		for ( am::Character*& pCharacter : am::GetCharacters() )
 		{
 			if ( pCharacter == m_element )
 				continue;
 
 			bool has = false;
-			for ( StoryElement*& pPresent : m_element->relatedElements )
+			for ( am::StoryElement*& pPresent : m_element->relatedElements )
 			{
 				if ( pPresent == pCharacter )
 				{
@@ -279,7 +277,7 @@ void amRelatedElementsDialog::LoadPossibleCharacters()
 			{
 				m_characters->InsertItem(i, pCharacter->name);
 				if ( pCharacter->image.IsOk() )
-					m_characters->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(amGetScaledImage(24, 24, pCharacter->image))));
+					m_characters->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(am::GetScaledImage(24, 24, pCharacter->image))));
 				else
 					m_characters->SetItemColumnImage(i, 0, -1);
 
@@ -290,14 +288,14 @@ void amRelatedElementsDialog::LoadPossibleCharacters()
 	else
 	{
 		int i = 0;
-		for ( StoryElement*& pPresent : m_element->relatedElements )
+		for ( am::StoryElement*& pPresent : m_element->relatedElements )
 		{
-			Character* pCharacter = dynamic_cast<Character*>(pPresent);
+			am::Character* pCharacter = dynamic_cast<am::Character*>(pPresent);
 			if ( pCharacter )
 			{
 				m_characters->InsertItem(i, pCharacter->name);
 				if ( pCharacter->image.IsOk() )
-					m_characters->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(amGetScaledImage(24, 24, pCharacter->image))));
+					m_characters->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(am::GetScaledImage(24, 24, pCharacter->image))));
 				else
 					m_characters->SetItemColumnImage(i, 0, -1);
 
@@ -311,16 +309,14 @@ void amRelatedElementsDialog::LoadPossibleLocations()
 {
 	if ( m_mode == ADD )
 	{
-		amProjectManager* manager = amGetManager();
-
 		int i = 0;
-		for ( Location*& pLocation : manager->GetLocations() )
+		for ( am::Location*& pLocation : am::GetLocations() )
 		{
 			if ( pLocation == m_element )
 				continue;
 
 			bool has = false;
-			for ( StoryElement*& pPresent : m_element->relatedElements )
+			for ( am::StoryElement*& pPresent : m_element->relatedElements )
 			{
 				if ( pPresent == pLocation )
 				{
@@ -333,7 +329,7 @@ void amRelatedElementsDialog::LoadPossibleLocations()
 			{
 				m_locations->InsertItem(i, pLocation->name);
 				if ( pLocation->image.IsOk() )
-					m_locations->SetItemColumnImage(i, 0, m_locationImages->Add(wxBitmap(amGetScaledImage(24, 24, pLocation->image))));
+					m_locations->SetItemColumnImage(i, 0, m_locationImages->Add(wxBitmap(am::GetScaledImage(24, 24, pLocation->image))));
 				else
 					m_locations->SetItemColumnImage(i, 0, -1);
 
@@ -344,14 +340,14 @@ void amRelatedElementsDialog::LoadPossibleLocations()
 	else
 	{
 		int i = 0;
-		for ( StoryElement*& pPresent : m_element->relatedElements )
+		for ( am::StoryElement*& pPresent : m_element->relatedElements )
 		{
-			Location* pLocation = dynamic_cast<Location*>(pPresent);
+			am::Location* pLocation = dynamic_cast<am::Location*>(pPresent);
 			if ( pLocation )
 			{
 				m_locations->InsertItem(i, pLocation->name);
 				if ( pLocation->image.IsOk() )
-					m_locations->SetItemColumnImage(i, 0, m_locationImages->Add(wxBitmap(amGetScaledImage(24, 24, pLocation->image))));
+					m_locations->SetItemColumnImage(i, 0, m_locationImages->Add(wxBitmap(am::GetScaledImage(24, 24, pLocation->image))));
 				else
 					m_locations->SetItemColumnImage(i, 0, -1);
 
@@ -365,16 +361,14 @@ void amRelatedElementsDialog::LoadPossibleItems()
 {
 	if ( m_mode == ADD )
 	{
-		amProjectManager* manager = amGetManager();
-
 		int i = 0;
-		for ( Item*& pItem : manager->GetItems() )
+		for ( am::Item*& pItem : am::GetItems() )
 		{
 			if ( pItem == m_element )
 				continue;
 
 			bool has = false;
-			for ( StoryElement*& pPresent : m_element->relatedElements )
+			for ( am::StoryElement*& pPresent : m_element->relatedElements )
 			{
 				if ( pPresent == pItem )
 				{
@@ -387,7 +381,7 @@ void amRelatedElementsDialog::LoadPossibleItems()
 			{
 				m_items->InsertItem(i, pItem->name);
 				if ( pItem->image.IsOk() )
-					m_items->SetItemColumnImage(i, 0, m_itemImages->Add(wxBitmap(amGetScaledImage(24, 24, pItem->image))));
+					m_items->SetItemColumnImage(i, 0, m_itemImages->Add(wxBitmap(am::GetScaledImage(24, 24, pItem->image))));
 				else
 					m_items->SetItemColumnImage(i, 0, -1);
 
@@ -398,14 +392,14 @@ void amRelatedElementsDialog::LoadPossibleItems()
 	else
 	{
 		int i = 0;
-		for ( StoryElement*& pPresent : m_element->relatedElements )
+		for ( am::StoryElement*& pPresent : m_element->relatedElements )
 		{
-			Item* pItem = dynamic_cast<Item*>(pPresent);
+			am::Item* pItem = dynamic_cast<am::Item*>(pPresent);
 			if ( pItem )
 			{
 				m_items->InsertItem(i, pItem->name);
 				if ( pItem->image.IsOk() )
-					m_items->SetItemColumnImage(i, 0, m_itemImages->Add(wxBitmap(amGetScaledImage(24, 24, pItem->image))));
+					m_items->SetItemColumnImage(i, 0, m_itemImages->Add(wxBitmap(am::GetScaledImage(24, 24, pItem->image))));
 				else
 					m_items->SetItemColumnImage(i, 0, -1);
 
@@ -418,11 +412,10 @@ void amRelatedElementsDialog::LoadPossibleItems()
 void amRelatedElementsDialog::OnMainButton(wxCommandEvent& event)
 {
 	wxBusyCursor cursor;
-	amProjectManager* manager = amGetManager();
-
+	
 	int n;
 	wxString name;
-	StoryElement* toApply = nullptr;
+	am::StoryElement* toApply = nullptr;
 
 	switch ( m_notebook->GetSelection() )
 	{
@@ -432,7 +425,7 @@ void amRelatedElementsDialog::OnMainButton(wxCommandEvent& event)
 		if ( n != -1 )
 		{
 			name = m_characters->GetItemText(n);
-			for ( Character*& pCharacter : manager->GetCharacters() )
+			for ( am::Character*& pCharacter : am::GetCharacters() )
 			{
 				if ( pCharacter->name == name )
 				{
@@ -451,7 +444,7 @@ void amRelatedElementsDialog::OnMainButton(wxCommandEvent& event)
 		if ( n != -1 )
 		{
 			name = m_locations->GetItemText(n);
-			for ( Location*& pLocation : manager->GetLocations() )
+			for ( am::Location*& pLocation : am::GetLocations() )
 			{
 				if ( pLocation->name == name )
 				{
@@ -469,7 +462,7 @@ void amRelatedElementsDialog::OnMainButton(wxCommandEvent& event)
 		if ( n != -1 )
 		{
 			name = m_items->GetItemText(n);
-			for ( Item*& pItem : manager->GetItems() )
+			for ( am::Item*& pItem : am::GetItems() )
 			{
 				if ( pItem->name == name )
 				{
@@ -485,20 +478,19 @@ void amRelatedElementsDialog::OnMainButton(wxCommandEvent& event)
 	if ( toApply )
 	{
 		if ( m_mode == ADD )
-			manager->RelateStoryElements(m_element, toApply);
+			am::RelateStoryElements(m_element, toApply);
 		else
-			manager->UnrelateStoryElements(m_element, toApply);
+			am::UnrelateStoryElements(m_element, toApply);
 	}
 }
 
 void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent& event)
 {
 	wxBusyCursor cursor;
-	amProjectManager* manager = amGetManager();
-
+	
 	int n;
 	wxString name;
-	StoryElement* toAdd = nullptr;
+	am::StoryElement* toAdd = nullptr;
 
 	switch ( m_notebook->GetSelection() )
 	{
@@ -508,7 +500,7 @@ void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent& event)
 		if ( n != -1 )
 		{
 			name = m_characters->GetItemText(n);
-			for ( Character*& pCharacter : manager->GetCharacters() )
+			for ( am::Character*& pCharacter : am::GetCharacters() )
 			{
 				if ( pCharacter->name == name )
 				{
@@ -527,7 +519,7 @@ void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent& event)
 		if ( n != -1 )
 		{
 			name = m_locations->GetItemText(n);
-			for ( Location*& pLocation : manager->GetLocations() )
+			for ( am::Location*& pLocation : am::GetLocations() )
 			{
 				if ( pLocation->name == name )
 				{
@@ -545,7 +537,7 @@ void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent& event)
 		if ( n != -1 )
 		{
 			name = m_items->GetItemText(n);
-			for ( Item*& pItem : manager->GetItems() )
+			for ( am::Item*& pItem : am::GetItems() )
 			{
 				if ( pItem->name == name )
 				{
@@ -559,7 +551,7 @@ void amRelatedElementsDialog::OnRemoveElement(wxCommandEvent& event)
 	}
 
 	if ( toAdd )
-		manager->UnrelateStoryElements(m_element, toAdd);
+		am::UnrelateStoryElements(m_element, toAdd);
 }
 
 void amRelatedElementsDialog::OnListResize(wxSizeEvent& event)
@@ -574,7 +566,7 @@ void amRelatedElementsDialog::OnListResize(wxSizeEvent& event)
 ///////////////////////////////////////////////////////////////////
 wxIMPLEMENT_ABSTRACT_CLASS(amElementShowcase, wxWindow);
 
-bool amElementShowcase::Create(wxWindow* parent, amProjectManager* manager)
+bool amElementShowcase::Create(wxWindow* parent)
 {
 	return wxWindow::Create(parent, -1);
 }
@@ -583,15 +575,14 @@ wxIMPLEMENT_ABSTRACT_CLASS(amTangibleElementShowcase, amElementShowcase);
 
 amTangibleElementShowcase::amTangibleElementShowcase(wxWindow* parent)
 {
-	Create(parent, amGetManager());
+	Create(parent);
 }
 
-bool amTangibleElementShowcase::Create(wxWindow* parent, amProjectManager* manager)
+bool amTangibleElementShowcase::Create(wxWindow* parent)
 {
-	if ( !amElementShowcase::Create(parent, manager) )
+	if ( !amElementShowcase::Create(parent) )
 		return false;
 
-	m_pManager = manager;
 	wxFont font(wxFontInfo(12).Bold());
 
 	SetDoubleBuffered(true);
@@ -687,21 +678,21 @@ bool amTangibleElementShowcase::Create(wxWindow* parent, amProjectManager* manag
 	m_addDocumentBtn->SetBackgroundColour(wxColour(15, 15, 15));
 	m_addDocumentBtn->SetForegroundColour(wxColour(255, 255, 255));
 	m_addDocumentBtn->Bind(wxEVT_BUTTON, &amTangibleElementShowcase::OnAddDocument, this);
-	m_addDocumentBtn->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
-	m_addDocumentBtn->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+	m_addDocumentBtn->Bind(wxEVT_ENTER_WINDOW, am::OnEnterDarkButton);
+	m_addDocumentBtn->Bind(wxEVT_LEAVE_WINDOW, am::OnLeaveDarkButton);
 	m_addDocumentBtn->Bind(wxEVT_UPDATE_UI, enableBut);
 	wxButton* removeDocument = new wxButton(m_secondPanel, -1, "Remove", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	removeDocument->SetBackgroundColour(wxColour(15, 15, 15));
 	removeDocument->SetForegroundColour(wxColour(255, 255, 255));
-	removeDocument->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
-	removeDocument->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+	removeDocument->Bind(wxEVT_ENTER_WINDOW, am::OnEnterDarkButton);
+	removeDocument->Bind(wxEVT_LEAVE_WINDOW, am::OnLeaveDarkButton);
 	removeDocument->Bind(wxEVT_BUTTON, &amTangibleElementShowcase::OnRemoveDocument, this);
 	removeDocument->Bind(wxEVT_UPDATE_UI, enableBut);
 	wxButton* openDocument = new wxButton(m_secondPanel, -1, "Open", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 	openDocument->SetBackgroundColour(wxColour(15, 15, 15));
 	openDocument->SetForegroundColour(wxColour(255, 255, 255));
-	openDocument->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
-	openDocument->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+	openDocument->Bind(wxEVT_ENTER_WINDOW, am::OnEnterDarkButton);
+	openDocument->Bind(wxEVT_LEAVE_WINDOW, am::OnLeaveDarkButton);
 	openDocument->Bind(wxEVT_BUTTON, &amTangibleElementShowcase::OnOpenDocument, this);
 	openDocument->Bind(wxEVT_UPDATE_UI, enableBut);
 
@@ -733,9 +724,9 @@ bool amTangibleElementShowcase::Create(wxWindow* parent, amProjectManager* manag
 	return true;
 }
 
-void amTangibleElementShowcase::SetData(StoryElement* element)
+void amTangibleElementShowcase::SetData(am::StoryElement* element)
 {
-	if ( !element || !element->IsKindOf(wxCLASSINFO(TangibleElement)) )
+	if ( !element || !element->IsKindOf(wxCLASSINFO(am::TangibleElement)) )
 	{
 		ClearAll();
 		return;
@@ -743,7 +734,7 @@ void amTangibleElementShowcase::SetData(StoryElement* element)
 
 	Freeze();
 
-	TangibleElement* pTangible = (TangibleElement*)element;
+	am::TangibleElement* pTangible = (am::TangibleElement*)element;
 
 	if ( !LoadFirstPanel(pTangible) || !LoadSecondPanel(pTangible) )
 		ClearAll();
@@ -753,7 +744,7 @@ void amTangibleElementShowcase::SetData(StoryElement* element)
 	Thaw();
 }
 
-bool amTangibleElementShowcase::LoadFirstPanel(TangibleElement* element)
+bool amTangibleElementShowcase::LoadFirstPanel(am::TangibleElement* element)
 {
 	m_mainPanel->Freeze();
 
@@ -766,34 +757,34 @@ bool amTangibleElementShowcase::LoadFirstPanel(TangibleElement* element)
 
 	switch ( element->role )
 	{
-	case cProtagonist:
+	case am::cProtagonist:
 		role = _("Protagonist");
 		rolebg = { 230, 60, 60 };
 		rolefg = { 10, 10, 10 };
 		break;
 
-	case cSupporting:
+	case am::cSupporting:
 		role = _("Supporting");
 		rolebg = { 130, 230, 180 };
 		rolefg = { 10, 10, 10 };
 		break;
 
-	case cVillian:
+	case am::cVillian:
 		role = _("Villian");
 		rolebg = { 100, 20, 20 };
 		rolefg = { 255, 255, 255 };
 		break;
 
-	case cSecondary:
-	case lLow:
-	case iLow:
+	case am::cSecondary:
+	case am::lLow:
+	case am::iLow:
 		role = _("Secondary");
 		rolebg = { 220, 220, 220 };
 		rolefg = { 10, 10, 10 };
 		break;
 
-	case lHigh:
-	case iHigh:
+	case am::lHigh:
+	case am::iHigh:
 		role = "Main";
 		rolebg = { 230, 60, 60 };
 		rolefg = { 10,10,10 };
@@ -815,7 +806,7 @@ bool amTangibleElementShowcase::LoadFirstPanel(TangibleElement* element)
 	return false;
 }
 
-bool amTangibleElementShowcase::LoadSecondPanel(TangibleElement* element)
+bool amTangibleElementShowcase::LoadSecondPanel(am::TangibleElement* element)
 {
 	m_secondPanel->Freeze();
 
@@ -824,7 +815,7 @@ bool amTangibleElementShowcase::LoadSecondPanel(TangibleElement* element)
 	m_documentViewModel->ClearAll();
 	for ( int i = 0; i < element->documents.size(); i++ )
 	{
-		Document*& pDocument = element->documents[i];
+		am::Document*& pDocument = element->documents[i];
 		if ( pDocument->isInTrash )
 			continue;
 
@@ -853,7 +844,7 @@ bool amTangibleElementShowcase::LoadSecondPanel(TangibleElement* element)
 	return true;
 }
 
-void amTangibleElementShowcase::LoadShortAttr(StoryElement* element)
+void amTangibleElementShowcase::LoadShortAttr(am::StoryElement* element)
 {
 	size_t nWrapItemSize = m_pShortAttrSizer->GetItemCount();
 
@@ -915,7 +906,7 @@ void amTangibleElementShowcase::LoadShortAttr(StoryElement* element)
 	}
 }
 
-void amTangibleElementShowcase::LoadLongAttr(StoryElement * element)
+void amTangibleElementShowcase::LoadLongAttr(am::StoryElement * element)
 {
 	wxVector<wxTextCtrl*> vTextCtrls;
 
@@ -1019,7 +1010,7 @@ void amTangibleElementShowcase::OnDocumentActivated(wxDataViewEvent& event)
 	StoryTreeModelNode* pNode = (StoryTreeModelNode*)event.GetItem().GetID();
 
 	if ( pNode && pNode->IsDocument() )
-		amGetManager()->OpenDocument(pNode->GetDocument());
+		am::OpenDocument(pNode->GetDocument());
 }
 
 void amTangibleElementShowcase::OnPreviousPanel(wxCommandEvent& event)
@@ -1044,17 +1035,17 @@ void amTangibleElementShowcase::OnAddDocument(wxCommandEvent& event)
 		wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT));
 	dvc->SetBackgroundColour(wxColour(90, 90, 90));
 
-	for ( Book*& pBook : amGetManager()->GetBooks() )
+	for ( am::Book*& pBook : am::GetBooks() )
 	{
 		StoryTreeModelNode* pBookNode = new StoryTreeModelNode(pBook);
 		wxDataViewItem bookItem(pBookNode);
 		m_addDocumentViewModel->GetBooks().push_back(pBookNode);
 		m_addDocumentViewModel->ItemAdded(wxDataViewItem(nullptr), bookItem);
 
-		for ( Document*& pDocument : pBook->documents )
+		for ( am::Document*& pDocument : pBook->documents )
 		{
 			bool bIsPresent = false;
-			for ( Document*& pDocumentInElement : ((TangibleElement*)m_element)->documents )
+			for ( am::Document*& pDocumentInElement : ((am::TangibleElement*)m_element)->documents )
 			{
 				if ( pDocumentInElement == pDocument )
 				{
@@ -1081,9 +1072,9 @@ void amTangibleElementShowcase::OnAddDocument(wxCommandEvent& event)
 			if ( !pNode->IsDocument() )
 				return;
 
-			amGetManager()->AddElementToDocument((TangibleElement*)m_element, pNode->GetDocument());
+			am::AddElementToDocument((am::TangibleElement*)m_element, pNode->GetDocument());
 			m_addDocumentViewModel->DeleteItem(wxDataViewItem(pNode));
-			LoadSecondPanel((TangibleElement*)m_element);
+			LoadSecondPanel((am::TangibleElement*)m_element);
 		});
 
 	wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
@@ -1101,10 +1092,9 @@ void amTangibleElementShowcase::OnAddDocument(wxCommandEvent& event)
 void amTangibleElementShowcase::OnRemoveDocument(wxCommandEvent& event)
 {
 	wxBusyCursor cursor;
-	amProjectManager* manager = amGetManager();
-
+	
 	wxDataViewItemArray selections;
-	wxVector<Document*> toBeRemoved;
+	wxVector<am::Document*> toBeRemoved;
 	size_t selCount = m_documentView->GetSelections(selections);
 	
 	for ( int i = 0; i < selCount; i++ )
@@ -1116,17 +1106,16 @@ void amTangibleElementShowcase::OnRemoveDocument(wxCommandEvent& event)
 		}
 	}
 
-	for ( Document*& pDocument : toBeRemoved )
+	for ( am::Document*& pDocument : toBeRemoved )
 	{
-		manager->RemoveElementFromDocument((TangibleElement*)m_element, pDocument);
+		am::RemoveElementFromDocument((am::TangibleElement*)m_element, pDocument);
 	}
 }
 
 void amTangibleElementShowcase::OnOpenDocument(wxCommandEvent& event)
 {
 	wxBusyCursor busy;
-	amProjectManager* manager = amGetManager();
-
+	
 	wxDataViewItemArray selections;
 	size_t selCount = m_documentView->GetSelections(selections);
 
@@ -1135,7 +1124,7 @@ void amTangibleElementShowcase::OnOpenDocument(wxCommandEvent& event)
 		StoryTreeModelNode* pNode = (StoryTreeModelNode*)selections[i].GetID();
 		if ( pNode->IsDocument() )
 		{
-			manager->OpenDocument(pNode->GetDocument());
+			am::OpenDocument(pNode->GetDocument());
 		}
 	}
 }
@@ -1150,12 +1139,12 @@ wxIMPLEMENT_DYNAMIC_CLASS(amCharacterShowcase, amTangibleElementShowcase);
 
 amCharacterShowcase::amCharacterShowcase(wxWindow* parent)
 {
-	Create(parent, amGetManager());
+	Create(parent);
 }
 
-bool amCharacterShowcase::Create(wxWindow* parent, amProjectManager* manager)
+bool amCharacterShowcase::Create(wxWindow* parent)
 {
-	if ( !amTangibleElementShowcase::Create(parent, manager) )
+	if ( !amTangibleElementShowcase::Create(parent) )
 		return false;
 
 	wxFont font(wxFontInfo(12).Bold());
@@ -1180,15 +1169,15 @@ void amCharacterShowcase::OnIsAlive(wxCommandEvent& event)
 		return;
 
 	wxBusyCursor busy;
-	((Character*)m_element)->isAlive = event.GetInt();
-	m_element->Update(amGetManager()->GetStorage());
+	((am::Character*)m_element)->isAlive = event.GetInt();
+	m_element->Update(am::GetProjectDatabase());
 
 	event.Skip();
 }
 
-bool amCharacterShowcase::LoadFirstPanel(TangibleElement* element)
+bool amCharacterShowcase::LoadFirstPanel(am::TangibleElement* element)
 {
-	Character* pCharacter = dynamic_cast<Character*>(element);
+	am::Character* pCharacter = dynamic_cast<am::Character*>(element);
 	if ( !pCharacter )
 		return false;
 
@@ -1236,12 +1225,12 @@ wxIMPLEMENT_DYNAMIC_CLASS(amLocationShowcase, amTangibleElementShowcase);
 
 amLocationShowcase::amLocationShowcase(wxWindow* parent)
 {
-	Create(parent, amGetManager());
+	Create(parent);
 }
 
-bool amLocationShowcase::Create(wxWindow* parent, amProjectManager* manager)
+bool amLocationShowcase::Create(wxWindow* parent)
 {
-	if ( !amTangibleElementShowcase::Create(parent, manager) )
+	if ( !amTangibleElementShowcase::Create(parent) )
 		return false;
 
 	wxFont font(wxFontInfo(12).Bold());
@@ -1259,9 +1248,9 @@ bool amLocationShowcase::Create(wxWindow* parent, amProjectManager* manager)
 	return true;
 }
 
-bool amLocationShowcase::LoadFirstPanel(TangibleElement* element)
+bool amLocationShowcase::LoadFirstPanel(am::TangibleElement* element)
 {
-	Location* pLocation = dynamic_cast<Location*>(element);
+	am::Location* pLocation = dynamic_cast<am::Location*>(element);
 	if ( !pLocation )
 		return false;
 
@@ -1296,7 +1285,7 @@ void amLocationShowcase::ClearAll()
 	Thaw();
 }
 
-void amLocationShowcase::LoadLongAttr(StoryElement* element)
+void amLocationShowcase::LoadLongAttr(am::StoryElement* element)
 {
 	wxVector<wxTextCtrl*> vTextCtrls;
 
@@ -1390,12 +1379,12 @@ wxIMPLEMENT_DYNAMIC_CLASS(amItemShowcase, amTangibleElementShowcase);
 
 amItemShowcase::amItemShowcase(wxWindow* parent)
 {
-	Create(parent, amGetManager());
+	Create(parent);
 }
 
-bool amItemShowcase::Create(wxWindow* parent, amProjectManager* manager)
+bool amItemShowcase::Create(wxWindow* parent)
 {
-	if ( !amTangibleElementShowcase::Create(parent, manager) )
+	if ( !amTangibleElementShowcase::Create(parent) )
 		return false;
 
 	wxFont labelFont(wxFontInfo(12).Bold());
@@ -1421,9 +1410,9 @@ bool amItemShowcase::Create(wxWindow* parent, amProjectManager* manager)
 	return true;
 }
 
-bool amItemShowcase::LoadFirstPanel(TangibleElement* element)
+bool amItemShowcase::LoadFirstPanel(am::TangibleElement* element)
 {
-	Item* pItem = dynamic_cast<Item*>(element);
+	am::Item* pItem = dynamic_cast<am::Item*>(element);
 	if ( !pItem )
 		return false;
 

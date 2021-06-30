@@ -12,26 +12,24 @@
 #include <list>
 
 class StoryGrid;
-struct Document;
+struct am::Document;
 
 class amStoryNotebook : public wxAuiNotebook
 {
 private:
-	amProjectManager* m_manager = nullptr;
-
 	StoryGrid* m_grid = nullptr;
 	wxListView* m_list = nullptr;
 
 public:
-	amStoryNotebook(wxWindow* parent, amProjectManager* manager);
+	amStoryNotebook(wxWindow* parent);
 
-	void SetBookData(Book* book);
+	void SetBookData(am::Book* book);
 
-	void AddDocument(Document* document, int pos = -1);
-	void AddToList(Document* document, int pos = -1);
+	void AddDocument(am::Document* document, int pos = -1);
+	void AddToList(am::Document* document, int pos = -1);
 
-	void DeleteDocument(Document* document);
-	void RemoveFromList(Document* document);
+	void DeleteDocument(am::Document* document);
+	void RemoveFromList(am::Document* document);
 
 	void LayoutGrid();
 
@@ -50,13 +48,11 @@ public:
 class StoryGrid : public wxScrolledWindow
 {
 private:
-	amProjectManager* m_manager = nullptr;
-
 	wxVector<wxButton*> m_buttons{};
 	wxWrapSizer* m_btnSizer = nullptr;
 
 public:
-	StoryGrid(wxWindow* parent, amProjectManager* manager);
+	StoryGrid(wxWindow* parent);
 
 	void AddButton();
 	void DeleteButton();

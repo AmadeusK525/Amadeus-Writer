@@ -6,8 +6,8 @@
 
 #include "wxmemdbg.h"
 
-amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
-	wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE), m_manager(manager)
+amStoryNotebook::amStoryNotebook(wxWindow* parent) :
+	wxAuiNotebook(parent, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
 	wxAuiSimpleTabArt* pArt = new wxAuiSimpleTabArt();
 	pArt->SetColour(wxColour(50, 50, 50));
@@ -17,7 +17,7 @@ amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
 	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
 	GetAuiManager().GetArtProvider()->SetMetric(wxAUI_DOCKART_GRADIENT_TYPE, wxAUI_GRADIENT_NONE);
 
-	m_grid = new StoryGrid(this, m_manager);
+	m_grid = new StoryGrid(this);
 	m_grid->SetBackgroundColour(wxColour(150, 0, 0));
 
 	wxPanel* pListPanel = new wxPanel(this);
@@ -47,35 +47,35 @@ amStoryNotebook::amStoryNotebook(wxWindow* parent, amProjectManager* manager) :
 	AddPage(pListPanel, "List");
 }
 
-void amStoryNotebook::SetBookData(Book* book)
+void amStoryNotebook::SetBookData(am::Book* book)
 {
 	ClearAll();
 
-	for ( Document*& pDocument : book->documents )
+	for ( am::Document*& pDocument : book->documents )
 	{
 		AddDocument(pDocument);
 	}
 }
 
-void amStoryNotebook::AddDocument(Document* document, int pos)
+void amStoryNotebook::AddDocument(am::Document* document, int pos)
 {
 	m_grid->AddButton();
 	AddToList(document, pos);
 }
 
-void amStoryNotebook::AddToList(Document* document, int pos)
+void amStoryNotebook::AddToList(am::Document* document, int pos)
 {
 	if ( pos == -1 )
 		pos = m_list->GetItemCount();
 
 	size_t characterCount = 0, locationCount = 0, itemCount = 0;
-	for ( TangibleElement*& pElement : document->vTangibleElements )
+	for ( am::TangibleElement*& pElement : document->vTangibleElements )
 	{
-		if ( dynamic_cast<Character*>(pElement) )
+		if ( dynamic_cast<am::Character*>(pElement) )
 			characterCount++;
-		else if ( dynamic_cast<Location*>(pElement) )
+		else if ( dynamic_cast<am::Location*>(pElement) )
 			locationCount++;
-		else if ( dynamic_cast<Item*>(pElement) )
+		else if ( dynamic_cast<am::Item*>(pElement) )
 			itemCount++;
 	}
 
@@ -86,13 +86,13 @@ void amStoryNotebook::AddToList(Document* document, int pos)
 	//m_list->SetItem(pos, 3, document.pointOfView);
 }
 
-void amStoryNotebook::DeleteDocument(Document* document)
+void amStoryNotebook::DeleteDocument(am::Document* document)
 {
 	m_grid->DeleteButton();
 	RemoveFromList(document);
 }
 
-void amStoryNotebook::RemoveFromList(Document* document)
+void amStoryNotebook::RemoveFromList(am::Document* document)
 {
 	m_list->DeleteItem(document->position - 1);
 }
@@ -115,11 +115,9 @@ void amStoryNotebook::ClearAll()
 //////////////////////////////////////////////////////////////////
 
 
-StoryGrid::StoryGrid(wxWindow* parent, amProjectManager* manager) : wxScrolledWindow(parent, wxID_ANY,
+StoryGrid::StoryGrid(wxWindow* parent) : wxScrolledWindow(parent, wxID_ANY,
 	wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL)
 {
-	m_manager = manager;
-
 	m_btnSizer = new wxWrapSizer(wxHORIZONTAL);
 	m_btnSizer->SetMinSize(wxSize(300, 300));
 
@@ -164,7 +162,7 @@ void StoryGrid::DeleteButton()
 
 void StoryGrid::OpenDocument(unsigned int documentIndex)
 {
-	m_manager->OpenDocument(documentIndex);
+	am::OpenDocument(documentIndex);
 }
 
 void StoryGrid::OnButtonPressed(wxCommandEvent& event)

@@ -9,7 +9,7 @@
 #include <wx\tglbtn.h>
 
 #include "TimelineShapes.h"
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 #include "amUtility.h"
 
 #include <map>
@@ -395,7 +395,6 @@ private:
 class amTLTimeline : public amSplitterWindow
 {
 private:
-	amProjectManager* m_manager = nullptr;
 	amOutline* m_outline = nullptr;
 
 	amTLTimelineCanvas* m_canvas = nullptr;
@@ -445,7 +444,7 @@ public:
 	inline amOutline* GetOutline() { return m_outline; }
 
 	void Save(bool doCanvas = true, bool doElements = true);
-	void Load(amProjectSQLDatabase* db);
+	void Load(am::ProjectSQLDatabase* db);
 
 	void SaveTimelineElements(wxStringOutputStream& stream);
 	void LoadTimelineElements(wxStringInputStream& stream);

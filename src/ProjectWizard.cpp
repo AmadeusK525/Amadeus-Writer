@@ -1,4 +1,5 @@
 #include "ProjectWizard.h"
+#include "MyApp.h"
 
 #include <wx\wx.h>
 
@@ -10,15 +11,17 @@ amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id)
 	Create(parent, id, "Project Wizard", wxNullBitmap, wxDefaultPosition,
 		wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 
+	m_btnNext->Bind(wxEVT_BUTTON, &amProjectWizard::OnNextBtn, this);
+
 	SetIcon(wxICON(amadeus));
 
 	SetBitmapPlacement(wxWIZARD_VALIGN_CENTRE);
 	//SetLayoutAdaptationMode(wxDIALOG_ADAPTATION_MODE_ENABLED);
 
 	wxWizardPageSimple* page2 = new wxWizardPageSimple(this);
-	wxWizardPageSimple* page3 = new wxWizardPageSimple(this);
+	m_pLoadPage = new wxWizardPageSimple(this);
 	wxWizardPageSimple* page4 = new wxWizardPageSimple(this);
-	m_page1 = new amFirstWizardPage(this, page2, page3);
+	m_page1 = new amFirstWizardPage(this, page2, m_pLoadPage);
 
 	wxStaticText* label = new wxStaticText(page2, -1, _("Please select a folder where\nyour project will be located:"));
 	label->SetForegroundColour(wxColour(255, 255, 255));
@@ -26,10 +29,10 @@ amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id)
 	m_dirPicker = new wxDirPickerCtrl(page2, -1, "", "Select a folder", wxDefaultPosition,
 		wxDefaultSize, wxDIRP_DEFAULT_STYLE | wxDIRP_SMALL | wxDIRP_DIR_MUST_EXIST);
 
-	wxStaticText* label2 = new wxStaticText(page3, -1, _("Please select an .amp file for\nloading your project:"));
+	wxStaticText* label2 = new wxStaticText(m_pLoadPage, -1, _("Please select an .amp file for\nloading your project:"));
 	label2->SetForegroundColour(wxColour(255, 255, 255));
 	label2->SetFont(wxFontInfo(10).Bold());
-	m_filePicker = new wxFilePickerCtrl(page3, -1, "", _("Select a file"), _("Amadeus Project files (*.amp)|*.amp"),
+	m_filePicker = new wxFilePickerCtrl(m_pLoadPage, -1, "", _("Select a file"), _("Amadeus Project files (*.amp)|*.amp"),
 		wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE | wxFLP_SMALL | wxFLP_FILE_MUST_EXIST);
 
 	wxStaticText* label3 = new wxStaticText(page4, -1, "Project Title:");
@@ -51,7 +54,7 @@ amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id)
 	siz3->AddSpacer(5);
 	siz3->Add(m_filePicker, wxSizerFlags(0).Expand());
 	siz3->AddStretchSpacer(1);
-	page3->SetSizerAndFit(siz3);
+	m_pLoadPage->SetSizerAndFit(siz3);
 
 	wxBoxSizer* siz4 = new wxBoxSizer(wxVERTICAL);
 	siz4->Add(label3, wxSizerFlags(0).CenterHorizontal());
@@ -61,10 +64,10 @@ amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id)
 	page4->SetSizerAndFit(siz4);
 
 	page2->SetNext(page4);
-	page3->SetNext(nullptr);
+	m_pLoadPage->SetNext(nullptr);
 	page4->SetNext(nullptr);
 	page2->SetPrev(m_page1);
-	page3->SetPrev(m_page1);
+	m_pLoadPage->SetPrev(m_page1);
 	page4->SetPrev(page2);
 
 	GetPageAreaSizer()->Add(m_page1);
@@ -84,6 +87,27 @@ wxFileName amProjectWizard::GetFileName()
 
 		return fileName;
 	}
+}
+
+void amProjectWizard::OnNextBtn(wxCommandEvent& event)
+{
+	if ( !GetCurrentPage()->GetNext() )
+	{
+		wxFileName fileName(GetFileName());
+
+		if ( (IsLoading() && (!wxFileName::Exists(fileName.GetFullPath()) || fileName.GetExt() != "amp")) 
+			|| !wxFileName::Exists(fileName.GetPath()) )
+		{ 
+			wxMessageBox("Path to .amp file isn't valid! Plase chose a valid path.");
+			return;
+		}
+		else
+		{
+			wxGetApp().OnWizardFinished(fileName);
+		}
+	}
+
+	event.Skip();
 }
 
 

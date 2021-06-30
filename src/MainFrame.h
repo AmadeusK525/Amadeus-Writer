@@ -8,13 +8,11 @@
 #include <wx\splitter.h>
 
 #include "amUtility.h"
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 
 class amMainFrame : public wxFrame
 {
 private:
-	amProjectManager* m_manager = nullptr;
-
 	wxPanel* m_mainPanel = nullptr,
 		* m_panel = nullptr;
 
@@ -44,7 +42,6 @@ private:
 
 public:
 	amMainFrame(const wxString& title,
-		amProjectManager* manager,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize);
 
@@ -55,6 +52,8 @@ public:
 	amRelease* GetRelease();
 
 	wxSimplebook* GetSimplebook() { return m_mainBook; }
+
+	void ClearAll();
 
 	void OnQuit(wxCommandEvent& event);
 	void OnNewFile(wxCommandEvent& event);

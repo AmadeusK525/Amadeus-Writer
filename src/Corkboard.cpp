@@ -23,9 +23,6 @@ END_EVENT_TABLE()
 
 amCorkboard::amCorkboard(wxWindow* parent) : wxPanel(parent)
 {
-	m_outline = (amOutline*)(parent->GetParent());
-	m_manager = amGetManager();
-
 	m_toolBar = new wxToolBar(this, -1);
 	m_toolBar->AddRadioTool(TOOL_Cursor, "", wxBITMAP_PNG(cursor), wxNullBitmap, "Default");
 	m_toolBar->AddRadioTool(TOOL_NewNote, "", wxBITMAP_PNG(newNote), wxNullBitmap, "New note");
@@ -96,7 +93,7 @@ void amCorkboard::LayoutAll()
 	Layout();
 	m_canvas->Layout();
 	m_corkboardSizer->Layout();
-	m_outline->Layout();
+	am::GetOutline()->Layout();
 }
 
 void amCorkboard::SetToolMode(ToolMode mode)
@@ -129,7 +126,7 @@ void amCorkboard::ExportToImage(wxBitmapType type)
 	wxString dummyName = name;
 
 	int i = 0;
-	while ( wxFileName::Exists(m_manager->GetPath(true).ToStdString() + "Images\\Corkboard\\" + dummyName.ToStdString()) )
+	while ( wxFileName::Exists(am::GetPath(true).ToStdString() + "Images\\Corkboard\\" + dummyName.ToStdString()) )
 	{
 		dummyName = dummyName + " (" + std::to_string(i++) + ")";
 	}
@@ -139,12 +136,12 @@ void amCorkboard::ExportToImage(wxBitmapType type)
 	switch ( type )
 	{
 	case wxBITMAP_TYPE_PNG:
-		m_canvas->SaveCanvasToImage(m_manager->GetPath(true) +
+		m_canvas->SaveCanvasToImage(am::GetPath(true) +
 			"Images\\Corkboard\\" + name + ".png",
 			type, true, 1.0);
 		break;
 	case wxBITMAP_TYPE_BMP:
-		m_canvas->SaveCanvasToImage(m_manager->GetPath(true) +
+		m_canvas->SaveCanvasToImage(am::GetPath(true) +
 			"Images\\Corkboard\\" + name + ".bmp",
 			type, true, 1.0);
 		break;
@@ -160,7 +157,7 @@ void amCorkboard::Save()
 		{
 			m_isSaving = true;
 
-			amSQLEntry sqlEntry;
+			am::SQLEntry sqlEntry;
 			sqlEntry.tableName = "outline_corkboards";
 			sqlEntry.name = "Corkboard Canvas";
 
@@ -169,7 +166,7 @@ void amCorkboard::Save()
 			wxStringOutputStream sstream(&sqlEntry.strings["content"]);
 			m_canvas->SaveCanvas(sstream);
 
-			m_manager->SaveSQLEntry(sqlEntry, sqlEntry);
+			am::SaveSQLEntry(sqlEntry, sqlEntry);
 			m_isSaving = false;
 		}
 	);
@@ -177,7 +174,7 @@ void amCorkboard::Save()
 	thread.detach();
 }
 
-void amCorkboard::Load(amProjectSQLDatabase* db)
+void amCorkboard::Load(am::ProjectSQLDatabase* db)
 {
 	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM outline_corkboards;");
 	while ( result.NextRow() )
@@ -204,8 +201,6 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 	wxWindowID id, const wxPoint& pos, const wxSize& size, long style) :
 	amSFShapeCanvas(canvasManager, parent, id, pos, size, style)
 {
-
-	m_manager = amGetManager();
 	m_parent = (amCorkboard*)parent;
 
 	// Remove grid lines.
@@ -242,9 +237,9 @@ CorkboardCanvas::CorkboardCanvas(wxSFDiagramManager* canvasManager, wxWindow* pa
 
 void CorkboardCanvas::DoFullScreen(bool fs)
 {
-	amOutline* outline = m_parent->GetOutline();
+	amOutline* outline = am::GetOutline();
 
-	amDoSubWindowFullscreen(m_parent, outline->GetCorkboardHolder(), fs,
+	am::DoSubWindowFullscreen(m_parent, outline->GetCorkboardHolder(), fs,
 		outline->GetCorkHolderSizer(), wxSizerFlags(1).Expand(), 0);
 	m_parent->GetToolbar()->ToggleTool(amCorkboard::TOOL_CorkboardFullScreen, fs);
 

@@ -3,7 +3,7 @@
 
 #include <wx\mstream.h>
 
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 
 #include "wxmemdbg.h"
 
@@ -90,14 +90,14 @@ wxStringMultimap xsStringMultimapIO::FromString(const wxString& value)
 }
 
 
-CompType StoryElement::elCompType = CompRole;
-CompType Character::cCompType = CompRole;
-CompType Location::lCompType = CompRole;
-CompType Item::iCompType = CompRole;
+am::CompType am::StoryElement::elCompType = CompRole;
+am::CompType am::Character::cCompType = CompRole;
+am::CompType am::Location::lCompType = CompRole;
+am::CompType am::Item::iCompType = CompRole;
 
-wxIMPLEMENT_DYNAMIC_CLASS(StoryElement, wxObject);
+wxIMPLEMENT_DYNAMIC_CLASS(am::StoryElement, wxObject);
 
-StoryElement::StoryElement()
+am::StoryElement::StoryElement()
 {
 	XS_SERIALIZE_STRING(name, wxT("name"));
 	XS_SERIALIZE_INT(role, wxT("role"));
@@ -106,7 +106,7 @@ StoryElement::StoryElement()
 	XS_SERIALIZE_PROPERTY(mLongAttributes, wxT("unordered_string_map"), "long_attributes");
 }
 
-void StoryElement::Save(amProjectSQLDatabase* db)
+void am::StoryElement::Save(ProjectSQLDatabase* db)
 {
 	bool bDoImage = image.IsOk();
 
@@ -141,7 +141,7 @@ void StoryElement::Save(amProjectSQLDatabase* db)
 	SetId(db->GetSQLEntryId(GenerateSQLEntryForId()));
 }
 
-bool StoryElement::Update(amProjectSQLDatabase* db)
+bool am::StoryElement::Update(ProjectSQLDatabase* db)
 {
 	if ( dbID == -1 )
 		return false;
@@ -180,7 +180,7 @@ bool StoryElement::Update(amProjectSQLDatabase* db)
 	return true;
 }
 
-wxString StoryElement::GetXMLString()
+wxString am::StoryElement::GetXMLString()
 {
 	wxXmlDocument xmlDoc;
 	wxXmlNode* pRootNode = this->SerializeObject(nullptr);
@@ -192,7 +192,7 @@ wxString StoryElement::GetXMLString()
 	return sstream.GetString();
 }
 
-void StoryElement::EditTo(const StoryElement& other)
+void am::StoryElement::EditTo(const am::StoryElement& other)
 {
 	name = other.name;
 	role = other.role;
@@ -204,9 +204,9 @@ void StoryElement::EditTo(const StoryElement& other)
 	relatedElements = other.relatedElements;
 }
 
-amSQLEntry StoryElement::GenerateSQLEntrySimple()
+am::SQLEntry am::StoryElement::GenerateSQLEntrySimple()
 {
-	amSQLEntry sqlEntry;
+	am::SQLEntry sqlEntry;
 	sqlEntry.name = name;
 	sqlEntry.tableName = "story_elements";
 
@@ -236,14 +236,14 @@ amSQLEntry StoryElement::GenerateSQLEntrySimple()
 	return sqlEntry;
 }
 
-amSQLEntry StoryElement::GenerateSQLEntry()
+am::SQLEntry am::StoryElement::GenerateSQLEntry()
 {
 	return GenerateSQLEntrySimple();
 }
 
-amSQLEntry StoryElement::GenerateSQLEntryForId()
+am::SQLEntry am::StoryElement::GenerateSQLEntryForId()
 {
-	amSQLEntry sqlEntry;
+	am::SQLEntry sqlEntry;
 	sqlEntry.name = name;
 	sqlEntry.tableName = "story_elements";
 
@@ -252,7 +252,7 @@ amSQLEntry StoryElement::GenerateSQLEntryForId()
 	return sqlEntry;
 }
 
-bool StoryElement::operator<(const StoryElement& other) const
+bool am::StoryElement::operator<(const am::StoryElement& other) const
 {
 	int i, j;
 
@@ -274,18 +274,18 @@ bool StoryElement::operator<(const StoryElement& other) const
 	return name.Lower() < other.name.Lower();
 }
 
-bool StoryElement::operator==(const StoryElement& other) const
+bool am::StoryElement::operator==(const am::StoryElement& other) const
 {
 	return name == other.name;
 
 }
 
 
-wxIMPLEMENT_DYNAMIC_CLASS(TangibleElement, StoryElement);
+wxIMPLEMENT_DYNAMIC_CLASS(am::TangibleElement, am::StoryElement);
 
-bool TangibleElement::IsInBook(Book* book) const
+bool am::TangibleElement::IsInBook(Book* book) const
 {
-	for ( Document* const& pDocument : documents )
+	for ( am::Document* const& pDocument : documents )
 	{
 		if ( pDocument->book == book )
 			return true;
@@ -294,10 +294,10 @@ bool TangibleElement::IsInBook(Book* book) const
 	return false;
 }
 
-Document* TangibleElement::GetFirstDocument() const
+am::Document* am::TangibleElement::GetFirstDocument() const
 {
-	Document* pFirstDocument = nullptr;
-	for ( Document* const& pDocument : documents )
+	am::Document* pFirstDocument = nullptr;
+	for ( am::Document* const& pDocument : documents )
 	{
 		if ( !pFirstDocument || *pDocument < *pFirstDocument )
 			pFirstDocument = pDocument;
@@ -306,10 +306,10 @@ Document* TangibleElement::GetFirstDocument() const
 	return pFirstDocument;
 }
 
-Document* TangibleElement::GetLastDocument() const
+am::Document* am::TangibleElement::GetLastDocument() const
 {
-	Document* pLastDocument = nullptr;
-	for ( Document* const& pDocument : documents )
+	am::Document* pLastDocument = nullptr;
+	for ( am::Document* const& pDocument : documents )
 	{
 		if ( !pLastDocument || *pLastDocument < *pDocument )
 			pLastDocument = pDocument;
@@ -318,25 +318,25 @@ Document* TangibleElement::GetLastDocument() const
 	return pLastDocument;
 }
 
-Document* TangibleElement::GetFirstDocumentInBook(Book* book) const
+am::Document* am::TangibleElement::GetFirstDocumentInBook(Book* book) const
 {
 	return nullptr;
 }
 
-Document* TangibleElement::GetLastDocumentInBook(Book* book) const
+am::Document* am::TangibleElement::GetLastDocumentInBook(Book* book) const
 {
 	return nullptr;
 }
 
-void TangibleElement::EditTo(const StoryElement& other)
+void am::TangibleElement::EditTo(const am::StoryElement& other)
 {
-	StoryElement::EditTo(other);
+	am::StoryElement::EditTo(other);
 
-	if ( other.IsKindOf(wxCLASSINFO(TangibleElement)) )
-		documents = ((TangibleElement*)&other)->documents;
+	if ( other.IsKindOf(wxCLASSINFO(am::TangibleElement)) )
+		documents = ((am::TangibleElement*)&other)->documents;
 }
 
-bool TangibleElement::operator<(const TangibleElement& other) const
+bool am::TangibleElement::operator<(const am::TangibleElement& other) const
 {
 	int i, j;
 
@@ -361,8 +361,8 @@ bool TangibleElement::operator<(const TangibleElement& other) const
 		break;
 	case CompFirst:
 	{
-		Document* pFirstDocument = GetFirstDocument();
-		Document* pOtherFirstDocument = other.GetFirstDocument();
+		am::Document* pFirstDocument = GetFirstDocument();
+		am::Document* pOtherFirstDocument = other.GetFirstDocument();
 
 		if ( pFirstDocument && pOtherFirstDocument )
 			return *pFirstDocument < *pOtherFirstDocument;
@@ -375,8 +375,8 @@ bool TangibleElement::operator<(const TangibleElement& other) const
 	}
 	case CompLast:
 	{
-		Document* pLastDocument = GetLastDocument();
-		Document* pOtherLastDocument = other.GetLastDocument();
+		am::Document* pLastDocument = GetLastDocument();
+		am::Document* pOtherLastDocument = other.GetLastDocument();
 
 		if ( pLastDocument && pOtherLastDocument )
 			return *pOtherLastDocument < *pLastDocument;
@@ -394,11 +394,11 @@ bool TangibleElement::operator<(const TangibleElement& other) const
 	return name.Lower() < other.name.Lower();
 }
 
-TangibleElement::~TangibleElement()
+am::TangibleElement::~TangibleElement()
 {
-	for ( Document*& pDocument : documents )
+	for ( am::Document*& pDocument : documents )
 	{
-		for ( TangibleElement*& pElement : pDocument->vTangibleElements )
+		for ( am::TangibleElement*& pElement : pDocument->vTangibleElements )
 		{
 			if ( pElement == this )
 			{
@@ -410,87 +410,87 @@ TangibleElement::~TangibleElement()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// Character ///////////////////////////////////
+////////////////////////////////// am::Character ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
-wxIMPLEMENT_DYNAMIC_CLASS(Character, TangibleElement);
+wxIMPLEMENT_DYNAMIC_CLASS(am::Character, am::TangibleElement);
 
-Character::Character()
+am::Character::Character()
 {
 	XS_SERIALIZE_BOOL(isAlive, "isAlive");
 }
 
-void Character::EditTo(const StoryElement& other)
+void am::Character::EditTo(const am::StoryElement& other)
 {
-	TangibleElement::EditTo(other);
+	am::TangibleElement::EditTo(other);
 
-	if ( other.IsKindOf(wxCLASSINFO(Character)) )
-		isAlive = ((Character*)&other)->isAlive;
+	if ( other.IsKindOf(wxCLASSINFO(am::Character)) )
+		isAlive = ((am::Character*)&other)->isAlive;
 }
 
-bool Character::operator<(const Character& other) const
+bool am::Character::operator<(const am::Character& other) const
 {
 	elCompType = cCompType;
-	return this->TangibleElement::operator<(other);
+	return this->am::TangibleElement::operator<(other);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// Location ////////////////////////////////////
+////////////////////////////////// am::Location ////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
-wxIMPLEMENT_DYNAMIC_CLASS(Location, TangibleElement);
+wxIMPLEMENT_DYNAMIC_CLASS(am::Location, am::TangibleElement);
 
-Location::Location()
+am::Location::Location()
 {
 	XS_SERIALIZE_INT(type, "locationType");
 }
 
-void Location::EditTo(const StoryElement& other)
+void am::Location::EditTo(const am::StoryElement& other)
 {
-	TangibleElement::EditTo(other);
+	am::TangibleElement::EditTo(other);
 
-	if ( other.IsKindOf(wxCLASSINFO(Location)) )
-		type = ((Location*)&other)->type;
+	if ( other.IsKindOf(wxCLASSINFO(am::Location)) )
+		type = ((am::Location*)&other)->type;
 }
 
-bool Location::operator<(const Location& other) const
+bool am::Location::operator<(const am::Location& other) const
 {
 	elCompType = lCompType;
-	return this->TangibleElement::operator<(other);
+	return this->am::TangibleElement::operator<(other);
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////// Item /////////////////////////////////////
+//////////////////////////////////// am::Item /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 
-wxIMPLEMENT_DYNAMIC_CLASS(Item, TangibleElement);
+wxIMPLEMENT_DYNAMIC_CLASS(am::Item, am::TangibleElement);
 
-Item::Item()
+am::Item::Item()
 {
 	XS_SERIALIZE_BOOL_EX(isMagic, "isMagic", false);
 	XS_SERIALIZE_BOOL_EX(isManMade, "isManMade", true);
 }
 
-void Item::EditTo(const StoryElement& other)
+void am::Item::EditTo(const am::StoryElement& other)
 {
-	TangibleElement::EditTo(other);
+	am::TangibleElement::EditTo(other);
 
-	if ( other.IsKindOf(wxCLASSINFO(Item)) )
+	if ( other.IsKindOf(wxCLASSINFO(am::Item)) )
 	{
-		Item* pItem = (Item*)&other;
+		am::Item* pItem = (am::Item*)&other;
 
 		isMagic = pItem->isMagic;
 		isManMade = pItem->isManMade;
 	}
 }
 
-bool Item::operator<(const Item& other) const
+bool am::Item::operator<(const am::Item& other) const
 {
 	elCompType = iCompType;
-	return this->TangibleElement::operator<(other);
+	return this->am::TangibleElement::operator<(other);
 }

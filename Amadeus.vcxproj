@@ -434,6 +434,7 @@
   <ItemGroup>
     <ClCompile Include="src\amUtility.cpp" />
     <ClCompile Include="src\BookElements.cpp" />
+    <ClCompile Include="src\BookWizard.cpp" />
     <ClCompile Include="src\DocumentCreator.cpp" />
     <ClCompile Include="src\Overview.cpp" />
     <ClCompile Include="src\StoryNotebook.cpp" />
@@ -450,7 +451,7 @@
     <ClCompile Include="src\MyApp.cpp" />
     <ClCompile Include="src\Outline.cpp" />
     <ClCompile Include="src\OutlineFiles.cpp" />
-    <ClCompile Include="src\ProjectManager.cpp" />
+    <ClCompile Include="src\ProjectManaging.cpp" />
     <ClCompile Include="src\ProjectWizard.cpp" />
     <ClCompile Include="src\Release.cpp" />
     <ClCompile Include="src\SwitchCtrl.cpp" />
@@ -461,6 +462,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BookElements.h" />
+    <ClInclude Include="src\BookWizard.h" />
     <ClInclude Include="src\DocumentCreator.h" />
     <ClInclude Include="src\Notebook\Notebook.h" />
     <ClInclude Include="src\Overview.h" />
@@ -480,7 +482,7 @@
     <ClInclude Include="src\MyApp.h" />
     <ClInclude Include="src\Outline.h" />
     <ClInclude Include="src\OutlineFiles.h" />
-    <ClInclude Include="src\ProjectManager.h" />
+    <ClInclude Include="src\ProjectManaging.h" />
     <ClInclude Include="src\ProjectWizard.h" />
     <ClInclude Include="src\Release.h" />
     <ClInclude Include="src\SwitchCtrl.h" />

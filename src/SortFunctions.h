@@ -4,30 +4,30 @@
 
 #include "BookElements.h"
 
-inline bool amSortCharacters(Character* character1, Character* character2)
+inline bool amSortCharacters(am::Character* character1, am::Character* character2)
 {
 	return (*character1 < *character2);
 }
 
-inline bool amSortLocations(Location* location1, Location* location2)
+inline bool amSortLocations(am::Location* location1, am::Location* location2)
 {
 	return (*location1 < *location2);
 }
 
-inline bool amSortItems(Item* item1, Item* item2)
+inline bool amSortItems(am::Item* item1, am::Item* item2)
 {
 	return (*item1 < *item2);
 }
 
-inline bool amSortDocuments(Document* document1, Document* document2)
+inline bool amSortDocuments(am::Document* document1, am::Document* document2)
 {
 	return (*document1 < *document2);
 }
 
-inline bool amSortElements(StoryElement* element1, StoryElement* element2)
+inline bool amSortElements(am::StoryElement* element1, am::StoryElement* element2)
 {
-	Character* pCharacter1 = dynamic_cast<Character*>(element1);
-	Character* pCharacter2 = dynamic_cast<Character*>(element2);
+	am::Character* pCharacter1 = dynamic_cast<am::Character*>(element1);
+	am::Character* pCharacter2 = dynamic_cast<am::Character*>(element2);
 
 	if ( pCharacter1 )
 	{
@@ -42,8 +42,8 @@ inline bool amSortElements(StoryElement* element1, StoryElement* element2)
 		return false;
 
 
-	Location* pLocation1 = dynamic_cast<Location*>(element1);
-	Location* pLocation2 = dynamic_cast<Location*>(element2);
+	am::Location* pLocation1 = dynamic_cast<am::Location*>(element1);
+	am::Location* pLocation2 = dynamic_cast<am::Location*>(element2);
 
 	if ( pLocation1 )
 	{
@@ -58,8 +58,8 @@ inline bool amSortElements(StoryElement* element1, StoryElement* element2)
 		return false;
 
 
-	Item* pItem1 = dynamic_cast<Item*>(element1);
-	Item* pItem2 = dynamic_cast<Item*>(element2);
+	am::Item* pItem1 = dynamic_cast<am::Item*>(element1);
+	am::Item* pItem2 = dynamic_cast<am::Item*>(element2);
 
 	if ( pItem1 )
 	{

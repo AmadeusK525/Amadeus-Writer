@@ -6,35 +6,23 @@
 
 wxIMPLEMENT_APP(MyApp);
 
-/// <summary>
-/// Global function that returns the application manager, gotten from wxGetApp().
-/// </summary>
-/// <returns>The active amProjectManager object pointer</returns>
-amProjectManager* amGetManager()
-{
-	return 	wxGetApp().GetManager();
-}
-
 bool MyApp::OnInit()
 {
 	m_locale.Init(wxLANGUAGE_DEFAULT);
 	wxInitAllImageHandlers();
 
-	m_manager = new amProjectManager();
-	m_manager->SetExecutablePath(argv.GetArguments()[0]);
+	am::SetExecutablePath(argv.GetArguments()[0]);
 
+	wxString strProjectPath;
 	if ( argc > 1 )
-		m_manager->SetProjectFileName(argv.GetArguments()[1]);
+		strProjectPath = argv.GetArguments()[1];
 	else
-		m_manager->GetLastSave();
+		strProjectPath = am::GetLastSavePath();
 
-	if ( !m_manager->Init() )
+	if ( !am::Init(strProjectPath) )
 	{
-		m_wizard = new amProjectWizard(nullptr, 1234);
-		m_wizard->Bind(wxEVT_WIZARD_FINISHED, &MyApp::OnWizardFinished, this);
-		m_wizard->Bind(wxEVT_WIZARD_CANCEL, &MyApp::OnWizardCanceled, this);
-		m_wizard->Show();
-		m_wizard->RunWizard(m_wizard->GetFirstPage());
+		amProjectWizard wizard(nullptr, 1234);
+		return wizard.RunWizard(wizard.GetFirstPage());
 	}
 
 	return true;
@@ -42,27 +30,11 @@ bool MyApp::OnInit()
 
 int MyApp::OnExit()
 {
-	if ( m_manager )
-		delete m_manager;
-
-	return 0;
+	am::ShutDown();
+	return wxApp::OnExit();
 }
 
-void MyApp::OnWizardFinished(wxWizardEvent& event)
+void MyApp::OnWizardFinished(const wxFileName& path)
 {
-	if ( !wxFileName::Exists(m_wizard->GetFileName().GetPath()) )
-	{
-		wxMessageBox("There was an error.");
-		return;
-	}
-
-	m_wizard->Destroy();
-
-	m_manager->SetProjectFileName(m_wizard->GetFileName());
-	m_manager->Init();
-}
-
-void MyApp::OnWizardCanceled(wxWizardEvent& event)
-{
-	m_wizard->Destroy();
+	am::Init(path.GetFullPath());
 }

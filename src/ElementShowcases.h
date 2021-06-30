@@ -34,7 +34,7 @@ class amRelatedElementsContainer : public wxPanel
 protected:
 	amTangibleElementShowcase* m_showcase = nullptr;
 
-	StoryElement* m_owner = nullptr;
+	am::StoryElement* m_owner = nullptr;
 	wxStaticText* m_label = nullptr;
 
 	wxBoxSizer* m_vertical = nullptr;
@@ -42,9 +42,9 @@ protected:
 
 	struct amElementButton : public wxButton
 	{
-		StoryElement* element = nullptr;
+		am::StoryElement* element = nullptr;
 
-		amElementButton(wxWindow* parent, StoryElement* element, const wxString& label) : 
+		amElementButton(wxWindow* parent, am::StoryElement* element, const wxString& label) : 
 			wxButton(parent, -1, label, wxDefaultPosition, wxSize(90, 140))
 		{
 			SetFont(wxFontInfo(8).Bold());
@@ -54,7 +54,7 @@ protected:
 			SetElement(element);
 		}
 
-		void SetElement(StoryElement* element)
+		void SetElement(am::StoryElement* element)
 		{
 			this->element = element;
 
@@ -67,7 +67,7 @@ protected:
 			}
 
 			if ( element->image.IsOk() )
-				SetBitmap(amGetScaledImage(80, 80, element->image), wxTOP);
+				SetBitmap(am::GetScaledImage(80, 80, element->image), wxTOP);
 
 			SetLabel(label);
 			Refresh();
@@ -77,18 +77,18 @@ protected:
 public:
 	amRelatedElementsContainer(wxWindow* parent, amTangibleElementShowcase* showcase);
 
-	void LoadCharacters(StoryElement* element);
-	void LoadLocations(StoryElement* element);
-	void LoadLocationsByType(StoryElement* element);
-	void LoadItems(StoryElement* element);
+	void LoadCharacters(am::StoryElement* element);
+	void LoadLocations(am::StoryElement* element);
+	void LoadLocationsByType(am::StoryElement* element);
+	void LoadItems(am::StoryElement* element);
 
-	void DoLoad(StoryElement* element, bool (*ShouldAdd)(StoryElement*));
+	void DoLoad(am::StoryElement* element, bool (*ShouldAdd)(am::StoryElement*));
 	void ClearAll();
 
 	void OnAddElement(wxCommandEvent& event);
 	void OnRemoveElement(wxCommandEvent& event);
 	void OnElementButtons(wxCommandEvent& event);
-	void LoadAllElements(StoryElement* element);
+	void LoadAllElements(am::StoryElement* element);
 };
 
 
@@ -107,7 +107,7 @@ public:
 	};
 
 private:
-	StoryElement* m_element = nullptr;
+	am::StoryElement* m_element = nullptr;
 	amRelatedElementsContainer* m_container = nullptr;
 	MODE m_mode;
 
@@ -122,7 +122,7 @@ private:
 		* m_itemImages = nullptr;
 
 public:
-	amRelatedElementsDialog(wxWindow* parent, StoryElement* element, amRelatedElementsContainer* container, MODE mode);
+	amRelatedElementsDialog(wxWindow* parent, am::StoryElement* element, amRelatedElementsContainer* container, MODE mode);
 
 	void LoadPossibleCharacters();
 	void LoadPossibleLocations();
@@ -143,20 +143,19 @@ public:
 class amElementShowcase : public wxWindow
 {
 protected:
-	StoryElement* m_element = nullptr;
-	amProjectManager* m_pManager = nullptr;
+	am::StoryElement* m_element = nullptr;
 
 public:
-	virtual bool Create(wxWindow* parent, amProjectManager* manager);
+	virtual bool Create(wxWindow* parent);
 
-	virtual void SetData(StoryElement* element) = 0;
-	virtual bool LoadFirstPanel(TangibleElement* element) = 0;
-	virtual bool LoadSecondPanel(TangibleElement* element) = 0;
+	virtual void SetData(am::StoryElement* element) = 0;
+	virtual bool LoadFirstPanel(am::TangibleElement* element) = 0;
+	virtual bool LoadSecondPanel(am::TangibleElement* element) = 0;
 	virtual void ClearAll() = 0;
 
 	virtual void ShowPage(int index) = 0;
 
-	StoryElement* GetElement() { return m_element; }
+	am::StoryElement* GetElement() { return m_element; }
 
 	wxDECLARE_ABSTRACT_CLASS(amElementShowcase);
 };
@@ -201,11 +200,11 @@ public:
 	amTangibleElementShowcase() = default;
 	amTangibleElementShowcase(wxWindow* parent);
 
-	virtual bool Create(wxWindow* parent, amProjectManager* manager);
+	virtual bool Create(wxWindow* parent);
 
-	virtual void SetData(StoryElement* element);
-	virtual bool LoadFirstPanel(TangibleElement* element);
-	virtual bool LoadSecondPanel(TangibleElement* element);
+	virtual void SetData(am::StoryElement* element);
+	virtual bool LoadFirstPanel(am::TangibleElement* element);
+	virtual bool LoadSecondPanel(am::TangibleElement* element);
 	virtual void ClearAll() = 0;
 
 	void ShowPage(int index);
@@ -224,8 +223,8 @@ public:
 	wxDECLARE_ABSTRACT_CLASS(amTangibleElementShowcase);
 
 protected:
-	virtual void LoadShortAttr(StoryElement* element);
-	virtual void LoadLongAttr(StoryElement* element);
+	virtual void LoadShortAttr(am::StoryElement* element);
+	virtual void LoadLongAttr(am::StoryElement* element);
 };
 
 
@@ -243,9 +242,9 @@ public:
 	amCharacterShowcase() = default;
 	amCharacterShowcase(wxWindow* parent);
 
-	virtual bool Create(wxWindow* parent, amProjectManager* manager);
+	virtual bool Create(wxWindow* parent);
 
-	virtual bool LoadFirstPanel(TangibleElement* element) override;
+	virtual bool LoadFirstPanel(am::TangibleElement* element) override;
 	virtual void ClearAll() override;
 
 	void OnIsAlive(wxCommandEvent& event);
@@ -271,20 +270,20 @@ public:
 	amLocationShowcase() = default;
 	amLocationShowcase(wxWindow* parent);
 	
-	virtual bool Create(wxWindow* parent, amProjectManager* manager);
+	virtual bool Create(wxWindow* parent);
 
-	virtual bool LoadFirstPanel(TangibleElement* element) override;
+	virtual bool LoadFirstPanel(am::TangibleElement* element) override;
 	virtual void ClearAll() override;
 
 	wxDECLARE_DYNAMIC_CLASS(amLocationShowcase);
 
 protected:
-	virtual void LoadLongAttr(StoryElement* element) override;
+	virtual void LoadLongAttr(am::StoryElement* element) override;
 };
 
 
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Item Showcase ///////////////////////////////
+///////////////////////////////// am::Item Showcase ///////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -298,9 +297,9 @@ public:
 	amItemShowcase() = default;
 	amItemShowcase(wxWindow* parent);
 	
-	virtual bool Create(wxWindow* parent, amProjectManager* manager);
+	virtual bool Create(wxWindow* parent);
 
-	virtual bool LoadFirstPanel(TangibleElement* element) override;
+	virtual bool LoadFirstPanel(am::TangibleElement* element) override;
 	virtual void ClearAll() override;
 
 	wxDECLARE_DYNAMIC_CLASS(amItemShowcase);

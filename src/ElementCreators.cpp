@@ -20,19 +20,18 @@ EVT_BUTTON(BUTTON_RemoveImage, amElementCreator::RemoveImage)
 
 END_EVENT_TABLE()
 
-amElementCreator::amElementCreator(wxWindow* parent, amProjectManager* manager,
+amElementCreator::amElementCreator(wxWindow* parent,
 	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
 {
-	Create(parent, manager, id, label, pos, size, style);
+	Create(parent, id, label, pos, size, style);
 }
 
-bool amElementCreator::Create(wxWindow* parent, amProjectManager* manager, long id,
+bool amElementCreator::Create(wxWindow* parent, long id,
 	const wxString& label, const wxPoint& pos, const wxSize& size, long style)
 {
 	if ( !wxFrame::Create(parent, id, label, pos, size, style) )
 		return false;
 
-	m_manager = manager;
 	CenterOnParent();
 
 	Bind(wxEVT_CLOSE_WINDOW, &amElementCreator::OnClose, this);
@@ -122,7 +121,7 @@ bool amElementCreator::Create(wxWindow* parent, amProjectManager* manager, long 
 	m_mainSizer->Add(m_btnPanel, wxSizerFlags(0).Expand().Border(wxLEFT | wxRIGHT, 15));
 
 	SetSizer(m_mainSizer);
-	m_manager->GetMainFrame()->Enable(false);
+	am::GetMainFrame()->Enable(false);
 	return true;
 }
 
@@ -164,7 +163,7 @@ void amElementCreator::RemoveCustomAttr(wxCommandEvent& event)
 
 void amElementCreator::Cancel(wxCommandEvent& event)
 {
-	m_manager->GetMainFrame()->Enable();
+	am::GetMainFrame()->Enable();
 	this->Destroy();
 	event.Skip();
 }
@@ -326,32 +325,31 @@ wxVector<std::pair<wxString, wxString>> amElementCreator::GetLongAttributes()
 
 void amElementCreator::OnClose(wxCloseEvent& event)
 {
-	m_manager->GetMainFrame()->Enable();
+	am::GetMainFrame()->Enable();
 	event.Skip();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
-////////////////////////////// Character creator //////////////////////////////
+////////////////////////////// am::Character creator //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 wxIMPLEMENT_DYNAMIC_CLASS(amCharacterCreator, amElementCreator);
 
-amCharacterCreator::amCharacterCreator(wxWindow* parent, amProjectManager* manager,
-	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
+amCharacterCreator::amCharacterCreator(wxWindow* parent, long id, const wxString& label,
+	const wxPoint& pos, const wxSize& size, long style)
 {
-	Create(parent, manager, id, label, pos, size, style);
+	Create(parent, id, label, pos, size, style);
 }
 
 bool amCharacterCreator::Create(wxWindow* parent,
-	amProjectManager* manager,
 	long id,
 	const wxString& label,
 	const wxPoint& pos,
 	const wxSize& size,
 	long style)
 {
-	if ( !amElementCreator::Create(parent, manager, id, label, pos, size, style) )
+	if ( !amElementCreator::Create(parent, id, label, pos, size, style) )
 		return false;
 
 	Bind(wxEVT_CLOSE_WINDOW, &amCharacterCreator::OnClose, this);
@@ -550,9 +548,9 @@ bool amCharacterCreator::Create(wxWindow* parent,
 	return true;
 }
 
-void amCharacterCreator::StartEditing(StoryElement* editChar)
+void amCharacterCreator::StartEditing(am::StoryElement* editChar)
 {
-	Character* character = dynamic_cast<Character*>(editChar);
+	am::Character* character = dynamic_cast<am::Character*>(editChar);
 	if ( !character )
 	{
 		wxMessageBox("There was an unexpected error. Editing could not be start.");
@@ -597,16 +595,16 @@ void amCharacterCreator::StartEditing(StoryElement* editChar)
 
 	switch ( character->role )
 	{
-	case cProtagonist:
+	case am::cProtagonist:
 		ncMain->SetValue(true);
 		break;
-	case cSupporting:
+	case am::cSupporting:
 		ncSupp->SetValue(true);
 		break;
-	case cVillian:
+	case am::cVillian:
 		ncVillian->SetValue(true);
 		break;
-	case cSecondary:
+	case am::cSecondary:
 		ncSecon->SetValue(true);
 		break;
 	default:
@@ -655,17 +653,17 @@ void amCharacterCreator::StartEditing(StoryElement* editChar)
 
 void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
 {
-	Role newRole;
+	am::Role newRole;
 	if ( ncMain->GetValue() )
-		newRole = cProtagonist;
+		newRole = am::cProtagonist;
 	else if ( ncSupp->GetValue() )
-		newRole = cSupporting;
+		newRole = am::cSupporting;
 	else if ( ncSecon->GetValue() )
-		newRole = cSecondary;
+		newRole = am::cSecondary;
 	else if ( ncVillian->GetValue() )
-		newRole = cVillian;
+		newRole = am::cVillian;
 
-	Character character;
+	am::Character character;
 
 	character.name = ncFullName->GetValue();
 	character.role = newRole;
@@ -682,17 +680,17 @@ void amCharacterCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
 
 	character.image = m_imagePanel->GetImage();
 
-	character.documents = ((Character*)m_elementEdit)->documents;
+	character.documents = ((am::Character*)m_elementEdit)->documents;
 	character.aliases = m_elementEdit->aliases;
 	character.relatedElements = m_elementEdit->relatedElements;
 	character.dbID = m_elementEdit->dbID;
 
-	Character* pCharacterToEdit = (Character*)m_elementEdit;
+	am::Character* pCharacterToEdit = (am::Character*)m_elementEdit;
 	bool dif = pCharacterToEdit->name != ncFullName->GetValue() || pCharacterToEdit->role != newRole;
 
 	Hide();
-	m_manager->GetMainFrame()->Enable();
-	m_manager->DoEditStoryElement(pCharacterToEdit, character, dif);
+	am::GetMainFrame()->Enable();
+	am::DoEditStoryElement(pCharacterToEdit, character, dif);
 
 	Destroy();
 }
@@ -740,17 +738,17 @@ void amCharacterCreator::OnCreateElement(wxCommandEvent& event)
 {
 	if ( !ncFullName->IsEmpty() )
 	{
-		Character* pCharacter = new Character;
+		am::Character* pCharacter = new am::Character;
 		pCharacter->name = ncFullName->GetValue();
 
 		if ( ncMain->GetValue() )
-			pCharacter->role = cProtagonist;
+			pCharacter->role = am::cProtagonist;
 		else if ( ncSupp->GetValue() )
-			pCharacter->role = cSupporting;
+			pCharacter->role = am::cSupporting;
 		else if ( ncVillian->GetValue() )
-			pCharacter->role = cVillian;
+			pCharacter->role = am::cVillian;
 		else if ( ncSecon->GetValue() )
-			pCharacter->role = cSecondary;
+			pCharacter->role = am::cSecondary;
 
 		for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
 		{
@@ -765,8 +763,8 @@ void amCharacterCreator::OnCreateElement(wxCommandEvent& event)
 		pCharacter->image = m_imagePanel->GetImage();
 
 		Hide();
-		m_manager->GetMainFrame()->Enable();
-		m_manager->AddStoryElement(pCharacter, true);
+		am::GetMainFrame()->Enable();
+		am::AddStoryElement(pCharacter, true);
 	}
 	else
 	{
@@ -791,33 +789,32 @@ void amCharacterCreator::OnClose(wxCloseEvent& event)
 			return;
 	}
 
-	m_manager->GetMainFrame()->Enable(true);
+	am::GetMainFrame()->Enable(true);
 	event.Skip();
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Location Creator ///////////////////////////////////
+//////////////////////////////// am::Location Creator ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
 
 wxIMPLEMENT_DYNAMIC_CLASS(amLocationCreator, amElementCreator);
 
-amLocationCreator::amLocationCreator(wxWindow* parent, amProjectManager* manager,
-	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
+amLocationCreator::amLocationCreator(wxWindow* parent, long id, const wxString& label,
+	const wxPoint& pos, const wxSize& size, long style)
 {
-	Create(parent, manager, id, label, pos, size, style);
+	Create(parent, id, label, pos, size, style);
 }
 
 bool amLocationCreator::Create(wxWindow* parent,
-	amProjectManager* manager,
 	long id,
 	const wxString& label,
 	const wxPoint& pos,
 	const wxSize& size,
 	long style)
 {
-	if ( !amElementCreator::Create(parent, manager, id, label, pos, size, style) )
+	if ( !amElementCreator::Create(parent, id, label, pos, size, style) )
 		return false;
 	
 	Bind(wxEVT_CLOSE_WINDOW, &amLocationCreator::OnClose, this);
@@ -997,9 +994,9 @@ bool amLocationCreator::Create(wxWindow* parent,
 	return true;
 }
 
-void amLocationCreator::StartEditing(StoryElement* editLoc)
+void amLocationCreator::StartEditing(am::StoryElement* editLoc)
 {
-	Location* location = dynamic_cast<Location*>(editLoc);
+	am::Location* location = dynamic_cast<am::Location*>(editLoc);
 	if ( !location )
 	{
 		wxMessageBox("There was an unexpected error. Editing could not start.");
@@ -1050,11 +1047,11 @@ void amLocationCreator::StartEditing(StoryElement* editLoc)
 
 	switch ( location->role )
 	{
-	case lHigh:
+	case am::lHigh:
 		nlHigh->SetValue(true);
 		break;
 
-	case lLow:
+	case am::lLow:
 		nlLow->SetValue(true);
 		break;
 
@@ -1087,7 +1084,7 @@ void amLocationCreator::StartEditing(StoryElement* editLoc)
 
 void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
 {
-	Location location;
+	am::Location location;
 	location.name = nlName->GetValue();
 
 	for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
@@ -1101,25 +1098,25 @@ void amLocationCreator::DoEdit(wxCommandEvent& WXUNUSED(event))
 	}
 
 	if ( nlHigh->GetValue() )
-		location.role = lHigh;
+		location.role = am::lHigh;
 	else if ( nlLow->GetValue() )
-		location.role = lLow;
+		location.role = am::lLow;
 	else
-		location.role = None;
+		location.role = am::None;
 
 	location.image = m_imagePanel->GetImage();
 
-	location.documents = ((Location*)m_elementEdit)->documents;
+	location.documents = ((am::Location*)m_elementEdit)->documents;
 	location.aliases = m_elementEdit->aliases;
 	location.relatedElements = m_elementEdit->relatedElements;
 	location.dbID = m_elementEdit->dbID;
 
-	Location* pLocationToEdit = (Location*)m_elementEdit;
+	am::Location* pLocationToEdit = (am::Location*)m_elementEdit;
 	bool dif = pLocationToEdit->name != nlName->GetValue() || pLocationToEdit->role != location.role;
 
 	Hide();
-	m_manager->GetMainFrame()->Enable();
-	m_manager->DoEditStoryElement(pLocationToEdit, location, dif);
+	am::GetMainFrame()->Enable();
+	am::DoEditStoryElement(pLocationToEdit, location, dif);
 	Destroy();
 }
 
@@ -1197,7 +1194,7 @@ void amLocationCreator::OnCreateElement(wxCommandEvent& WXUNUSED(event))
 {
 	if ( !nlName->IsEmpty() )
 	{
-		Location* pLocation = new Location;
+		am::Location* pLocation = new am::Location;
 
 		pLocation->name = nlName->GetValue();
 
@@ -1212,19 +1209,19 @@ void amLocationCreator::OnCreateElement(wxCommandEvent& WXUNUSED(event))
 		}
 
 		if ( nlHigh->GetValue() )
-			pLocation->role = lHigh;
+			pLocation->role = am::lHigh;
 		else if ( nlLow->GetValue() )
-			pLocation->role = lLow;
+			pLocation->role = am::lLow;
 		else
-			pLocation->role = None;
+			pLocation->role = am::None;
 
 		pLocation->image = m_imagePanel->GetImage();
 
 		//pLocation->custom = GetCustom();
 
 		Hide();
-		m_manager->GetMainFrame()->Enable();
-		m_manager->AddStoryElement(pLocation, true);
+		am::GetMainFrame()->Enable();
+		am::AddStoryElement(pLocation, true);
 	}
 	else
 	{
@@ -1246,33 +1243,32 @@ void amLocationCreator::OnClose(wxCloseEvent& event)
 			return;
 	}
 
-	m_manager->GetMainFrame()->Enable(true);
+	am::GetMainFrame()->Enable(true);
 	event.Skip();
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Item Creator ////////////////////////////////////
+/////////////////////////////////// am::Item Creator ////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
 
 wxIMPLEMENT_DYNAMIC_CLASS(amItemCreator, amElementCreator);
 
-amItemCreator::amItemCreator(wxWindow* parent, amProjectManager* manager,
-	long id, const wxString& label, const wxPoint& pos, const wxSize& size, long style)
+amItemCreator::amItemCreator(wxWindow* parent, long id, const wxString& label,
+	const wxPoint& pos, const wxSize& size, long style)
 {
-	Create(parent, manager, id, label, pos, size, style);
+	Create(parent, id, label, pos, size, style);
 }
 
 bool amItemCreator::Create(wxWindow* parent,
-	amProjectManager* manager,
 	long id,
 	const wxString& label,
 	const wxPoint& pos,
 	const wxSize& size,
 	long style)
 {
-	if ( !amElementCreator::Create(parent, manager, id, label, pos, size, style) )
+	if ( !amElementCreator::Create(parent, id, label, pos, size, style) )
 		return false;
 
 	Bind(wxEVT_CLOSE_WINDOW, &amItemCreator::OnClose, this);
@@ -1528,9 +1524,9 @@ bool amItemCreator::Create(wxWindow* parent,
 	return true;
 }
 
-void amItemCreator::StartEditing(StoryElement* editItem)
+void amItemCreator::StartEditing(am::StoryElement* editItem)
 {
-	Item* item = dynamic_cast<Item*>(editItem);
+	am::Item* item = dynamic_cast<am::Item*>(editItem);
 	if ( !item )
 	{
 		wxMessageBox("There was an unexpected error. Editing could not start.");
@@ -1549,7 +1545,7 @@ void amItemCreator::StartEditing(StoryElement* editItem)
 	if ( !item->isMagic )
 		niNonMagic->SetValue(true);
 
-	if ( item->role == iLow )
+	if ( item->role == am::iLow )
 		niLow->SetValue(true);
 
 	auto& it = item->mShortAttributes.find(_("Width"));
@@ -1622,7 +1618,7 @@ void amItemCreator::StartEditing(StoryElement* editItem)
 
 void amItemCreator::DoEdit(wxCommandEvent& event)
 {
-	Item item;
+	am::Item item;
 	item.name = niName->GetValue();
 
 	if ( niNatural->GetValue() )
@@ -1636,9 +1632,9 @@ void amItemCreator::DoEdit(wxCommandEvent& event)
 		item.isMagic = false;
 
 	if ( niHigh->GetValue() )
-		item.role = iHigh;
+		item.role = am::iHigh;
 	else
-		item.role = iLow;
+		item.role = am::iLow;
 
 	for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
 	{
@@ -1652,17 +1648,17 @@ void amItemCreator::DoEdit(wxCommandEvent& event)
 
 	item.image = m_imagePanel->GetImage();
 
-	item.documents = ((Item*)m_elementEdit)->documents;
+	item.documents = ((am::Item*)m_elementEdit)->documents;
 	item.aliases = m_elementEdit->aliases;
 	item.relatedElements = m_elementEdit->relatedElements;
 	item.dbID = m_elementEdit->dbID;
 
-	Item* pItemToEdit = (Item*)m_elementEdit;
+	am::Item* pItemToEdit = (am::Item*)m_elementEdit;
 	bool dif = pItemToEdit->name != niName->GetValue() || pItemToEdit->role != item.role;
 
 	Hide();
-	m_manager->GetMainFrame()->Enable();
-	m_manager->DoEditStoryElement(pItemToEdit, item, dif);
+	am::GetMainFrame()->Enable();
+	am::DoEditStoryElement(pItemToEdit, item, dif);
 
 	Destroy();
 }
@@ -1707,7 +1703,7 @@ void amItemCreator::OnCreateElement(wxCommandEvent& event)
 {
 	if ( !niName->IsEmpty() )
 	{
-		Item* pItem = new Item;
+		am::Item* pItem = new am::Item;
 		pItem->name = niName->GetValue();
 
 		if ( niNatural->GetValue() )
@@ -1721,9 +1717,9 @@ void amItemCreator::OnCreateElement(wxCommandEvent& event)
 			pItem->isMagic = false;
 
 		if ( niHigh->GetValue() )
-			pItem->role = iHigh;
+			pItem->role = am::iHigh;
 		else
-			pItem->role = iLow;
+			pItem->role = am::iLow;
 
 		for ( std::pair<wxString, wxString>& it : GetShortAttributes() )
 		{
@@ -1738,8 +1734,8 @@ void amItemCreator::OnCreateElement(wxCommandEvent& event)
 		pItem->image = m_imagePanel->GetImage();
 
 		Hide();
-		m_manager->GetMainFrame()->Enable();
-		m_manager->AddStoryElement(pItem, true);
+		am::GetMainFrame()->Enable();
+		am::AddStoryElement(pItem, true);
 	}
 	else
 	{
@@ -1761,7 +1757,7 @@ void amItemCreator::OnClose(wxCloseEvent& event)
 			return;
 	}
 
-	m_manager->GetMainFrame()->Enable(true);
+	am::GetMainFrame()->Enable(true);
 	event.Skip();
 }
 

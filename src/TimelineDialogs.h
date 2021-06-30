@@ -25,7 +25,6 @@ class amTLAddThreadDlg : public wxFrame
 {
 private:
 	amTLTimeline* m_timeline = nullptr;
-	amProjectManager* m_manager = nullptr;
 
 	wxListView* m_characterList = nullptr;
 	wxImageList* m_characterImages = nullptr;
@@ -35,13 +34,13 @@ private:
 	amTLThreadDlgMode m_mode = MODE_THREAD_Add;
 
 public:
-	amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amProjectManager* manager,
+	amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline,
 		amTLThreadDlgMode mode = MODE_THREAD_Add, const wxSize& size = wxDefaultSize);
 
 	void OnDone(wxCommandEvent& event);
 	void OnUpdateDone(wxUpdateUIEvent& event);
 
-	void SetCharacters(wxVector<Character*>& characters);
+	void SetCharacters(wxVector<am::Character*>& characters);
 	void OnListResize(wxSizeEvent& event);
 
 	void OnClose(wxCloseEvent& event);

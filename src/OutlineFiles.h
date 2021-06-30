@@ -10,7 +10,7 @@
 
 #include "StoryElements.h"
 #include "amUtility.h"
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 
 #include <atomic>
 
@@ -228,20 +228,20 @@ public:
 
 	wxObjectDataPtr<OutlineTreeModel>& GetOutlineTreeModel() { return m_outlineTreeModel; }
 
-	void AppendStoryElement(StoryElement* element);
-	void DeleteStoryElement(StoryElement* element);
+	void AppendStoryElement(am::StoryElement* element);
+	void DeleteStoryElement(am::StoryElement* element);
 
-	void GenerateElementBuffer(StoryElement* element, wxRichTextBuffer* buffer);
-	/*void GenerateCharacterBuffer(Character* character, wxRichTextBuffer* buffer);
-	void GenerateLocationBuffer(Location* location, wxRichTextBuffer* buffer);
-	void GenerateItemBuffer(Item* item, wxRichTextBuffer* buffer);*/
-	/*void AppendCharacter(Character* character);
-	void AppendLocation(Location* location);
-	void AppendItem(Item* item);*/
+	void GenerateElementBuffer(am::StoryElement* element, wxRichTextBuffer* buffer);
+	/*void GenerateCharacterBuffer(am::Character* character, wxRichTextBuffer* buffer);
+	void GenerateLocationBuffer(am::Location* location, wxRichTextBuffer* buffer);
+	void GenerateItemBuffer(am::Item* item, wxRichTextBuffer* buffer);*/
+	/*void AppendCharacter(am::Character* character);
+	void AppendLocation(am::Location* location);
+	void AppendItem(am::Item* item);*/
 
-	void DeleteCharacter(Character* character);
-	void DeleteLocation(Location* location);
-	void DeleteItem(Item* item);
+	void DeleteCharacter(am::Character* character);
+	void DeleteLocation(am::Location* location);
+	void DeleteItem(am::Item* item);
 
 	void NewFile(wxCommandEvent& event);
 	void NewFolder(wxCommandEvent& event);
@@ -267,7 +267,7 @@ public:
 	wxXmlNode* SerializeFile(wxDataViewItem& item);
 	void DeserializeNode(wxXmlNode* node, wxDataViewItem& parent);
 	bool Save();
-	bool Load(amProjectSQLDatabase* db);
+	bool Load(am::ProjectSQLDatabase* db);
 
 	void ClearAll();
 

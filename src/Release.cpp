@@ -27,25 +27,26 @@ amRelease::amRelease(wxWindow* parent) :
 
 amRelease::~amRelease()
 {
-
 }
 
-void amRelease::SetBookData(Book* book)
-{}
+void amRelease::ClearAll()
+{
+}
+
+void amRelease::SetBookData(am::Book* book)
+{
+}
 
 void amRelease::UpdateContent()
 {
-
 }
 
 void amRelease::OnNext(wxCommandEvent& event)
 {
-
 }
 
 void amRelease::OnPrevious(wxCommandEvent& event)
 {
-
 }
 
 void amRelease::OnKeyPressed(wxKeyEvent& event)

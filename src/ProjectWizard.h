@@ -29,6 +29,7 @@ class amProjectWizard : public wxWizard
 {
 private:
 	amFirstWizardPage* m_page1 = nullptr;
+	wxWizardPageSimple* m_pLoadPage = nullptr;
 
 	wxDirPickerCtrl* m_dirPicker = nullptr;
 	wxFilePickerCtrl* m_filePicker = nullptr;
@@ -41,6 +42,8 @@ public:
 	wxFileName GetFileName();
 
 	bool IsLoading() { return m_page1->IsLoading(); }
+
+	void OnNextBtn(wxCommandEvent& event);
 };
 
 #endif

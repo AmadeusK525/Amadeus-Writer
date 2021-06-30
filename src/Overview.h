@@ -25,9 +25,9 @@ private:
 
 	struct amBookButton : public wxBitmapToggleButton
 	{
-		Book* book = nullptr;
+		am::Book* book = nullptr;
 
-		amBookButton(wxWindow* parent, Book* book, const wxBitmap& bmp,
+		amBookButton(wxWindow* parent, am::Book* book, const wxBitmap& bmp,
 			const wxPoint& pos, const wxSize& size) :
 			wxBitmapToggleButton(parent, -1, bmp, pos, size), book(book)
 		{
@@ -40,10 +40,15 @@ private:
 public:
 	amBookPicker(amOverview* parent);
 
-	void AddButton(Book* book, size_t index);
+	void AddButton(am::Book* book, size_t index);
 	void OnBookClicked(wxCommandEvent& event);
 
-	void SetSelectionByBook(Book* book);
+	void SetSelectionByBook(am::Book* book);
+
+	void OnCreateBook(wxCommandEvent& event);
+	void OnDeleteBook(wxCommandEvent& event);
+
+	void DeleteAllButtons();
 };
 
 
@@ -55,7 +60,6 @@ public:
 class amOverview : public wxPanel
 {
 private:
-	amProjectManager* m_manager = nullptr;
 	amBookPicker* m_bookPicker = nullptr;
 
 	wxStaticText* m_stBookTitle = nullptr;
@@ -70,10 +74,12 @@ private:
 	wxBoxSizer* m_mainSizer = nullptr;
 
 public:
-	amOverview(wxWindow* parent, amProjectManager* manager);
+	amOverview(wxWindow* parent);
 
-	void SetBookData(Book* book);
-	void LoadRecentDocuments(Book* book);
+	void ClearAll();
+
+	void SetBookData(am::Book* book);
+	void LoadRecentDocuments(am::Book* book);
 
 	void LoadBookContainer();
 

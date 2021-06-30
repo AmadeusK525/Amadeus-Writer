@@ -9,7 +9,7 @@
 #include <wx\combo.h>
 #include <wx\srchctrl.h>
 
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 #include "ElementShowcases.h"
 
 class amCheckListBox;
@@ -28,7 +28,7 @@ private:
 	wxImageList* m_imageList = nullptr;
 
 	wxChoice* m_sortBy = nullptr;
-	wxVector<Book*> m_vBooksToShow;
+	wxVector<am::Book*> m_vBooksToShow;
 
 	wxComboCtrl* m_show = nullptr;
 	amCheckListBox* m_bookCheckList = nullptr;
@@ -38,14 +38,14 @@ private:
 public:
 	amElementNotebookPage(wxWindow* parent, wxClassInfo* showcaseType, const wxArrayString& sortByChoices);
 
-	bool ShouldShow(StoryElement* element);
+	bool ShouldShow(am::StoryElement* element);
 	void ClearAll();
 	void InitShowChoices();
 
-	void GoToStoryElement(StoryElement* element);
+	void GoToStoryElement(am::StoryElement* element);
 
 	void UpdateList();
-	void UpdateElementInList(int n, StoryElement* element);
+	void UpdateElementInList(int n, am::StoryElement* element);
 
 	inline wxListView* GetList() { return m_elementList; }
 	inline amElementShowcase* GetShowcase() { return m_elementShowcase; }
@@ -62,9 +62,6 @@ public:
 
 class amElementNotebook : public wxAuiNotebook
 {
-private:
-	amProjectManager* m_manager = nullptr;
-
 public:
 	amElementNotebookPage* m_characterPage = nullptr,
 		* m_locationPage = nullptr,
@@ -77,8 +74,8 @@ public:
 
 	void InitShowChoices();
 
-	wxListView* GetAppropriateList(StoryElement* element);
-	amElementNotebookPage* GetAppropriatePage(StoryElement* element);
+	wxListView* GetAppropriateList(am::StoryElement* element);
+	amElementNotebookPage* GetAppropriatePage(am::StoryElement* element);
 
 	inline amElementShowcase* GetCharacterShowcase() { return m_characterPage->GetShowcase(); }
 	inline amElementShowcase* GetLocationShowcase() { return m_locationPage->GetShowcase(); }
@@ -90,15 +87,15 @@ public:
 
 	wxSearchCtrl* GetSearchBar() { return m_searchBar; }
 
-	void GoToStoryElement(StoryElement* element);
-	bool ShouldShow(StoryElement* element) const;
+	void GoToStoryElement(am::StoryElement* element);
+	bool ShouldShow(am::StoryElement* element) const;
 
 	void UpdateSearchAutoComplete(wxBookCtrlEvent& event);
 
 	void ClearAll();
 
-	void RemoveElementFromList(StoryElement* element);
-	void UpdateElementInList(int n, StoryElement* element);
+	void RemoveElementFromList(am::StoryElement* element);
+	void UpdateElementInList(int n, am::StoryElement* element);
 
 	inline void UpdateCharacterList() { m_characterPage->UpdateList(); }
 	inline void UpdateLocationList() { m_locationPage->UpdateList(); }

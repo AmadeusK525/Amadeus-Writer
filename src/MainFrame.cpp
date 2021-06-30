@@ -59,11 +59,9 @@ EVT_CLOSE(amMainFrame::OnClose)
 
 END_EVENT_TABLE()
 
-amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const wxPoint& pos, const wxSize& size) :
+amMainFrame::amMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
 	wxFrame(nullptr, wxID_ANY, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
-	m_manager = manager;
-
 	m_mainPanel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
 	m_mainPanel->SetBackgroundColour(wxColour(40, 40, 40));
 
@@ -100,8 +98,8 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 		button->SetFont(font);
 		button->SetBackgroundColour(wxColour(20, 20, 20));
 		button->SetForegroundColour(wxColour(245, 245, 245));
-		button->Bind(wxEVT_ENTER_WINDOW, amOnEnterDarkButton);
-		button->Bind(wxEVT_LEAVE_WINDOW, amOnLeaveDarkButton);
+		button->Bind(wxEVT_ENTER_WINDOW, am::OnEnterDarkButton);
+		button->Bind(wxEVT_LEAVE_WINDOW, am::OnLeaveDarkButton);
 		m_buttonSizer->Add(button, wxSizerFlags(1).Expand().Border(wxALL, 2));
 	}
 
@@ -113,14 +111,14 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	m_mainBook = new wxSimplebook(m_mainSplitter);
 	m_mainBook->SetBackgroundColour(wxColour(40, 40, 40));
 
-	m_overview = new amOverview(m_mainBook, m_manager);
+	m_overview = new amOverview(m_mainBook);
 	m_overview->Show();
 
 	//Setting up notebook Elements page
 	m_elementNotebook = new amElementNotebook(m_mainBook);
 	m_elementNotebook->Hide();
 
-	m_storyNotebook = new amStoryNotebook(m_mainBook, m_manager);
+	m_storyNotebook = new amStoryNotebook(m_mainBook);
 	m_storyNotebook->Hide();
 
 	m_outline = new amOutline(m_mainBook);
@@ -150,13 +148,13 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	pNewMenu->Append(-1, _("Project"));
 
 	wxMenu* pImportElementMenu = new wxMenu();
-	pImportElementMenu->Append(-1, _("Character"));
-	pImportElementMenu->Append(-1, _("Location"));
-	pImportElementMenu->Append(-1, _("Item"));
+	pImportElementMenu->Append(-1, _("am::Character"));
+	pImportElementMenu->Append(-1, _("am::Location"));
+	pImportElementMenu->Append(-1, _("am::Item"));
 
 	wxMenu* pImportMenu = new wxMenu();
 	pImportMenu->Append(-1, _("Book"));
-	pImportMenu->Append(-1, _("Document"));
+	pImportMenu->Append(-1, _("am::Document"));
 	pImportMenu->AppendSeparator();
 	pImportMenu->Append(-1, _("Element"), pImportElementMenu);
 
@@ -171,11 +169,11 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 	wxMenu* pProjectMenu = new wxMenu();
 
 	pProjectMenu->Append(-1, _("New &Book"), _("Create a new books"));
-	pProjectMenu->Append(MENU_NewDocument, _("New &Document"), _("Create a new document"));
+	pProjectMenu->Append(MENU_NewDocument, _("New &am::Document"), _("Create a new document"));
 	pProjectMenu->AppendSeparator();
-	pProjectMenu->Append(MENU_NewCharacter, _("New Character"), _("Create a new character"));
-	pProjectMenu->Append(MENU_NewLocation, _("New &Location"), _("Create a new location"));
-	pProjectMenu->Append(MENU_NewItem, _("New &Item"), _("Create a new item"));
+	pProjectMenu->Append(MENU_NewCharacter, _("New am::Character"), _("Create a new character"));
+	pProjectMenu->Append(MENU_NewLocation, _("New &am::Location"), _("Create a new location"));
+	pProjectMenu->Append(MENU_NewItem, _("New &am::Item"), _("Create a new item"));
 
 	wxMenu* pEditMenu = new wxMenu();
 	pEditMenu->Append(MENU_Update, _("&Update"), _("Update"));
@@ -251,13 +249,7 @@ amMainFrame::amMainFrame(const wxString& title, amProjectManager* manager, const
 
 void amMainFrame::OnNewFile(wxCommandEvent& event)
 {
-	// Updating everything that needs to be reset.
-	m_elementNotebook->ClearAll();
-	m_storyNotebook->ClearAll();
-	m_outline->ClearAll();
-
-	// Clearing all paths and setting window title as generic.
-	SetTitle("New Amadeus project");
+	//ClearAll();
 }
 
 void amMainFrame::OnOpenFile(wxCommandEvent& event)
@@ -267,20 +259,20 @@ void amMainFrame::OnOpenFile(wxCommandEvent& event)
 		wxFD_OPEN, wxDefaultPosition);
 
 	if ( openDialog.ShowModal() == wxID_OK )
-		m_manager->DoLoadProject(openDialog.GetPath());
+		am::DoLoadProject(openDialog.GetPath());
 }
 
 void amMainFrame::OnSaveFile(wxCommandEvent& event)
 {
 	// First, check whether the current path of the project exists. If it doesn't,
 	// the "OnSaveFileAs" is called, which calls back the "saveAs" function.
-	if ( !wxFileName::Exists(m_manager->GetPath(false).ToStdString()) )
+	if ( !wxFileName::Exists(am::GetPath(false).ToStdString()) )
 	{
 		amMainFrame::OnSaveFileAs(event);
 	}
 	else
 	{
-		m_manager->SaveProject();
+		am::SaveProject();
 		SetFocus();
 	}
 	event.Skip();
@@ -294,7 +286,7 @@ void amMainFrame::OnSaveFileAs(wxCommandEvent& event)
 
 	if ( saveDialog.ShowModal() == wxID_OK )
 	{
-		m_manager->SetProjectFileName(saveDialog.GetPath());
+		am::SetNewProjectPath(saveDialog.GetPath());
 		OnSaveFile(event);
 	}
 
@@ -319,7 +311,7 @@ void amMainFrame::OnExportCorkboard(wxCommandEvent& event)
 
 void amMainFrame::OnClose(wxCloseEvent& event)
 {
-	m_manager->SaveSessionToDb();
+	am::SaveSessionToDb();
 	/*if (event.CanVeto()) {
 		wxMessageDialog saveBefore(this, "Project has been modified and not saved.\nDo you want to save before quitting?",
 			"Quit", wxYES_NO | wxCANCEL | wxYES_DEFAULT | wxICON_EXCLAMATION);
@@ -348,6 +340,18 @@ void amMainFrame::OnClose(wxCloseEvent& event)
 	}*/
 
 	event.Skip();
+}
+
+void amMainFrame::ClearAll()
+{
+	m_overview->ClearAll();
+	m_elementNotebook->ClearAll();
+	m_storyNotebook->ClearAll();
+	m_outline->ClearAll();
+	m_release->ClearAll();
+
+	// Clearing all paths and setting window title as generic.
+	SetTitle("New Amadeus project");
 }
 
 void amMainFrame::OnQuit(wxCommandEvent& event)
@@ -475,7 +479,7 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event)
 // These next 3 functions are for opening up the frames used on creating characters, locations and documents.
 void amMainFrame::OnNewDocument(wxCommandEvent& event)
 {
-	DocumentCreator* create = new DocumentCreator(this, m_manager);
+	DocumentCreator* create = new DocumentCreator(this);
 	create->Show();
 	create->SetFocus();
 	Enable(false);
@@ -485,7 +489,7 @@ void amMainFrame::OnNewDocument(wxCommandEvent& event)
 void amMainFrame::OnNewCharacter(wxCommandEvent& event)
 {
 	amCharacterCreator* pCreator = new amCharacterCreator;
-	pCreator->Create(this, m_manager, -1, "Create character", wxDefaultPosition, pCreator->GetBestSize());
+	pCreator->Create(this, -1, "Create character", wxDefaultPosition, pCreator->GetBestSize());
 	pCreator->Show();
 	pCreator->SetFocus();
 	Enable(false);
@@ -495,7 +499,7 @@ void amMainFrame::OnNewCharacter(wxCommandEvent& event)
 void amMainFrame::OnNewLocation(wxCommandEvent& event)
 {
 	amLocationCreator* pCreator = new amLocationCreator;
-	pCreator->Create(this, m_manager, -1, "Create location", wxDefaultPosition, pCreator->GetBestSize());
+	pCreator->Create(this, -1, "Create location", wxDefaultPosition, pCreator->GetBestSize());
 	pCreator->Show();
 	pCreator->SetFocus();
 	Enable(false);
@@ -505,7 +509,7 @@ void amMainFrame::OnNewLocation(wxCommandEvent& event)
 void amMainFrame::OnNewItem(wxCommandEvent& event)
 {
 	amItemCreator* pCreator = new amItemCreator;
-	pCreator->Create(this, m_manager, -1, "Create item", wxDefaultPosition, pCreator->GetBestSize());
+	pCreator->Create(this, -1, "Create item", wxDefaultPosition, pCreator->GetBestSize());
 	pCreator->Show();
 	pCreator->SetFocus();
 	Enable(false);
@@ -537,7 +541,7 @@ void amMainFrame::Search(wxCommandEvent& event)
 
 		if ( item == -1 )
 		{
-			wxMessageBox("Character \"" + nameSearch + "\" could not be found", "Not found!",
+			wxMessageBox("am::Character \"" + nameSearch + "\" could not be found", "Not found!",
 				wxOK | wxICON_INFORMATION | wxCENTER);
 		}
 		else
@@ -554,7 +558,7 @@ void amMainFrame::Search(wxCommandEvent& event)
 
 		if ( item == -1 )
 		{
-			wxMessageBox("Location """ + nameSearch + """ could not be found", "Not found!",
+			wxMessageBox("am::Location """ + nameSearch + """ could not be found", "Not found!",
 				wxOK | wxICON_INFORMATION | wxCENTER);
 		}
 		else
@@ -571,7 +575,7 @@ void amMainFrame::Search(wxCommandEvent& event)
 
 		if ( item == -1 )
 		{
-			wxMessageBox("Item """ + nameSearch + """ could not be found", "Not found!",
+			wxMessageBox("am::Item """ + nameSearch + """ could not be found", "Not found!",
 				wxOK | wxICON_INFORMATION | wxCENTER);
 		}
 		else

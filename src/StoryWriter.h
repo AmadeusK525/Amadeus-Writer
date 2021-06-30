@@ -9,7 +9,7 @@
 #include <wx\wrapsizer.h>
 #include <wx\scrolwin.h>
 
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 #include "StoryNotebook.h"
 #include "OutlineFiles.h"
 
@@ -38,8 +38,8 @@ private:
 	StoryTreeModelNode* m_trashNode = nullptr;
 
 	STMN_Type m_type = STMN_Null;
-	Document* m_document = nullptr;
-	Book* m_book = nullptr;
+	am::Document* m_document = nullptr;
+	am::Book* m_book = nullptr;
 	int m_index = -1;
 
 	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash,
@@ -79,17 +79,17 @@ private:
 public:
 	static wxVector<wxIcon> m_icons;
 
-	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, Document* document, int position) :
+	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, am::Document* document, int position) :
 		StoryTreeModelNode(parent, trash, document->name, position, STMN_Document)
 	{
 		m_document = document;
 	}
 
-	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, Document* document) :
+	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, am::Document* document) :
 		StoryTreeModelNode(parent, trash, document, document->position)
 	{}
 
-	inline StoryTreeModelNode(Book* book) :
+	inline StoryTreeModelNode(am::Book* book) :
 		StoryTreeModelNode(nullptr, nullptr, book->title, -1, STMN_Book)
 	{
 		m_book = book;
@@ -139,14 +139,26 @@ public:
 	inline int GetIndex() { return m_index; }
 	inline void SetIndex(int index) { m_index = index; }
 
-	inline void SetTitle(wxString& title) { m_title = title; }
+	inline virtual wxString GetTitle() const override
+	{
+		if ( m_document )
+			return m_document->name;
 
-	inline bool IsBook() { return m_type == STMN_Book; }
-	inline bool IsDocument() { return m_type == STMN_Document; }
-	inline bool IsTrash() { return m_type == STMN_Trash; }
+		if ( m_book )
+			return m_book->title;
 
-	inline Book* GetBook() { return m_book; }
-	inline Document* GetDocument() { return m_document; }
+		if ( IsTrash() )
+			return _("Trash");
+
+		return "";
+	}
+
+	inline bool IsBook() const { return m_type == STMN_Book; }
+	inline bool IsDocument() const { return m_type == STMN_Document; }
+	inline bool IsTrash() const { return m_type == STMN_Trash; }
+
+	inline am::Book* GetBook() { return m_book; }
+	inline am::Document* GetDocument() { return m_document; }
 
 	inline bool IsInTrash() { return (m_document && m_document->isInTrash); }
 	inline void SetIsInTrash(bool is) { if ( m_document ) m_document->isInTrash = is; }
@@ -189,7 +201,7 @@ public:
 
 class StoryTreeModel : public amDataViewModel
 {
-private:
+protected:
 	// pointers to some "special" nodes of the tree:
 	wxVector<StoryTreeModelNode*> m_vBooks;
 	StoryTreeModelNode* m_trashNode = nullptr;
@@ -210,16 +222,16 @@ public:
 
 	bool Load();
 	bool Save();
-	void CreateFromScratch(amProject* project);
+	void CreateFromScratch(am::Project* project);
 
 	inline wxVector<StoryTreeModelNode*>& GetBooks() { return m_vBooks; }
 	inline StoryTreeModelNode* GetTrash() { return m_trashNode; }
 
-	wxDataViewItem AddDocument(Document* document, const wxDataViewItem& parentItem);
+	wxDataViewItem AddDocument(am::Document* document, const wxDataViewItem& parentItem);
 
-	wxDataViewItem GetBookItem(Book* book);
-	wxDataViewItem GetDocumentItem(Document* document);
-	wxDataViewItem ScanForDocumentRecursive(StoryTreeModelNode* node, Document* document);
+	wxDataViewItem GetBookItem(am::Book* book);
+	wxDataViewItem GetDocumentItem(am::Document* document);
+	wxDataViewItem ScanForDocumentRecursive(StoryTreeModelNode* node, am::Document* document);
 
 	int GetIndex(const wxDataViewItem& item);
 
@@ -227,7 +239,7 @@ public:
 	STMN_Type RestoreFromTrash(const wxDataViewItem& item);
 	void DeleteItem(const wxDataViewItem& item);
 
-	wxDataViewItem SelectDocument(Document* document);
+	wxDataViewItem SelectDocument(am::Document* document);
 
 	bool Reposition(const wxDataViewItem& item, int n);
 
@@ -272,10 +284,10 @@ struct amStoryWriterTab
 	wxRichTextCtrl* rtc = nullptr;
 	wxScrolledWindow* notePanel = nullptr;
 
-	Document* document = nullptr;
+	am::Document* document = nullptr;
 
 	amStoryWriterTab() = default;
-	amStoryWriterTab(wxPanel* mainPanel, wxRichTextCtrl* rtc, wxScrolledWindow* notePanel, Document* document) :
+	amStoryWriterTab(wxPanel* mainPanel, wxRichTextCtrl* rtc, wxScrolledWindow* notePanel, am::Document* document) :
 		mainPanel(mainPanel), rtc(rtc), notePanel(notePanel), document(document)
 	{}
 };
@@ -291,7 +303,6 @@ class amStoryWriterNotebook;
 class amStoryWriter : public wxFrame
 {
 private:
-	amProjectManager* m_manager = nullptr;
 	amStoryWriterNotebook* m_swNotebook = nullptr;
 
 	wxTextCtrl* m_noteLabel = nullptr;
@@ -338,11 +349,11 @@ public:
 	wxStatusBar* m_statusBar = nullptr;
 
 public:
-	amStoryWriter(wxWindow* parent, amProjectManager* manager, Document* document);
+	amStoryWriter(wxWindow* parent, am::Document* document);
 
 	void ClearNote(wxCommandEvent& event);
 	void OnAddNote(wxCommandEvent& event);
-	void AddNote(Note* note, bool addToDocument);
+	void AddNote(am::Note* note, bool addToDocument);
 
 	void CheckNotes();
 
@@ -375,7 +386,7 @@ public:
 	void OnNextDocument(wxCommandEvent& event);
 	void OnPreviousDocument(wxCommandEvent& event);
 
-	void LoadDocument(Document* document);
+	void LoadDocument(am::Document* document);
 	void SaveActiveTab();
 
 	inline amStoryWriterTab GetActiveTab() { return m_activeTab; }
@@ -561,7 +572,7 @@ public:
 
 	bool HasRedNote();
 
-	void AddNote(Note* note);
+	void AddNote(am::Note* note);
 	void PaintDots(wxPaintEvent& event);
 	void SetRed(wxCommandEvent& event);
 	void SetGreen(wxCommandEvent& event);

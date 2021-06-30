@@ -15,10 +15,9 @@ EVT_CLOSE(DocumentCreator::CheckClose)
 
 END_EVENT_TABLE()
 
-DocumentCreator::DocumentCreator(wxWindow* parent, amProjectManager* manager) :
+DocumentCreator::DocumentCreator(wxWindow* parent) :
 	wxFrame(parent, wxID_ANY, "Create document", wxDefaultPosition, wxSize(500, 350), wxMINIMIZE_BOX | wxSYSTEM_MENU |
-	wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT),
-	m_manager(manager)
+	wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxFRAME_SHAPED | wxFRAME_FLOAT_ON_PARENT)
 {
 	this->CenterOnParent();
 	this->SetBackgroundColour(wxColour(40, 40, 40));
@@ -33,7 +32,7 @@ DocumentCreator::DocumentCreator(wxWindow* parent, amProjectManager* manager) :
 	label1->SetForegroundColour(wxColour(245, 245, 245));
 	label1->SetBackgroundColour(wxColour(40, 40, 40));
 	m_ndocName = new wxTextCtrl(m_ndocPanel1, wxID_ANY, "Document " +
-		std::to_string(m_manager->GetDocumentCount(1) + 1), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
+		std::to_string(am::GetDocumentCount(am::GetCurrentBookPos()) + 1), wxPoint(105, 10), wxSize(365, 25), wxBORDER_SIMPLE);
 	m_ndocName->SetBackgroundColour(wxColour(70, 70, 70));
 	m_ndocName->SetForegroundColour(wxColour(250, 250, 250));
 	m_ndocName->SetFont(wxFont(wxFontInfo(10)));
@@ -124,7 +123,7 @@ void DocumentCreator::Next(wxCommandEvent& event)
 		m_ndocList->AppendColumn("Drag document '" + m_tempName + "' to desired position", wxLIST_FORMAT_LEFT, 2000);
 
 		int i = 0;
-		for ( Document*& it : m_manager->GetDocumentsInCurrentBook() )
+		for ( am::Document*& it : am::GetDocumentsInCurrentBook() )
 			m_ndocList->InsertItem(i++, it->name);
 
 		m_ndocList->InsertItem(i, m_tempName);
@@ -163,7 +162,7 @@ void DocumentCreator::Back(wxCommandEvent& event)
 
 void DocumentCreator::Cancel(wxCommandEvent& event)
 {
-	m_manager->GetMainFrame()->Enable();
+	am::GetMainFrame()->Enable();
 	this->Destroy();
 
 	event.Skip();
@@ -171,12 +170,12 @@ void DocumentCreator::Cancel(wxCommandEvent& event)
 
 void DocumentCreator::Create(wxCommandEvent& event)
 {
-	Document* pDocument = new Document(nullptr, -1, m_manager->GetCurrentBook(), Document_Chapter);
+	am::Document* pDocument = new am::Document(nullptr, -1, am::GetCurrentBook(), am::Document_Chapter);
 
 	if ( m_ndocName->GetValue() != "" && m_ndocName->IsModified() )
 		pDocument->name = m_ndocName->GetValue();
 	else
-		pDocument->name = "Document " + std::to_string(m_manager->GetDocumentCount(1) + 1);
+		pDocument->name = "Document " + std::to_string(am::GetDocumentCount(am::GetCurrentBookPos()) + 1);
 
 	pDocument->synopsys = m_ndocSummary->GetValue();
 
@@ -184,8 +183,8 @@ void DocumentCreator::Create(wxCommandEvent& event)
 
 	pDocument->position = pos + 1;
 
-	m_manager->AddDocument(pDocument, m_manager->GetCurrentBook(), pos);
-	m_manager->GetMainFrame()->Enable();
+	am::AddDocument(pDocument, am::GetCurrentBook(), pos);
+	am::GetMainFrame()->Enable();
 	Destroy();
 
 	event.Skip();
@@ -201,7 +200,7 @@ void DocumentCreator::CheckClose(wxCloseEvent& event)
 		switch ( check.ShowModal() )
 		{
 		case wxID_YES:
-			m_manager->GetMainFrame()->Enable();
+			am::GetMainFrame()->Enable();
 			this->Destroy();
 			break;
 
@@ -212,7 +211,7 @@ void DocumentCreator::CheckClose(wxCloseEvent& event)
 	}
 	else
 	{
-		m_manager->GetMainFrame()->Enable();
+		am::GetMainFrame()->Enable();
 		this->Destroy();
 	}
 }

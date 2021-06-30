@@ -483,39 +483,39 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 
 void amOutlineFilesPanel::Init()
 {
-	for ( StoryElement*& pElement : amGetManager()->GetAllElements() )
+	for ( am::StoryElement*& pElement : am::GetAllElements() )
 	{
 		AppendStoryElement(pElement);
 	}
 }
 
-void amOutlineFilesPanel::AppendStoryElement(StoryElement* element)
+void amOutlineFilesPanel::AppendStoryElement(am::StoryElement* element)
 {
 	if ( !element )
 		return;
 
 	wxDataViewItem item;
-	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::Character)) )
 		item = m_outlineTreeModel->AddToCharacters(element->name.ToStdString());
-	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Location)) )
 		item = m_outlineTreeModel->AddToLocations(element->name.ToStdString());
-	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
+	else if ( element->IsKindOf(wxCLASSINFO(am::Item)) )
 		item = m_outlineTreeModel->AddToItems(element->name.ToStdString());
 
 	GenerateElementBuffer(element, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
 }
 
-void amOutlineFilesPanel::DeleteStoryElement(StoryElement* element)
+void amOutlineFilesPanel::DeleteStoryElement(am::StoryElement* element)
 {
-	if ( element->IsKindOf(wxCLASSINFO(Character)) )
-		DeleteCharacter((Character*)element);
-	else if ( element->IsKindOf(wxCLASSINFO(Location)) )
-		DeleteLocation((Location*)element);
-	else if ( element->IsKindOf(wxCLASSINFO(Item)) )
-		DeleteItem((Item*)element);
+	if ( element->IsKindOf(wxCLASSINFO(am::Character)) )
+		DeleteCharacter((am::Character*)element);
+	else if ( element->IsKindOf(wxCLASSINFO(am::Location)) )
+		DeleteLocation((am::Location*)element);
+	else if ( element->IsKindOf(wxCLASSINFO(am::Item)) )
+		DeleteItem((am::Item*)element);
 }
 
-void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTextBuffer* buffer)
+void amOutlineFilesPanel::GenerateElementBuffer(am::StoryElement* element, wxRichTextBuffer* buffer)
 {
 	if ( !element || !buffer )
 		return;
@@ -549,7 +549,7 @@ void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTex
 	buffer->InsertTextWithUndo(buffer->GetText().size(), " " + element->name, nullptr);
 	buffer->EndFontSize();
 
-	if ( element->IsKindOf(wxCLASSINFO(Item)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::Item)) )
 	{
 
 	}
@@ -559,10 +559,12 @@ void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTex
 	for ( auto& it : element->mShortAttributes )
 	{
 		buffer->BeginBold();
-		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + it.first, nullptr);
+		buffer->InsertTextWithUndo(buffer->GetText().size(), separator + it.first + ": ", nullptr);
 		buffer->EndBold();
 		buffer->InsertTextWithUndo(buffer->GetText().size(), it.second, nullptr);
-		separator = "\n";
+
+		if ( separator != '\n' )
+			separator = '\n';
 	}
 
 	for ( auto& it : element->mLongAttributes )
@@ -576,7 +578,7 @@ void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTex
 	buffer->SetName(element->name);
 }
 
-//void amOutlineFilesPanel::GenerateCharacterBuffer(Character* character, wxRichTextBuffer* buffer)
+//void amOutlineFilesPanel::GenerateCharacterBuffer(am::Character* character, wxRichTextBuffer* buffer)
 //{
 //	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
 //	buffer->BeginSuppressUndo();
@@ -692,7 +694,7 @@ void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTex
 //	buffer->SetName(character->name);
 //}
 //
-//void amOutlineFilesPanel::GenerateLocationBuffer(Location* location, wxRichTextBuffer* buffer)
+//void amOutlineFilesPanel::GenerateLocationBuffer(am::Location* location, wxRichTextBuffer* buffer)
 //{
 //	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
 //	buffer->BeginSuppressUndo();
@@ -801,7 +803,7 @@ void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTex
 //	buffer->SetName(location->name);
 //}
 //
-//void amOutlineFilesPanel::GenerateItemBuffer(Item* item, wxRichTextBuffer* buffer)
+//void amOutlineFilesPanel::GenerateItemBuffer(am::Item* item, wxRichTextBuffer* buffer)
 //{
 //	buffer->SetBasicStyle(m_textCtrl->GetBasicStyle());
 //	buffer->BeginSuppressUndo();
@@ -851,25 +853,25 @@ void amOutlineFilesPanel::GenerateElementBuffer(StoryElement* element, wxRichTex
 //	buffer->SetName(item->name);
 //}
 //
-//void amOutlineFilesPanel::AppendCharacter(Character* character)
+//void amOutlineFilesPanel::AppendCharacter(am::Character* character)
 //{
 //	wxDataViewItem item = m_outlineTreeModel->AddToCharacters(character->name.ToStdString());
 //	GenerateCharacterBuffer(character, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
 //}
 //
-//void amOutlineFilesPanel::AppendLocation(Location* location)
+//void amOutlineFilesPanel::AppendLocation(am::Location* location)
 //{
 //	wxDataViewItem item = m_outlineTreeModel->AddToLocations(location->name.ToStdString());
 //	GenerateLocationBuffer(location, ((OutlineTreeModelNode*)item.GetID())->GetBuffer());
 //}
 //
-//void amOutlineFilesPanel::AppendItem(Item* item)
+//void amOutlineFilesPanel::AppendItem(am::Item* item)
 //{
 //	wxDataViewItem dvitem = m_outlineTreeModel->AddToItems(item->name.ToStdString());
 //	GenerateItemBuffer(item, ((OutlineTreeModelNode*)dvitem.GetID())->GetBuffer());
 //}
 
-void amOutlineFilesPanel::DeleteCharacter(Character* character)
+void amOutlineFilesPanel::DeleteCharacter(am::Character* character)
 {
 	wxVector<amTreeModelNode*>& characters = m_outlineTreeModel->GetCharacters();
 	for ( unsigned int i = 0; i < characters.size(); i++ )
@@ -889,7 +891,7 @@ void amOutlineFilesPanel::DeleteCharacter(Character* character)
 	}
 }
 
-void amOutlineFilesPanel::DeleteLocation(Location* location)
+void amOutlineFilesPanel::DeleteLocation(am::Location* location)
 {
 	wxVector<amTreeModelNode*>& locations = m_outlineTreeModel->GetLocations();
 	for ( unsigned int i = 0; i < locations.size(); i++ )
@@ -909,7 +911,7 @@ void amOutlineFilesPanel::DeleteLocation(Location* location)
 	}
 }
 
-void amOutlineFilesPanel::DeleteItem(Item* item)
+void amOutlineFilesPanel::DeleteItem(am::Item* item)
 {
 	wxVector<amTreeModelNode*>& items = m_outlineTreeModel->GetItems();
 	for ( unsigned int i = 0; i < items.size(); i++ )
@@ -1288,7 +1290,7 @@ bool amOutlineFilesPanel::Save()
 					root->AddChild(SerializeFile(rootFiles[i]));
 			}
 
-			amSQLEntry sqlEntry;
+			am::SQLEntry sqlEntry;
 			sqlEntry.strings["content"] = wxString();
 
 			wxStringOutputStream stream(&sqlEntry.strings["content"]);
@@ -1298,7 +1300,7 @@ bool amOutlineFilesPanel::Save()
 				sqlEntry.tableName = "outline_files";
 				sqlEntry.name = "Outline Files";
 
-				amGetManager()->SaveSQLEntry(sqlEntry, sqlEntry);
+				am::SaveSQLEntry(sqlEntry, sqlEntry);
 
 				bSucceeded = true;
 			}
@@ -1314,7 +1316,7 @@ bool amOutlineFilesPanel::Save()
 	return bSucceeded;
 }
 
-bool amOutlineFilesPanel::Load(amProjectSQLDatabase* db)
+bool amOutlineFilesPanel::Load(am::ProjectSQLDatabase* db)
 {
 	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM outline_files;");
 	while ( result.NextRow() )

@@ -821,7 +821,7 @@ void amTLTimelineCanvas::MoveThread(amTLThread* thread, bool moveUp, bool reposi
 
 void amTLTimelineCanvas::OnDeleteCard(wxCommandEvent& event)
 {
-	wxMessageDialog message(amGetManager()->GetMainFrame(), _("Are you sure you want to delete this card?"
+	wxMessageDialog message(am::GetMainFrame(), _("Are you sure you want to delete this card?"
 		" This action cannot be undone!"), _("Confirmation"),
 		wxYES_NO | wxCANCEL | wxICON_WARNING);
 
@@ -839,7 +839,7 @@ void amTLTimelineCanvas::OnDeleteCard(wxCommandEvent& event)
 
 void amTLTimelineCanvas::OnDeleteThread(wxCommandEvent& event)
 {
-	wxMessageDialog message(amGetManager()->GetMainFrame(), _("Are you sure you want to delete this thread?"
+	wxMessageDialog message(am::GetMainFrame(), _("Are you sure you want to delete this thread?"
 		" This action cannot be undone!"), _("Confirmation"),
 		wxYES_NO | wxCANCEL | wxICON_WARNING);
 
@@ -857,7 +857,7 @@ void amTLTimelineCanvas::OnDeleteThread(wxCommandEvent& event)
 
 void amTLTimelineCanvas::OnDeleteSection(wxCommandEvent& event)
 {
-	wxMessageDialog message(amGetManager()->GetMainFrame(), _("Are you sure you want to delete this section?"
+	wxMessageDialog message(am::GetMainFrame(), _("Are you sure you want to delete this section?"
 		" This action cannot be undone!"), _("Confirmation"),
 		wxYES_NO | wxCANCEL | wxICON_WARNING);
 
@@ -1519,8 +1519,7 @@ void amTLTimelineCanvas::SelectThread(amTLThread* thread, const wxPoint& pos)
 amTLTimeline::amTLTimeline(wxWindow* parent) : amSplitterWindow(parent)
 {
 	m_outline = (amOutline*)(parent->GetParent());
-	m_manager = amGetManager();
-
+	
 	m_canvas = new amTLTimelineCanvas(&m_canvasManager, this);
 	m_sidebar = new amTLTimelineSidebar(this, m_canvas);
 
@@ -1733,7 +1732,7 @@ void amTLTimeline::Save(bool doCanvas, bool doElements)
 	std::thread thread([&]()
 		{
 			m_isSaving = true;
-			amSQLEntry sqlEntry;
+			am::SQLEntry sqlEntry;
 			sqlEntry.tableName = "outline_timelines";
 			sqlEntry.name = "Timeline Canvas";
 
@@ -1751,7 +1750,7 @@ void amTLTimeline::Save(bool doCanvas, bool doElements)
 					SaveTimelineElements(sstream2);
 				}
 
-			m_manager->SaveSQLEntry(sqlEntry, sqlEntry);
+			am::SaveSQLEntry(sqlEntry, sqlEntry);
 			m_isSaving = false;
 		}
 	);
@@ -1759,7 +1758,7 @@ void amTLTimeline::Save(bool doCanvas, bool doElements)
 	thread.detach();
 }
 
-void amTLTimeline::Load(amProjectSQLDatabase* db)
+void amTLTimeline::Load(am::ProjectSQLDatabase* db)
 {
 	wxSQLite3ResultSet result = db->ExecuteQuery("SELECT * FROM outline_timelines;");
 
@@ -2417,33 +2416,32 @@ void amTLTimelineSidebar::ShowContent(bool show)
 void amTLTimelineSidebar::OnFullScreen(wxCommandEvent& event)
 {
 	amOutline* outline = m_parent->GetOutline();
-	amDoSubWindowFullscreen(m_parent, outline->GetTimelineHolder(), event.GetInt(),
+	am::DoSubWindowFullscreen(m_parent, outline->GetTimelineHolder(), event.GetInt(),
 		outline->GetTimelineHolderSizer(), wxSizerFlags(1).Expand(), 0);
 }
 
 void amTLTimelineSidebar::OnAddThread(wxCommandEvent& event)
 {
 	wxBusyCursor busy;
-	amProjectManager* pManager = amGetManager();
-
-	amTLAddThreadDlg* addThread = new amTLAddThreadDlg(pManager->GetMainFrame(), m_parent, pManager,
+	
+	amTLAddThreadDlg* addThread = new amTLAddThreadDlg(am::GetMainFrame(), m_parent,
 		MODE_THREAD_Add, FromDIP(wxSize(500, 500)));
 	addThread->CenterOnScreen();
 	addThread->Show();
 
-	pManager->GetMainFrame()->Enable(false);
+	am::GetMainFrame()->Enable(false);
 }
 
 void amTLTimelineSidebar::OnAddSection(wxCommandEvent& event)
 {
 	wxBusyCursor busy;
-	amProjectManager* pManager = amGetManager();
-	amTLAddSectionDlg* addSection = new amTLAddSectionDlg(pManager->GetMainFrame(), m_parent,
+	
+	amTLAddSectionDlg* addSection = new amTLAddSectionDlg(am::GetMainFrame(), m_parent,
 		MODE_SECTION_Add, FromDIP(wxSize(400, 400)));
 	addSection->CenterOnScreen();
 	addSection->Show();
 
-	pManager->GetMainFrame()->Enable(false);
+	am::GetMainFrame()->Enable(false);
 }
 
 void amTLTimelineSidebar::OnAddCardToThread(wxCommandEvent& event)
@@ -2496,50 +2494,43 @@ void amTLTimelineSidebar::OnAddCardAfter(wxCommandEvent& event)
 void amTLTimelineSidebar::OnChangeCharacterThread(wxCommandEvent& event)
 {
 	wxBusyCursor busy;
-	amProjectManager* pManager = amGetManager();
-
-	amTLAddThreadDlg* addThread = new amTLAddThreadDlg(pManager->GetMainFrame(), m_parent,
-		pManager, MODE_THREAD_Change, FromDIP(wxSize(400, 400)));
+	
+	amTLAddThreadDlg* addThread = new amTLAddThreadDlg(am::GetMainFrame(), m_parent,
+		MODE_THREAD_Change, FromDIP(wxSize(400, 400)));
 	addThread->CenterOnScreen();
 	addThread->Show();
 
-	pManager->GetMainFrame()->Enable(false);
+	am::GetMainFrame()->Enable(false);
 }
 
 void amTLTimelineSidebar::OnChangeNameCard(wxCommandEvent& event)
 {
-	amProjectManager* manager = amGetManager();
-
-	amTLCardDlg* change = new amTLCardDlg(manager->GetMainFrame(), m_parent, m_cardThumbnail->GetCard()->GetTitle(),
+	amTLCardDlg* change = new amTLCardDlg(am::GetMainFrame(), m_parent, m_cardThumbnail->GetCard()->GetTitle(),
 		MODE_CARD_Title, FromDIP(wxSize(250, 150)));
 	change->CenterOnScreen();
 	change->Show();
 
-	manager->GetMainFrame()->Enable(false);
+	am::GetMainFrame()->Enable(false);
 }
 
 void amTLTimelineSidebar::OnChangeContentCard(wxCommandEvent& event)
 {
-	amProjectManager* manager = amGetManager();
-
-	amTLCardDlg* change = new amTLCardDlg(manager->GetMainFrame(), m_parent, m_cardThumbnail->GetCard()->GetContent(),
+	amTLCardDlg* change = new amTLCardDlg(am::GetMainFrame(), m_parent, m_cardThumbnail->GetCard()->GetContent(),
 		MODE_CARD_Content, FromDIP(wxSize(300, 250)));
 	change->CenterOnScreen();
 	change->Show();
 
-	manager->GetMainFrame()->Enable(false);
+	am::GetMainFrame()->Enable(false);
 }
 
 void amTLTimelineSidebar::OnChangeNameSection(wxCommandEvent& event)
 {
-	amProjectManager* manager = amGetManager();
-
-	amTLAddSectionDlg* change = new amTLAddSectionDlg(manager->GetMainFrame(), m_parent,
+	amTLAddSectionDlg* change = new amTLAddSectionDlg(am::GetMainFrame(), m_parent,
 		MODE_SECTION_Change, FromDIP(wxSize(300, 150)));
 	change->CenterOnScreen();
 	change->Show();
 
-	manager->GetMainFrame()->Enable(false);
+	am::GetMainFrame()->Enable(false);
 }
 
 void amTLTimelineSidebar::OnThreadColourChanged(wxColourPickerEvent& event)
@@ -2736,9 +2727,7 @@ void amTLTimelineSidebar::OnPreferencesCheck(wxCommandEvent& event)
 
 void amTLTimelineSidebar::OnResetPreferences(wxCommandEvent& event)
 {
-	amProjectManager* manager = amGetManager();
-
-	wxMessageDialog message(manager->GetMainFrame(), _("Are you sure you want to reset all preferences?"), _("Confirmation"),
+	wxMessageDialog message(am::GetMainFrame(), _("Are you sure you want to reset all preferences?"), _("Confirmation"),
 		wxYES_NO | wxCANCEL | wxICON_WARNING);
 
 	switch ( message.ShowModal() )

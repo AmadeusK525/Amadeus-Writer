@@ -7,19 +7,22 @@
 
 #include <unordered_map>
 
-struct amSQLEntry
+namespace am
 {
-	wxString tableName{ "" };
-	wxString name{ "" };
+	struct SQLEntry
+	{
+		wxString tableName{ "" };
+		wxString name{ "" };
 
-	std::unordered_map<wxString, int> integers{};
-	std::unordered_map<wxString, wxString> strings{};
-	std::unordered_map<wxString, wxMemoryBuffer> memBuffers{};
+		std::unordered_map<wxString, int> integers{};
+		std::unordered_map<wxString, wxString> strings{};
+		std::unordered_map<wxString, wxMemoryBuffer> memBuffers{};
 
-	bool specialForeign = false;
-	std::pair<wxString, int> foreignKey{ "", -1 };
+		bool specialForeign = false;
+		std::pair<wxString, int> foreignKey{ "", -1 };
 
-	wxVector<amSQLEntry> childEntries{};
-};
+		wxVector<SQLEntry> childEntries{};
+	};
+}
 
 #endif

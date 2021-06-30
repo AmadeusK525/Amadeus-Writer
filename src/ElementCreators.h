@@ -6,7 +6,7 @@
 #include <wx\wrapsizer.h>
 
 #include "StoryElements.h"
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 #include "ImagePanel.h"
 
 using std::pair;
@@ -14,8 +14,6 @@ using std::pair;
 class amElementCreator : public wxFrame
 {
 protected:
-	amProjectManager* m_manager = nullptr;
-
 	wxPanel* m_panel1 = nullptr,
 		* m_panel3 = nullptr,
 		* m_btnPanel = nullptr;
@@ -40,12 +38,11 @@ protected:
 	wxButton* m_removeImage = nullptr;
 
 	wxBoxSizer* m_mainSizer = nullptr;
-	StoryElement* m_elementEdit = nullptr;
+	am::StoryElement* m_elementEdit = nullptr;
 
 public:
 	amElementCreator() = default;
 	amElementCreator(wxWindow* parent,
-		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create element",
 		const wxPoint& pos = wxDefaultPosition,
@@ -54,7 +51,6 @@ public:
 		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
 	virtual bool Create(wxWindow* parent,
-		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create element",
 		const wxPoint& pos = wxDefaultPosition,
@@ -62,7 +58,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT);
 
-	virtual void StartEditing(StoryElement* element) = 0;
+	virtual void StartEditing(am::StoryElement* element) = 0;
 	virtual void DoEdit(wxCommandEvent& event) = 0;
 
 	virtual void AddCustomAttr(wxCommandEvent& event) = 0;
@@ -111,7 +107,7 @@ public:
 
 
 //////////////////////////////////////////////////////////////////////
-//////////////////////// Character Creator /////////////////////////
+//////////////////////// am::Character Creator /////////////////////////
 /////////////////////////////////////////////////////////////////////
 
 
@@ -138,7 +134,6 @@ private:
 public:
 	amCharacterCreator() = default;
 	amCharacterCreator(wxWindow* parent,
-		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create character",
 		const wxPoint& pos = wxDefaultPosition,
@@ -147,7 +142,6 @@ public:
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT);
 
 	virtual bool Create(wxWindow* parent,
-		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create element",
 		const wxPoint& pos = wxDefaultPosition,
@@ -155,7 +149,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
-	virtual void StartEditing(StoryElement* editChar);
+	virtual void StartEditing(am::StoryElement* editChar);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
@@ -170,7 +164,7 @@ public:
 
 
 //////////////////////////////////////////////////////////////////////
-////////////////////////// Location Creator //////////////////////////
+////////////////////////// am::Location Creator //////////////////////////
 //////////////////////////////////////////////////////////////////////
 
 
@@ -194,7 +188,6 @@ private:
 public:
 	amLocationCreator() = default;
 	amLocationCreator(wxWindow* parent,
-		amProjectManager* manager,
 		long id,
 		const wxString& label = "Create location",
 		const wxPoint& pos = wxDefaultPosition,
@@ -203,7 +196,6 @@ public:
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
 	virtual bool Create(wxWindow* parent,
-		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create location",
 		const wxPoint& pos = wxDefaultPosition,
@@ -211,7 +203,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
-	virtual void StartEditing(StoryElement* editLoc);
+	virtual void StartEditing(am::StoryElement* editLoc);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);
@@ -228,7 +220,7 @@ public:
 
 
 //////////////////////////////////////////////////////////////////////
-//////////////////////////// Item Creator ////////////////////////////
+//////////////////////////// am::Item Creator ////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
 
@@ -259,7 +251,6 @@ private:
 public:
 	amItemCreator() = default;
 	amItemCreator(wxWindow* parent,
-		amProjectManager* manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create item",
 		const wxPoint& pos = wxDefaultPosition,
@@ -268,7 +259,6 @@ public:
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT | wxBORDER_SIMPLE);
 
 	virtual bool Create(wxWindow* parent,
-		amProjectManager* m_manager,
 		long id = wxID_ANY,
 		const wxString& label = "Create item",
 		const wxPoint& pos = wxDefaultPosition,
@@ -276,7 +266,7 @@ public:
 		long style = wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX |
 		wxCLIP_CHILDREN | wxRESIZE_BORDER | wxFRAME_FLOAT_ON_PARENT) override;
 
-	virtual void StartEditing(StoryElement* editItem);
+	virtual void StartEditing(am::StoryElement* editItem);
 	virtual void DoEdit(wxCommandEvent& event);
 
 	virtual void AddCustomAttr(wxCommandEvent& event);

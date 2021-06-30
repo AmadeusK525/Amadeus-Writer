@@ -1,6 +1,7 @@
-#include "ProjectManager.h"
+#include "ProjectManaging.h"
 
 #include "ProjectWizard.h"
+#include "BookWizard.h"
 #include "MainFrame.h"
 #include "Overview.h"
 #include "ElementsNotebook.h"
@@ -29,7 +30,7 @@
 ///////////////////////////////////////////////////////////////////
 
 
-amProjectSQLDatabase::amProjectSQLDatabase(wxFileName& path)
+am::ProjectSQLDatabase::ProjectSQLDatabase(wxFileName& path)
 {
 	EnableForeignKeySupport(true);
 	if ( path.IsOk() && !path.IsDir() )
@@ -38,7 +39,7 @@ amProjectSQLDatabase::amProjectSQLDatabase(wxFileName& path)
 	}
 }
 
-bool amProjectSQLDatabase::Init()
+bool am::ProjectSQLDatabase::Init()
 {
 	if ( !TableExists("books") )
 	{
@@ -50,7 +51,7 @@ bool amProjectSQLDatabase::Init()
 	return true;
 }
 
-void amProjectSQLDatabase::CreateAllTables()
+void am::ProjectSQLDatabase::CreateAllTables()
 {
 	wxArrayString tStoryElements;
 	tStoryElements.Add("id INTEGER PRIMARY KEY");
@@ -175,7 +176,7 @@ void amProjectSQLDatabase::CreateAllTables()
 	}
 }
 
-int amProjectSQLDatabase::GetSQLEntryId(amSQLEntry& sqlEntry)
+int am::ProjectSQLDatabase::GetSQLEntryId(am::SQLEntry& sqlEntry)
 {
 	wxString query("SELECT DISTINCT id FROM ");
 	query << sqlEntry.tableName;
@@ -229,7 +230,7 @@ int amProjectSQLDatabase::GetSQLEntryId(amSQLEntry& sqlEntry)
 	return id;
 }
 
-bool amProjectSQLDatabase::CreateTable(const wxString& tableName, const wxArrayString& arguments,
+bool am::ProjectSQLDatabase::CreateTable(const wxString& tableName, const wxArrayString& arguments,
 	bool ifNotExists)
 {
 	if ( arguments.IsEmpty() )
@@ -262,13 +263,13 @@ bool amProjectSQLDatabase::CreateTable(const wxString& tableName, const wxArrayS
 	return true;
 }
 
-bool amProjectSQLDatabase::InsertSQLEntry(amSQLEntry& sqlEntry)
+bool am::ProjectSQLDatabase::InsertSQLEntry(am::SQLEntry& sqlEntry)
 {
 	wxSQLite3Statement statement = ConstructInsertStatement(sqlEntry);
 
 	statement.ExecuteUpdate();
 
-	for ( amSQLEntry& documentIt : sqlEntry.childEntries )
+	for ( am::SQLEntry& documentIt : sqlEntry.childEntries )
 	{
 		if ( documentIt.specialForeign )
 			documentIt.foreignKey.second = GetSQLEntryId(sqlEntry);
@@ -278,7 +279,7 @@ bool amProjectSQLDatabase::InsertSQLEntry(amSQLEntry& sqlEntry)
 	return true;
 }
 
-bool amProjectSQLDatabase::UpdateSQLEntry(amSQLEntry& original, amSQLEntry& edit)
+bool am::ProjectSQLDatabase::UpdateSQLEntry(am::SQLEntry& original, am::SQLEntry& edit)
 {
 	int id = GetSQLEntryId(original);
 
@@ -337,7 +338,7 @@ bool amProjectSQLDatabase::UpdateSQLEntry(amSQLEntry& original, amSQLEntry& edit
 	return true;
 }
 
-bool amProjectSQLDatabase::InsertManyToMany(const wxString& tableName,
+bool am::ProjectSQLDatabase::InsertManyToMany(const wxString& tableName,
 	int sqlID1, const wxString& arg1,
 	int sqlID2, const wxString& arg2)
 {
@@ -350,15 +351,15 @@ bool amProjectSQLDatabase::InsertManyToMany(const wxString& tableName,
 	return ExecuteUpdate(insert);
 }
 
-bool amProjectSQLDatabase::InsertManyToMany(const wxString& tableName,
-	amSQLEntry& sqlEntry1, const wxString& arg1,
-	amSQLEntry& sqlEntry2, const wxString& arg2)
+bool am::ProjectSQLDatabase::InsertManyToMany(const wxString& tableName,
+	am::SQLEntry& sqlEntry1, const wxString& arg1,
+	am::SQLEntry& sqlEntry2, const wxString& arg2)
 {
 
 	return InsertManyToMany(tableName, GetSQLEntryId(sqlEntry1), arg1, GetSQLEntryId(sqlEntry2), arg2);
 }
 
-bool amProjectSQLDatabase::DeleteSQLEntry(amSQLEntry& sqlEntry)
+bool am::ProjectSQLDatabase::DeleteSQLEntry(am::SQLEntry& sqlEntry)
 {
 	wxString statement("DELETE FROM ");
 	statement << sqlEntry.tableName << " WHERE id = " << GetSQLEntryId(sqlEntry) << ";";
@@ -366,7 +367,7 @@ bool amProjectSQLDatabase::DeleteSQLEntry(amSQLEntry& sqlEntry)
 	return ExecuteUpdate(statement);
 }
 
-bool amProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
+bool am::ProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
 	int sqlID1, const wxString& arg1,
 	int sqlID2, const wxString& arg2)
 {
@@ -377,14 +378,14 @@ bool amProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
 	return ExecuteUpdate(statement);
 }
 
-bool amProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
-	amSQLEntry& sqlEntry1, const wxString& arg1,
-	amSQLEntry& sqlEntry2, const wxString& arg2)
+bool am::ProjectSQLDatabase::DeleteManyToMany(const wxString& tableName,
+	am::SQLEntry& sqlEntry1, const wxString& arg1,
+	am::SQLEntry& sqlEntry2, const wxString& arg2)
 {
 	return DeleteManyToMany(tableName, GetSQLEntryId(sqlEntry1), arg1, GetSQLEntryId(sqlEntry2), arg2);
 }
 
-wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amSQLEntry& sqlEntry)
+wxSQLite3Statement am::ProjectSQLDatabase::ConstructInsertStatement(am::SQLEntry& sqlEntry)
 {
 	wxString insert("INSERT INTO ");
 	insert << sqlEntry.tableName << " (";
@@ -485,7 +486,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructInsertStatement(amSQLEntry& sq
 	return wxSQLite3Statement();
 }
 
-wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amSQLEntry& sqlEntry, int id)
+wxSQLite3Statement am::ProjectSQLDatabase::ConstructUpdateStatement(am::SQLEntry& sqlEntry, int id)
 {
 	wxString update("UPDATE ");
 	update << sqlEntry.tableName << " SET ";
@@ -559,7 +560,7 @@ wxSQLite3Statement amProjectSQLDatabase::ConstructUpdateStatement(amSQLEntry& sq
 
 }
 
-bool amProjectSQLDatabase::RowExists(amSQLEntry& sqlEntry)
+bool am::ProjectSQLDatabase::RowExists(am::SQLEntry& sqlEntry)
 {
 	return GetSQLEntryId(sqlEntry) != -1;
 }
@@ -570,10 +571,10 @@ bool amProjectSQLDatabase::RowExists(amSQLEntry& sqlEntry)
 ///////////////////////////////////////////////////////////////////////
 
 
-void amProjectPreferences::MarkSerializableDataMembers()
+void am::ProjectPreferences::MarkSerializableDataMembers()
 {}
 
-void amSessionAttributes::MarkSerializableDataMembers()
+void am::SessionAttributes::MarkSerializableDataMembers()
 {
 	XS_SERIALIZE_INT(nMainFrameSashPos, "main-frame-sash-pos");
 	XS_SERIALIZE_INT(nCharacterSashPos, "character-sash-pos");
@@ -584,88 +585,110 @@ void amSessionAttributes::MarkSerializableDataMembers()
 
 
 ///////////////////////////////////////////////////////////////////////
-//////////////////////////// ProjectManager ///////////////////////////
+/////////////////////////// ProjectManaging ///////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+am::Project project;
+am::ProjectSQLDatabase* pDatabase;
+am::Book* pCurrentBook = nullptr;
 
-amProjectManager::amProjectManager()
-{
-}
+amMainFrame* pMainFrame = nullptr;
+amOverview* pOverview = nullptr;
+amElementNotebook* pElementNotebook = nullptr;
+amStoryNotebook* pStoryNotebook = nullptr;
+amOutline* pOutline = nullptr;
+amRelease* pRelease = nullptr;
 
-amProjectManager::~amProjectManager()
-{
-	m_storage.Close();
-	wxSQLite3Database::ShutdownSQLite();
-}
+amStoryWriter* pStoryWriter = nullptr;
 
-bool amProjectManager::Init()
+wxFileName executablePath{};
+
+bool bIsInitialized = false;
+
+
+bool am::Init(const wxString& path)
 {
-	if ( m_isInitialized )
+	if ( bIsInitialized )
 		return false;
 
-	if ( m_project.amFile.IsOk() )
+	wxFileName amFile(path);
+
+	if ( amFile.IsOk() )
 	{
 		wxBusyCursor busy;
+		project.amFile.Assign(amFile);
 
-		if ( !m_mainFrame )
+		if ( !pMainFrame )
 		{
-			m_mainFrame = new amMainFrame(m_project.amFile.GetFullName() + "Amadeus Writer - ",
-				this, wxDefaultPosition, wxDefaultSize);
-			m_mainFrame->Hide();
-			m_mainFrame->Maximize();
+			pMainFrame = new amMainFrame(project.amFile.GetFullName() + "Amadeus Writer - ", wxDefaultPosition, wxDefaultSize);
+			pMainFrame->Hide();
+			pMainFrame->Maximize();
 
-			m_overview = m_mainFrame->GetOverview();
-			m_elementNotebook = m_mainFrame->GetElementsNotebook();
-			m_storyNotebook = m_mainFrame->GetStoryNotebook();
-			m_outline = m_mainFrame->GetOutline();
-			m_release = m_mainFrame->GetRelease();
+			pOverview = pMainFrame->GetOverview();
+			pElementNotebook = pMainFrame->GetElementsNotebook();
+			pStoryNotebook = pMainFrame->GetStoryNotebook();
+			pOutline = pMainFrame->GetOutline();
+			pRelease = pMainFrame->GetRelease();
 		}
 
 		wxSQLite3Database::InitializeSQLite();
-		m_storage.Open(m_project.amFile.GetFullPath());
+		pDatabase = new am::ProjectSQLDatabase;
+		pDatabase->Open(project.amFile.GetFullPath());
 
-		if ( !m_storage.Init() )
+		if ( !pDatabase->Init() )
 		{
-			Book* book = new Book(m_project.amFile.GetName(), 1);
-
-			book->Save(&m_storage);
-			m_project.books.push_back(book);
-			m_overview->LoadBookContainer();
+			pCurrentBook = new am::Book(project.amFile.GetName(), 1);
+			AddBook(pCurrentBook);
+			
+			SetLastSavePath();
 		}
 		else
 			LoadProject();
 
-		m_elementNotebook->InitShowChoices();
-		m_isInitialized = true;
+		pElementNotebook->InitShowChoices();
+		bIsInitialized = true;
 
-		m_mainFrame->Show();
+		pMainFrame->Show();
 		return true;
 	}
+
 	return false;
 }
 
-bool amProjectManager::SaveProject()
+void am::ShutDown()
 {
-	return DoSaveProject(m_project.amFile.GetFullPath());
+	pDatabase->Close();
+	wxSQLite3Database::ShutdownSQLite();
+	delete pDatabase;
 }
 
-bool amProjectManager::LoadProject()
+am::ProjectSQLDatabase* am::GetProjectDatabase()
 {
-	return DoLoadProject(m_project.amFile.GetFullPath());
+	return pDatabase;
 }
 
-bool amProjectManager::SaveSessionToDb()
+bool am::SaveProject()
+{
+	return am::DoSaveProject(project.amFile.GetFullPath());
+}
+
+bool am::LoadProject()
+{
+	return am::DoLoadProject(project.amFile.GetFullPath());
+}
+
+bool am::SaveSessionToDb()
 {
 	try
 	{
 		// Saving last session
 		{
-			amSessionAttributes attr;
-			attr.nMainFrameSashPos = m_mainFrame->GetMainSplitter()->GetSashPosition();
-			attr.nCharacterSashPos = m_elementNotebook->m_characterPage->GetSashPosition();
-			attr.nLocationSashPos = m_elementNotebook->m_locationPage->GetSashPosition();
-			attr.nItemSashPos = m_elementNotebook->m_itemPage->GetSashPosition();
-			attr.nOutlineFilesSashPos = m_outline->GetOutlineFiles()->GetSashPosition();
+			SessionAttributes attr;
+			attr.nMainFrameSashPos = pMainFrame->GetMainSplitter()->GetSashPosition();
+			attr.nCharacterSashPos = pElementNotebook->m_characterPage->GetSashPosition();
+			attr.nLocationSashPos = pElementNotebook->m_locationPage->GetSashPosition();
+			attr.nItemSashPos = pElementNotebook->m_itemPage->GetSashPosition();
+			attr.nOutlineFilesSashPos = pOutline->GetOutlineFiles()->GetSashPosition();
 
 			wxXmlDocument attrDoc;
 			wxXmlNode* pAttrRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Session-Attributes");
@@ -679,15 +702,15 @@ bool amProjectManager::SaveSessionToDb()
 			wxXmlNode* pDocsRootNode = new wxXmlNode(nullptr, wxXML_ELEMENT_NODE, "Recent-Documents");
 			doc.SetRoot(pDocsRootNode);
 
-			for ( Book*& pBook : m_project.books )
+			for ( Book*& pBook : project.books )
 			{
 				wxXmlNode* pBookNode = new wxXmlNode(wxXML_ELEMENT_NODE, "Book");
 				pBookNode->AddAttribute("name", pBook->title);
 				pBookNode->AddAttribute("id", std::to_string(pBook->id));
 
-				for ( Document*& pDocument : pBook->vRecentDocuments )
+				for ( am::Document*& pDocument : pBook->vRecentDocuments )
 				{
-					wxXmlNode* pDocNode = new wxXmlNode(wxXML_ELEMENT_NODE, "Document");
+					wxXmlNode* pDocNode = new wxXmlNode(wxXML_ELEMENT_NODE, "am::Document");
 					pDocNode->AddChild(new wxXmlNode(wxXML_TEXT_NODE, pDocument->name));
 					pDocNode->AddAttribute("id", std::to_string(pDocument->id));
 
@@ -701,7 +724,7 @@ bool amProjectManager::SaveSessionToDb()
 			doc.Save(docStream);
 
 
-			wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT id FROM last_session;");
+			wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT id FROM last_session;");
 			wxSQLite3StatementBuffer sqlBuffer;
 			if ( result.NextRow() )
 			{
@@ -720,15 +743,15 @@ bool amProjectManager::SaveSessionToDb()
 					(const char*)attrStream.GetString().ToUTF8());
 			}
 
-			m_storage.ExecuteUpdate(sqlBuffer);
+			pDatabase->ExecuteUpdate(sqlBuffer);
 		}
 
 		// Saving persistent session attributes
 		{
 			int totalWordCount = 0, storyWordCount = 0;
-			for ( Book*& pBook : m_project.books )
+			for ( Book*& pBook : project.books )
 			{
-				for ( Document*& pDocument : pBook->documents )
+				for ( am::Document*& pDocument : pBook->documents )
 				{
 					int wordCount = pDocument->GetWordCount();
 					totalWordCount += wordCount;
@@ -739,7 +762,7 @@ bool amProjectManager::SaveSessionToDb()
 			}
 
 			wxString strDate = wxDateTime::Now().FormatDate();
-			wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT id FROM sessions WHERE date = '" + strDate + "';");
+			wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT id FROM sessions WHERE date = '" + strDate + "';");
 			wxString update;
 
 			if ( result.NextRow() )
@@ -753,7 +776,7 @@ bool amProjectManager::SaveSessionToDb()
 					<< ", " << storyWordCount << ", '" << strDate << "');";
 			}
 
-			m_storage.ExecuteUpdate(update);
+			pDatabase->ExecuteUpdate(update);
 		}
 	}
 	catch ( wxSQLite3Exception& e )
@@ -764,51 +787,51 @@ bool amProjectManager::SaveSessionToDb()
 	return true;
 }
 
-void amProjectManager::SaveSQLEntry(amSQLEntry& original, amSQLEntry& edit)
+void am::SaveSQLEntry(am::SQLEntry& original, am::SQLEntry& edit)
 {
-	if ( m_storage.RowExists(original) )
-		m_storage.UpdateSQLEntry(original, edit);
+	if ( pDatabase->RowExists(original) )
+		pDatabase->UpdateSQLEntry(original, edit);
 	else
-		m_storage.InsertSQLEntry(edit);
+		pDatabase->InsertSQLEntry(edit);
 }
 
-bool amProjectManager::DoSaveProject(const wxString& path)
+bool am::DoSaveProject(const wxString& path)
 {
 	// Sets Save state as saved, updates the current title and all that good stuff.
 	// The attribute "saveDialog" currently does nothing.
-	m_mainFrame->SetTitle("Amadeus Writer - " + m_project.amFile.GetFullName());
-	m_mainFrame->SetFocus();
-	SetLastSave();
+	pMainFrame->SetTitle("Amadeus Writer - " + project.amFile.GetFullName());
+	pMainFrame->SetFocus();
+	SetLastSavePath();
 
 	return true;
 }
 
-bool amProjectManager::DoLoadProject(const wxString& path)
+bool am::DoLoadProject(const wxString& path)
 {
 	try
 	{
-		SetProjectFileName(path);
-		m_mainFrame->OnNewFile(wxCommandEvent());
+		project.amFile.Assign(path);
+		pMainFrame->ClearAll();
 
-		m_storage.Begin();
+		pDatabase->Begin();
 
 		LoadStoryElements();
 		LoadBooks();
 
 		LoadStandardRelations();
 
-		m_storage.Commit();
+		pDatabase->Commit();
 
 		Book* currentBook = GetCurrentBook();
 
-		m_overview->LoadBookContainer();
-		m_outline->LoadOutline(&m_storage);
+		pOverview->LoadBookContainer();
+		pOutline->LoadOutline(pDatabase);
 
 		if ( !LoadLastSession() )
 			SetCurrentBook(currentBook);
 
-		m_mainFrame->SetTitle(m_project.amFile.GetFullName() + " - Amadeus Writer");
-		SetLastSave();
+		pMainFrame->SetTitle(project.amFile.GetFullName() + " - Amadeus Writer");
+		SetLastSavePath();
 	}
 	catch ( wxSQLite3Exception& e )
 	{
@@ -818,26 +841,26 @@ bool amProjectManager::DoLoadProject(const wxString& path)
 	return true;
 }
 
-void amProjectManager::LoadBooks()
+void am::LoadBooks()
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT name, id FROM books;");
+	wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT name, id FROM books ORDER BY position;");
 
 	int i = 0;
 	while ( result.NextRow() )
 	{
-		Book* book = new Book(result.GetAsString("name"), i + 1);
+		am::Book* book = new am::Book(result.GetAsString("name"), i + 1);
 		book->SetId(result.GetInt("id"));
 
 		LoadBookContent(book, true);
 
-		m_project.books.push_back(book);
+		project.books.push_back(book);
 		i++;
 	}
 }
 
-void amProjectManager::LoadBookContent(Book* book, bool loadDocuments)
+void am::LoadBookContent(am::Book* book, bool loadDocuments)
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM books WHERE id = " +
+	wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT * FROM books WHERE id = " +
 		std::to_string(book->id) + " ORDER BY position ASC;");
 
 	while ( result.NextRow() )
@@ -854,16 +877,16 @@ void amProjectManager::LoadBookContent(Book* book, bool loadDocuments)
 	}
 }
 
-void amProjectManager::LoadDocuments(Book* book)
+void am::LoadDocuments(am::Book* book)
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM documents WHERE book_id = " +
+	wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT * FROM documents WHERE book_id = " +
 		std::to_string(book->id) + " ORDER BY position ASC;");
 
 	while ( result.NextRow() )
 	{
 		int documentId = result.GetInt("id");
 
-		Document* pDocument = new Document(nullptr, result.GetInt("position"), book, (DocumentType)result.GetInt("type"));
+		am::Document* pDocument = new am::Document(nullptr, result.GetInt("position"), book, (DocumentType)result.GetInt("type"));
 
 		pDocument->name = result.GetAsString("name");
 		pDocument->synopsys = result.GetAsString("synopsys");
@@ -874,18 +897,18 @@ void amProjectManager::LoadDocuments(Book* book)
 
 		pDocument->SetId(documentId);
 
-		wxSQLite3ResultSet results2 = m_storage.ExecuteQuery("SELECT * FROM elements_documents WHERE document_id = " +
+		wxSQLite3ResultSet results2 = pDatabase->ExecuteQuery("SELECT * FROM elements_documents WHERE document_id = " +
 			std::to_string(documentId) + ";");
 
 		while ( results2.NextRow() )
 		{
 			wxClassInfo* elementClass = wxClassInfo::FindClass(results2.GetAsString("element_class"));
 
-			for ( StoryElement*& pElement : GetAllElements() )
+			for ( am::StoryElement*& pElement : GetAllElements() )
 			{
 				if ( pElement->IsKindOf(elementClass) && pElement->dbID == results2.GetInt("element_id") )
 				{
-					AddElementToDocument((TangibleElement*)pElement, pDocument, false);
+					am::AddElementToDocument((am::TangibleElement*)pElement, pDocument, false);
 				}
 			}
 		}
@@ -894,18 +917,18 @@ void amProjectManager::LoadDocuments(Book* book)
 	}
 }
 
-void amProjectManager::SetupDocumentHierarchy(Book* book)
+void am::SetupDocumentHierarchy(am::Book* book)
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT book_id, parent_document_id FROM documents ORDER BY position ASC;");
+	wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT book_id, parent_document_id FROM documents ORDER BY position ASC;");
 
 	while ( result.NextRow() )
 	{
 		if ( !result.IsNull("parent_document_id") )
 		{
-			Document* pDocument = GetDocumentById(result.GetInt("id"));
+			am::Document* pDocument = GetDocumentById(result.GetInt("id"));
 			if ( pDocument )
 			{
-				Document* pParent = GetDocumentById(result.GetInt("parent_document_id"));
+				am::Document* pParent = GetDocumentById(result.GetInt("parent_document_id"));
 				if ( pParent )
 				{
 					pParent->children.push_back(pDocument);
@@ -916,15 +939,15 @@ void amProjectManager::SetupDocumentHierarchy(Book* book)
 	}
 }
 
-void amProjectManager::LoadStoryElements()
+void am::LoadStoryElements()
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM story_elements");
+	wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT * FROM story_elements");
 
 	while ( result.NextRow() )
 	{
 		int id = result.GetInt("id");
 
-		StoryElement* pElement = (StoryElement*)wxClassInfo::FindClass(result.GetAsString("class"))->CreateObject();
+		am::StoryElement* pElement = (am::StoryElement*)wxClassInfo::FindClass(result.GetAsString("class"))->CreateObject();
 		if ( !pElement )
 			continue;
 
@@ -936,7 +959,7 @@ void amProjectManager::LoadStoryElements()
 
 		if ( !result.IsNull("image") )
 		{
-			wxSQLite3Blob blob = m_storage.GetReadOnlyBlob(id, "image", "story_elements");
+			wxSQLite3Blob blob = pDatabase->GetReadOnlyBlob(id, "image", "story_elements");
 			if ( blob.IsOk() && blob.GetSize() > 12 )
 			{
 				wxMemoryBuffer imageBuf;
@@ -947,26 +970,26 @@ void amProjectManager::LoadStoryElements()
 			}
 		}
 	
-		m_project.vStoryElements.push_back(pElement);
+		project.vStoryElements.push_back(pElement);
 	}
 }
 
-void amProjectManager::LoadStandardRelations()
+void am::LoadStandardRelations()
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM elements_elements;");
+	wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT * FROM elements_elements;");
 
 	while ( result.NextRow() )
 	{
-		StoryElement* pElement = nullptr;
-		StoryElement* pRelated = nullptr;
+		am::StoryElement* pElement = nullptr;
+		am::StoryElement* pRelated = nullptr;
 		int elementID = result.GetInt("element_id");
 		int relatedID = result.GetInt("related_id");
 		wxClassInfo* elementClass = wxClassInfo::FindClass(result.GetAsString("element_class"));
 		wxClassInfo* relatedClass = wxClassInfo::FindClass(result.GetAsString("related_class"));
 
-		wxVector<StoryElement*> vElements = GetAllElements();
+		wxVector<am::StoryElement*> vElements = GetAllElements();
 
-		for ( StoryElement*& pElementInVector : vElements )
+		for ( am::StoryElement*& pElementInVector : vElements )
 		{
 			if ( pElementInVector->IsKindOf(elementClass) && pElementInVector->dbID == elementID )
 			{
@@ -975,7 +998,7 @@ void amProjectManager::LoadStandardRelations()
 			}
 		}
 	
-		for ( StoryElement*& pRelatedInVector : vElements )
+		for ( am::StoryElement*& pRelatedInVector : vElements )
 		{
 			if ( pRelatedInVector->IsKindOf(relatedClass) && pRelatedInVector->dbID == relatedID )
 			{
@@ -985,22 +1008,22 @@ void amProjectManager::LoadStandardRelations()
 		}
 
 		if ( pElement && pRelated )
-			RelateStoryElements(pElement, pRelated, false);
+			am::RelateStoryElements(pElement, pRelated, false);
 	}
 
-	for ( StoryElement*& pElement : GetAllElements() )
+	for ( am::StoryElement*& pElement : GetAllElements() )
 	{
 		if ( !pElement->relatedElements.empty() )
 			std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
 	}
 }
 
-void amProjectManager::LoadCharacterRelations()
+void am::LoadCharacterRelations()
 {}
 
-bool amProjectManager::LoadLastSession()
+bool am::LoadLastSession()
 {
-	wxSQLite3ResultSet result = m_storage.ExecuteQuery("SELECT * FROM last_session;");
+	wxSQLite3ResultSet result = pDatabase->ExecuteQuery("SELECT * FROM last_session;");
 	if ( result.NextRow() )
 	{
 		wxStringInputStream sstream(result.GetAsString("recent_documents"));
@@ -1026,7 +1049,7 @@ bool amProjectManager::LoadLastSession()
 		wxStringInputStream attrStream(result.GetAsString("session_attributes"));
 		wxXmlDocument attrDoc(attrStream);
 
-		amSessionAttributes attr;
+		SessionAttributes attr;
 		attr.DeserializeObject(attrDoc.GetRoot()->GetChildren());
 		LoadSessionAttr(attr);
 
@@ -1040,97 +1063,123 @@ bool amProjectManager::LoadLastSession()
 	return false;
 }
 
-void amProjectManager::LoadSessionAttr(const amSessionAttributes& attr)
+void am::LoadSessionAttr(const SessionAttributes& attr)
 {
-	m_mainFrame->Layout();
+	pMainFrame->Layout();
 
 	if ( attr.nMainFrameSashPos != -1 )
-		m_mainFrame->GetMainSplitter()->SetSashPosition(attr.nMainFrameSashPos);
+		pMainFrame->GetMainSplitter()->SetSashPosition(attr.nMainFrameSashPos);
 	
 	if ( attr.nCharacterSashPos != -1 )
-		m_elementNotebook->m_characterPage->SetSashPosition(attr.nCharacterSashPos, false);
+		pElementNotebook->m_characterPage->SetSashPosition(attr.nCharacterSashPos, false);
 
 	if ( attr.nLocationSashPos != -1 )	
-		m_elementNotebook->m_locationPage->SetSashPosition(attr.nLocationSashPos, false);
+		pElementNotebook->m_locationPage->SetSashPosition(attr.nLocationSashPos, false);
 
 	if ( attr.nItemSashPos != -1 )
-		m_elementNotebook->m_itemPage->SetSashPosition(attr.nItemSashPos, false);
+		pElementNotebook->m_itemPage->SetSashPosition(attr.nItemSashPos, false);
 
 	if ( attr.nOutlineFilesSashPos != -1 )
-		m_outline->GetOutlineFiles()->SetSashPosition(attr.nOutlineFilesSashPos, false);
+		pOutline->GetOutlineFiles()->SetSashPosition(attr.nOutlineFilesSashPos, false);
 }
 
-void amProjectManager::SetExecutablePath(const wxString& path)
+void am::SetNewProjectPath(const wxFileName& path)
 {
-	m_executablePath.Assign(path);
+	project.amFile.Assign(path);
 }
 
-void amProjectManager::SetProjectFileName(const wxFileName& fileName)
+void am::SetExecutablePath(const wxString& path)
 {
-	m_project.amFile.Assign(fileName);
+	executablePath.Assign(path);
 }
 
-bool amProjectManager::SetCurrentBook(Book* book)
+bool am::SetCurrentBook(int bookPos) 
+{
+	return SetCurrentBook(project.books[bookPos - 1]); 
+}
+
+bool am::SetCurrentBook(am::Book* book)
 {
 	if ( !book )
 		return false;
 
-	m_overview->SetBookData(book);
+	pOverview->SetBookData(book);
 
-	m_elementNotebook->UpdateAll();
-	amElementShowcase* showcase = m_elementNotebook->GetCharacterShowcase();
+	pElementNotebook->UpdateAll();
+	amElementShowcase* showcase = pElementNotebook->GetCharacterShowcase();
 	showcase->SetData(showcase->GetElement());
-	showcase = m_elementNotebook->GetLocationShowcase();
+	showcase = pElementNotebook->GetLocationShowcase();
 	showcase->SetData(showcase->GetElement());
-	showcase = m_elementNotebook->GetItemShowcase();
+	showcase = pElementNotebook->GetItemShowcase();
 	showcase->SetData(showcase->GetElement());
 
-	m_storyNotebook->SetBookData(book);
-	m_release->SetBookData(book);
+	pStoryNotebook->SetBookData(book);
+	pRelease->SetBookData(book);
 
-	m_pCurrentBook = book;
+	pCurrentBook = book;
 	return true;
 }
 
-amMainFrame* amProjectManager::GetMainFrame()
+void am::StartCreatingBook()
 {
-	return m_mainFrame;
+	amBookWizard wizard(pMainFrame);
+	wizard.RunWizard(wizard.GetFirstPage());
 }
 
-amElementNotebook* amProjectManager::GetElementsNotebook()
+amMainFrame* am::GetMainFrame()
 {
-	return m_elementNotebook;
+	return pMainFrame;
 }
 
-amStoryNotebook* amProjectManager::GetStoryNotebook()
+amElementNotebook* am::GetElementsNotebook()
 {
-	return m_storyNotebook;
+	return pElementNotebook;
 }
 
-amOutline* amProjectManager::GetOutline()
+amStoryNotebook* am::GetStoryNotebook()
 {
-	return m_outline;
+	return pStoryNotebook;
 }
 
-amRelease* amProjectManager::GetRelease()
+amOutline* am::GetOutline()
 {
-	return m_release;
+	return pOutline;
 }
 
-wxString amProjectManager::GetPath(bool withSeparator)
+amRelease* am::GetRelease()
+{
+	return pRelease;
+}
+
+wxString am::GetPath(bool withSeparator)
 {
 	if ( withSeparator )
-		return m_project.amFile.GetPathWithSep();
+		return project.amFile.GetPathWithSep();
 	else
-		return m_project.amFile.GetPath();
+		return project.amFile.GetPath();
 }
 
-void amProjectManager::ClearPath()
+wxString am::GetFullPath()
 {
-	m_project.amFile.Clear();
+	return project.amFile.GetFullPath();
 }
 
-void amProjectManager::SetLastSave()
+wxString am::GetExecutablePath(bool withSeparator)
+{
+	return executablePath.GetPath(withSeparator);
+}
+
+wxString am::GetTitle()
+{
+	return project.amFile.GetName();
+}
+
+void am::ClearPath()
+{
+	project.amFile.Clear();
+}
+
+void am::SetLastSavePath()
 {
 	// This function is called at every Save and it writes a file named 88165468
 	// next to the executable. In the file, there are paths to the project.
@@ -1147,11 +1196,12 @@ void amProjectManager::SetLastSave()
 	last.close();
 }
 
-bool amProjectManager::GetLastSave()
+wxString am::GetLastSavePath()
 {
 	// Nothing special here, just reads the 88165468 file and, if succesful, calls the load function.
 	// Else, just clear the paths and load a standard new project.
 	std::ifstream last(GetExecutablePath(true).ToStdString() + "88165468", std::ios::binary | std::ios::in);
+	wxString strPath;
 
 	if ( last.is_open() )
 	{
@@ -1161,31 +1211,28 @@ bool amProjectManager::GetLastSave()
 		last.read((char*)&size, sizeof(int));
 		data = new char[size];
 		last.read(data, size);
-		SetProjectFileName(wxFileName(data));
+		strPath = data;
 		delete[] data;
 
 		last.close();
 	}
-	else
-		return false;
 
-	if ( wxFileName::Exists(GetFullPath().ToStdString()) )
+	if ( wxFileName::Exists(strPath) )
 	{
-		return true;
+		return strPath;
 	}
 	else
 	{
-		ClearPath();
-		return false;
+		return "";
 	}
 }
 
-int amProjectManager::GetSQLEntryId(amSQLEntry& sqlEntry)
+int am::GetSQLEntryId(am::SQLEntry& sqlEntry)
 {
 	int id = -1;
 	try
 	{
-		id = m_storage.GetSQLEntryId(sqlEntry);
+		id = pDatabase->GetSQLEntryId(sqlEntry);
 	}
 	catch ( wxString& e )
 	{
@@ -1195,28 +1242,33 @@ int amProjectManager::GetSQLEntryId(amSQLEntry& sqlEntry)
 	return id;
 }
 
-void amProjectManager::OpenDocument(int documentIndex)
+void am::InsertSQLEntry(am::SQLEntry& sqlEntry)
+{
+	pDatabase->InsertSQLEntry(sqlEntry);
+}
+
+void am::OpenDocument(int documentIndex)
 {
 	OpenDocument(GetCurrentBook()->documents[documentIndex]);
 }
 
-void amProjectManager::OpenDocument(Document* document)
+void am::OpenDocument(am::Document* document)
 {
-	if ( m_storyWriter )
+	if ( pStoryWriter )
 	{
-		m_storyWriter->LoadDocument(document);
-		m_storyWriter->Maximize();
+		pStoryWriter->LoadDocument(document);
+		pStoryWriter->Maximize();
 	}
 	else
 	{
-		m_storyWriter = new amStoryWriter(m_mainFrame, this, document);
+		pStoryWriter = new amStoryWriter(pMainFrame, document);
 
-		if ( m_mainFrame->IsFullScreen() )
-			m_storyWriter->ToggleFullScreen(true);
+		if ( pMainFrame->IsFullScreen() )
+			pStoryWriter->ToggleFullScreen(true);
 	}
 }
 
-bool amProjectManager::ScanForDocumentLinear(int toFind, int& current, Document* scanBegin, Document*& emptyPointer)
+bool am::ScanForDocumentLinear(int toFind, int& current, am::Document* scanBegin, am::Document*& emptyPointer)
 {
 	if ( emptyPointer )
 		return true;
@@ -1230,7 +1282,7 @@ bool amProjectManager::ScanForDocumentLinear(int toFind, int& current, Document*
 	}
 
 	current++;
-	for ( Document*& pChild : scanBegin->children )
+	for ( am::Document*& pChild : scanBegin->children )
 	{
 		if ( ScanForDocumentLinear(toFind, current, pChild, emptyPointer) )
 			return true;
@@ -1239,53 +1291,84 @@ bool amProjectManager::ScanForDocumentLinear(int toFind, int& current, Document*
 	return false;
 }
 
-void amProjectManager::AddStoryElement(StoryElement* element, bool refreshElements)
+void am::NullifyStoryWriter()
 {
-	m_storage.Begin();
-	element->Save(&m_storage);
-	m_storage.Commit();
+	pStoryWriter = nullptr;
+}
 
-	m_project.vStoryElements.push_back(element);
-	this->ResortElements();
+void am::AddBook(am::Book* book)
+{
+	if ( book->pos < project.books.size() )
+	{
+		for ( int i = project.books.size() - 1; i >= 0; i-- )
+		{
+			am::Book*& pBook = project.books[i];
+			
+			pBook->pos++;
+			pBook->Update(pDatabase, false);
+			
+			if ( pBook != book && pBook->pos == book->pos + 1 )
+			{
+				project.books.insert(&pBook, book);
+				break;
+			}
+		}
+	}
+	else
+		project.books.push_back(book);
+
+	book->Save(pDatabase);
+	pOverview->LoadBookContainer();
+	pElementNotebook->InitShowChoices();
+}
+
+void am::AddStoryElement(am::StoryElement* element, bool refreshElements)
+{
+	pDatabase->Begin();
+	element->Save(pDatabase);
+	pDatabase->Commit();
+
+	project.vStoryElements.push_back(element);
+	ResortElements();
 
 	if ( refreshElements )
 	{
-		m_elementNotebook->GetAppropriatePage(element)->UpdateList();
-		m_elementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
+		pElementNotebook->GetAppropriatePage(element)->UpdateList();
+		pElementNotebook->UpdateSearchAutoComplete(wxBookCtrlEvent());
 	}
 
-	m_outline->GetOutlineFiles()->AppendStoryElement(element);
+	pOutline->GetOutlineFiles()->AppendStoryElement(element);
 }
 
 /// <summary>
-/// Add new Document to selected book and in specified section.
+/// Add new am::Document to selected book and in specified section.
 /// </summary>
 /// <param name="document">Reference to document object</param>
 /// <param name="book">Reference to desired book object</param>
 /// <param name="sectionPos">Section position in Book (First section is number 1!)</param>
 /// <param name="pos">Where in the section will the document be inserted</param>
-void amProjectManager::AddDocument(Document* document, Book* book, int pos)
+void am::AddDocument(am::Document* document, am::Book* book, int pos)
 {
 	document->book = book;
-	m_storyNotebook->AddDocument(document, pos);
+	pStoryNotebook->AddDocument(document, pos);
 
-	document->Save(&m_storage);
+	document->Save(pDatabase);
 
 	if ( pos < book->documents.size() + 1 && pos > -1 )
 	{
-		Document** documentIt = book->documents.begin();
+		am::Document** documentIt = book->documents.begin();
 		for ( int i = 0; i < pos; i++ )
 			documentIt++;
 
 		book->documents.insert(documentIt, document);
 
-		m_storage.Begin();
+		pDatabase->Begin();
 		for ( int i = 0; i < book->documents.size(); i++ )
 		{
 			book->documents[i]->position = i + 1;
-			book->documents[i]->Update(&m_storage, false, false);
+			book->documents[i]->Update(pDatabase, false, false);
 		}
-		m_storage.Commit();
+		pDatabase->Commit();
 	}
 	else
 	{
@@ -1293,31 +1376,31 @@ void amProjectManager::AddDocument(Document* document, Book* book, int pos)
 	}
 }
 
-void amProjectManager::ResortElements()
+void am::ResortElements()
 {
-	std::sort(m_project.vStoryElements.begin(), m_project.vStoryElements.end(), amSortElements);
+	std::sort(project.vStoryElements.begin(), project.vStoryElements.end(), amSortElements);
 
-	for ( StoryElement*& pElement : m_project.vStoryElements )
+	for ( am::StoryElement*& pElement : project.vStoryElements )
 	{
 		std::sort(pElement->relatedElements.begin(), pElement->relatedElements.end(), amSortElements);
 	}
 
-	for ( Book*& pBook : m_project.books )
+	for ( Book*& pBook : project.books )
 	{
-		for ( Document*& pDocument : pBook->documents )
+		for ( am::Document*& pDocument : pBook->documents )
 		{
 			std::sort(pDocument->vTangibleElements.begin(), pDocument->vTangibleElements.end(), amSortElements);
 		}
 	}
 }
 
-void amProjectManager::StartEditingElement(StoryElement* element)
+void am::StartEditingElement(am::StoryElement* element)
 {
-	wxString strCreatorClass("am" + wxString(element->GetClassInfo()->GetClassName()) + "Creator");
+	wxString strCreatorClass("am" + wxString(element->GetClassInfo()->GetClassName()).AfterLast(':') + "Creator");
 
 	wxClassInfo* pCreatorClass = wxClassInfo::FindClass(strCreatorClass);
 	amElementCreator* pCreator = (amElementCreator*)pCreatorClass->CreateObject();
-	if ( !pCreator->Create(m_mainFrame, this, -1, "Edit " + element->name, wxDefaultPosition, pCreator->GetBestSize()) )
+	if ( !pCreator->Create(pMainFrame, -1, "Edit " + element->name, wxDefaultPosition, pCreator->GetBestSize()) )
 		return;
 	
 	pCreator->CenterOnParent();
@@ -1325,19 +1408,19 @@ void amProjectManager::StartEditingElement(StoryElement* element)
 	pCreator->Show(true);
 }
 
-void amProjectManager::DoEditStoryElement(StoryElement* original, StoryElement& edit, bool sort)
+void am::DoEditStoryElement(am::StoryElement* original, am::StoryElement& edit, bool sort)
 {
 	wxASSERT(original->GetClassInfo() == edit.GetClassInfo());
 
 	try
 	{
-		m_outline->GetOutlineFiles()->DeleteStoryElement(original);
+		pOutline->GetOutlineFiles()->DeleteStoryElement(original);
 		original->EditTo(edit);
 		std::thread thread([&]()
 			{
-				m_storage.Begin();
-				original->Update(&m_storage);
-				m_storage.Commit();
+				pDatabase->Begin();
+				original->Update(pDatabase);
+				pDatabase->Commit();
 			}
 		);
 		thread.detach();
@@ -1345,12 +1428,12 @@ void amProjectManager::DoEditStoryElement(StoryElement* original, StoryElement& 
 		if ( sort )
 		{
 			ResortElements();
-			m_elementNotebook->GetAppropriatePage(original)->UpdateList();
+			pElementNotebook->GetAppropriatePage(original)->UpdateList();
 		}
 
-		UpdateStoryElementInGUI(original);
+		am::UpdateStoryElementInGUI(original);
 
-		m_outline->GetOutlineFiles()->AppendStoryElement(original);
+		pOutline->GetOutlineFiles()->AppendStoryElement(original);
 
 	}
 	catch ( wxSQLite3Exception& e )
@@ -1359,18 +1442,18 @@ void amProjectManager::DoEditStoryElement(StoryElement* original, StoryElement& 
 	}
 }
 
-void amProjectManager::UpdateStoryElementInGUI(StoryElement* element)
+void am::UpdateStoryElementInGUI(am::StoryElement* element)
 {
-	bool bShouldShowInNotebook = m_elementNotebook->ShouldShow(element);
-	amElementNotebookPage* pPage = m_elementNotebook->GetAppropriatePage(element);
+	bool bShouldShowInNotebook = pElementNotebook->ShouldShow(element);
+	amElementNotebookPage* pPage = pElementNotebook->GetAppropriatePage(element);
 
 	int n = pPage->GetList()->FindItem(0, element->name);
 	if ( n != -1 )
 	{
 		if ( !bShouldShowInNotebook )
-			m_elementNotebook->RemoveElementFromList(element);
+			pElementNotebook->RemoveElementFromList(element);
 		else
-			m_elementNotebook->UpdateElementInList(n, element);
+			pElementNotebook->UpdateElementInList(n, element);
 	}
 	else
 	{
@@ -1381,36 +1464,36 @@ void amProjectManager::UpdateStoryElementInGUI(StoryElement* element)
 	if ( pPage->GetShowcase()->GetElement() == element )
 		pPage->GetShowcase()->SetData(element);
 
-	if ( m_storyWriter )
+	if ( pStoryWriter )
 	{
-		if ( element->IsKindOf(wxCLASSINFO(Character)) )
-			m_storyWriter->UpdateCharacterList();
-		else if ( element->IsKindOf(wxCLASSINFO(Location)) )
-			m_storyWriter->UpdateLocationList();
-		else if ( element->IsKindOf(wxCLASSINFO(Item)) )
-			m_storyWriter->UpdateItemList();
+		if ( element->IsKindOf(wxCLASSINFO(am::Character)) )
+			pStoryWriter->UpdateCharacterList();
+		else if ( element->IsKindOf(wxCLASSINFO(am::Location)) )
+			pStoryWriter->UpdateLocationList();
+		else if ( element->IsKindOf(wxCLASSINFO(am::Item)) )
+			pStoryWriter->UpdateItemList();
 	}
 }
 
-void amProjectManager::GoToStoryElement(StoryElement* element)
+void am::GoToStoryElement(am::StoryElement* element)
 {
 	if ( !element )
 		return;
 
-	m_mainFrame->GetSimplebook()->SetSelection(1);
-	m_elementNotebook->GoToStoryElement(element);
+	pMainFrame->GetSimplebook()->SetSelection(1);
+	pElementNotebook->GoToStoryElement(element);
 
-	if ( m_storyWriter )
-		m_storyWriter->Iconize();
+	if ( pStoryWriter )
+		pStoryWriter->Iconize();
 }
 
-void amProjectManager::AddElementToDocument(TangibleElement* element, Document* document, bool addToDb)
+void am::AddElementToDocument(am::TangibleElement* element, am::Document* document, bool addToDb)
 {
 	if ( !element || !document )
 		return;
 
 	bool had = false;
-	for ( Document*& pDocInElement : element->documents )
+	for ( am::Document*& pDocInElement : element->documents )
 	{
 		if ( pDocInElement == document )
 		{
@@ -1431,7 +1514,7 @@ void amProjectManager::AddElementToDocument(TangibleElement* element, Document* 
 				wxString update("INSERT INTO elements_documents (element_id, document_id, element_class) VALUES (");
 				update << element->dbID << ", " << document->id << ", '" << element->GetClassInfo()->GetClassName() << "');";
 
-				m_storage.ExecuteUpdate(update);
+				pDatabase->ExecuteUpdate(update);
 			}
 			catch ( wxSQLite3Exception& e )
 			{
@@ -1441,7 +1524,7 @@ void amProjectManager::AddElementToDocument(TangibleElement* element, Document* 
 	}
 
 	had = false;
-	for ( TangibleElement*& pElementInDoc : document->vTangibleElements )
+	for ( am::TangibleElement*& pElementInDoc : document->vTangibleElements )
 	{
 		if ( pElementInDoc == element )
 		{
@@ -1459,12 +1542,12 @@ void amProjectManager::AddElementToDocument(TangibleElement* element, Document* 
 	UpdateStoryElementInGUI(element);
 }
 
-void amProjectManager::RemoveElementFromDocument(TangibleElement* element, Document * document)
+void am::RemoveElementFromDocument(am::TangibleElement* element, am::Document * document)
 {
 	if ( !element || !document )
 		return;
 
-	for ( Document*& pDocInElement : element->documents )
+	for ( am::Document*& pDocInElement : element->documents )
 	{
 		if ( pDocInElement == document )
 		{
@@ -1474,12 +1557,12 @@ void amProjectManager::RemoveElementFromDocument(TangibleElement* element, Docum
 			update << element->dbID << " AND document_id = " << document->id <<
 				" AND element_class = '" << element->GetClassInfo()->GetClassName() << "';";
 
-			m_storage.ExecuteUpdate(update);
+			pDatabase->ExecuteUpdate(update);
 			break;
 		}
 	}
 
-	for ( TangibleElement*& pElementInDoc : document->vTangibleElements)
+	for ( am::TangibleElement*& pElementInDoc : document->vTangibleElements)
 	{
 		if ( pElementInDoc == element)
 		{
@@ -1491,10 +1574,10 @@ void amProjectManager::RemoveElementFromDocument(TangibleElement* element, Docum
 	UpdateStoryElementInGUI(element);
 }
 
-void amProjectManager::RelateStoryElements(StoryElement* element1, StoryElement* element2, bool addToDb)
+void am::RelateStoryElements(am::StoryElement* element1, am::StoryElement* element2, bool addToDb)
 {
 	bool had1 = false;
-	for ( StoryElement*& pPresent : element1->relatedElements )
+	for ( am::StoryElement*& pPresent : element1->relatedElements )
 	{
 		if ( pPresent == element2 )
 		{
@@ -1510,7 +1593,7 @@ void amProjectManager::RelateStoryElements(StoryElement* element1, StoryElement*
 	}
 
 	bool had2 = false;
-	for ( StoryElement*& pPresent : element2->relatedElements )
+	for ( am::StoryElement*& pPresent : element2->relatedElements )
 	{
 		if ( pPresent == element1 )
 		{
@@ -1531,17 +1614,17 @@ void amProjectManager::RelateStoryElements(StoryElement* element1, StoryElement*
 		update << element1->dbID << "," << element2->dbID << ", '" <<
 			element1->GetClassInfo()->GetClassName() << "', '" << element2->GetClassInfo()->GetClassName() << "');";
 
-		m_storage.ExecuteUpdate(update);
+		pDatabase->ExecuteUpdate(update);
 	}
 
 	UpdateStoryElementInGUI(element1);
 	UpdateStoryElementInGUI(element2);
 }
 
-void amProjectManager::UnrelateStoryElements(StoryElement* element1, StoryElement* element2, bool removeFromDb)
+void am::UnrelateStoryElements(am::StoryElement* element1, am::StoryElement* element2, bool removeFromDb)
 {
 	bool had1 = false;
-	for ( StoryElement*& pPresent : element1->relatedElements )
+	for ( am::StoryElement*& pPresent : element1->relatedElements )
 	{
 		if ( pPresent == element2 )
 		{
@@ -1552,7 +1635,7 @@ void amProjectManager::UnrelateStoryElements(StoryElement* element1, StoryElemen
 	}
 
 	bool had2 = false;
-	for ( StoryElement*& pPresent : element2->relatedElements )
+	for ( am::StoryElement*& pPresent : element2->relatedElements )
 	{
 		if ( pPresent == element1 )
 		{
@@ -1569,23 +1652,23 @@ void amProjectManager::UnrelateStoryElements(StoryElement* element1, StoryElemen
 			" AND element_class = '" << element1->GetClassInfo()->GetClassName() << 
 			"' AND related_class = '" << element2->GetClassInfo()->GetClassName() << "';";
 
-		m_storage.ExecuteUpdate(update);
+		pDatabase->ExecuteUpdate(update);
 
 		update = "DELETE FROM elements_elements WHERE element_id = ";
 		update << element2->dbID << " AND related_id = " << element1->dbID <<
 			" AND element_class = '" << element2->GetClassInfo()->GetClassName() <<
 			"' AND related_class = '" << element1->GetClassInfo()->GetClassName() << "';";
 
-		m_storage.ExecuteUpdate(update);
+		pDatabase->ExecuteUpdate(update);
 	}
 
 	UpdateStoryElementInGUI(element1);
 	UpdateStoryElementInGUI(element2);
 }
 
-StoryElement* amProjectManager::GetStoryElementByName(const wxString& name)
+am::StoryElement* am::GetStoryElementByName(const wxString& name)
 {
-	for ( StoryElement* pElement : GetAllElements() )
+	for ( am::StoryElement* pElement : GetAllElements() )
 	{
 		if ( pElement->name == name )
 			return pElement;
@@ -1594,7 +1677,7 @@ StoryElement* amProjectManager::GetStoryElementByName(const wxString& name)
 	return nullptr;
 }
 
-Book* amProjectManager::GetBookByName(const wxString& name)
+am::Book* am::GetBookByName(const wxString& name)
 {
 	for ( Book*& pBook : GetBooks() )
 	{
@@ -1605,60 +1688,63 @@ Book* amProjectManager::GetBookByName(const wxString& name)
 	return nullptr;
 }
 
-void amProjectManager::DeleteElement(StoryElement* element)
+void am::DeleteElement(am::StoryElement* element)
 {
+	if ( !element )
+		return;
+
 	wxBusyCursor cursor;
 
-	TangibleElement* pTangible = dynamic_cast<TangibleElement*>(element);
+	am::TangibleElement* pTangible = dynamic_cast<am::TangibleElement*>(element);
 	if ( pTangible )
 	{
-		for ( Document*& pDocument : pTangible->documents )
+		for ( am::Document*& pDocument : pTangible->documents )
 			RemoveElementFromDocument(pTangible, pDocument);
 	}
 
-	if ( element->IsKindOf(wxCLASSINFO(Character)) )
+	if ( element->IsKindOf(wxCLASSINFO(am::Character)) )
 	{
-		for ( amTLThread*& thread : m_outline->GetTimeline()->GetThreads() )
+		for ( amTLThread*& thread : pOutline->GetTimeline()->GetThreads() )
 		{
 			if ( thread->GetCharacter() == element->name )
-				m_outline->GetTimeline()->DeleteThread(thread, false);
+				pOutline->GetTimeline()->DeleteThread(thread, false);
 		}
 	}
 
-	amSQLEntry sqlEntry = element->GenerateSQLEntry();
-	for ( amSQLEntry& childEntry : sqlEntry.childEntries )
+	am::SQLEntry sqlEntry = element->GenerateSQLEntry();
+	for ( am::SQLEntry& childEntry : sqlEntry.childEntries )
 	{
-		m_storage.DeleteSQLEntry(childEntry);
+		pDatabase->DeleteSQLEntry(childEntry);
 	}
 
-	m_storage.DeleteSQLEntry(sqlEntry);
-	for ( StoryElement*& pElement : m_project.vStoryElements )
+	pDatabase->DeleteSQLEntry(sqlEntry);
+	for ( am::StoryElement*& pElement : project.vStoryElements )
 	{
 		if ( pElement == element )
 		{
-			m_project.vStoryElements.erase(&pElement);
+			project.vStoryElements.erase(&pElement);
 			delete element;
 			break;
 		}
 	}
 }
 
-void amProjectManager::DeleteDocument(Document* document)
+void am::DeleteDocument(am::Document* document)
 {
-	for ( Document* pChild : document->children )
+	for ( am::Document* pChild : document->children )
 	{
 		DeleteDocument(document);
 	}
 
-	for ( TangibleElement*& pElement : document->vTangibleElements )
+	for ( am::TangibleElement*& pElement : document->vTangibleElements )
 		RemoveElementFromDocument(pElement, document);
 
-	m_storyNotebook->DeleteDocument(document);
-	m_storage.DeleteSQLEntry(document->GenerateSQLEntryForId());
+	pStoryNotebook->DeleteDocument(document);
+	pDatabase->DeleteSQLEntry(document->GenerateSQLEntryForId());
 
 	if ( document->parent )
 	{
-		for ( Document*& pSibling : document->parent->children )
+		for ( am::Document*& pSibling : document->parent->children )
 		{
 			if ( pSibling == document )
 				document->parent->children.erase(&pSibling);
@@ -1666,7 +1752,7 @@ void amProjectManager::DeleteDocument(Document* document)
 	}
 
 	Book* currentBook = GetCurrentBook();
-	for ( Document*& pDocInBook : currentBook->documents )
+	for ( am::Document*& pDocInBook : currentBook->documents )
 	{
 		if ( pDocInBook == document )
 		{
@@ -1676,16 +1762,56 @@ void amProjectManager::DeleteDocument(Document* document)
 	}
 }
 
-wxVector<Document*>& amProjectManager::GetDocumentsInCurrentBook()
+am::Project* am::GetProject()
 {
-	return m_pCurrentBook->documents;
+	return &project;
 }
 
-Document* amProjectManager::GetDocumentById(int id)
+int am::GetCurrentBookPos()
 {
-	for ( Book*& pBook : m_project.books )
+	return pCurrentBook->pos;
+}
+
+am::Book* am::GetCurrentBook()
+{
+	return pCurrentBook;
+}
+
+wxVector<am::Book*>& am::GetBooks()
+{
+	return project.books;
+}
+
+wxVector<am::Character*> am::GetCharacters()
+{
+	return project.GetCharacters();
+}
+
+wxVector<am::Location*> am::GetLocations()
+{
+	return project.GetLocations();
+}
+
+wxVector<am::Item*> am::GetItems()
+{
+	return project.GetItems();
+}
+
+wxVector<am::StoryElement*>& am::GetAllElements()
+{
+	return project.vStoryElements;
+}
+
+wxVector<am::Document*>& am::GetDocumentsInCurrentBook()
+{
+	return pCurrentBook->documents;
+}
+
+am::Document* am::GetDocumentById(int id)
+{
+	for ( Book*& pBook : project.books )
 	{
-		for ( Document*& pDocument : pBook->documents )
+		for ( am::Document*& pDocument : pBook->documents )
 		{
 			if ( pDocument->id == id )
 				return pDocument;
@@ -1695,9 +1821,9 @@ Document* amProjectManager::GetDocumentById(int id)
 	return nullptr;
 }
 
-Book* amProjectManager::GetBookById(int id)
+am::Book* am::GetBookById(int id)
 {
-	for ( Book*& pBook : m_project.books )
+	for ( Book*& pBook : project.books )
 	{
 		if ( pBook->id == id )
 			return pBook;
@@ -1706,38 +1832,63 @@ Book* amProjectManager::GetBookById(int id)
 	return nullptr;
 }
 
-wxArrayString amProjectManager::GetCharacterNames()
+wxArrayString am::GetCharacterNames()
 {
 	wxArrayString names(true);
-	for ( Character*& pCharacter : m_project.GetCharacters() )
+	for ( am::Character*& pCharacter : project.GetCharacters() )
 		names.Add(pCharacter->name);
 
 	return names;
 }
 
-wxArrayString amProjectManager::GetLocationNames()
+wxArrayString am::GetLocationNames()
 {
 	wxArrayString names(true);
-	for ( Location*& pLocation : m_project.GetLocations() )
+	for ( am::Location*& pLocation : project.GetLocations() )
 		names.Add(pLocation->name);
 
 	return names;
 }
 
-wxArrayString amProjectManager::GetItemNames()
+wxArrayString am::GetItemNames()
 {
 	wxArrayString names(true);
-	for ( Item*& pItem : m_project.GetItems() )
+	for ( am::Item*& pItem : project.GetItems() )
 		names.Add(pItem->name);
 
 	return names;
 }
 
-wxArrayString amProjectManager::GetBookTitles()
+wxArrayString am::GetBookTitles()
 {
 	wxArrayString names;
-	for ( Book*& book : m_project.books )
+	for ( Book*& book : project.books )
 		names.Add(book->title);
 
 	return names;
+}
+
+unsigned int am::GetBookCount()
+{
+	return project.books.size();
+}
+
+unsigned int am::GetDocumentCount(int bookPos)
+{
+	return project.books[bookPos - 1]->documents.size();
+}
+
+unsigned int am::GetCharacterCount()
+{
+	return project.GetCharacters().size();
+}
+
+unsigned int am::GetLocationCount()
+{
+	return project.GetLocations().size();
+}
+
+unsigned int am::GetItemCount()
+{
+	return project.GetItems().size();
 }

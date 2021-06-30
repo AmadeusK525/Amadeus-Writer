@@ -37,8 +37,6 @@ public:
 	friend class CorkboardCanvas;
 
 private:
-	amProjectManager* m_manager = nullptr;
-	amOutline* m_outline = nullptr;
 	wxToolBar* m_toolBar = nullptr;
 
 	wxBoxSizer* m_corkboardSizer = nullptr;
@@ -60,7 +58,6 @@ public:
 
 	void CallFullScreen(wxCommandEvent& event);
 	void LayoutAll();
-	inline amOutline* GetOutline() { return m_outline; }
 
 	void SetToolMode(ToolMode mode);
 	ToolMode getToolMode() { return m_toolMode; }
@@ -69,7 +66,7 @@ public:
 	void ExportToImage(wxBitmapType type);
 
 	void Save();
-	void Load(amProjectSQLDatabase* db);
+	void Load(am::ProjectSQLDatabase* db);
 
 	CorkboardCanvas* getCanvas() { return m_canvas; }
 
@@ -94,7 +91,6 @@ class CorkboardCanvas : public amSFShapeCanvas
 {
 private:
 	amCorkboard* m_parent = nullptr;
-	amProjectManager* m_manager = nullptr;
 
 	wxSFShapeBase* m_shapeForMenu = nullptr;
 

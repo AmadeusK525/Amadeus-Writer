@@ -25,39 +25,6 @@ public:
 };
 
 
-inline wxImage amGetScaledImage(int maxWidth, int maxHeight, wxImage& image)
-{
-	int width = image.GetWidth();
-	int height = image.GetHeight();
-
-	double ratio;
-
-	int neww, xoffset;
-	int newh, yoffset;
-
-	ratio = (double)width / height;
-
-	if ( width > height )
-	{
-		neww = maxWidth;
-		newh = maxWidth / ratio;
-		xoffset = 0;
-		yoffset = (maxHeight / 2) - (newh / 2);
-	}
-	else
-	{
-		newh = maxHeight;
-		neww = maxHeight * ratio;
-		yoffset = 0;
-		xoffset = (maxWidth / 2) - (neww / 2);
-	}
-
-	return image.Scale(neww, newh, wxIMAGE_QUALITY_HIGH).Size(wxSize(maxWidth, maxHeight), wxPoint(xoffset, yoffset));
-}
-
-void amDoSubWindowFullscreen(wxWindow* window, wxWindow* originalParent, bool fs,
-	wxBoxSizer* originalSizer = nullptr, wxSizerFlags flags = { 0 }, int sizerInex = -1);
-
 inline wxColour wxLightenColour(const wxColour& colour, int percent)
 {
 	int newRed = (colour.Red() * (100 + percent)) / 100;
@@ -76,17 +43,54 @@ inline wxColour wxDarkenColour(const wxColour& colour, int percent)
 	return wxColour((unsigned char)newRed, (unsigned char)newGreen, (unsigned char)newBlue);
 }
 
-inline void amOnEnterDarkButton(wxMouseEvent& event)
+namespace am
 {
-	wxButton* button = (wxButton*)event.GetEventObject();
-	button->SetBackgroundColour(wxLightenColour(button->GetBackgroundColour(), 40));
+	inline wxImage GetScaledImage(int maxWidth, int maxHeight, wxImage& image)
+	{
+		int width = image.GetWidth();
+		int height = image.GetHeight();
+
+		double ratio;
+
+		int neww, xoffset;
+		int newh, yoffset;
+
+		ratio = (double)width / height;
+
+		if ( width > height )
+		{
+			neww = maxWidth;
+			newh = maxWidth / ratio;
+			xoffset = 0;
+			yoffset = (maxHeight / 2) - (newh / 2);
+		}
+		else
+		{
+			newh = maxHeight;
+			neww = maxHeight * ratio;
+			yoffset = 0;
+			xoffset = (maxWidth / 2) - (neww / 2);
+		}
+
+		return image.Scale(neww, newh, wxIMAGE_QUALITY_HIGH).Size(wxSize(maxWidth, maxHeight), wxPoint(xoffset, yoffset));
+	}
+
+	void DoSubWindowFullscreen(wxWindow* window, wxWindow* originalParent, bool fs,
+		wxBoxSizer* originalSizer = nullptr, wxSizerFlags flags = { 0 }, int sizerInex = -1);
+
+	inline void OnEnterDarkButton(wxMouseEvent& event)
+	{
+		wxButton* button = (wxButton*)event.GetEventObject();
+		button->SetBackgroundColour(wxLightenColour(button->GetBackgroundColour(), 40));
+	}
+
+	inline void OnLeaveDarkButton(wxMouseEvent& event)
+	{
+		wxButton* button = (wxButton*)event.GetEventObject();
+		button->SetBackgroundColour(wxDarkenColour(button->GetBackgroundColour(), 28));
+	}
 }
 
-inline void amOnLeaveDarkButton(wxMouseEvent& event)
-{
-	wxButton* button = (wxButton*)event.GetEventObject();
-	button->SetBackgroundColour(wxDarkenColour(button->GetBackgroundColour(), 28));
-}
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// wxDVC Classes ///////////////////////////////
@@ -120,7 +124,7 @@ public:
 		}
 	}
 
-	inline const wxString& GetTitle() const { return m_title; }
+	inline virtual wxString GetTitle() const { return m_title; }
 	inline void SetTitle(const wxString& title) { m_title = title; }
 
 	inline bool IsContainer() const { return m_isContainer; }
@@ -236,12 +240,13 @@ public:
 		}
 	}
 
-	inline virtual const wxString& GetTitle(const wxDataViewItem& item) const
+	inline virtual wxString GetTitle(const wxDataViewItem& item) const
 	{
 		if ( !item.IsOk() )
 			return wxEmptyString;
 
-		return ((amTreeModelNode*)item.GetID())->GetTitle();
+		amTreeModelNode* pNode = (amTreeModelNode*)item.GetID();
+		return pNode->GetTitle();
 	}
 
 	inline virtual void SetItemBackgroundColour(const wxDataViewItem& item, const wxColour& colour)
@@ -366,6 +371,65 @@ public:
 		return true;
 	}
 
+	inline virtual bool Reposition(const wxDataViewItem item, int n)
+	{
+		if ( n == -1 )
+			return false;
+
+		wxDataViewItem parentItem(GetParent(item));
+		wxDataViewItemArray arrSiblings;
+		GetChildren(parentItem, arrSiblings);
+
+		if ( n < 0 || n > arrSiblings.size() )
+			return false;
+
+		int nPrevIndex = 0;
+
+		if ( !parentItem.IsOk() )
+		{
+			for ( amTreeModelNode*& it : m_otherRoots )
+			{
+				if ( it == item.GetID() )
+				{
+					if ( nPrevIndex == n )
+						return false;
+
+					m_otherRoots.erase(&it);
+					((amTreeModelNode*)item.GetID())->Reparent(nullptr);
+					ItemDeleted(parentItem, item);
+					break;
+				}
+
+				nPrevIndex++;
+			}
+		}
+		else
+		{
+			for ( wxDataViewItem& it : arrSiblings )
+			{
+				if ( it == item )
+				{
+					if ( nPrevIndex == n )
+						return false;
+
+					arrSiblings.Remove(item);
+					((amTreeModelNode*)item.GetID())->Reparent(nullptr);
+					ItemDeleted(parentItem, item);
+					break;
+				}
+
+				nPrevIndex++;
+			}
+		}
+
+		((amTreeModelNode*)item.GetID())->Reparent((amTreeModelNode*)parentItem.GetID(), n <= nPrevIndex ? n : n - 1);
+		if ( !parentItem.IsOk() )
+			m_otherRoots.insert(n == m_otherRoots.size() ? m_otherRoots.end() : &m_otherRoots[n <= nPrevIndex ? n : n - 1], (amTreeModelNode*)item.GetID());
+
+		ItemAdded(parentItem, item);
+		return true;
+	}
+
 	inline virtual bool SetValue(const wxVariant& variant,
 		const wxDataViewItem& item, unsigned int col)
 	{
@@ -423,7 +487,7 @@ public:
 			else
 					attr = node->GetAttr();
 		}
-
+		
 		return true;
 	}
 

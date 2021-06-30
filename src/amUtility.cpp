@@ -7,10 +7,10 @@
 wxDataViewItemAttr amTreeModelNode::m_hoverAttr{};
 #endif
 
-void amDoSubWindowFullscreen(wxWindow* window, wxWindow* originalParent, bool fs,
+void am::DoSubWindowFullscreen(wxWindow* window, wxWindow* originalParent, bool fs,
 	wxBoxSizer* originalSizer, wxSizerFlags flags, int sizerIndex)
 {
-	amMainFrame* mainFrame = amGetManager()->GetMainFrame();
+	amMainFrame* mainFrame = am::GetMainFrame();
 	wxPanel* mainPanel = mainFrame->GetMainPanel();
 	wxBoxSizer* holderSizer = mainFrame->GetHolderSizer();
 

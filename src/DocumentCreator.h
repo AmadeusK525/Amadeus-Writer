@@ -11,8 +11,6 @@
 class DocumentCreator : public wxFrame
 {
 private:
-	amProjectManager* m_manager = nullptr;
-
 	wxPanel* m_ndocPanel1 = nullptr,
 		* m_ndocPanel2 = nullptr;
 
@@ -33,7 +31,7 @@ private:
 	bool m_firstNext = true;
 
 public:
-	DocumentCreator(wxWindow* parent, amProjectManager* manager);
+	DocumentCreator(wxWindow* parent);
 
 	void Next(wxCommandEvent& event);
 	void Back(wxCommandEvent& event);

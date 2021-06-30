@@ -17,15 +17,17 @@ amBookPicker::amBookPicker(amOverview* parent) :
 	m_mainWindow->ShowScrollbars(wxSHOW_SB_ALWAYS, wxSHOW_SB_NEVER);
 	m_mainWindow->SetScrollRate(10, 10);
 
-	m_bookCoverSize = { Book::GetCoverSize().x / 6, Book::GetCoverSize().y / 6 };
+	m_bookCoverSize = { am::Book::GetCoverSize().x / 6, am::Book::GetCoverSize().y / 6 };
 	m_buttonSize = m_bookCoverSize + wxSize(15, 15);
 
 	m_mainWindow->SetMinClientSize(wxSize(-1, m_buttonSize.y + 10));
 
 	wxButton* addBook = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
 	addBook->SetBitmap(wxBITMAP_PNG(plus));
+	addBook->Bind(wxEVT_BUTTON, &amBookPicker::OnCreateBook, this);
 	wxButton* removeBook = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
 	removeBook->SetBitmap(wxBITMAP_PNG(minus));
+	removeBook->Bind(wxEVT_BUTTON, &amBookPicker::OnDeleteBook, this);
 
 	wxBoxSizer* bottomLine = new wxBoxSizer(wxHORIZONTAL);
 	bottomLine->AddStretchSpacer(1);
@@ -41,10 +43,10 @@ amBookPicker::amBookPicker(amOverview* parent) :
 	SetSizerAndFit(vertical);
 }
 
-void amBookPicker::AddButton(Book* book, size_t index)
+void amBookPicker::AddButton(am::Book* book, size_t index)
 {
 	amBookButton* button = new amBookButton(m_mainWindow, book,
-		amGetScaledImage(m_bookCoverSize.x, m_bookCoverSize.y, book->cover),
+		am::GetScaledImage(m_bookCoverSize.x, m_bookCoverSize.y, book->cover),
 		wxDefaultPosition, m_buttonSize);
 	button->Bind(wxEVT_TOGGLEBUTTON, &amBookPicker::OnBookClicked, this);
 
@@ -65,21 +67,21 @@ void amBookPicker::AddButton(Book* book, size_t index)
 void amBookPicker::OnBookClicked(wxCommandEvent& event)
 {
 	amBookButton* pButton = (amBookButton*)event.GetEventObject();
-	Book* pCurrentBook = amGetManager()->GetCurrentBook();
+	am::Book* pCurrentBook = am::GetCurrentBook();
 
 	if ( pCurrentBook != pButton->book )
 	{
 		wxBusyCursor cursor;
-		if ( !amGetManager()->SetCurrentBook(pButton->book->pos) )
+		if ( !am::SetCurrentBook(pButton->book->pos) )
 		{
-			SetSelectionByBook(amGetManager()->GetCurrentBook());
+			SetSelectionByBook(am::GetCurrentBook());
 		}
 	}
 
 	event.Skip();
 }
 
-void amBookPicker::SetSelectionByBook(Book* book)
+void amBookPicker::SetSelectionByBook(am::Book* book)
 {
 	for ( size_t i = 0; i < m_bookButtons.size(); i++ )
 	{
@@ -90,16 +92,30 @@ void amBookPicker::SetSelectionByBook(Book* book)
 	}
 }
 
+void amBookPicker::OnCreateBook(wxCommandEvent& event)
+{
+	am::StartCreatingBook();
+}
+
+void amBookPicker::OnDeleteBook(wxCommandEvent & event)
+{}
+
+void amBookPicker::DeleteAllButtons()
+{
+	for ( amBookButton*& pButton : m_bookButtons )
+		pButton->Destroy();
+
+	m_bookButtons.clear();
+}
+
 
 /////////////////////////////////////////////////////////////////
 /////////////////////////// Overview ////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 
-amOverview::amOverview(wxWindow* parent, amProjectManager* manager) : wxPanel(parent)
+amOverview::amOverview(wxWindow* parent) : wxPanel(parent)
 {
-	m_manager = manager;
-
 	SetBackgroundColour(wxColour(20, 20, 20));
 	m_bookPicker = new amBookPicker(this);
 
@@ -107,6 +123,7 @@ amOverview::amOverview(wxWindow* parent, amProjectManager* manager) : wxPanel(pa
 	m_stBookTitle->SetBackgroundColour(wxColour(0, 0, 0));
 	m_stBookTitle->SetForegroundColour(wxColour(255, 255, 255));
 	m_stBookTitle->SetFont(wxFontInfo(20).Bold());
+	m_stBookTitle->SetBackgroundStyle(wxBG_STYLE_PAINT);
 	m_stBookTitle->SetDoubleBuffered(true);
 
 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -159,7 +176,14 @@ amOverview::amOverview(wxWindow* parent, amProjectManager* manager) : wxPanel(pa
 	Layout();
 }
 
-void amOverview::SetBookData(Book* book)
+void amOverview::ClearAll()
+{
+	m_bookPicker->DeleteAllButtons();
+	m_recentDocumentsModel->ClearAll();
+	m_stBookTitle->SetLabel("");
+}
+
+void amOverview::SetBookData(am::Book* book)
 {
 	Freeze();
 
@@ -175,7 +199,7 @@ void amOverview::SetBookData(Book* book)
 	Thaw();
 }
 
-void amOverview::LoadRecentDocuments(Book* book)
+void amOverview::LoadRecentDocuments(am::Book* book)
 {
 	Freeze();
 
@@ -196,18 +220,24 @@ void amOverview::OnRecentDocument(wxDataViewEvent& event)
 		return;
 
 	if ( pNode->GetDocument() )
-		m_manager->OpenDocument(pNode->GetDocument());
+		am::OpenDocument(pNode->GetDocument());
 
 	event.Skip();
 }
 
 void amOverview::LoadBookContainer()
 {
-	wxVector<Book*>& books = m_manager->GetBooks();
+	m_bookPicker->Freeze();
+	m_bookPicker->DeleteAllButtons();
+
+	wxVector<am::Book*>& books = am::GetBooks();
 
 	int i = 0;
-	for ( Book*& book : books )
+	for ( am::Book*& book : books )
 		m_bookPicker->AddButton(book, i++);
 
-	m_bookPicker->SetSelectionByBook(m_manager->GetCurrentBook());
+	m_bookPicker->SetSelectionByBook(am::GetCurrentBook());
+	m_bookPicker->Layout();
+
+	m_bookPicker->Thaw();
 }

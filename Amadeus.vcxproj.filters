@@ -59,7 +59,7 @@
     <ClCompile Include="src\ProjectWizard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ProjectManager.cpp">
+    <ClCompile Include="src\ProjectManaging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\BookElements.cpp">
@@ -96,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SwitchCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BookWizard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -142,7 +145,7 @@
     <ClInclude Include="src\ProjectWizard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ProjectManager.h">
+    <ClInclude Include="src\ProjectManaging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\BookElements.h">
@@ -188,6 +191,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Notebook\Notebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BookWizard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,12 +10,11 @@ EVT_UPDATE_UI(BUTTON_AddThreadDone, amTLAddThreadDlg::OnUpdateDone)
 
 END_EVENT_TABLE()
 
-amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amProjectManager* manager,
+amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline,
 	amTLThreadDlgMode mode, const wxSize& size) :
 	wxFrame(parent, -1, "Add new thread", wxDefaultPosition, size, wxFRAME_FLOAT_ON_PARENT | wxCAPTION | wxCLOSE_BOX | wxRESIZE_BORDER)
 {
 	m_timeline = timeline;
-	m_manager = manager;
 	m_mode = mode;
 
 	wxPanel* panel = new wxPanel(this);
@@ -72,7 +71,7 @@ amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline, amP
 	vertical->Add(nextBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
 	panel->SetSizer(vertical);
 
-	SetCharacters(m_manager->GetCharacters());
+	SetCharacters(am::GetCharacters());
 	SetIcon(wxICON(amadeus));
 }
 
@@ -91,13 +90,13 @@ void amTLAddThreadDlg::OnUpdateDone(wxUpdateUIEvent& event)
 	event.Enable(m_characterList->GetSelectedItemCount());
 }
 
-void amTLAddThreadDlg::SetCharacters(wxVector<Character*>& characters)
+void amTLAddThreadDlg::SetCharacters(wxVector<am::Character*>& characters)
 {
 	if ( !m_characterList->IsEmpty() )
 		m_characterList->DeleteAllItems();
 
 	int i = 0;
-	for ( Character*& character : characters )
+	for ( am::Character*& character : characters )
 	{
 		if ( m_timeline->IsCharacterPresent(character->name) )
 			continue;
@@ -105,7 +104,7 @@ void amTLAddThreadDlg::SetCharacters(wxVector<Character*>& characters)
 		m_characterList->InsertItem(i, character->name);
 
 		if ( character->image.IsOk() )
-			m_characterList->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(amGetScaledImage(24, 24, character->image))));
+			m_characterList->SetItemColumnImage(i, 0, m_characterImages->Add(wxBitmap(am::GetScaledImage(24, 24, character->image))));
 		else
 			m_characterList->SetItemColumnImage(i, 0, -1);
 

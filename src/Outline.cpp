@@ -47,7 +47,7 @@ void amOutline::SaveOutline()
 	m_files->Save();
 }
 
-void amOutline::LoadOutline(amProjectSQLDatabase* db)
+void amOutline::LoadOutline(am::ProjectSQLDatabase* db)
 {
 	m_corkboard->Load(db);
 	m_timeline->Load(db);
