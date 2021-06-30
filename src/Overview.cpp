@@ -86,7 +86,10 @@ void amBookPicker::SetSelectionByBook(am::Book* book)
 	for ( size_t i = 0; i < m_bookButtons.size(); i++ )
 	{
 		if ( book == m_bookButtons[i]->book )
+		{
 			m_bookButtons[i]->SetValue(true);
+			m_bookButtons[i]->SetFocus();
+		}
 		else
 			m_bookButtons[i]->SetValue(false);
 	}

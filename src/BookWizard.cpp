@@ -171,6 +171,7 @@ void amBookWizard::OnNextButton(wxCommandEvent& event)
 		}
 		else
 		{
+			wxBusyCursor busyCursor;
 			am::AddBook(m_pBookToInsert);
 			m_bSucceeded = true;
 		}
@@ -180,17 +181,17 @@ void amBookWizard::OnNextButton(wxCommandEvent& event)
 		if ( m_pBookToInsert->title != m_pMainPage->m_tcTitle->GetValue() )
 			m_pBookToInsert->title = m_pMainPage->m_tcTitle->GetValue();
 
-		if ( m_pBookToInsert->title != m_pMainPage->m_tcTitle->GetValue() )
-			m_pBookToInsert->title = m_pMainPage->m_tcTitle->GetValue();
+		if ( m_pBookToInsert->author != m_pMainPage->m_tcAuthor->GetValue() )
+			m_pBookToInsert->author = m_pMainPage->m_tcAuthor->GetValue();
 
-		if ( m_pBookToInsert->title != m_pMainPage->m_tcTitle->GetValue() )
-			m_pBookToInsert->title = m_pMainPage->m_tcTitle->GetValue();
+		if ( m_pBookToInsert->genre != m_pMainPage->m_tcGenre->GetValue() )
+			m_pBookToInsert->genre = m_pMainPage->m_tcGenre->GetValue();
 
-		if ( m_pBookToInsert->title != m_pMainPage->m_tcTitle->GetValue() )
-			m_pBookToInsert->title = m_pMainPage->m_tcTitle->GetValue();
+		if ( m_pBookToInsert->publisher != m_pMainPage->m_tcPublisher->GetValue() )
+			m_pBookToInsert->publisher = m_pMainPage->m_tcPublisher->GetValue();
 
-		if ( m_pBookToInsert->title != m_pMainPage->m_tcTitle->GetValue() )
-			m_pBookToInsert->title = m_pMainPage->m_tcTitle->GetValue();
+		if ( m_pBookToInsert->description != m_pMainPage->m_tcDescription->GetValue() )
+			m_pBookToInsert->description = m_pMainPage->m_tcDescription->GetValue();
 	}
 
 	event.Skip();
