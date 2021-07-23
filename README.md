@@ -1,6 +1,8 @@
 # Amadeus-Writer
 ### *Work in progress*
 
+  --// As I've landed a full-time job as a Software Developer, Amadeus Writer development has been stale. In some time I will try and work on this on the weekends \\\\--
+
   This project aims to be a multifunctional desktop application for fiction writers (or writers in general).
   
   My vision is to have a program that can be utilized in every step of the writing process, incluing the research, the outline, the writing itself, keeping track of characters, locations, items, etc. I plan to add tools such as a drawing board for sketching your own drawings, an integraded media player, a built-in online search extension, online social features and more. I'm currently working full time on this.
