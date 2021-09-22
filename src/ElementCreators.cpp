@@ -491,7 +491,7 @@ bool amCharacterCreator::Create(wxWindow* parent,
 
 	label8 = new wxStaticText(m_panel1, wxID_ANY, "Appearance", wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
-	label8->SetBackgroundColour(wxColour(230, 0, 20));
+	label8->SetBackgroundColour(wxColour(230, 60, 60));
 	label8->SetFont(wxFont(wxFontInfo(13).Bold()));
 	ncAppearance = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -502,7 +502,7 @@ bool amCharacterCreator::Create(wxWindow* parent,
 
 	wxStaticText* label9 = new wxStaticText(m_panel1, wxID_ANY, "Personality", wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
-	label9->SetBackgroundColour(wxColour(230, 0, 20));
+	label9->SetBackgroundColour(wxColour(230, 60, 60));
 	label9->SetFont(wxFont(wxFontInfo(13).Bold()));
 	ncPersonality = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -513,7 +513,7 @@ bool amCharacterCreator::Create(wxWindow* parent,
 
 	wxStaticText* label10 = new wxStaticText(m_panel1, wxID_ANY, "Backstory", wxDefaultPosition, wxDefaultSize,
 		wxBORDER_SIMPLE | wxALIGN_LEFT);
-	label10->SetBackgroundColour(wxColour(230, 0, 20));
+	label10->SetBackgroundColour(wxColour(230, 60, 60));
 	label10->SetFont(wxFont(wxFontInfo(13).Bold()));
 	ncBackstory = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -709,7 +709,7 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event)
 
 	content->SetBackgroundColour(wxColour(60, 60, 60));
 	content->SetForegroundColour(wxColour(255, 255, 255));
-	label->SetBackgroundColour(wxColour(230, 0, 20));
+	label->SetBackgroundColour(wxColour(230, 60, 60));
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
@@ -822,7 +822,7 @@ bool amLocationCreator::Create(wxWindow* parent,
 	wxColour dark(50, 50, 50);
 	wxColour darker(30, 30, 30);
 	wxColour grey(200, 200, 200);
-	wxColour red(230, 0, 20);
+	wxColour red(230, 60, 60);
 	wxColour txtCol(255, 255, 255);
 
 	wxFont font(wxFontInfo(9));
@@ -901,7 +901,7 @@ bool amLocationCreator::Create(wxWindow* parent,
 
 	wxStaticText* pArchitectureLabel = new wxStaticText(m_panel1, wxID_ANY, "Architecture",
 		wxPoint(430, 70), wxSize(200, 25), wxALIGN_CENTER | wxBORDER_SIMPLE);
-	pArchitectureLabel->SetBackgroundColour(wxColor(230, 0, 20, 0));
+	pArchitectureLabel->SetBackgroundColour(red);
 	pArchitectureLabel->SetFont(wxFont(wxFontInfo(12).Bold()));
 	nlArchitecture = new wxTextCtrl(m_panel1, wxID_ANY, wxEmptyString, wxPoint(430, 95),
 		wxSize(200, 205), wxTE_MULTILINE | wxBORDER_SIMPLE);
@@ -1175,7 +1175,7 @@ void amLocationCreator::RemoveCustomAttr(wxCommandEvent& event)
 
 void amLocationCreator::RecolorCustoms()
 {
-	wxColour red(230, 0, 20);
+	wxColour red(230, 60, 60);
 	wxColour grey(200, 200, 200);
 
 	bool doRed = true;
@@ -1677,7 +1677,7 @@ void amItemCreator::AddCustomAttr(wxCommandEvent& event)
 
 	content->SetBackgroundColour(wxColour(60, 60, 60));
 	content->SetForegroundColour(wxColour(255, 255, 255));
-	label->SetBackgroundColour(wxColour(230, 0, 20));
+	label->SetBackgroundColour(wxColour(230, 60, 60));
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
@@ -1766,7 +1766,7 @@ void amItemCreator::OnPaint(wxPaintEvent& event)
 	wxPaintDC dc(m_panel1);
 
 	wxRect rect;
-	dc.SetPen(wxPen(wxColour(250, 0, 0), 3));
+	dc.SetPen(wxPen(wxColour(230, 60, 60), 3));
 	dc.SetBackgroundMode(wxTRANSPARENT);
 
 	rect = niGeneral->GetRect();
@@ -1784,7 +1784,7 @@ void amItemCreator::OnPaint(wxPaintEvent& event)
 	rect = niUsage->GetRect();
 	dc.DrawLine(wxPoint(rect.x, rect.y - 3), wxPoint(rect.x + rect.width, rect.y - 3));
 
-	dc.SetPen(wxPen(wxColour(250, 0, 0), 5));
+	dc.SetPen(wxPen(wxColour(230, 60, 60), 5));
 
 	rect = meaLabel->GetRect();
 	dc.DrawLine(wxPoint(rect.x + 3, rect.y + rect.height + 7),

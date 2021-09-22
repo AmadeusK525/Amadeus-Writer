@@ -631,6 +631,8 @@ bool am::Init(const wxString& path)
 			pRelease = pMainFrame->GetRelease();
 		}
 
+		am::Book::coverSize = { pMainFrame->FromDIP(wxSize(660, 900)) };
+
 		wxSQLite3Database::InitializeSQLite();
 		pDatabase = new am::ProjectSQLDatabase;
 		pDatabase->Open(project.amFile.GetFullPath());
@@ -1303,10 +1305,10 @@ void am::AddBook(am::Book* book)
 		for ( int i = project.books.size() - 1; i >= 0; i-- )
 		{
 			am::Book*& pBook = project.books[i];
-			
+
 			pBook->pos++;
 			pBook->Update(pDatabase, false);
-			
+
 			if ( pBook != book && pBook->pos == book->pos + 1 )
 			{
 				project.books.insert(&pBook, book);

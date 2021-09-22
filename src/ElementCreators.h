@@ -157,7 +157,7 @@ public:
 	virtual void OnCreateElement(wxCommandEvent& event);
 	virtual void OnClose(wxCloseEvent& event);
 
-	inline virtual wxSize DoGetBestClientSize() const override { return wxSize(700, 700); }
+	inline virtual wxSize DoGetBestClientSize() const override { return FromDIP(wxSize(700, 700)); }
 
 	wxDECLARE_DYNAMIC_CLASS(amCharacterCreator);
 };
@@ -213,7 +213,7 @@ public:
 	virtual void OnCreateElement(wxCommandEvent& event);
 	virtual void OnClose(wxCloseEvent& event);
 
-	inline virtual wxSize DoGetBestClientSize() const override { return wxSize(1100, 750); }
+	inline virtual wxSize DoGetBestClientSize() const override { return FromDIP(wxSize(1100, 750)); }
 
 	wxDECLARE_DYNAMIC_CLASS(amLocationCreator);
 };
@@ -276,7 +276,7 @@ public:
 
 	void OnPaint(wxPaintEvent& event);
 
-	inline virtual wxSize DoGetBestClientSize() const override { return wxSize(1000, 750); }
+	inline virtual wxSize DoGetBestClientSize() const override { return FromDIP(wxSize(1000, 750)); }
 
 	wxDECLARE_DYNAMIC_CLASS(amItemCreator);
 };

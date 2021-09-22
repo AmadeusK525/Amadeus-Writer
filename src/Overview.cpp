@@ -18,9 +18,9 @@ amBookPicker::amBookPicker(amOverview* parent) :
 	m_mainWindow->SetScrollRate(10, 10);
 
 	m_bookCoverSize = { am::Book::GetCoverSize().x / 6, am::Book::GetCoverSize().y / 6 };
-	m_buttonSize = m_bookCoverSize + wxSize(15, 15);
+	m_buttonSize = m_bookCoverSize + FromDIP(wxSize(15, 15));
 
-	m_mainWindow->SetMinClientSize(wxSize(-1, m_buttonSize.y + 10));
+	m_mainWindow->SetMinClientSize(FromDIP(wxSize(-1, m_buttonSize.y + 10)));
 
 	wxButton* addBook = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
 	addBook->SetBitmap(wxBITMAP_PNG(plus));

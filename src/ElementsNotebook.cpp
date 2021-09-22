@@ -28,10 +28,10 @@ amElementNotebookPage::amElementNotebookPage(wxWindow* parent, wxClassInfo* show
 	m_elementList = new wxListView(left, -1, wxDefaultPosition, wxDefaultSize,
 		wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxBORDER_NONE);
 	m_elementList->InsertColumn(0, "Name", wxLIST_FORMAT_CENTER, FromDIP(190));
-	m_elementList->InsertColumn(1, sortByChoices.front(), wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+	m_elementList->InsertColumn(1, sortByChoices.front(), wxLIST_FORMAT_CENTER, FromDIP(80));
 	m_elementList->InsertColumn(2, "First Appearance", wxLIST_FORMAT_CENTER, FromDIP(130));
 	m_elementList->InsertColumn(3, "Last Appearance", wxLIST_FORMAT_CENTER, FromDIP(130));
-	m_elementList->InsertColumn(4, "Documents", wxLIST_FORMAT_CENTER, wxLIST_AUTOSIZE);
+	m_elementList->InsertColumn(4, "Documents", wxLIST_FORMAT_CENTER, FromDIP(90));
 
 	m_elementList->SetBackgroundColour(wxColour(45, 45, 45));
 	m_elementList->SetForegroundColour(wxColour(245, 245, 245));

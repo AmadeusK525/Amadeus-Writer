@@ -490,8 +490,8 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	leftSplitter->SetBackgroundColour(wxColour(20, 20, 20));
 	rightSplitter->SetBackgroundColour(wxColour(20, 20, 20));
 
-	leftSplitter->SetMinimumPaneSize(30);
-	rightSplitter->SetMinimumPaneSize(30);
+	leftSplitter->SetMinimumPaneSize(FromDIP(30));
+	rightSplitter->SetMinimumPaneSize(FromDIP(30));
 
 	m_swNotebook = new amStoryWriterNotebook(leftSplitter, this);
 
@@ -789,7 +789,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	Maximize();
 
 	leftSplitter->SplitVertically(leftNotebook, m_swNotebook, FromDIP(200));
-	rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1150));
+	rightSplitter->SplitVertically(leftSplitter, rightPanel, FromDIP(1200));
 	leftSplitter->SetSashGravity(0.0);
 	rightSplitter->SetSashGravity(1.0);
 
@@ -1306,7 +1306,7 @@ void amStoryWriter::LoadDocument(am::Document* document)
 
 		wxRichTextCtrl* rtc = new wxRichTextCtrl(mainPanel, TEXT_Content, "", wxDefaultPosition, wxDefaultSize,
 			wxRE_MULTILINE | wxBORDER_NONE);
-		rtc->SetMinSize(wxSize(750, -1));
+		rtc->SetMinSize(FromDIP(wxSize(750, -1)));
 		rtc->SetLineHeight(15);
 		rtc->Bind(wxEVT_RICHTEXT_CHARACTER, &amStoryWriter::OnCharRTC, this);
 		rtc->Bind(wxEVT_RICHTEXT_DELETE, &amStoryWriter::OnCharRTC, this);

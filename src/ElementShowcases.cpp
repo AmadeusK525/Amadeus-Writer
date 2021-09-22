@@ -869,7 +869,7 @@ void amTangibleElementShowcase::LoadShortAttr(am::StoryElement* element)
 
 			pShortAttrContent->SetBackgroundStyle(wxBG_STYLE_PAINT);
 			pShortAttrContent->SetBackgroundColour(wxColour(10, 10, 10));
-			pShortAttrContent->SetForegroundColour(wxColour(255, 255, 255));
+			pShortAttrContent->SetForegroundColour(wxColour(210, 210, 210));
 			pShortAttrContent->SetFont(wxFontInfo(11));
 
 			wxBoxSizer* pSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -931,7 +931,7 @@ void amTangibleElementShowcase::LoadLongAttr(am::StoryElement * element)
 
 			pLongAttrContent->SetBackgroundStyle(wxBG_STYLE_PAINT);
 			pLongAttrContent->SetBackgroundColour(wxColour(10, 10, 10));
-			pLongAttrContent->SetForegroundColour(wxColour(255, 255, 255));
+			pLongAttrContent->SetForegroundColour(wxColour(210, 210, 210));
 			pLongAttrContent->SetFont(wxFontInfo(9));
 			pLongAttrContent->SetCursor(wxCURSOR_DEFAULT);
 			pLongAttrContent->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);
@@ -1310,7 +1310,7 @@ void amLocationShowcase::LoadLongAttr(am::StoryElement* element)
 
 			pLongAttrContent->SetBackgroundStyle(wxBG_STYLE_PAINT);
 			pLongAttrContent->SetBackgroundColour(wxColour(10, 10, 10));
-			pLongAttrContent->SetForegroundColour(wxColour(255, 255, 255));
+			pLongAttrContent->SetForegroundColour(wxColour(210, 210, 210));
 			pLongAttrContent->SetFont(wxFontInfo(9));
 			pLongAttrContent->SetCursor(wxCURSOR_DEFAULT);
 			pLongAttrContent->Bind(wxEVT_LEFT_DOWN, &amCharacterShowcase::EmptyMouseEvent, this);

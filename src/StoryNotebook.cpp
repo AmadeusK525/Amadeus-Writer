@@ -141,14 +141,13 @@ void StoryGrid::AddButton()
 
 	wxButton* button = new wxButton(this, 10000 + current,
 		"Document " + std::to_string(current),
-		wxDefaultPosition, wxDefaultSize);
+		wxDefaultPosition, FromDIP(wxSize(190, 80)));
 	button->SetFont(wxFontInfo(14).AntiAliased().Family(wxFONTFAMILY_ROMAN));
 
 	m_buttons.push_back(button);
 	m_buttons[m_buttons.size() - 1]->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &StoryGrid::OnButtonPressed, this);
 
 	m_btnSizer->Add(m_buttons[current - 1], 1, wxGROW | wxALL, 10);
-	m_btnSizer->SetItemMinSize(current - 1, 190, 80);
 	m_btnSizer->Layout();
 
 	FitInside();
