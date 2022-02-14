@@ -174,6 +174,8 @@ namespace am
 	void StartEditingElement(StoryElement* element);
 	void DoEditStoryElement(StoryElement* original, StoryElement& edit, bool sort = false);
 
+	void UpdateStoryElement(StoryElement* element);
+
 	void UpdateStoryElementInGUI(StoryElement* element);
 	void GoToStoryElement(StoryElement* element);
 

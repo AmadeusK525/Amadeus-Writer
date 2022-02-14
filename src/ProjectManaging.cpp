@@ -1418,14 +1418,8 @@ void am::DoEditStoryElement(am::StoryElement* original, am::StoryElement& edit, 
 	{
 		pOutline->GetOutlineFiles()->DeleteStoryElement(original);
 		original->EditTo(edit);
-		std::thread thread([&]()
-			{
-				pDatabase->Begin();
-				original->Update(pDatabase);
-				pDatabase->Commit();
-			}
-		);
-		thread.detach();
+
+		am::UpdateStoryElement(original);
 
 		if ( sort )
 		{
@@ -1442,6 +1436,12 @@ void am::DoEditStoryElement(am::StoryElement* original, am::StoryElement& edit, 
 	{
 		wxMessageBox(e.GetMessage());
 	}
+}
+
+void am::UpdateStoryElement(StoryElement* element)
+{
+	std::thread thread([element]() { element->Update(pDatabase); });
+	thread.detach();
 }
 
 void am::UpdateStoryElementInGUI(am::StoryElement* element)

@@ -1168,9 +1168,8 @@ void amCharacterShowcase::OnIsAlive(wxCommandEvent& event)
 	if ( !m_element )
 		return;
 
-	wxBusyCursor busy;
 	((am::Character*)m_element)->isAlive = event.GetInt();
-	m_element->Update(am::GetProjectDatabase());
+	am::UpdateStoryElement(m_element);
 
 	event.Skip();
 }
