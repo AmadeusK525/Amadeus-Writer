@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "wxmemdbg.h"
+#include "Utils/wxmemdbg.h"
 
 wxIMPLEMENT_APP(MyApp);
 

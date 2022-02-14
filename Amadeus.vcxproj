@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -144,7 +144,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/include;$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -182,7 +182,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/include;$(WXWIN)\include\msvc;$(WXWIN)\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;NDEBUG;_UNICODE;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -219,7 +219,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/include;$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;_UNICODE;WXUSINGDLL;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -255,7 +255,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/include;$(WXWIN)\3rdparty\wxsqlite3-4.6.4\include;$(WXWIN)\3rdparty\wxSF\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;NDEBUG;_UNICODE;WXUSINGDLL;_WINDOWS;NOPCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -432,70 +432,70 @@
     <ResourceCompile Include="Resource\resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\amUtility.cpp" />
-    <ClCompile Include="src\BookElements.cpp" />
-    <ClCompile Include="src\BookWizard.cpp" />
-    <ClCompile Include="src\DocumentCreator.cpp" />
-    <ClCompile Include="src\Overview.cpp" />
-    <ClCompile Include="src\StoryNotebook.cpp" />
-    <ClCompile Include="src\StoryWriter.cpp" />
-    <ClCompile Include="src\Corkboard.cpp" />
-    <ClCompile Include="src\CorkboardShapes.cpp" />
-    <ClCompile Include="src\DragList.cpp" />
-    <ClCompile Include="src\ElementCreators.cpp" />
-    <ClCompile Include="src\StoryElements.cpp" />
-    <ClCompile Include="src\ElementShowcases.cpp" />
-    <ClCompile Include="src\ImagePanel.cpp" />
-    <ClCompile Include="src\MainFrame.cpp" />
-    <ClCompile Include="src\ElementsNotebook.cpp" />
-    <ClCompile Include="src\MyApp.cpp" />
-    <ClCompile Include="src\Outline.cpp" />
-    <ClCompile Include="src\OutlineFiles.cpp" />
-    <ClCompile Include="src\ProjectManaging.cpp" />
-    <ClCompile Include="src\ProjectWizard.cpp" />
-    <ClCompile Include="src\Release.cpp" />
-    <ClCompile Include="src\SwitchCtrl.cpp" />
-    <ClCompile Include="src\Timeline.cpp" />
-    <ClCompile Include="src\TimelineDialogs.cpp" />
-    <ClCompile Include="src\TimelineShapes.cpp" />
-    <ClCompile Include="src\WordProcessor.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\BookElements.h" />
-    <ClInclude Include="src\BookWizard.h" />
-    <ClInclude Include="src\DocumentCreator.h" />
-    <ClInclude Include="src\Notebook\Notebook.h" />
-    <ClInclude Include="src\Overview.h" />
-    <ClInclude Include="src\SortFunctions.h" />
-    <ClInclude Include="src\StoryNotebook.h" />
-    <ClInclude Include="src\StoryWriter.h" />
-    <ClInclude Include="src\Corkboard.h" />
-    <ClInclude Include="src\CorkboardShapes.h" />
-    <ClInclude Include="src\SQLEntry.h" />
-    <ClInclude Include="src\DragList.h" />
-    <ClInclude Include="src\ElementCreators.h" />
-    <ClInclude Include="src\StoryElements.h" />
-    <ClInclude Include="src\ElementShowcases.h" />
-    <ClInclude Include="src\ImagePanel.h" />
-    <ClInclude Include="src\MainFrame.h" />
-    <ClInclude Include="src\ElementsNotebook.h" />
-    <ClInclude Include="src\MyApp.h" />
-    <ClInclude Include="src\Outline.h" />
-    <ClInclude Include="src\OutlineFiles.h" />
-    <ClInclude Include="src\ProjectManaging.h" />
-    <ClInclude Include="src\ProjectWizard.h" />
-    <ClInclude Include="src\Release.h" />
-    <ClInclude Include="src\SwitchCtrl.h" />
-    <ClInclude Include="src\Timeline.h" />
-    <ClInclude Include="src\TimelineDialogs.h" />
-    <ClInclude Include="src\TimelineShapes.h" />
-    <ClInclude Include="src\amUtility.h" />
-    <ClInclude Include="src\WordProcessor.h" />
-    <ClInclude Include="src\wxmemdbg.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\resource.bin" />
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Controls\DragList.h" />
+    <ClInclude Include="include\Controls\ImagePanel.h" />
+    <ClInclude Include="include\Controls\SwitchCtrl.h" />
+    <ClInclude Include="include\Controls\WordProcessor.h" />
+    <ClInclude Include="include\Database\SQLEntry.h" />
+    <ClInclude Include="include\Elements\BookElements.h" />
+    <ClInclude Include="include\Elements\StoryElements.h" />
+    <ClInclude Include="include\MyApp.h" />
+    <ClInclude Include="include\ProjectManaging.h" />
+    <ClInclude Include="include\Utils\amUtility.h" />
+    <ClInclude Include="include\Utils\SortFunctions.h" />
+    <ClInclude Include="include\Utils\wxmemdbg.h" />
+    <ClInclude Include="include\Views\DocumentCreator.h" />
+    <ClInclude Include="include\Views\Elements\ElementCreators.h" />
+    <ClInclude Include="include\Views\Elements\ElementShowcases.h" />
+    <ClInclude Include="include\Views\Elements\ElementsNotebook.h" />
+    <ClInclude Include="include\Views\MainFrame.h" />
+    <ClInclude Include="include\Views\Outline\Corkboard\Corkboard.h" />
+    <ClInclude Include="include\Views\Outline\Corkboard\CorkboardShapes.h" />
+    <ClInclude Include="include\Views\Outline\Outline.h" />
+    <ClInclude Include="include\Views\Outline\OutlineFiles.h" />
+    <ClInclude Include="include\Views\Outline\Timeline\Timeline.h" />
+    <ClInclude Include="include\Views\Outline\Timeline\TimelineDialogs.h" />
+    <ClInclude Include="include\Views\Outline\Timeline\TimelineShapes.h" />
+    <ClInclude Include="include\Views\Overview\Overview.h" />
+    <ClInclude Include="include\Views\Release\Release.h" />
+    <ClInclude Include="include\Views\StoryWriter\StoryWriter.h" />
+    <ClInclude Include="include\Views\Story\StoryNotebook.h" />
+    <ClInclude Include="include\Views\Wizards\BookWizard.h" />
+    <ClInclude Include="include\Views\Wizards\ProjectWizard.h" />
+    <ClInclude Include="src\Database\SQLEntry.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Controls\DragList.cpp" />
+    <ClCompile Include="src\Controls\ImagePanel.cpp" />
+    <ClCompile Include="src\Controls\SwitchCtrl.cpp" />
+    <ClCompile Include="src\Controls\WordProcessor.cpp" />
+    <ClCompile Include="src\Elements\BookElements.cpp" />
+    <ClCompile Include="src\Elements\StoryElements.cpp" />
+    <ClCompile Include="src\MyApp.cpp" />
+    <ClCompile Include="src\ProjectManaging.cpp" />
+    <ClCompile Include="src\Utils\amUtility.cpp" />
+    <ClCompile Include="src\Views\DocumentCreator.cpp" />
+    <ClCompile Include="src\Views\Elements\ElementCreators.cpp" />
+    <ClCompile Include="src\Views\Elements\ElementShowcases.cpp" />
+    <ClCompile Include="src\Views\Elements\ElementsNotebook.cpp" />
+    <ClCompile Include="src\Views\MainFrame.cpp" />
+    <ClCompile Include="src\Views\Outline\Corkboard\Corkboard.cpp" />
+    <ClCompile Include="src\Views\Outline\Corkboard\CorkboardShapes.cpp" />
+    <ClCompile Include="src\Views\Outline\Outline.cpp" />
+    <ClCompile Include="src\Views\Outline\OutlineFiles.cpp" />
+    <ClCompile Include="src\Views\Outline\Timeline\Timeline.cpp" />
+    <ClCompile Include="src\Views\Outline\Timeline\TimelineDialogs.cpp" />
+    <ClCompile Include="src\Views\Outline\Timeline\TimelineShapes.cpp" />
+    <ClCompile Include="src\Views\Overview\Overview.cpp" />
+    <ClCompile Include="src\Views\Release\Release.cpp" />
+    <ClCompile Include="src\Views\StoryWriter\StoryWriter.cpp" />
+    <ClCompile Include="src\Views\Story\StoryNotebook.cpp" />
+    <ClCompile Include="src\Views\Wizards\BookWizard.cpp" />
+    <ClCompile Include="src\Views\Wizards\ProjectWizard.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

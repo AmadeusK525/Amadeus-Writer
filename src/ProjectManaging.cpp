@@ -1,28 +1,28 @@
 #include "ProjectManaging.h"
 
-#include "ProjectWizard.h"
-#include "BookWizard.h"
-#include "MainFrame.h"
-#include "Overview.h"
-#include "ElementsNotebook.h"
-#include "StoryNotebook.h"
-#include "Outline.h"
-#include "Release.h"
-#include "OutlineFiles.h"
-#include "Timeline.h"
-#include "ElementShowcases.h"
-#include "StoryWriter.h"
-#include "SortFunctions.h"
-#include "ElementCreators.h"
+#include "Views/Wizards/ProjectWizard.h"
+#include "Views/Wizards/BookWizard.h"
+#include "Views/MainFrame.h"
+#include "Views/Overview/Overview.h"
+#include "Views/Elements/ElementsNotebook.h"
+#include "Views/Story/StoryNotebook.h"
+#include "Views/Outline/Outline.h"
+#include "Views/Release/Release.h"
+#include "Views/Outline/OutlineFiles.h"
+#include "Views/Outline/Timeline/Timeline.h"
+#include "Views/Elements/ElementShowcases.h"
+#include "Views/StoryWriter/StoryWriter.h"
+#include "Utils/SortFunctions.h"
+#include "Views/Elements/ElementCreators.h"
 
-#include <wx\progdlg.h>
-#include <wx\mstream.h>
-#include <wx\utils.h>
+#include <wx/progdlg.h>
+#include <wx/mstream.h>
+#include <wx/utils.h>
 #include <fstream>
 
 #include <thread>
 
-#include "wxmemdbg.h"
+#include "Utils/wxmemdbg.h"
 
 
 ///////////////////////////////////////////////////////////////////
@@ -1320,8 +1320,12 @@ void am::AddBook(am::Book* book)
 		project.books.push_back(book);
 
 	book->Save(pDatabase);
-	pOverview->LoadBookContainer();
-	pElementNotebook->InitShowChoices();
+
+	if ( bIsInitialized )
+	{
+		pOverview->LoadBookContainer();
+		pElementNotebook->InitShowChoices();
+	}
 }
 
 void am::AddStoryElement(am::StoryElement* element, bool refreshElements)
