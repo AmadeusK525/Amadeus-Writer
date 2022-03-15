@@ -8,6 +8,9 @@
 
 #include "Utils/wxmemdbg.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/Amadeus.xpm"
+#endif
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////// RelatedElementsContainer ////////////////////
@@ -662,7 +665,7 @@ bool amTangibleElementShowcase::Create(wxWindow* parent)
 #else
 	m_documentView = new wxDataViewCtrl(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
 		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
-	m_documentView->AssociateModel(&m_documentViewModel);
+	m_documentView->AssociateModel(m_documentViewModel.get());
 #endif
 
 	m_documentView->SetBackgroundColour(wxColour(90, 90, 90));
@@ -1029,7 +1032,7 @@ void amTangibleElementShowcase::OnAddDocument(wxCommandEvent& event)
 #else
 	dvc = new wxDataViewCtrl(win, -1, wxDefaultPosition, wxDefaultSize,
 		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
-	dvc->AssociateModel(&m_addDocumentViewModel);
+	dvc->AssociateModel(m_addDocumentViewModel.get());
 #endif
 	dvc->AppendColumn(new wxDataViewColumn("", new wxDataViewIconTextRenderer(wxDataViewIconTextRenderer::GetDefaultType(),
 		wxDATAVIEW_CELL_EDITABLE), 0, FromDIP(200), wxALIGN_LEFT));

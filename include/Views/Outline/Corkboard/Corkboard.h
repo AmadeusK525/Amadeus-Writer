@@ -17,6 +17,7 @@
 #include <atomic>
 
 class amCorkboard;
+class CorkboardCanvas;
 
 enum ToolMode
 {

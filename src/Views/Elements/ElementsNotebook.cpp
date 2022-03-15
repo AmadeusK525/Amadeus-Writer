@@ -35,7 +35,8 @@ amElementNotebookPage::amElementNotebookPage(wxWindow* parent, wxClassInfo* show
 
 	m_elementList->SetBackgroundColour(wxColour(45, 45, 45));
 	m_elementList->SetForegroundColour(wxColour(245, 245, 245));
-	m_elementList->Bind(wxEVT_LIST_ITEM_ACTIVATED, [&](wxListEvent&) { OnEditElement(wxCommandEvent()); });
+    wxCommandEvent emptyCommandEvent;
+	m_elementList->Bind(wxEVT_LIST_ITEM_ACTIVATED, [&](wxListEvent&) { OnEditElement(emptyCommandEvent); });
 	m_elementList->Bind(wxEVT_LIST_ITEM_SELECTED, &amElementNotebookPage::OnElementSelected, this);
 	m_elementList->Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, &amElementNotebookPage::OnElementRightClick, this);
 
@@ -504,7 +505,7 @@ amElementNotebookPage* amElementNotebook::GetAppropriatePage(am::StoryElement* e
 	return page;
 }
 
-void amElementNotebook::UpdateSearchAutoComplete(wxBookCtrlEvent& WXUNUSED(event))
+void amElementNotebook::UpdateSearchAutoComplete(const wxBookCtrlEvent& WXUNUSED(event))
 {
 	int sel = this->GetSelection();
 

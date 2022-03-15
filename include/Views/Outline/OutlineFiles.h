@@ -12,6 +12,12 @@
 #include "Utils/amUtility.h"
 #include "ProjectManaging.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/Research.xpm"
+#include "../Assets/OSX/Folder.xpm"
+#include "../Assets/OSX/File.xpm"
+#endif
+
 #include <atomic>
 
 class OutlineTreeModelNode : public amTreeModelNode
@@ -56,14 +62,17 @@ public:
 		{
 			int x = 14, y = 14;
 
-			wxIcon research(wxICON(researchIcon));
-			research.SetSize(x, y);
+            wxIcon research = wxICON(researchIcon);
+			research.SetHeight(y);
+            research.SetWidth(x);
 
-			wxIcon folder(wxICON(folderIcon));
-			folder.SetSize(x, y);
+			wxIcon folder = wxICON(folderIcon);
+			folder.SetHeight(y);
+            folder.SetWidth(x);
 
-			wxIcon file(wxICON(fileIcon));
-			file.SetSize(x, y);
+			wxIcon file = wxICON(fileIcon);
+			file.SetHeight(y);
+            file.SetWidth(x);
 
 			m_icons.push_back(research);
 			m_icons.push_back(folder);
@@ -207,8 +216,10 @@ class amOutlineFilesPanel : public amSplitterWindow
 {
 private:
 	wxPanel* m_leftPanel = nullptr;
+#ifdef __WXMSW__
 	amHotTrackingDVCHandler m_filesHTHandler;
-	wxDataViewCtrl* m_files = nullptr;
+#endif // __WXMSW__
+    wxDataViewCtrl* m_files = nullptr;
 
 	wxRichTextCtrl* m_textCtrl = nullptr;
 	wxRichTextAttr m_basicAttr{};
@@ -246,7 +257,7 @@ public:
 	void NewFile(wxCommandEvent& event);
 	void NewFolder(wxCommandEvent& event);
 
-	void DeleteItem(wxDataViewItem& item);
+	void DeleteItem(const wxDataViewItem& item);
 
 	void OnKeyDownDataView(wxKeyEvent& event);
 	void OnMenuDataView(wxCommandEvent& event);
@@ -263,9 +274,9 @@ public:
 	void OnTimerEvent(wxTimerEvent& event);
 	void SaveCurrentBuffer();
 
-	wxXmlNode* SerializeFolder(wxDataViewItem& item);
-	wxXmlNode* SerializeFile(wxDataViewItem& item);
-	void DeserializeNode(wxXmlNode* node, wxDataViewItem& parent);
+	wxXmlNode* SerializeFolder(const wxDataViewItem& item);
+	wxXmlNode* SerializeFile(const wxDataViewItem& item);
+	void DeserializeNode(wxXmlNode* node, const wxDataViewItem& parent);
 	bool Save();
 	bool Load(am::ProjectSQLDatabase* db);
 

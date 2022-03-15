@@ -13,6 +13,12 @@
 #include "Views/Story/StoryNotebook.h"
 #include "Views/Outline/OutlineFiles.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/Book.xpm"
+#include "../Assets/OSX/Section.xpm"
+#include "../Assets/OSX/Trash.xpm"
+#endif
+
 struct amStoryWriterTab;
 class amStoryWriter;
 class amStoryWriterNotebook;
@@ -105,19 +111,23 @@ public:
 		{
 			int x = 14, y = 14;
 
-			wxIcon book(wxICON(bookIcon));
-			book.SetSize(x, y);
+			wxIcon book = wxICON(bookIcon);
+			book.SetHeight(y);
+            book.SetWidth(x);
 
-			wxIcon section(wxICON(sectionIcon));
-			section.SetSize(x, y);
+            wxIcon section = wxICON(sectionIcon);
+			section.SetHeight(y);
+            section.SetWidth(x);
 
-			wxIcon document(wxICON(fileIcon));
-			document.SetSize(x, y);
+            wxIcon document = wxICON(fileIcon);
+			document.SetHeight(y);
+            document.SetWidth(x);
 
-			wxIcon trash(wxICON(trashIcon));
-			trash.SetSize(x, y);
+            wxIcon trash = wxICON(trashIcon);
+			trash.SetHeight(y);
+            trash.SetWidth(x);
 
-			m_icons.push_back(book);
+            m_icons.push_back(book);
 			m_icons.push_back(section);
 			m_icons.push_back(document);
 			m_icons.push_back(trash);
@@ -381,7 +391,7 @@ public:
 	void OnMoveToTrash(wxCommandEvent& event);
 	void OnRestoreFromTrash(wxCommandEvent& event);
 
-	void SetActiveTab(amStoryWriterTab& tab, bool saveBefore, bool load);
+	void SetActiveTab(const amStoryWriterTab& tab, bool saveBefore, bool load);
 
 	void OnNextDocument(wxCommandEvent& event);
 	void OnPreviousDocument(wxCommandEvent& event);
@@ -396,7 +406,7 @@ public:
 	void OnCharRTC(wxRichTextEvent& event);
 
 	void OnTimerEvent(wxTimerEvent& event);
-	void OnLeftSplitterChanged(wxSplitterEvent& event);
+	void OnLeftSplitterChanged(const wxSplitterEvent& event);
 
 	void ToggleFullScreen(bool fs);
 	void OnClose(wxCloseEvent& event);
@@ -483,7 +493,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxTB_DEFAULT_STYLE | wxTB_FLAT);
 
-	inline void SetCurrentTab(amStoryWriterTab& currentPage) { m_currentTab = currentPage; }
+	inline void SetCurrentTab(const amStoryWriterTab& currentPage) { m_currentTab = currentPage; }
 
 	void OnBold(wxCommandEvent& event);
 	void OnItalic(wxCommandEvent& event);
@@ -541,7 +551,7 @@ private:
 	amStoryWriterTab m_closingTab;
 
 public:
-	amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* documentWriter);
+	amStoryWriterNotebook(wxWindow* parent, amStoryWriter* documentWriter);
 
 	inline wxRichTextCtrl* GetTextCtrl() { return m_curTextCtrl; }
 	inline wxPanel* GetCorkboard() { return m_curCorkboard; }
@@ -556,10 +566,10 @@ public:
 	inline wxVector<amStoryWriterTab>& GetAllWriterPages() { return m_swTabs; }
 	inline wxAuiNotebook* GetNotebook() { return m_notebook; }
 
-	void AddTab(amStoryWriterTab& tab, const wxString& title);
-	void SetCurrentTab(amStoryWriterTab& tab, bool load);
+	void AddTab(const amStoryWriterTab& tab, const wxString& title);
+	void SetCurrentTab(const amStoryWriterTab& tab, bool load);
 
-	inline void SetNoteSize(wxSize& size) { m_noteSize = size; }
+	inline void SetNoteSize(const wxSize& size) { m_noteSize = size; }
 
 	void OnSelectionChanged(wxAuiNotebookEvent& event);
 	void OnPageClosing(wxAuiNotebookEvent& event);

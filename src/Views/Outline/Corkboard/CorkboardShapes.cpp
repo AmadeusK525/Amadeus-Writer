@@ -110,7 +110,7 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height)
 			end = strLen;
 
 		currentString = m_textToDraw.SubString(begin, end);
-		textSize = GetTextExtent(currentString);
+        textSize = GetTextExtent(currentString);
 
 		// This is done due to a bug that causes m_nLineHeight to be 0 before getting the text extent
 		if ( numberOfLines == 1 && end <= 2 )
@@ -147,9 +147,9 @@ void AutoWrapTextShape::DoCalcWrappedText(int length, int height)
 				begin += maxChar + 1;
 			}
 
-			found = currentString.Index(wxChar("\n"));
+            found = currentString.Find("\n");
 			if ( found != -1 )
-				numberOfLines -= currentString.Index(wxChar("\n"));
+				numberOfLines -= currentString.Find("\n");
 			else
 				numberOfLines--;
 

@@ -9,6 +9,12 @@
 #include <wx/stattext.h>
 #include <wx/statline.h>
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/AddCharacter.xpm"
+#include "../Assets/OSX/AddLocation.xpm"
+#include "../Assets/OSX/AddItem.xpm"
+#endif
+
 #include "Utils/wxmemdbg.h"
 
 wxIMPLEMENT_ABSTRACT_CLASS(amElementCreator, wxFrame);
@@ -563,7 +569,7 @@ void amCharacterCreator::StartEditing(am::StoryElement* editChar)
 
 	ncFullName->SetValue(character->name);
 
-	auto& it = character->mShortAttributes.find(_("Sex"));
+	auto it = character->mShortAttributes.find(_("Sex"));
 	if ( it != character->mShortAttributes.end() )
 	{
 		ncSex->SetValue(it->second);
@@ -634,7 +640,8 @@ void amCharacterCreator::StartEditing(am::StoryElement* editChar)
 	{
 		if ( it.first != _("Appearance") && it.first != _("Personality") && it.first != _("Backstory") )
 		{
-			AddCustomAttr(wxCommandEvent());
+            wxCommandEvent emptyCommandEvent;
+			AddCustomAttr(emptyCommandEvent);
 			m_custom[i].first->SetValue(it.first);
 			m_custom[i].second->SetValue(it.second);
 
@@ -1009,7 +1016,7 @@ void amLocationCreator::StartEditing(am::StoryElement* editLoc)
 
 	nlName->SetValue(location->name);
 
-	auto& it = location->mLongAttributes.find(_("General"));
+	auto it = location->mLongAttributes.find(_("General"));
 	if ( it != location->mLongAttributes.end() )
 	{
 		nlGeneral->SetValue(it->second);
@@ -1065,7 +1072,8 @@ void amLocationCreator::StartEditing(am::StoryElement* editLoc)
 		if ( it.first != _("General") && it.first != _("Natural characteristics") && it.first != _("Architecture") &&
 			it.first != _("Politics") && it.first != _("Economy") && it.first != _("Culture") )
 		{
-			AddCustomAttr(wxCommandEvent());
+            wxCommandEvent emptyCommandEvent;
+			AddCustomAttr(emptyCommandEvent);
 			m_custom[i].first->SetValue(it.first);
 			m_custom[i].second->SetValue(it.second);
 
@@ -1548,7 +1556,7 @@ void amItemCreator::StartEditing(am::StoryElement* editItem)
 	if ( item->role == am::iLow )
 		niLow->SetValue(true);
 
-	auto& it = item->mShortAttributes.find(_("Width"));
+	auto it = item->mShortAttributes.find(_("Width"));
 	if ( it != item->mShortAttributes.end() )
 	{
 		niWidth->SetValue(it->second);
@@ -1602,7 +1610,8 @@ void amItemCreator::StartEditing(am::StoryElement* editItem)
 		if ( it.first != _("General") && it.first != _("Appearance") && it.first != _("Origin") &&
 			it.first != _("Backstory") && it.first != _("Usage") )
 		{
-			AddCustomAttr(wxCommandEvent());
+            wxCommandEvent emptyCommandEvent;
+			AddCustomAttr(emptyCommandEvent);
 			m_custom[i].first->SetValue(it.first);
 			m_custom[i].second->SetValue(it.second);
 

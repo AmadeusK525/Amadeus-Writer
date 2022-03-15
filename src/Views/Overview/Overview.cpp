@@ -144,9 +144,9 @@ amOverview::amOverview(wxWindow* parent) : wxPanel(parent)
 	m_recentDocumentsDVC = m_recentDocumentsHandler.Create(this, -1, m_recentDocumentsModel.get(),
 		wxBORDER_NONE | wxDV_MULTIPLE);
 #else
-	m_recentDocumentsDVC = new wxDataViewCtrl(m_secondPanel, -1, wxDefaultPosition, wxDefaultSize,
+	m_recentDocumentsDVC = new wxDataViewCtrl(this, -1, wxDefaultPosition, wxDefaultSize,
 		wxDV_SINGLE | wxBORDER_NONE);
-	m_recentDocumentsDVC->AssociateModel(&m_recentDocumentsModel);
+	m_recentDocumentsDVC->AssociateModel(m_recentDocumentsModel.get());
 #endif
 
 	m_recentDocumentsDVC->SetBackgroundColour(wxColour(90, 90, 90));

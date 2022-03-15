@@ -1,5 +1,9 @@
 #include "Views/Wizards/BookWizard.h"
 
+#ifndef wxHAS_IMAGE_IN_RESOURCES
+#include "../Assets/OSX/Amadeus.xpm"
+#endif
+
 BookWizardTreeModel::BookWizardTreeModel(am::Book* pBookToInsert) : m_pBookToInsert(pBookToInsert)
 {
 	for ( int i = 0; i <= am::GetBookCount(); i++ )
@@ -120,7 +124,7 @@ amBookWizard::amBookWizard(wxWindow* parent)
 #else
 	m_pPosDVC = new wxDataViewCtrl(m_pPosPage, -1, wxDefaultPosition, wxDefaultSize,
 		wxDV_SINGLE | wxBORDER_NONE);
-	m_pPosDVC->AssociateModel(&m_posDVCModel);
+	m_pPosDVC->AssociateModel(m_posDVCModel.get());
 #endif
 
 	m_pPosDVC->SetBackgroundColour(wxColour(90, 90, 90));

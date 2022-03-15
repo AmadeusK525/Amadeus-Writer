@@ -1746,7 +1746,8 @@ void am::DeleteDocument(am::Document* document)
 		RemoveElementFromDocument(pElement, document);
 
 	pStoryNotebook->DeleteDocument(document);
-	pDatabase->DeleteSQLEntry(document->GenerateSQLEntryForId());
+    am::SQLEntry entryForId = document->GenerateSQLEntryForId();
+	pDatabase->DeleteSQLEntry(entryForId);
 
 	if ( document->parent )
 	{

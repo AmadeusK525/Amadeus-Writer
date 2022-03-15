@@ -82,12 +82,14 @@ namespace am
 	{
 		wxButton* button = (wxButton*)event.GetEventObject();
 		button->SetBackgroundColour(wxLightenColour(button->GetBackgroundColour(), 40));
+        button->Refresh();
 	}
 
 	inline void OnLeaveDarkButton(wxMouseEvent& event)
 	{
 		wxButton* button = (wxButton*)event.GetEventObject();
 		button->SetBackgroundColour(wxDarkenColour(button->GetBackgroundColour(), 28));
+        button->Refresh();
 	}
 }
 
@@ -277,7 +279,7 @@ public:
 
 	inline virtual bool IsDescendant(const wxDataViewItem& item, const wxDataViewItem& descendant) const
 	{
-		wxDataViewItem& parent = GetParent(descendant);
+		wxDataViewItem parent = GetParent(descendant);
 
 		bool is = false;
 
@@ -482,9 +484,11 @@ public:
 		}
 		else
 		{
+#ifdef __WXMSW__
 			if ( node->IsHovering() )
 				attr = node->GetHoverAttr();
 			else
+#endif // __WXMSW__
 					attr = node->GetAttr();
 		}
 		
@@ -695,9 +699,9 @@ public:
 		}
 
 		if ( HasCapture() )
-			ReleaseCapture();
+            ReleaseMouse();
 
-		m_beginDraggingRight = false;
+        m_beginDraggingRight = false;
 		event.Skip();
 	}
 
@@ -739,4 +743,4 @@ public:
 	}
 };
 
-#endif; /*UTILITY_AM_H_*/
+#endif /*UTILITY_AM_H_*/

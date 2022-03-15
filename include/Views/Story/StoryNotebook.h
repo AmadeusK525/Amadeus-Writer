@@ -12,7 +12,7 @@
 #include <list>
 
 class StoryGrid;
-struct am::Document;
+struct Document;
 
 class amStoryNotebook : public wxAuiNotebook
 {

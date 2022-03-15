@@ -142,12 +142,13 @@ void OutlineTreeModel::DeleteItem(const wxDataViewItem& item)
 		return;
 	}
 
+#ifdef __WXMSW__
 	if ( m_handler )
 	{
 		if ( item == m_handler->GetItemUnderMouse() )
 			m_handler->SetItemUnderMouse(wxDataViewItem(nullptr));
 	}
-
+#endif /* __WXMSW__ */
 	// first remove the node from the parent's array of children;
 	// NOTE: OutlineTreeModelNode is only an array of _pointers_
 	//       thus removing the node from it doesn't result in freeing it
@@ -441,9 +442,16 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 	m_leftPanel = new wxPanel(this);
 
 	m_outlineTreeModel = new OutlineTreeModel;
-	m_files = m_filesHTHandler.Create(m_leftPanel, TREE_Files, m_outlineTreeModel.get());
+#ifdef __WXMSW__
+    m_files = m_filesHTHandler.Create(m_leftPanel, TREE_Files, m_outlineTreeModel.get(),
+        wxBORDER_NONE | wxDV_MULTIPLE);
+#else
+    m_files = new wxDataViewCtrl(m_leftPanel, TREE_Files, wxDefaultPosition, wxDefaultSize,
+        wxDV_SINGLE | wxBORDER_NONE);
+    m_files->AssociateModel(m_outlineTreeModel.get());
+#endif
 
-	m_files->GetMainWindow()->Bind(wxEVT_KEY_DOWN, &amOutlineFilesPanel::OnKeyDownDataView, this);
+    m_files->GetMainWindow()->Bind(wxEVT_KEY_DOWN, &amOutlineFilesPanel::OnKeyDownDataView, this);
 	m_files->Bind(wxEVT_DATAVIEW_ITEM_CONTEXT_MENU, &amOutlineFilesPanel::OnRightDownDataView, this);
 
 	m_filesTB = new wxToolBar(m_leftPanel, -1);
@@ -970,7 +978,7 @@ void amOutlineFilesPanel::NewFolder(wxCommandEvent& event)
 	Save();
 }
 
-void amOutlineFilesPanel::DeleteItem(wxDataViewItem& item)
+void amOutlineFilesPanel::DeleteItem(const wxDataViewItem& item)
 {
 	if ( m_outlineTreeModel->IsSpecial(item) )
 	{
@@ -1160,7 +1168,7 @@ void amOutlineFilesPanel::SaveCurrentBuffer()
 	}
 }
 
-wxXmlNode* amOutlineFilesPanel::SerializeFolder(wxDataViewItem& item)
+wxXmlNode* amOutlineFilesPanel::SerializeFolder(const wxDataViewItem& item)
 {
 	if ( !m_outlineTreeModel->IsContainer(item) )
 		return nullptr;
@@ -1194,7 +1202,7 @@ wxXmlNode* amOutlineFilesPanel::SerializeFolder(wxDataViewItem& item)
 	return node;
 }
 
-wxXmlNode* amOutlineFilesPanel::SerializeFile(wxDataViewItem& item)
+wxXmlNode* amOutlineFilesPanel::SerializeFile(const wxDataViewItem& item)
 {
 	if ( m_outlineTreeModel->IsContainer(item) )
 		return nullptr;
@@ -1218,7 +1226,7 @@ wxXmlNode* amOutlineFilesPanel::SerializeFile(wxDataViewItem& item)
 	return node;
 }
 
-void amOutlineFilesPanel::DeserializeNode(wxXmlNode* node, wxDataViewItem& parent)
+void amOutlineFilesPanel::DeserializeNode(wxXmlNode* node, const wxDataViewItem& parent)
 {
 	wxXmlNode* child = node->GetChildren();
 	wxDataViewItem item;
@@ -1358,6 +1366,8 @@ bool amOutlineFilesPanel::Load(am::ProjectSQLDatabase* db)
 			return true;
 		}
 	}
+
+    return false;
 }
 
 void amOutlineFilesPanel::ClearAll()

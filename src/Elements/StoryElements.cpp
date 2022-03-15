@@ -138,7 +138,8 @@ void am::StoryElement::Save(ProjectSQLDatabase* db)
 	}
 
 	statement.ExecuteUpdate();
-	SetId(db->GetSQLEntryId(GenerateSQLEntryForId()));
+    am::SQLEntry entryForId = GenerateSQLEntryForId();
+	SetId(db->GetSQLEntryId(entryForId));
 }
 
 bool am::StoryElement::Update(ProjectSQLDatabase* db)

@@ -90,7 +90,7 @@ public:
 	void GoToStoryElement(am::StoryElement* element);
 	bool ShouldShow(am::StoryElement* element) const;
 
-	void UpdateSearchAutoComplete(wxBookCtrlEvent& event);
+	void UpdateSearchAutoComplete(const wxBookCtrlEvent& event);
 
 	void ClearAll();
 

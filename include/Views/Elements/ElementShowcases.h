@@ -242,7 +242,7 @@ public:
 	amCharacterShowcase() = default;
 	amCharacterShowcase(wxWindow* parent);
 
-	virtual bool Create(wxWindow* parent);
+	virtual bool Create(wxWindow* parent) override;
 
 	virtual bool LoadFirstPanel(am::TangibleElement* element) override;
 	virtual void ClearAll() override;
@@ -270,7 +270,7 @@ public:
 	amLocationShowcase() = default;
 	amLocationShowcase(wxWindow* parent);
 	
-	virtual bool Create(wxWindow* parent);
+	virtual bool Create(wxWindow* parent) override;
 
 	virtual bool LoadFirstPanel(am::TangibleElement* element) override;
 	virtual void ClearAll() override;
@@ -297,7 +297,7 @@ public:
 	amItemShowcase() = default;
 	amItemShowcase(wxWindow* parent);
 	
-	virtual bool Create(wxWindow* parent);
+	virtual bool Create(wxWindow* parent) override;
 
 	virtual bool LoadFirstPanel(am::TangibleElement* element) override;
 	virtual void ClearAll() override;

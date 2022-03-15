@@ -1,5 +1,9 @@
 #include "Views/Outline/Timeline/TimelineDialogs.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/Amadeus.xpm"
+#endif
+
 BEGIN_EVENT_TABLE(amTLAddThreadDlg, wxFrame)
 
 EVT_SIZE(amTLAddThreadDlg::OnListResize)
@@ -71,7 +75,9 @@ amTLAddThreadDlg::amTLAddThreadDlg(wxWindow* parent, amTLTimeline* timeline,
 	vertical->Add(nextBtn, wxSizerFlags(0).Right().Border(wxALL, 5));
 	panel->SetSizer(vertical);
 
-	SetCharacters(am::GetCharacters());
+    wxVector<am::Character*> vCharacters = am::GetCharacters();
+
+    SetCharacters(vCharacters);
 	SetIcon(wxICON(amadeus));
 }
 

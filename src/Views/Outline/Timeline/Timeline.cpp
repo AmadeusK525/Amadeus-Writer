@@ -819,7 +819,7 @@ void amTLTimelineCanvas::MoveThread(amTLThread* thread, bool moveUp, bool reposi
 	thread->RecalculatePosition();
 }
 
-void amTLTimelineCanvas::OnDeleteCard(wxCommandEvent& event)
+void amTLTimelineCanvas::DoDeleteCard()
 {
 	wxMessageDialog message(am::GetMainFrame(), _("Are you sure you want to delete this card?"
 		" This action cannot be undone!"), _("Confirmation"),
@@ -837,7 +837,7 @@ void amTLTimelineCanvas::OnDeleteCard(wxCommandEvent& event)
 	}
 }
 
-void amTLTimelineCanvas::OnDeleteThread(wxCommandEvent& event)
+void amTLTimelineCanvas::DoDeleteThread()
 {
 	wxMessageDialog message(am::GetMainFrame(), _("Are you sure you want to delete this thread?"
 		" This action cannot be undone!"), _("Confirmation"),
@@ -855,7 +855,7 @@ void amTLTimelineCanvas::OnDeleteThread(wxCommandEvent& event)
 	}
 }
 
-void amTLTimelineCanvas::OnDeleteSection(wxCommandEvent& event)
+void amTLTimelineCanvas::DoDeleteSection()
 {
 	wxMessageDialog message(am::GetMainFrame(), _("Are you sure you want to delete this section?"
 		" This action cannot be undone!"), _("Confirmation"),
@@ -952,7 +952,8 @@ void amTLTimelineCanvas::DeleteThread(amTLThread* thread, bool refresh, bool upd
 	if ( isSelected )
 	{
 		m_selectedThread = nullptr;
-		m_parent->SetThreadData(nullptr, ShapeList());
+        ShapeList emptyList;
+		m_parent->SetThreadData(nullptr, emptyList);
 	}
 
 	if ( updateThumbnails )
@@ -1037,6 +1038,8 @@ wxColour amTLTimelineCanvas::GetThreadColour(int threadIndex)
 		if ( thread->GetIndex() == threadIndex )
 			return thread->GetColour();
 	}
+
+    return wxColour();
 }
 
 void amTLTimelineCanvas::OnThreadSelected(amTLThread* thread)

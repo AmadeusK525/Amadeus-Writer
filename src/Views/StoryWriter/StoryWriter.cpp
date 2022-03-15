@@ -15,6 +15,10 @@
 
 #include "Utils/wxmemdbg.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/Amadeus.xpm"
+#endif
+
 wxVector<wxIcon> StoryTreeModelNode::m_icons{};
 
 StoryTreeModel::StoryTreeModel()
@@ -235,10 +239,12 @@ void StoryTreeModel::DeleteItem(const wxDataViewItem& item)
 		}
 	}
 
+#ifdef __WXMSW__
 	if ( this->m_handler->GetItemUnderMouse() == item )
 	{
 		this->m_handler->SetItemUnderMouse(wxDataViewItem(nullptr));
 	}
+#endif // __WSMSW__
 
 	wxDataViewItem parent(parentNode);
 	ItemDeleted(parent, item);
@@ -350,7 +356,9 @@ void StoryTreeModel::ClearAll()
 		m_trashNode = nullptr;
 	}
 
+#ifdef __WXMSW__
 	m_handler->SetItemUnderMouse(wxDataViewItem(nullptr));
+#endif /* __WXMSW__ */
 }
 
 void StoryTreeModel::GetValue(wxVariant& variant,
@@ -683,7 +691,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 #else
 	m_storyView = new wxDataViewCtrl(leftPanel3, TREE_Story, wxDefaultPosition, wxDefaultSize,
 		wxDV_NO_HEADER | wxDV_SINGLE | wxBORDER_NONE);
-	m_storyView->AssociateModel(m_storyView.get());
+	m_storyView->AssociateModel(m_storyTreeModel.get());
 #endif
 
 	m_storyView->SetBackgroundColour(wxColour(90, 90, 90));
@@ -806,7 +814,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	m_statusBar->SetBackgroundColour(wxColour(120, 120, 120));
 
 	wxSize noteSize((m_swNotebook->GetClientSize()));
-	m_swNotebook->SetNoteSize(FromDIP(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10)));
+    m_swNotebook->SetNoteSize(FromDIP(wxSize((noteSize.x / 3) - 30, (noteSize.y / 4) - 10)));
 
 	SetIcon(wxICON(amadeus));
 	LoadDocument(document);
@@ -1217,7 +1225,7 @@ void amStoryWriter::OnRestoreFromTrash(wxCommandEvent& event)
 	}
 }
 
-void amStoryWriter::SetActiveTab(amStoryWriterTab& tab, bool saveBefore, bool load)
+void amStoryWriter::SetActiveTab(const amStoryWriterTab& tab, bool saveBefore, bool load)
 {
 	if ( saveBefore )
 		SaveActiveTab();
@@ -1407,7 +1415,7 @@ void amStoryWriter::OnTimerEvent(wxTimerEvent& event)
 	event.Skip();
 }
 
-void amStoryWriter::OnLeftSplitterChanged(wxSplitterEvent& event)
+void amStoryWriter::OnLeftSplitterChanged(const wxSplitterEvent& event)
 {
 	int x = m_charInChap->GetSize().x - 1;
 
@@ -1823,7 +1831,7 @@ amStoryWriterNotebook::amStoryWriterNotebook(wxWindow* parent, amStoryWriter* do
 	m_timer.Start(10000);
 }
 
-void amStoryWriterNotebook::AddTab(amStoryWriterTab& tab, const wxString& title)
+void amStoryWriterNotebook::AddTab(const amStoryWriterTab& tab, const wxString& title)
 {
 	m_swTabs.push_back(tab);
 	m_notebook->AddPage(tab.mainPanel, title, false);
@@ -1831,7 +1839,7 @@ void amStoryWriterNotebook::AddTab(amStoryWriterTab& tab, const wxString& title)
 	SetCurrentTab(tab, false);
 }
 
-void amStoryWriterNotebook::SetCurrentTab(amStoryWriterTab& tab, bool load)
+void amStoryWriterNotebook::SetCurrentTab(const amStoryWriterTab& tab, bool load)
 {
 	for ( int i = 0; i < m_notebook->GetPageCount(); i++ )
 	{

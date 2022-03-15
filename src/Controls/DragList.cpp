@@ -160,7 +160,8 @@ void amDragList::EndDragging()
 	Refresh(false);
 	Update();
 
-	SelectItem(wxMouseEvent());
+    wxMouseEvent emptyMouseEvent;
+	SelectItem(emptyMouseEvent);
 	SetFocus();
 }
 

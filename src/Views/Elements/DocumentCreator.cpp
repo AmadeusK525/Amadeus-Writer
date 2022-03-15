@@ -2,6 +2,10 @@
 
 #include "MyApp.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/AddDocument.xpm"
+#endif
+
 #include "Utils/wxmemdbg.h"
 
 BEGIN_EVENT_TABLE(DocumentCreator, wxFrame)

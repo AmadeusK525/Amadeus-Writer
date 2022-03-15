@@ -7,6 +7,7 @@
 #include <wx/notebook.h>
 #include <wx/timer.h>
 #include <wx/tglbtn.h>
+#include <wx/spinctrl.h>
 
 #include "Views/Outline/Timeline/TimelineShapes.h"
 #include "ProjectManaging.h"
@@ -92,7 +93,7 @@ public:
 	inline static void SetWidth(int width) { m_width = width; }
 
 	inline wxColour& GetColour() { return m_colour; }
-	inline void SetColour(wxColour& colour) { m_colour = colour; }
+	inline void SetColour(const wxColour& colour) { m_colour = colour; }
 
 	inline wxString& GetCharacter() { return m_character; }
 	void SetCharacter(const wxString& newCharacter);
@@ -325,10 +326,14 @@ public:
 
 	void MoveThread(amTLThread* thread, bool moveUp, bool repositionAll = true);
 
-	void OnDeleteCard(wxCommandEvent& event);
-	void OnDeleteThread(wxCommandEvent& event);
-	void OnDeleteSection(wxCommandEvent& event);
+    void OnDeleteCard(wxCommandEvent& event) { DoDeleteCard(); }
+    void OnDeleteThread(wxCommandEvent& event) { DoDeleteThread(); }
+    void OnDeleteSection(wxCommandEvent& event) { DoDeleteSection(); }
 
+    void DoDeleteCard();
+    void DoDeleteThread();
+    void DoDeleteSection();
+    
 	void DeleteCard(amTLTimelineCard* card, bool refresh = true, bool updateThumbnails = true, bool save = true);
 	void DeleteThread(amTLThread* thread, bool refresh = true, bool updateThumbnails = true, bool save = true);
 
@@ -428,9 +433,9 @@ public:
 
 	void DeleteThread(amTLThread* thread, bool refresh) { m_canvas->DeleteThread(thread, refresh); }
 
-	void DeleteCurrentThread() { m_canvas->OnDeleteThread(wxCommandEvent()); }
-	void DeleteCurrentCard() { m_canvas->OnDeleteCard(wxCommandEvent()); }
-	void DeleteCurrentSection() { m_canvas->OnDeleteSection(wxCommandEvent()); }
+	void DeleteCurrentThread() { m_canvas->DoDeleteThread(); }
+	void DeleteCurrentCard() { m_canvas->DoDeleteCard(); }
+	void DeleteCurrentSection() { m_canvas->DoDeleteSection(); }
 
 	void ShowSidebar(bool force = false);
 

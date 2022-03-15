@@ -17,6 +17,10 @@
 #include <wx/richtext/richtexthtml.h>
 #include <wx/aboutdlg.h>
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/Amadeus.xpm"
+#endif
+
 #include "Utils/wxmemdbg.h"
 
 BEGIN_EVENT_TABLE(amMainFrame, wxFrame)
@@ -200,7 +204,7 @@ amMainFrame::amMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 	SetMenuBar(pMainMenu);
 
 	// Creating toolbar and setting tools
-	m_toolBar = new wxToolBar(m_mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT);
+	m_toolBar = new wxToolBar(m_mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxTB_DEFAULT_STYLE);
 	m_toolBar->SetBackgroundColour(wxColour(100, 100, 100));
 
 	m_toolBar->AddTool(TOOL_NewDocument, wxEmptyString, wxBITMAP_PNG(documentPng), "Add new document", wxITEM_NORMAL);
@@ -468,7 +472,9 @@ void amMainFrame::OnMainButtons(wxCommandEvent& event)
 			m_mainButtons[i]->SetBackgroundColour(wxColour(130, 0, 0));
 		else
 			m_mainButtons[i]->SetBackgroundColour(wxColour(20, 20, 20));
-	}
+
+        m_mainButtons[i]->Refresh();
+    }
 
 	m_mainBook->ChangeSelection(page);
 	m_toolBar->Show(showToolBar);

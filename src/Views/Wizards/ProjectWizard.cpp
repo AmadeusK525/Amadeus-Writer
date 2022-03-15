@@ -5,6 +5,10 @@
 
 #include "Utils/wxmemdbg.h"
 
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+#include "../Assets/OSX/Amadeus.xpm"
+#endif
+
 amProjectWizard::amProjectWizard(wxWindow* parent, wxWindowID id)
 {
 	SetExtraStyle(wxWIZARD_EX_HELPBUTTON);

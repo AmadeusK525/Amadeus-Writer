@@ -60,7 +60,7 @@ int am::Document::GetWordCount()
 
 		if ( result.NextRow() )
 		{
-			std::string content = result.GetAsString("plain_text");
+			std::string content = result.GetAsString("plain_text").ToStdString();
 
 			if ( !content.empty() )
 			{
@@ -105,7 +105,8 @@ void am::Document::Save(ProjectSQLDatabase* db)
 			(const char*)content.ToUTF8(), (const char*)parentId, "NULL");
 
 		db->ExecuteUpdate(buffer);
-		SetId(db->GetSQLEntryId(GenerateSQLEntryForId()));
+        am::SQLEntry entryForId = GenerateSQLEntryForId();
+		SetId(db->GetSQLEntryId(entryForId));
 	}
 	catch ( wxSQLite3Exception& e )
 	{
@@ -499,7 +500,8 @@ void am::Book::Save(ProjectSQLDatabase* db)
 		}
 
 		statement.ExecuteUpdate();
-		SetId(db->GetSQLEntryId(GenerateSQLEntryForId()));
+        am::SQLEntry entryForId = GenerateSQLEntryForId();
+		SetId(db->GetSQLEntryId(entryForId));
 
 		Init();
 	}
