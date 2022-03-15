@@ -1,0 +1,890 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4DD16A9A27C4ACA200E42682 /* MyApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3427C4ACA200E42682 /* MyApp.cpp */; };
+		4DD16A9B27C4ACA200E42682 /* amUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3627C4ACA200E42682 /* amUtility.cpp */; };
+		4DD16A9C27C4ACA200E42682 /* ProjectManaging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3727C4ACA200E42682 /* ProjectManaging.cpp */; };
+		4DD16A9D27C4ACA200E42682 /* WordProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3927C4ACA200E42682 /* WordProcessor.cpp */; };
+		4DD16A9E27C4ACA200E42682 /* SwitchCtrl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3A27C4ACA200E42682 /* SwitchCtrl.cpp */; };
+		4DD16A9F27C4ACA200E42682 /* ImagePanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3B27C4ACA200E42682 /* ImagePanel.cpp */; };
+		4DD16AA027C4ACA200E42682 /* DragList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3C27C4ACA200E42682 /* DragList.cpp */; };
+		4DD16AA127C4ACA200E42682 /* BookElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3E27C4ACA200E42682 /* BookElements.cpp */; };
+		4DD16AA227C4ACA200E42682 /* StoryElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A3F27C4ACA200E42682 /* StoryElements.cpp */; };
+		4DD16AA327C4ACA200E42682 /* StoryWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4227C4ACA200E42682 /* StoryWriter.cpp */; };
+		4DD16AA427C4ACA200E42682 /* MainFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4327C4ACA200E42682 /* MainFrame.cpp */; };
+		4DD16AA527C4ACA200E42682 /* Release.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4527C4ACA200E42682 /* Release.cpp */; };
+		4DD16AA627C4ACA200E42682 /* ElementsNotebook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4727C4ACA200E42682 /* ElementsNotebook.cpp */; };
+		4DD16AA727C4ACA200E42682 /* DocumentCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4827C4ACA200E42682 /* DocumentCreator.cpp */; };
+		4DD16AA827C4ACA200E42682 /* ElementCreators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4927C4ACA200E42682 /* ElementCreators.cpp */; };
+		4DD16AA927C4ACA200E42682 /* ElementShowcases.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4A27C4ACA200E42682 /* ElementShowcases.cpp */; };
+		4DD16AAA27C4ACA200E42682 /* Outline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4C27C4ACA200E42682 /* Outline.cpp */; };
+		4DD16AAB27C4ACA200E42682 /* OutlineFiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4D27C4ACA200E42682 /* OutlineFiles.cpp */; };
+		4DD16AAC27C4ACA200E42682 /* Corkboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A4F27C4ACA200E42682 /* Corkboard.cpp */; };
+		4DD16AAD27C4ACA200E42682 /* CorkboardShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5027C4ACA200E42682 /* CorkboardShapes.cpp */; };
+		4DD16AAE27C4ACA200E42682 /* TimelineShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5227C4ACA200E42682 /* TimelineShapes.cpp */; };
+		4DD16AAF27C4ACA200E42682 /* TimelineDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5327C4ACA200E42682 /* TimelineDialogs.cpp */; };
+		4DD16AB027C4ACA200E42682 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5427C4ACA200E42682 /* Timeline.cpp */; };
+		4DD16AB127C4ACA200E42682 /* BookWizard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5627C4ACA200E42682 /* BookWizard.cpp */; };
+		4DD16AB227C4ACA200E42682 /* ProjectWizard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5727C4ACA200E42682 /* ProjectWizard.cpp */; };
+		4DD16AB327C4ACA200E42682 /* Overview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5927C4ACA200E42682 /* Overview.cpp */; };
+		4DD16AB427C4ACA200E42682 /* StoryNotebook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16A5B27C4ACA200E42682 /* StoryNotebook.cpp */; };
+		4DD16B8227C4AFF900E42682 /* libwxShapeFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD16B8127C4AFF900E42682 /* libwxShapeFramework.a */; };
+		4DD16C1A27C5313D00E42682 /* libwxSQLite3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD16C1927C5313D00E42682 /* libwxSQLite3.a */; };
+		4DD16C5727C5521E00E42682 /* Amadeus.xpm in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4DD16C5527C551EC00E42682 /* Amadeus.xpm */; };
+		4DD16C5827C5521E00E42682 /* Research.xpm in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4DD16C5127C54B5C00E42682 /* Research.xpm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4DD16C5627C5521600E42682 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				4DD16C5727C5521E00E42682 /* Amadeus.xpm in CopyFiles */,
+				4DD16C5827C5521E00E42682 /* Research.xpm in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		4D3A9E9E27C572F6003312BD /* Amadeus-Writer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amadeus-Writer.entitlements"; sourceTree = "<group>"; };
+		4DBB83FB27C568A800F4F8E9 /* AddDocument.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddDocument.xpm; sourceTree = "<group>"; };
+		4DBB83FC27C56AD000F4F8E9 /* AddItem.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddItem.xpm; sourceTree = "<group>"; };
+		4DBB83FD27C56AD000F4F8E9 /* AddLocation.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddLocation.xpm; sourceTree = "<group>"; };
+		4DBB83FE27C56AD000F4F8E9 /* AddCharacter.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddCharacter.xpm; sourceTree = "<group>"; };
+		4DD1694327C4A1D400E42682 /* Amadeus-Writer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Amadeus-Writer"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4DD16A0027C4ACA200E42682 /* SQLEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLEntry.h; sourceTree = "<group>"; };
+		4DD16A0127C4ACA200E42682 /* ProjectManaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectManaging.h; sourceTree = "<group>"; };
+		4DD16A0327C4ACA200E42682 /* wxmemdbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxmemdbg.h; sourceTree = "<group>"; };
+		4DD16A0427C4ACA200E42682 /* SortFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SortFunctions.h; sourceTree = "<group>"; };
+		4DD16A0527C4ACA200E42682 /* amUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amUtility.h; sourceTree = "<group>"; };
+		4DD16A0727C4ACA200E42682 /* WordProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WordProcessor.h; sourceTree = "<group>"; };
+		4DD16A0827C4ACA200E42682 /* ImagePanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePanel.h; sourceTree = "<group>"; };
+		4DD16A0927C4ACA200E42682 /* SwitchCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchCtrl.h; sourceTree = "<group>"; };
+		4DD16A0A27C4ACA200E42682 /* DragList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragList.h; sourceTree = "<group>"; };
+		4DD16A0C27C4ACA200E42682 /* BookElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookElements.h; sourceTree = "<group>"; };
+		4DD16A0D27C4ACA200E42682 /* StoryElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryElements.h; sourceTree = "<group>"; };
+		4DD16A1027C4ACA200E42682 /* StoryWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryWriter.h; sourceTree = "<group>"; };
+		4DD16A1227C4ACA200E42682 /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
+		4DD16A1427C4ACA200E42682 /* DocumentCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentCreator.h; sourceTree = "<group>"; };
+		4DD16A1527C4ACA200E42682 /* ElementsNotebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementsNotebook.h; sourceTree = "<group>"; };
+		4DD16A1627C4ACA200E42682 /* ElementCreators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementCreators.h; sourceTree = "<group>"; };
+		4DD16A1727C4ACA200E42682 /* ElementShowcases.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementShowcases.h; sourceTree = "<group>"; };
+		4DD16A1927C4ACA200E42682 /* Outline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Outline.h; sourceTree = "<group>"; };
+		4DD16A1B27C4ACA200E42682 /* Corkboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Corkboard.h; sourceTree = "<group>"; };
+		4DD16A1C27C4ACA200E42682 /* CorkboardShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CorkboardShapes.h; sourceTree = "<group>"; };
+		4DD16A1D27C4ACA200E42682 /* OutlineFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineFiles.h; sourceTree = "<group>"; };
+		4DD16A1F27C4ACA200E42682 /* TimelineDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineDialogs.h; sourceTree = "<group>"; };
+		4DD16A2027C4ACA200E42682 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
+		4DD16A2127C4ACA200E42682 /* TimelineShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineShapes.h; sourceTree = "<group>"; };
+		4DD16A2227C4ACA200E42682 /* MainFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainFrame.h; sourceTree = "<group>"; };
+		4DD16A2427C4ACA200E42682 /* BookWizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookWizard.h; sourceTree = "<group>"; };
+		4DD16A2527C4ACA200E42682 /* ProjectWizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectWizard.h; sourceTree = "<group>"; };
+		4DD16A2727C4ACA200E42682 /* Overview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Overview.h; sourceTree = "<group>"; };
+		4DD16A2927C4ACA200E42682 /* StoryNotebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryNotebook.h; sourceTree = "<group>"; };
+		4DD16A2A27C4ACA200E42682 /* MyApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyApp.h; sourceTree = "<group>"; };
+		4DD16A2C27C4ACA200E42682 /* RCb17708 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RCb17708; sourceTree = "<group>"; };
+		4DD16A2D27C4ACA200E42682 /* RCa20288 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RCa20288; sourceTree = "<group>"; };
+		4DD16A2E27C4ACA200E42682 /* resource.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = resource.rc; sourceTree = "<group>"; };
+		4DD16A2F27C4ACA200E42682 /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
+		4DD16A3027C4ACA200E42682 /* RCa17708 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RCa17708; sourceTree = "<group>"; };
+		4DD16A3327C4ACA200E42682 /* SQLEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLEntry.h; sourceTree = "<group>"; };
+		4DD16A3427C4ACA200E42682 /* MyApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MyApp.cpp; sourceTree = "<group>"; };
+		4DD16A3627C4ACA200E42682 /* amUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = amUtility.cpp; sourceTree = "<group>"; };
+		4DD16A3727C4ACA200E42682 /* ProjectManaging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProjectManaging.cpp; sourceTree = "<group>"; };
+		4DD16A3927C4ACA200E42682 /* WordProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WordProcessor.cpp; sourceTree = "<group>"; };
+		4DD16A3A27C4ACA200E42682 /* SwitchCtrl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchCtrl.cpp; sourceTree = "<group>"; };
+		4DD16A3B27C4ACA200E42682 /* ImagePanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePanel.cpp; sourceTree = "<group>"; };
+		4DD16A3C27C4ACA200E42682 /* DragList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DragList.cpp; sourceTree = "<group>"; };
+		4DD16A3E27C4ACA200E42682 /* BookElements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookElements.cpp; sourceTree = "<group>"; };
+		4DD16A3F27C4ACA200E42682 /* StoryElements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StoryElements.cpp; sourceTree = "<group>"; };
+		4DD16A4227C4ACA200E42682 /* StoryWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StoryWriter.cpp; sourceTree = "<group>"; };
+		4DD16A4327C4ACA200E42682 /* MainFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainFrame.cpp; sourceTree = "<group>"; };
+		4DD16A4527C4ACA200E42682 /* Release.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Release.cpp; sourceTree = "<group>"; };
+		4DD16A4727C4ACA200E42682 /* ElementsNotebook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ElementsNotebook.cpp; sourceTree = "<group>"; };
+		4DD16A4827C4ACA200E42682 /* DocumentCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DocumentCreator.cpp; sourceTree = "<group>"; };
+		4DD16A4927C4ACA200E42682 /* ElementCreators.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ElementCreators.cpp; sourceTree = "<group>"; };
+		4DD16A4A27C4ACA200E42682 /* ElementShowcases.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ElementShowcases.cpp; sourceTree = "<group>"; };
+		4DD16A4C27C4ACA200E42682 /* Outline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Outline.cpp; sourceTree = "<group>"; };
+		4DD16A4D27C4ACA200E42682 /* OutlineFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutlineFiles.cpp; sourceTree = "<group>"; };
+		4DD16A4F27C4ACA200E42682 /* Corkboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Corkboard.cpp; sourceTree = "<group>"; };
+		4DD16A5027C4ACA200E42682 /* CorkboardShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CorkboardShapes.cpp; sourceTree = "<group>"; };
+		4DD16A5227C4ACA200E42682 /* TimelineShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimelineShapes.cpp; sourceTree = "<group>"; };
+		4DD16A5327C4ACA200E42682 /* TimelineDialogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimelineDialogs.cpp; sourceTree = "<group>"; };
+		4DD16A5427C4ACA200E42682 /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
+		4DD16A5627C4ACA200E42682 /* BookWizard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BookWizard.cpp; sourceTree = "<group>"; };
+		4DD16A5727C4ACA200E42682 /* ProjectWizard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProjectWizard.cpp; sourceTree = "<group>"; };
+		4DD16A5927C4ACA200E42682 /* Overview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Overview.cpp; sourceTree = "<group>"; };
+		4DD16A5B27C4ACA200E42682 /* StoryNotebook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StoryNotebook.cpp; sourceTree = "<group>"; };
+		4DD16A6827C4ACA200E42682 /* Characters-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Characters-Showcase.png"; sourceTree = "<group>"; };
+		4DD16A6927C4ACA200E42682 /* Document-Notes-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Document-Notes-Showcase.png"; sourceTree = "<group>"; };
+		4DD16A6A27C4ACA200E42682 /* Locations-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Locations-Showcase.png"; sourceTree = "<group>"; };
+		4DD16A6B27C4ACA200E42682 /* Outline-Files-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Outline-Files-Showcase.png"; sourceTree = "<group>"; };
+		4DD16A6C27C4ACA200E42682 /* Corkboard-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Corkboard-Showcase.png"; sourceTree = "<group>"; };
+		4DD16A6D27C4ACA200E42682 /* Timeline-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Timeline-Showcase.png"; sourceTree = "<group>"; };
+		4DD16A6E27C4ACA200E42682 /* Story-Table-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Story-Table-Showcase.png"; sourceTree = "<group>"; };
+		4DD16A6F27C4ACA200E42682 /* Story-Writer-Showcase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Story-Writer-Showcase.png"; sourceTree = "<group>"; };
+		4DD16B8127C4AFF900E42682 /* libwxShapeFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwxShapeFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4DD16C1927C5313D00E42682 /* libwxSQLite3.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwxSQLite3.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4DD16C5127C54B5C00E42682 /* Research.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research.xpm; sourceTree = "<group>"; };
+		4DD16C5527C551EC00E42682 /* Amadeus.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Amadeus.xpm; sourceTree = "<group>"; };
+		4DD16C5927C5598F00E42682 /* Book.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Book.xpm; sourceTree = "<group>"; };
+		4DD16C5A27C559E100E42682 /* Folder.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Folder.xpm; sourceTree = "<group>"; };
+		4DD16C5B27C55B0800E42682 /* Section.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Section.xpm; sourceTree = "<group>"; };
+		4DD16C5C27C55B6900E42682 /* File.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = File.xpm; sourceTree = "<group>"; };
+		4DD16C5D27C55BCA00E42682 /* Trash.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Trash.xpm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4DD1694027C4A1D400E42682 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4DD16C1A27C5313D00E42682 /* libwxSQLite3.a in Frameworks */,
+				4DD16B8227C4AFF900E42682 /* libwxShapeFramework.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4DD1693A27C4A1D400E42682 = {
+			isa = PBXGroup;
+			children = (
+				4D3A9E9E27C572F6003312BD /* Amadeus-Writer.entitlements */,
+				4DD16A5C27C4ACA200E42682 /* Assets */,
+				4DD169FE27C4ACA200E42682 /* include */,
+				4DD16A2B27C4ACA200E42682 /* Resource */,
+				4DD16A3127C4ACA200E42682 /* src */,
+				4DD1694427C4A1D400E42682 /* Products */,
+				4DD16B8027C4AFF900E42682 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		4DD1694427C4A1D400E42682 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4DD1694327C4A1D400E42682 /* Amadeus-Writer */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4DD169FE27C4ACA200E42682 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				4DD169FF27C4ACA200E42682 /* Database */,
+				4DD16A0127C4ACA200E42682 /* ProjectManaging.h */,
+				4DD16A0227C4ACA200E42682 /* Utils */,
+				4DD16A0627C4ACA200E42682 /* Controls */,
+				4DD16A0B27C4ACA200E42682 /* Elements */,
+				4DD16A0E27C4ACA200E42682 /* Views */,
+				4DD16A2A27C4ACA200E42682 /* MyApp.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		4DD169FF27C4ACA200E42682 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A0027C4ACA200E42682 /* SQLEntry.h */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		4DD16A0227C4ACA200E42682 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A0327C4ACA200E42682 /* wxmemdbg.h */,
+				4DD16A0427C4ACA200E42682 /* SortFunctions.h */,
+				4DD16A0527C4ACA200E42682 /* amUtility.h */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		4DD16A0627C4ACA200E42682 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A0727C4ACA200E42682 /* WordProcessor.h */,
+				4DD16A0827C4ACA200E42682 /* ImagePanel.h */,
+				4DD16A0927C4ACA200E42682 /* SwitchCtrl.h */,
+				4DD16A0A27C4ACA200E42682 /* DragList.h */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+		4DD16A0B27C4ACA200E42682 /* Elements */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A0C27C4ACA200E42682 /* BookElements.h */,
+				4DD16A0D27C4ACA200E42682 /* StoryElements.h */,
+			);
+			path = Elements;
+			sourceTree = "<group>";
+		};
+		4DD16A0E27C4ACA200E42682 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A0F27C4ACA200E42682 /* StoryWriter */,
+				4DD16A1127C4ACA200E42682 /* Release */,
+				4DD16A1327C4ACA200E42682 /* Elements */,
+				4DD16A1827C4ACA200E42682 /* Outline */,
+				4DD16A2227C4ACA200E42682 /* MainFrame.h */,
+				4DD16A2327C4ACA200E42682 /* Wizards */,
+				4DD16A2627C4ACA200E42682 /* Overview */,
+				4DD16A2827C4ACA200E42682 /* Story */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4DD16A0F27C4ACA200E42682 /* StoryWriter */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A1027C4ACA200E42682 /* StoryWriter.h */,
+			);
+			path = StoryWriter;
+			sourceTree = "<group>";
+		};
+		4DD16A1127C4ACA200E42682 /* Release */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A1227C4ACA200E42682 /* Release.h */,
+			);
+			path = Release;
+			sourceTree = "<group>";
+		};
+		4DD16A1327C4ACA200E42682 /* Elements */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A1427C4ACA200E42682 /* DocumentCreator.h */,
+				4DD16A1527C4ACA200E42682 /* ElementsNotebook.h */,
+				4DD16A1627C4ACA200E42682 /* ElementCreators.h */,
+				4DD16A1727C4ACA200E42682 /* ElementShowcases.h */,
+			);
+			path = Elements;
+			sourceTree = "<group>";
+		};
+		4DD16A1827C4ACA200E42682 /* Outline */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A1927C4ACA200E42682 /* Outline.h */,
+				4DD16A1A27C4ACA200E42682 /* Corkboard */,
+				4DD16A1D27C4ACA200E42682 /* OutlineFiles.h */,
+				4DD16A1E27C4ACA200E42682 /* Timeline */,
+			);
+			path = Outline;
+			sourceTree = "<group>";
+		};
+		4DD16A1A27C4ACA200E42682 /* Corkboard */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A1B27C4ACA200E42682 /* Corkboard.h */,
+				4DD16A1C27C4ACA200E42682 /* CorkboardShapes.h */,
+			);
+			path = Corkboard;
+			sourceTree = "<group>";
+		};
+		4DD16A1E27C4ACA200E42682 /* Timeline */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A1F27C4ACA200E42682 /* TimelineDialogs.h */,
+				4DD16A2027C4ACA200E42682 /* Timeline.h */,
+				4DD16A2127C4ACA200E42682 /* TimelineShapes.h */,
+			);
+			path = Timeline;
+			sourceTree = "<group>";
+		};
+		4DD16A2327C4ACA200E42682 /* Wizards */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A2427C4ACA200E42682 /* BookWizard.h */,
+				4DD16A2527C4ACA200E42682 /* ProjectWizard.h */,
+			);
+			path = Wizards;
+			sourceTree = "<group>";
+		};
+		4DD16A2627C4ACA200E42682 /* Overview */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A2727C4ACA200E42682 /* Overview.h */,
+			);
+			path = Overview;
+			sourceTree = "<group>";
+		};
+		4DD16A2827C4ACA200E42682 /* Story */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A2927C4ACA200E42682 /* StoryNotebook.h */,
+			);
+			path = Story;
+			sourceTree = "<group>";
+		};
+		4DD16A2B27C4ACA200E42682 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A2C27C4ACA200E42682 /* RCb17708 */,
+				4DD16A2D27C4ACA200E42682 /* RCa20288 */,
+				4DD16A2E27C4ACA200E42682 /* resource.rc */,
+				4DD16A2F27C4ACA200E42682 /* resource.h */,
+				4DD16A3027C4ACA200E42682 /* RCa17708 */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		4DD16A3127C4ACA200E42682 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A3227C4ACA200E42682 /* Database */,
+				4DD16A3427C4ACA200E42682 /* MyApp.cpp */,
+				4DD16A3527C4ACA200E42682 /* Utils */,
+				4DD16A3727C4ACA200E42682 /* ProjectManaging.cpp */,
+				4DD16A3827C4ACA200E42682 /* Controls */,
+				4DD16A3D27C4ACA200E42682 /* Elements */,
+				4DD16A4027C4ACA200E42682 /* Views */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		4DD16A3227C4ACA200E42682 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A3327C4ACA200E42682 /* SQLEntry.h */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		4DD16A3527C4ACA200E42682 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A3627C4ACA200E42682 /* amUtility.cpp */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		4DD16A3827C4ACA200E42682 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A3927C4ACA200E42682 /* WordProcessor.cpp */,
+				4DD16A3A27C4ACA200E42682 /* SwitchCtrl.cpp */,
+				4DD16A3B27C4ACA200E42682 /* ImagePanel.cpp */,
+				4DD16A3C27C4ACA200E42682 /* DragList.cpp */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+		4DD16A3D27C4ACA200E42682 /* Elements */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A3E27C4ACA200E42682 /* BookElements.cpp */,
+				4DD16A3F27C4ACA200E42682 /* StoryElements.cpp */,
+			);
+			path = Elements;
+			sourceTree = "<group>";
+		};
+		4DD16A4027C4ACA200E42682 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A4127C4ACA200E42682 /* StoryWriter */,
+				4DD16A4327C4ACA200E42682 /* MainFrame.cpp */,
+				4DD16A4427C4ACA200E42682 /* Release */,
+				4DD16A4627C4ACA200E42682 /* Elements */,
+				4DD16A4B27C4ACA200E42682 /* Outline */,
+				4DD16A5527C4ACA200E42682 /* Wizards */,
+				4DD16A5827C4ACA200E42682 /* Overview */,
+				4DD16A5A27C4ACA200E42682 /* Story */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4DD16A4127C4ACA200E42682 /* StoryWriter */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A4227C4ACA200E42682 /* StoryWriter.cpp */,
+			);
+			path = StoryWriter;
+			sourceTree = "<group>";
+		};
+		4DD16A4427C4ACA200E42682 /* Release */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A4527C4ACA200E42682 /* Release.cpp */,
+			);
+			path = Release;
+			sourceTree = "<group>";
+		};
+		4DD16A4627C4ACA200E42682 /* Elements */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A4727C4ACA200E42682 /* ElementsNotebook.cpp */,
+				4DD16A4827C4ACA200E42682 /* DocumentCreator.cpp */,
+				4DD16A4927C4ACA200E42682 /* ElementCreators.cpp */,
+				4DD16A4A27C4ACA200E42682 /* ElementShowcases.cpp */,
+			);
+			path = Elements;
+			sourceTree = "<group>";
+		};
+		4DD16A4B27C4ACA200E42682 /* Outline */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A4C27C4ACA200E42682 /* Outline.cpp */,
+				4DD16A4D27C4ACA200E42682 /* OutlineFiles.cpp */,
+				4DD16A4E27C4ACA200E42682 /* Corkboard */,
+				4DD16A5127C4ACA200E42682 /* Timeline */,
+			);
+			path = Outline;
+			sourceTree = "<group>";
+		};
+		4DD16A4E27C4ACA200E42682 /* Corkboard */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A4F27C4ACA200E42682 /* Corkboard.cpp */,
+				4DD16A5027C4ACA200E42682 /* CorkboardShapes.cpp */,
+			);
+			path = Corkboard;
+			sourceTree = "<group>";
+		};
+		4DD16A5127C4ACA200E42682 /* Timeline */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A5227C4ACA200E42682 /* TimelineShapes.cpp */,
+				4DD16A5327C4ACA200E42682 /* TimelineDialogs.cpp */,
+				4DD16A5427C4ACA200E42682 /* Timeline.cpp */,
+			);
+			path = Timeline;
+			sourceTree = "<group>";
+		};
+		4DD16A5527C4ACA200E42682 /* Wizards */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A5627C4ACA200E42682 /* BookWizard.cpp */,
+				4DD16A5727C4ACA200E42682 /* ProjectWizard.cpp */,
+			);
+			path = Wizards;
+			sourceTree = "<group>";
+		};
+		4DD16A5827C4ACA200E42682 /* Overview */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A5927C4ACA200E42682 /* Overview.cpp */,
+			);
+			path = Overview;
+			sourceTree = "<group>";
+		};
+		4DD16A5A27C4ACA200E42682 /* Story */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A5B27C4ACA200E42682 /* StoryNotebook.cpp */,
+			);
+			path = Story;
+			sourceTree = "<group>";
+		};
+		4DD16A5C27C4ACA200E42682 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16C5027C5396F00E42682 /* OSX */,
+				4DD16A6727C4ACA200E42682 /* Screenshots */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		4DD16A6727C4ACA200E42682 /* Screenshots */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16A6827C4ACA200E42682 /* Characters-Showcase.png */,
+				4DD16A6927C4ACA200E42682 /* Document-Notes-Showcase.png */,
+				4DD16A6A27C4ACA200E42682 /* Locations-Showcase.png */,
+				4DD16A6B27C4ACA200E42682 /* Outline-Files-Showcase.png */,
+				4DD16A6C27C4ACA200E42682 /* Corkboard-Showcase.png */,
+				4DD16A6D27C4ACA200E42682 /* Timeline-Showcase.png */,
+				4DD16A6E27C4ACA200E42682 /* Story-Table-Showcase.png */,
+				4DD16A6F27C4ACA200E42682 /* Story-Writer-Showcase.png */,
+			);
+			path = Screenshots;
+			sourceTree = "<group>";
+		};
+		4DD16B8027C4AFF900E42682 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16C1927C5313D00E42682 /* libwxSQLite3.a */,
+				4DD16B8127C4AFF900E42682 /* libwxShapeFramework.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4DD16C5027C5396F00E42682 /* OSX */ = {
+			isa = PBXGroup;
+			children = (
+				4DBB83FE27C56AD000F4F8E9 /* AddCharacter.xpm */,
+				4DBB83FC27C56AD000F4F8E9 /* AddItem.xpm */,
+				4DBB83FD27C56AD000F4F8E9 /* AddLocation.xpm */,
+				4DBB83FB27C568A800F4F8E9 /* AddDocument.xpm */,
+				4DD16C5D27C55BCA00E42682 /* Trash.xpm */,
+				4DD16C5C27C55B6900E42682 /* File.xpm */,
+				4DD16C5B27C55B0800E42682 /* Section.xpm */,
+				4DD16C5A27C559E100E42682 /* Folder.xpm */,
+				4DD16C5927C5598F00E42682 /* Book.xpm */,
+				4DD16C5527C551EC00E42682 /* Amadeus.xpm */,
+				4DD16C5127C54B5C00E42682 /* Research.xpm */,
+			);
+			path = OSX;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4DD1694227C4A1D400E42682 /* Amadeus-Writer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4DD1694A27C4A1D400E42682 /* Build configuration list for PBXNativeTarget "Amadeus-Writer" */;
+			buildPhases = (
+				4DD1693F27C4A1D400E42682 /* Sources */,
+				4DD1694027C4A1D400E42682 /* Frameworks */,
+				4DD16C5627C5521600E42682 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Amadeus-Writer";
+			productName = "Amadeus-Writer";
+			productReference = 4DD1694327C4A1D400E42682 /* Amadeus-Writer */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4DD1693B27C4A1D400E42682 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1320;
+				TargetAttributes = {
+					4DD1694227C4A1D400E42682 = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 4DD1693E27C4A1D400E42682 /* Build configuration list for PBXProject "Amadeus-Writer" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4DD1693A27C4A1D400E42682;
+			packageReferences = (
+			);
+			productRefGroup = 4DD1694427C4A1D400E42682 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4DD1694227C4A1D400E42682 /* Amadeus-Writer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4DD1693F27C4A1D400E42682 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4DD16AB027C4ACA200E42682 /* Timeline.cpp in Sources */,
+				4DD16A9C27C4ACA200E42682 /* ProjectManaging.cpp in Sources */,
+				4DD16AA827C4ACA200E42682 /* ElementCreators.cpp in Sources */,
+				4DD16AB127C4ACA200E42682 /* BookWizard.cpp in Sources */,
+				4DD16AAF27C4ACA200E42682 /* TimelineDialogs.cpp in Sources */,
+				4DD16AA527C4ACA200E42682 /* Release.cpp in Sources */,
+				4DD16AAD27C4ACA200E42682 /* CorkboardShapes.cpp in Sources */,
+				4DD16AA127C4ACA200E42682 /* BookElements.cpp in Sources */,
+				4DD16A9B27C4ACA200E42682 /* amUtility.cpp in Sources */,
+				4DD16A9F27C4ACA200E42682 /* ImagePanel.cpp in Sources */,
+				4DD16AAA27C4ACA200E42682 /* Outline.cpp in Sources */,
+				4DD16AA727C4ACA200E42682 /* DocumentCreator.cpp in Sources */,
+				4DD16AB327C4ACA200E42682 /* Overview.cpp in Sources */,
+				4DD16AA627C4ACA200E42682 /* ElementsNotebook.cpp in Sources */,
+				4DD16AA327C4ACA200E42682 /* StoryWriter.cpp in Sources */,
+				4DD16AAE27C4ACA200E42682 /* TimelineShapes.cpp in Sources */,
+				4DD16A9D27C4ACA200E42682 /* WordProcessor.cpp in Sources */,
+				4DD16AA227C4ACA200E42682 /* StoryElements.cpp in Sources */,
+				4DD16AA427C4ACA200E42682 /* MainFrame.cpp in Sources */,
+				4DD16AA027C4ACA200E42682 /* DragList.cpp in Sources */,
+				4DD16AAB27C4ACA200E42682 /* OutlineFiles.cpp in Sources */,
+				4DD16AAC27C4ACA200E42682 /* Corkboard.cpp in Sources */,
+				4DD16A9A27C4ACA200E42682 /* MyApp.cpp in Sources */,
+				4DD16A9E27C4ACA200E42682 /* SwitchCtrl.cpp in Sources */,
+				4DD16AB427C4ACA200E42682 /* StoryNotebook.cpp in Sources */,
+				4DD16AA927C4ACA200E42682 /* ElementShowcases.cpp in Sources */,
+				4DD16AB227C4ACA200E42682 /* ProjectWizard.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4DD1694827C4A1D400E42682 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		4DD1694927C4A1D400E42682 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		4DD1694B27C4A1D400E42682 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Amadeus-Writer.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 524GJ9D5JW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
+				HEADER_SEARCH_PATHS = (
+					./sdk/wxShapeFramework/include,
+					"$(WXROOT)/include",
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./sdk/wxSQLite3/include,
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
+					"-I$(WXROOT)/include",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+				);
+				OTHER_LDFLAGS = (
+					"-L$(WXROOT)/build-cocoa-debug/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					System,
+					"-framework",
+					OpenGL,
+					"-lwx_osx_cocoau_html-3.1",
+					"-lwx_osx_cocoau_core-3.1",
+					"-lwx_baseu_xml-3.1",
+					"-lwx_baseu_net-3.1",
+					"-lwx_baseu-3.1",
+					"-lwx_osx_cocoau_aui-3.1",
+					"-lwx_osx_cocoau_richtext-3.1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./src,
+				);
+				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
+				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
+				WXTOOLKIT = cocoa;
+				WXTOOLKITUPPER = COCOA;
+				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+			};
+			name = Debug;
+		};
+		4DD1694C27C4A1D400E42682 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Amadeus-Writer.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 524GJ9D5JW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
+				HEADER_SEARCH_PATHS = (
+					./sdk/wxShapeFramework/include,
+					"$(WXROOT)/include",
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./sdk/wxSQLite3/include,
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
+					"-I$(WXROOT)/include",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+				);
+				OTHER_LDFLAGS = (
+					"-L$(WXROOT)/build-cocoa-debug/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					System,
+					"-framework",
+					OpenGL,
+					"-lwx_osx_cocoau_html-3.1",
+					"-lwx_osx_cocoau_core-3.1",
+					"-lwx_baseu_xml-3.1",
+					"-lwx_baseu_net-3.1",
+					"-lwx_baseu-3.1",
+					"-lwx_osx_cocoau_aui-3.1",
+					"-lwx_osx_cocoau_richtext-3.1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./src,
+				);
+				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
+				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
+				WXTOOLKIT = cocoa;
+				WXTOOLKITUPPER = COCOA;
+				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4DD1693E27C4A1D400E42682 /* Build configuration list for PBXProject "Amadeus-Writer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DD1694827C4A1D400E42682 /* Debug */,
+				4DD1694927C4A1D400E42682 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4DD1694A27C4A1D400E42682 /* Build configuration list for PBXNativeTarget "Amadeus-Writer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DD1694B27C4A1D400E42682 /* Debug */,
+				4DD1694C27C4A1D400E42682 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4DD1693B27C4A1D400E42682 /* Project object */;
+}
