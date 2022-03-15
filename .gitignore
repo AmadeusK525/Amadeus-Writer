@@ -347,3 +347,7 @@ Output-Debug.txt
 
 # VSCode
 .vscode/
+
+# Mac files
+xcuserdata/
+.DS_Store
