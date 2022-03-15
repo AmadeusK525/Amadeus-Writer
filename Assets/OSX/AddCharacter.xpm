@@ -1,0 +1,30 @@
+/* XPM */
+static const char *characterIcon_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 8 1 ",
+"  c None",
+". c black",
+"X c #010101",
+"o c #020202",
+"O c gray1",
+"+ c #040404",
+"@ c gray2",
+"# c #060606",
+/* pixels */
+"     ooo        ",
+"    ooooo       ",
+"   ooooooo      ",
+"   ooooooo      ",
+"   ooooooo      ",
+"    ooooo+      ",
+"    ooooo       ",
+"      +         ",
+"   ooooooo      ",
+" oooooooooo+    ",
+"ooooooooooo     ",
+"oooooooooo  oo  ",
+" ooo+oooo +oooo+",
+"          oooooo",
+"            oo  ",
+"            oo  "
+};
