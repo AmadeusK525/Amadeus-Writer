@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\wx\wxsf\ArrowBase.h" />
+    <ClInclude Include="include\wx\wxsf\AutoLayout.h" />
+    <ClInclude Include="include\wx\wxsf\BitmapShape.h" />
+    <ClInclude Include="include\wx\wxsf\CanvasHistory.h" />
+    <ClInclude Include="include\wx\wxsf\CanvasState.h" />
+    <ClInclude Include="include\wx\wxsf\CircleArrow.h" />
+    <ClInclude Include="include\wx\wxsf\CircleShape.h" />
+    <ClInclude Include="include\wx\wxsf\CommonFcn.h" />
+    <ClInclude Include="include\wx\wxsf\ControlShape.h" />
+    <ClInclude Include="include\wx\wxsf\CurveShape.h" />
+    <ClInclude Include="include\wx\wxsf\Defs.h" />
+    <ClInclude Include="include\wx\wxsf\DiagramManager.h" />
+    <ClInclude Include="include\wx\wxsf\DiamondArrow.h" />
+    <ClInclude Include="include\wx\wxsf\DiamondShape.h" />
+    <ClInclude Include="include\wx\wxsf\EditTextShape.h" />
+    <ClInclude Include="include\wx\wxsf\EllipseShape.h" />
+    <ClInclude Include="include\wx\wxsf\FixedRectShape.h" />
+    <ClInclude Include="include\wx\wxsf\FlexGridShape.h" />
+    <ClInclude Include="include\wx\wxsf\GridShape.h" />
+    <ClInclude Include="include\wx\wxsf\LineShape.h" />
+    <ClInclude Include="include\wx\wxsf\MultiSelRect.h" />
+    <ClInclude Include="include\wx\wxsf\OpenArrow.h" />
+    <ClInclude Include="include\wx\wxsf\OrthoShape.h" />
+    <ClInclude Include="include\wx\wxsf\PolygonShape.h" />
+    <ClInclude Include="include\wx\wxsf\Printout.h" />
+    <ClInclude Include="include\wx\wxsf\RectShape.h" />
+    <ClInclude Include="include\wx\wxsf\RoundOrthoShape.h" />
+    <ClInclude Include="include\wx\wxsf\RoundRectShape.h" />
+    <ClInclude Include="include\wx\wxsf\ScaledDC.h" />
+    <ClInclude Include="include\wx\wxsf\SFEvents.h" />
+    <ClInclude Include="include\wx\wxsf\ShapeBase.h" />
+    <ClInclude Include="include\wx\wxsf\ShapeCanvas.h" />
+    <ClInclude Include="include\wx\wxsf\ShapeDataObject.h" />
+    <ClInclude Include="include\wx\wxsf\ShapeDockpoint.h" />
+    <ClInclude Include="include\wx\wxsf\ShapeHandle.h" />
+    <ClInclude Include="include\wx\wxsf\SolidArrow.h" />
+    <ClInclude Include="include\wx\wxsf\TextShape.h" />
+    <ClInclude Include="include\wx\wxsf\Thumbnail.h" />
+    <ClInclude Include="include\wx\wxsf\wxShapeFramework.h" />
+    <ClInclude Include="include\wx\wxxmlserializer\Defs.h" />
+    <ClInclude Include="include\wx\wxxmlserializer\PropertyIO.h" />
+    <ClInclude Include="include\wx\wxxmlserializer\XmlSerializer.h" />
+    <ClInclude Include="src\wx_pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ArrowBase.cpp" />
+    <ClCompile Include="src\AutoLayout.cpp" />
+    <ClCompile Include="src\BitmapShape.cpp" />
+    <ClCompile Include="src\BitmapShapeXml.cpp" />
+    <ClCompile Include="src\CanvasHistory.cpp" />
+    <ClCompile Include="src\CanvasState.cpp" />
+    <ClCompile Include="src\CircleArrow.cpp" />
+    <ClCompile Include="src\CircleShape.cpp" />
+    <ClCompile Include="src\CommonFcn.cpp" />
+    <ClCompile Include="src\ControlShape.cpp" />
+    <ClCompile Include="src\CurveShape.cpp" />
+    <ClCompile Include="src\DiagramManager.cpp" />
+    <ClCompile Include="src\DiamondArrow.cpp" />
+    <ClCompile Include="src\DiamondShape.cpp" />
+    <ClCompile Include="src\EditTextShape.cpp" />
+    <ClCompile Include="src\EllipseShape.cpp" />
+    <ClCompile Include="src\FixedRectShape.cpp" />
+    <ClCompile Include="src\FlexGridShape.cpp" />
+    <ClCompile Include="src\GridShape.cpp" />
+    <ClCompile Include="src\LineShape.cpp" />
+    <ClCompile Include="src\MultiSelRect.cpp" />
+    <ClCompile Include="src\OpenArrow.cpp" />
+    <ClCompile Include="src\OrthoShape.cpp" />
+    <ClCompile Include="src\PolygonShape.cpp" />
+    <ClCompile Include="src\PolygonShapeXml.cpp" />
+    <ClCompile Include="src\Printout.cpp" />
+    <ClCompile Include="src\RectShape.cpp" />
+    <ClCompile Include="src\RoundOrthoShape.cpp" />
+    <ClCompile Include="src\RoundRectShape.cpp" />
+    <ClCompile Include="src\ScaledDC.cpp" />
+    <ClCompile Include="src\SFEvents.cpp" />
+    <ClCompile Include="src\ShapeBase.cpp" />
+    <ClCompile Include="src\ShapeBaseXml.cpp" />
+    <ClCompile Include="src\ShapeCanvas.cpp" />
+    <ClCompile Include="src\ShapeDataObject.cpp" />
+    <ClCompile Include="src\ShapeDockpoint.cpp" />
+    <ClCompile Include="src\ShapeHandle.cpp" />
+    <ClCompile Include="src\SolidArrow.cpp" />
+    <ClCompile Include="src\TextShape.cpp" />
+    <ClCompile Include="src\TextShapeXml.cpp" />
+    <ClCompile Include="src\Thumbnail.cpp" />
+    <ClCompile Include="src\wxxmlserializer\PropertyIO.cpp" />
+    <ClCompile Include="src\wxxmlserializer\XmlSerializer.cpp" />
+    <ClCompile Include="src\wx_pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\wxSF.rc" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5399D8A0-844A-754F-9685-9FE2361D8054}</ProjectGuid>
+    <RootNamespace>wxSF</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>wxShapeFramework</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>16.0.32002.118</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>./lib/vc_lib\</OutDir>
+    <IntDir>./src/.objsu/</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>./lib/vc_lib/</OutDir>
+    <IntDir>./src/.objsud/</IntDir>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>./include;./src;$(WXWIN)/include;$(WXWIN)/lib/vc_lib/mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_DISWARNINGS_MSVC;UNICODE;_UNICODE;__WX__;__WXMSW__;WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>wx_pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_DISWARNINGS_MSVC;UNICODE;_UNICODE;__WX__;__WXMSW__;WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./include;./src;$(WXWIN)/include;$(WXWIN)/lib/vc_lib/mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./include;./src;$(WXWIN)/include;$(WXWIN)/lib/vc_lib/mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_DISWARNINGS_MSVC;UNICODE;_UNICODE;__WX__;__WXMSW__;WIN32;_WINDOWS;_DEBUG_MSVC;DEBUG;_DEBUG;__WXDEBUG__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>wx_pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_DISWARNINGS_MSVC;UNICODE;_UNICODE;__WX__;__WXMSW__;WIN32;_WINDOWS;_DEBUG_MSVC;DEBUG;_DEBUG;__WXDEBUG__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./include;./src;$(WXWIN)/include;$(WXWIN)/lib/vc_lib/mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

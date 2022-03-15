@@ -1,0 +1,293 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{3e5900b0-6209-4b75-a20e-987ffa69268c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx">
+      <UniqueIdentifier>{d0459d54-c792-405e-93b5-2cb8c9bdbff3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\wxsf">
+      <UniqueIdentifier>{92fadf9a-223c-41dc-a2a8-1c0f0360dc0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\wxxmlserializer">
+      <UniqueIdentifier>{a98f3f5b-27e7-497c-b0d0-bfc799cac6b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{f3fa0f7f-6a06-4c0d-9ff0-456eae25e883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\wxxmlserializer">
+      <UniqueIdentifier>{2be7b09f-65b6-4c73-b9b3-6e0759ecf809}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\wx\wxxmlserializer\XmlSerializer.h">
+      <Filter>include\wx\wxxmlserializer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ArrowBase.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\AutoLayout.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\BitmapShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\CanvasHistory.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\CanvasState.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\CircleArrow.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\CircleShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\CommonFcn.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ControlShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\CurveShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxxmlserializer\Defs.h">
+      <Filter>include\wx\wxxmlserializer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\Defs.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\DiagramManager.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\DiamondArrow.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\DiamondShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\EditTextShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\EllipseShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\FixedRectShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\FlexGridShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\GridShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\LineShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\MultiSelRect.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\OpenArrow.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\OrthoShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\PolygonShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\Printout.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxxmlserializer\PropertyIO.h">
+      <Filter>include\wx\wxxmlserializer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\RectShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\RoundOrthoShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\RoundRectShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ScaledDC.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\SFEvents.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ShapeBase.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ShapeCanvas.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ShapeDataObject.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ShapeDockpoint.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\ShapeHandle.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\SolidArrow.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\TextShape.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\Thumbnail.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wx_pch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsf\wxShapeFramework.h">
+      <Filter>include\wx\wxsf</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ArrowBase.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AutoLayout.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BitmapShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BitmapShapeXml.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CanvasHistory.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CanvasState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CircleArrow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CircleShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CommonFcn.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ControlShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CurveShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DiagramManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DiamondArrow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DiamondShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditTextShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EllipseShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FixedRectShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FlexGridShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GridShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LineShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MultiSelRect.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenArrow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OrthoShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PolygonShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PolygonShapeXml.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Printout.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wxxmlserializer\PropertyIO.cpp">
+      <Filter>src\wxxmlserializer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RectShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RoundOrthoShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RoundRectShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScaledDC.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SFEvents.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeBase.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeBaseXml.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeCanvas.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeDataObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeDockpoint.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeHandle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SolidArrow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextShape.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextShapeXml.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Thumbnail.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wx_pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wxxmlserializer\XmlSerializer.cpp">
+      <Filter>src\wxxmlserializer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\wxSF.rc">
+      <Filter>src</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

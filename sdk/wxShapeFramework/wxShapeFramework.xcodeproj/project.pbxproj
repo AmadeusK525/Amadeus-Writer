@@ -1,0 +1,800 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4DD16B2927C4AF3C00E42682 /* FixedRectShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AC727C4AF3C00E42682 /* FixedRectShape.cpp */; };
+		4DD16B2A27C4AF3C00E42682 /* TextShapeXml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AC827C4AF3C00E42682 /* TextShapeXml.cpp */; };
+		4DD16B2B27C4AF3C00E42682 /* LineShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ACA27C4AF3C00E42682 /* LineShape.cpp */; };
+		4DD16B2C27C4AF3C00E42682 /* ShapeCanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ACB27C4AF3C00E42682 /* ShapeCanvas.cpp */; };
+		4DD16B2D27C4AF3C00E42682 /* MultiSelRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ACC27C4AF3C00E42682 /* MultiSelRect.cpp */; };
+		4DD16B2E27C4AF3C00E42682 /* FlexGridShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ACD27C4AF3C00E42682 /* FlexGridShape.cpp */; };
+		4DD16B2F27C4AF3C00E42682 /* ScaledDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD027C4AF3C00E42682 /* ScaledDC.cpp */; };
+		4DD16B3027C4AF3C00E42682 /* EllipseShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD127C4AF3C00E42682 /* EllipseShape.cpp */; };
+		4DD16B3127C4AF3C00E42682 /* wx_pch.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16AD227C4AF3C00E42682 /* wx_pch.h */; };
+		4DD16B3227C4AF3C00E42682 /* OrthoShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD327C4AF3C00E42682 /* OrthoShape.cpp */; };
+		4DD16B3327C4AF3C00E42682 /* OpenArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD427C4AF3C00E42682 /* OpenArrow.cpp */; };
+		4DD16B3427C4AF3C00E42682 /* BitmapShapeXml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD527C4AF3C00E42682 /* BitmapShapeXml.cpp */; };
+		4DD16B3527C4AF3C00E42682 /* ControlShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD627C4AF3C00E42682 /* ControlShape.cpp */; };
+		4DD16B3627C4AF3C00E42682 /* Printout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD727C4AF3C00E42682 /* Printout.cpp */; };
+		4DD16B3727C4AF3C00E42682 /* DiamondArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD827C4AF3C00E42682 /* DiamondArrow.cpp */; };
+		4DD16B3827C4AF3C00E42682 /* DiamondShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AD927C4AF3C00E42682 /* DiamondShape.cpp */; };
+		4DD16B3927C4AF3C00E42682 /* CommonFcn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ADA27C4AF3C00E42682 /* CommonFcn.cpp */; };
+		4DD16B3A27C4AF3C00E42682 /* RoundOrthoShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ADB27C4AF3C00E42682 /* RoundOrthoShape.cpp */; };
+		4DD16B3B27C4AF3C00E42682 /* ArrowBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ADC27C4AF3C00E42682 /* ArrowBase.cpp */; };
+		4DD16B3C27C4AF3C00E42682 /* wx_pch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ADD27C4AF3C00E42682 /* wx_pch.cpp */; };
+		4DD16B3D27C4AF3C00E42682 /* Thumbnail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ADE27C4AF3C00E42682 /* Thumbnail.cpp */; };
+		4DD16B3E27C4AF3C00E42682 /* PolygonShapeXml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16ADF27C4AF3C00E42682 /* PolygonShapeXml.cpp */; };
+		4DD16B3F27C4AF3C00E42682 /* CurveShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AE027C4AF3C00E42682 /* CurveShape.cpp */; };
+		4DD16B4027C4AF3C00E42682 /* TextShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AE227C4AF3C00E42682 /* TextShape.cpp */; };
+		4DD16B4127C4AF3C00E42682 /* DiagramManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AE427C4AF3C00E42682 /* DiagramManager.cpp */; };
+		4DD16B4227C4AF3C00E42682 /* CircleShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AE527C4AF3C00E42682 /* CircleShape.cpp */; };
+		4DD16B4327C4AF3C00E42682 /* GridShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AE627C4AF3C00E42682 /* GridShape.cpp */; };
+		4DD16B4427C4AF3C00E42682 /* CircleArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AE727C4AF3C00E42682 /* CircleArrow.cpp */; };
+		4DD16B4527C4AF3C00E42682 /* XmlSerializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AE927C4AF3C00E42682 /* XmlSerializer.cpp */; };
+		4DD16B4627C4AF3C00E42682 /* PropertyIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AEA27C4AF3C00E42682 /* PropertyIO.cpp */; };
+		4DD16B4727C4AF3C00E42682 /* PolygonShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AEC27C4AF3C00E42682 /* PolygonShape.cpp */; };
+		4DD16B4827C4AF3C00E42682 /* RoundRectShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AED27C4AF3C00E42682 /* RoundRectShape.cpp */; };
+		4DD16B4927C4AF3C00E42682 /* SolidArrow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AEE27C4AF3C00E42682 /* SolidArrow.cpp */; };
+		4DD16B4A27C4AF3C00E42682 /* AutoLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AEF27C4AF3C00E42682 /* AutoLayout.cpp */; };
+		4DD16B4B27C4AF3C00E42682 /* ShapeHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF027C4AF3C00E42682 /* ShapeHandle.cpp */; };
+		4DD16B4C27C4AF3C00E42682 /* EditTextShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF127C4AF3C00E42682 /* EditTextShape.cpp */; };
+		4DD16B4D27C4AF3C00E42682 /* ShapeDockpoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF227C4AF3C00E42682 /* ShapeDockpoint.cpp */; };
+		4DD16B4E27C4AF3C00E42682 /* CanvasState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF327C4AF3C00E42682 /* CanvasState.cpp */; };
+		4DD16B4F27C4AF3C00E42682 /* CanvasHistory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF427C4AF3C00E42682 /* CanvasHistory.cpp */; };
+		4DD16B5027C4AF3C00E42682 /* BitmapShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF527C4AF3C00E42682 /* BitmapShape.cpp */; };
+		4DD16B5127C4AF3C00E42682 /* ShapeBaseXml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF627C4AF3C00E42682 /* ShapeBaseXml.cpp */; };
+		4DD16B5227C4AF3C00E42682 /* RectShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF727C4AF3C00E42682 /* RectShape.cpp */; };
+		4DD16B5327C4AF3C00E42682 /* ShapeDataObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF827C4AF3C00E42682 /* ShapeDataObject.cpp */; };
+		4DD16B5427C4AF3C00E42682 /* ShapeBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AF927C4AF3C00E42682 /* ShapeBase.cpp */; };
+		4DD16B5527C4AF3C00E42682 /* SFEvents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16AFA27C4AF3C00E42682 /* SFEvents.cpp */; };
+		4DD16B5627C4AF3C00E42682 /* CurveShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16AFE27C4AF3C00E42682 /* CurveShape.h */; };
+		4DD16B5727C4AF3C00E42682 /* RoundOrthoShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16AFF27C4AF3C00E42682 /* RoundOrthoShape.h */; };
+		4DD16B5827C4AF3C00E42682 /* DiagramManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0027C4AF3C00E42682 /* DiagramManager.h */; };
+		4DD16B5927C4AF3C00E42682 /* CanvasHistory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0127C4AF3C00E42682 /* CanvasHistory.h */; };
+		4DD16B5A27C4AF3C00E42682 /* SolidArrow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0227C4AF3C00E42682 /* SolidArrow.h */; };
+		4DD16B5B27C4AF3C00E42682 /* ShapeBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0327C4AF3C00E42682 /* ShapeBase.h */; };
+		4DD16B5C27C4AF3C00E42682 /* Defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0427C4AF3C00E42682 /* Defs.h */; };
+		4DD16B5D27C4AF3C00E42682 /* RectShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0527C4AF3C00E42682 /* RectShape.h */; };
+		4DD16B5E27C4AF3C00E42682 /* CanvasState.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0627C4AF3C00E42682 /* CanvasState.h */; };
+		4DD16B5F27C4AF3C00E42682 /* CommonFcn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0727C4AF3C00E42682 /* CommonFcn.h */; };
+		4DD16B6027C4AF3C00E42682 /* ShapeHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0827C4AF3C00E42682 /* ShapeHandle.h */; };
+		4DD16B6127C4AF3C00E42682 /* RoundRectShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0927C4AF3C00E42682 /* RoundRectShape.h */; };
+		4DD16B6227C4AF3C00E42682 /* EllipseShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0A27C4AF3C00E42682 /* EllipseShape.h */; };
+		4DD16B6327C4AF3C00E42682 /* ShapeCanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0B27C4AF3C00E42682 /* ShapeCanvas.h */; };
+		4DD16B6427C4AF3C00E42682 /* ShapeDockpoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0C27C4AF3C00E42682 /* ShapeDockpoint.h */; };
+		4DD16B6527C4AF3C00E42682 /* LineShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0D27C4AF3C00E42682 /* LineShape.h */; };
+		4DD16B6627C4AF3C00E42682 /* Thumbnail.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0E27C4AF3C00E42682 /* Thumbnail.h */; };
+		4DD16B6727C4AF3C00E42682 /* CircleArrow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B0F27C4AF3C00E42682 /* CircleArrow.h */; };
+		4DD16B6827C4AF3C00E42682 /* ArrowBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1027C4AF3C00E42682 /* ArrowBase.h */; };
+		4DD16B6927C4AF3C00E42682 /* DiamondShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1127C4AF3C00E42682 /* DiamondShape.h */; };
+		4DD16B6A27C4AF3C00E42682 /* wxShapeFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1227C4AF3C00E42682 /* wxShapeFramework.h */; };
+		4DD16B6B27C4AF3C00E42682 /* TextShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1327C4AF3C00E42682 /* TextShape.h */; };
+		4DD16B6C27C4AF3C00E42682 /* FlexGridShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1427C4AF3C00E42682 /* FlexGridShape.h */; };
+		4DD16B6D27C4AF3C00E42682 /* OrthoShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1527C4AF3C00E42682 /* OrthoShape.h */; };
+		4DD16B6E27C4AF3C00E42682 /* GridShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1627C4AF3C00E42682 /* GridShape.h */; };
+		4DD16B6F27C4AF3C00E42682 /* AutoLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1727C4AF3C00E42682 /* AutoLayout.h */; };
+		4DD16B7027C4AF3C00E42682 /* EditTextShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1827C4AF3C00E42682 /* EditTextShape.h */; };
+		4DD16B7127C4AF3C00E42682 /* CircleShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1927C4AF3C00E42682 /* CircleShape.h */; };
+		4DD16B7227C4AF3C00E42682 /* ScaledDC.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1A27C4AF3C00E42682 /* ScaledDC.h */; };
+		4DD16B7327C4AF3C00E42682 /* MultiSelRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1B27C4AF3C00E42682 /* MultiSelRect.h */; };
+		4DD16B7427C4AF3C00E42682 /* FixedRectShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1C27C4AF3C00E42682 /* FixedRectShape.h */; };
+		4DD16B7527C4AF3C00E42682 /* ShapeDataObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1D27C4AF3C00E42682 /* ShapeDataObject.h */; };
+		4DD16B7627C4AF3C00E42682 /* Printout.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1E27C4AF3C00E42682 /* Printout.h */; };
+		4DD16B7727C4AF3C00E42682 /* BitmapShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B1F27C4AF3C00E42682 /* BitmapShape.h */; };
+		4DD16B7827C4AF3C00E42682 /* SFEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2027C4AF3C00E42682 /* SFEvents.h */; };
+		4DD16B7927C4AF3C00E42682 /* ControlShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2127C4AF3C00E42682 /* ControlShape.h */; };
+		4DD16B7A27C4AF3C00E42682 /* PolygonShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2227C4AF3C00E42682 /* PolygonShape.h */; };
+		4DD16B7B27C4AF3C00E42682 /* DiamondArrow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2327C4AF3C00E42682 /* DiamondArrow.h */; };
+		4DD16B7C27C4AF3C00E42682 /* OpenArrow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2427C4AF3C00E42682 /* OpenArrow.h */; };
+		4DD16B7D27C4AF3C00E42682 /* Defs.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2627C4AF3C00E42682 /* Defs.h */; };
+		4DD16B7E27C4AF3C00E42682 /* XmlSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2727C4AF3C00E42682 /* XmlSerializer.h */; };
+		4DD16B7F27C4AF3C00E42682 /* PropertyIO.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16B2827C4AF3C00E42682 /* PropertyIO.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4DD16ABF27C4ADF100E42682 /* libwxShapeFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwxShapeFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4DD16AC727C4AF3C00E42682 /* FixedRectShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedRectShape.cpp; sourceTree = "<group>"; };
+		4DD16AC827C4AF3C00E42682 /* TextShapeXml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextShapeXml.cpp; sourceTree = "<group>"; };
+		4DD16AC927C4AF3C00E42682 /* wxSF.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wxSF.rc; sourceTree = "<group>"; };
+		4DD16ACA27C4AF3C00E42682 /* LineShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineShape.cpp; sourceTree = "<group>"; };
+		4DD16ACB27C4AF3C00E42682 /* ShapeCanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeCanvas.cpp; sourceTree = "<group>"; };
+		4DD16ACC27C4AF3C00E42682 /* MultiSelRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiSelRect.cpp; sourceTree = "<group>"; };
+		4DD16ACD27C4AF3C00E42682 /* FlexGridShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlexGridShape.cpp; sourceTree = "<group>"; };
+		4DD16ACF27C4AF3C00E42682 /* NoSource.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NoSource.xpm; sourceTree = "<group>"; };
+		4DD16AD027C4AF3C00E42682 /* ScaledDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScaledDC.cpp; sourceTree = "<group>"; };
+		4DD16AD127C4AF3C00E42682 /* EllipseShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EllipseShape.cpp; sourceTree = "<group>"; };
+		4DD16AD227C4AF3C00E42682 /* wx_pch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wx_pch.h; sourceTree = "<group>"; };
+		4DD16AD327C4AF3C00E42682 /* OrthoShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OrthoShape.cpp; sourceTree = "<group>"; };
+		4DD16AD427C4AF3C00E42682 /* OpenArrow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenArrow.cpp; sourceTree = "<group>"; };
+		4DD16AD527C4AF3C00E42682 /* BitmapShapeXml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BitmapShapeXml.cpp; sourceTree = "<group>"; };
+		4DD16AD627C4AF3C00E42682 /* ControlShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlShape.cpp; sourceTree = "<group>"; };
+		4DD16AD727C4AF3C00E42682 /* Printout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Printout.cpp; sourceTree = "<group>"; };
+		4DD16AD827C4AF3C00E42682 /* DiamondArrow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiamondArrow.cpp; sourceTree = "<group>"; };
+		4DD16AD927C4AF3C00E42682 /* DiamondShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiamondShape.cpp; sourceTree = "<group>"; };
+		4DD16ADA27C4AF3C00E42682 /* CommonFcn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommonFcn.cpp; sourceTree = "<group>"; };
+		4DD16ADB27C4AF3C00E42682 /* RoundOrthoShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RoundOrthoShape.cpp; sourceTree = "<group>"; };
+		4DD16ADC27C4AF3C00E42682 /* ArrowBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrowBase.cpp; sourceTree = "<group>"; };
+		4DD16ADD27C4AF3C00E42682 /* wx_pch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wx_pch.cpp; sourceTree = "<group>"; };
+		4DD16ADE27C4AF3C00E42682 /* Thumbnail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Thumbnail.cpp; sourceTree = "<group>"; };
+		4DD16ADF27C4AF3C00E42682 /* PolygonShapeXml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonShapeXml.cpp; sourceTree = "<group>"; };
+		4DD16AE027C4AF3C00E42682 /* CurveShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurveShape.cpp; sourceTree = "<group>"; };
+		4DD16AE127C4AF3C00E42682 /* GUI.fbp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = GUI.fbp; sourceTree = "<group>"; };
+		4DD16AE227C4AF3C00E42682 /* TextShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextShape.cpp; sourceTree = "<group>"; };
+		4DD16AE327C4AF3C00E42682 /* wxSF.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wxSF.txt; sourceTree = "<group>"; };
+		4DD16AE427C4AF3C00E42682 /* DiagramManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiagramManager.cpp; sourceTree = "<group>"; };
+		4DD16AE527C4AF3C00E42682 /* CircleShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CircleShape.cpp; sourceTree = "<group>"; };
+		4DD16AE627C4AF3C00E42682 /* GridShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GridShape.cpp; sourceTree = "<group>"; };
+		4DD16AE727C4AF3C00E42682 /* CircleArrow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CircleArrow.cpp; sourceTree = "<group>"; };
+		4DD16AE927C4AF3C00E42682 /* XmlSerializer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XmlSerializer.cpp; sourceTree = "<group>"; };
+		4DD16AEA27C4AF3C00E42682 /* PropertyIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyIO.cpp; sourceTree = "<group>"; };
+		4DD16AEB27C4AF3C00E42682 /* premake.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = premake.lua; sourceTree = "<group>"; };
+		4DD16AEC27C4AF3C00E42682 /* PolygonShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonShape.cpp; sourceTree = "<group>"; };
+		4DD16AED27C4AF3C00E42682 /* RoundRectShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RoundRectShape.cpp; sourceTree = "<group>"; };
+		4DD16AEE27C4AF3C00E42682 /* SolidArrow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SolidArrow.cpp; sourceTree = "<group>"; };
+		4DD16AEF27C4AF3C00E42682 /* AutoLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutoLayout.cpp; sourceTree = "<group>"; };
+		4DD16AF027C4AF3C00E42682 /* ShapeHandle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeHandle.cpp; sourceTree = "<group>"; };
+		4DD16AF127C4AF3C00E42682 /* EditTextShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditTextShape.cpp; sourceTree = "<group>"; };
+		4DD16AF227C4AF3C00E42682 /* ShapeDockpoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeDockpoint.cpp; sourceTree = "<group>"; };
+		4DD16AF327C4AF3C00E42682 /* CanvasState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CanvasState.cpp; sourceTree = "<group>"; };
+		4DD16AF427C4AF3C00E42682 /* CanvasHistory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CanvasHistory.cpp; sourceTree = "<group>"; };
+		4DD16AF527C4AF3C00E42682 /* BitmapShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BitmapShape.cpp; sourceTree = "<group>"; };
+		4DD16AF627C4AF3C00E42682 /* ShapeBaseXml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeBaseXml.cpp; sourceTree = "<group>"; };
+		4DD16AF727C4AF3C00E42682 /* RectShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectShape.cpp; sourceTree = "<group>"; };
+		4DD16AF827C4AF3C00E42682 /* ShapeDataObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeDataObject.cpp; sourceTree = "<group>"; };
+		4DD16AF927C4AF3C00E42682 /* ShapeBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeBase.cpp; sourceTree = "<group>"; };
+		4DD16AFA27C4AF3C00E42682 /* SFEvents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SFEvents.cpp; sourceTree = "<group>"; };
+		4DD16AFE27C4AF3C00E42682 /* CurveShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveShape.h; sourceTree = "<group>"; };
+		4DD16AFF27C4AF3C00E42682 /* RoundOrthoShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundOrthoShape.h; sourceTree = "<group>"; };
+		4DD16B0027C4AF3C00E42682 /* DiagramManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagramManager.h; sourceTree = "<group>"; };
+		4DD16B0127C4AF3C00E42682 /* CanvasHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CanvasHistory.h; sourceTree = "<group>"; };
+		4DD16B0227C4AF3C00E42682 /* SolidArrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SolidArrow.h; sourceTree = "<group>"; };
+		4DD16B0327C4AF3C00E42682 /* ShapeBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeBase.h; sourceTree = "<group>"; };
+		4DD16B0427C4AF3C00E42682 /* Defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defs.h; sourceTree = "<group>"; };
+		4DD16B0527C4AF3C00E42682 /* RectShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RectShape.h; sourceTree = "<group>"; };
+		4DD16B0627C4AF3C00E42682 /* CanvasState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CanvasState.h; sourceTree = "<group>"; };
+		4DD16B0727C4AF3C00E42682 /* CommonFcn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonFcn.h; sourceTree = "<group>"; };
+		4DD16B0827C4AF3C00E42682 /* ShapeHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeHandle.h; sourceTree = "<group>"; };
+		4DD16B0927C4AF3C00E42682 /* RoundRectShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundRectShape.h; sourceTree = "<group>"; };
+		4DD16B0A27C4AF3C00E42682 /* EllipseShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EllipseShape.h; sourceTree = "<group>"; };
+		4DD16B0B27C4AF3C00E42682 /* ShapeCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeCanvas.h; sourceTree = "<group>"; };
+		4DD16B0C27C4AF3C00E42682 /* ShapeDockpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeDockpoint.h; sourceTree = "<group>"; };
+		4DD16B0D27C4AF3C00E42682 /* LineShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineShape.h; sourceTree = "<group>"; };
+		4DD16B0E27C4AF3C00E42682 /* Thumbnail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thumbnail.h; sourceTree = "<group>"; };
+		4DD16B0F27C4AF3C00E42682 /* CircleArrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleArrow.h; sourceTree = "<group>"; };
+		4DD16B1027C4AF3C00E42682 /* ArrowBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrowBase.h; sourceTree = "<group>"; };
+		4DD16B1127C4AF3C00E42682 /* DiamondShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiamondShape.h; sourceTree = "<group>"; };
+		4DD16B1227C4AF3C00E42682 /* wxShapeFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxShapeFramework.h; sourceTree = "<group>"; };
+		4DD16B1327C4AF3C00E42682 /* TextShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextShape.h; sourceTree = "<group>"; };
+		4DD16B1427C4AF3C00E42682 /* FlexGridShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlexGridShape.h; sourceTree = "<group>"; };
+		4DD16B1527C4AF3C00E42682 /* OrthoShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrthoShape.h; sourceTree = "<group>"; };
+		4DD16B1627C4AF3C00E42682 /* GridShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridShape.h; sourceTree = "<group>"; };
+		4DD16B1727C4AF3C00E42682 /* AutoLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoLayout.h; sourceTree = "<group>"; };
+		4DD16B1827C4AF3C00E42682 /* EditTextShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditTextShape.h; sourceTree = "<group>"; };
+		4DD16B1927C4AF3C00E42682 /* CircleShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleShape.h; sourceTree = "<group>"; };
+		4DD16B1A27C4AF3C00E42682 /* ScaledDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScaledDC.h; sourceTree = "<group>"; };
+		4DD16B1B27C4AF3C00E42682 /* MultiSelRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiSelRect.h; sourceTree = "<group>"; };
+		4DD16B1C27C4AF3C00E42682 /* FixedRectShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedRectShape.h; sourceTree = "<group>"; };
+		4DD16B1D27C4AF3C00E42682 /* ShapeDataObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeDataObject.h; sourceTree = "<group>"; };
+		4DD16B1E27C4AF3C00E42682 /* Printout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Printout.h; sourceTree = "<group>"; };
+		4DD16B1F27C4AF3C00E42682 /* BitmapShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitmapShape.h; sourceTree = "<group>"; };
+		4DD16B2027C4AF3C00E42682 /* SFEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFEvents.h; sourceTree = "<group>"; };
+		4DD16B2127C4AF3C00E42682 /* ControlShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlShape.h; sourceTree = "<group>"; };
+		4DD16B2227C4AF3C00E42682 /* PolygonShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolygonShape.h; sourceTree = "<group>"; };
+		4DD16B2327C4AF3C00E42682 /* DiamondArrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiamondArrow.h; sourceTree = "<group>"; };
+		4DD16B2427C4AF3C00E42682 /* OpenArrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenArrow.h; sourceTree = "<group>"; };
+		4DD16B2627C4AF3C00E42682 /* Defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defs.h; sourceTree = "<group>"; };
+		4DD16B2727C4AF3C00E42682 /* XmlSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlSerializer.h; sourceTree = "<group>"; };
+		4DD16B2827C4AF3C00E42682 /* PropertyIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyIO.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4DD16ABD27C4ADF100E42682 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4DD16AB627C4ADF100E42682 = {
+			isa = PBXGroup;
+			children = (
+				4DD16AFB27C4AF3C00E42682 /* include */,
+				4DD16AC627C4AF3C00E42682 /* src */,
+				4DD16AC027C4ADF100E42682 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4DD16AC027C4ADF100E42682 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16ABF27C4ADF100E42682 /* libwxShapeFramework.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4DD16AC627C4AF3C00E42682 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16ADC27C4AF3C00E42682 /* ArrowBase.cpp */,
+				4DD16AEF27C4AF3C00E42682 /* AutoLayout.cpp */,
+				4DD16AF527C4AF3C00E42682 /* BitmapShape.cpp */,
+				4DD16AD527C4AF3C00E42682 /* BitmapShapeXml.cpp */,
+				4DD16AF427C4AF3C00E42682 /* CanvasHistory.cpp */,
+				4DD16AF327C4AF3C00E42682 /* CanvasState.cpp */,
+				4DD16AE727C4AF3C00E42682 /* CircleArrow.cpp */,
+				4DD16AE527C4AF3C00E42682 /* CircleShape.cpp */,
+				4DD16ADA27C4AF3C00E42682 /* CommonFcn.cpp */,
+				4DD16AD627C4AF3C00E42682 /* ControlShape.cpp */,
+				4DD16AE027C4AF3C00E42682 /* CurveShape.cpp */,
+				4DD16AE427C4AF3C00E42682 /* DiagramManager.cpp */,
+				4DD16AD827C4AF3C00E42682 /* DiamondArrow.cpp */,
+				4DD16AD927C4AF3C00E42682 /* DiamondShape.cpp */,
+				4DD16AF127C4AF3C00E42682 /* EditTextShape.cpp */,
+				4DD16AD127C4AF3C00E42682 /* EllipseShape.cpp */,
+				4DD16AC727C4AF3C00E42682 /* FixedRectShape.cpp */,
+				4DD16ACD27C4AF3C00E42682 /* FlexGridShape.cpp */,
+				4DD16AE627C4AF3C00E42682 /* GridShape.cpp */,
+				4DD16AE127C4AF3C00E42682 /* GUI.fbp */,
+				4DD16ACA27C4AF3C00E42682 /* LineShape.cpp */,
+				4DD16ACC27C4AF3C00E42682 /* MultiSelRect.cpp */,
+				4DD16AD427C4AF3C00E42682 /* OpenArrow.cpp */,
+				4DD16AD327C4AF3C00E42682 /* OrthoShape.cpp */,
+				4DD16AEC27C4AF3C00E42682 /* PolygonShape.cpp */,
+				4DD16ADF27C4AF3C00E42682 /* PolygonShapeXml.cpp */,
+				4DD16AEB27C4AF3C00E42682 /* premake.lua */,
+				4DD16AD727C4AF3C00E42682 /* Printout.cpp */,
+				4DD16AF727C4AF3C00E42682 /* RectShape.cpp */,
+				4DD16ACE27C4AF3C00E42682 /* res */,
+				4DD16ADB27C4AF3C00E42682 /* RoundOrthoShape.cpp */,
+				4DD16AED27C4AF3C00E42682 /* RoundRectShape.cpp */,
+				4DD16AD027C4AF3C00E42682 /* ScaledDC.cpp */,
+				4DD16AFA27C4AF3C00E42682 /* SFEvents.cpp */,
+				4DD16AF927C4AF3C00E42682 /* ShapeBase.cpp */,
+				4DD16AF627C4AF3C00E42682 /* ShapeBaseXml.cpp */,
+				4DD16ACB27C4AF3C00E42682 /* ShapeCanvas.cpp */,
+				4DD16AF827C4AF3C00E42682 /* ShapeDataObject.cpp */,
+				4DD16AF227C4AF3C00E42682 /* ShapeDockpoint.cpp */,
+				4DD16AF027C4AF3C00E42682 /* ShapeHandle.cpp */,
+				4DD16AEE27C4AF3C00E42682 /* SolidArrow.cpp */,
+				4DD16AE227C4AF3C00E42682 /* TextShape.cpp */,
+				4DD16AC827C4AF3C00E42682 /* TextShapeXml.cpp */,
+				4DD16ADE27C4AF3C00E42682 /* Thumbnail.cpp */,
+				4DD16ADD27C4AF3C00E42682 /* wx_pch.cpp */,
+				4DD16AD227C4AF3C00E42682 /* wx_pch.h */,
+				4DD16AC927C4AF3C00E42682 /* wxSF.rc */,
+				4DD16AE327C4AF3C00E42682 /* wxSF.txt */,
+				4DD16AE827C4AF3C00E42682 /* wxxmlserializer */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		4DD16ACE27C4AF3C00E42682 /* res */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16ACF27C4AF3C00E42682 /* NoSource.xpm */,
+			);
+			path = res;
+			sourceTree = "<group>";
+		};
+		4DD16AE827C4AF3C00E42682 /* wxxmlserializer */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16AE927C4AF3C00E42682 /* XmlSerializer.cpp */,
+				4DD16AEA27C4AF3C00E42682 /* PropertyIO.cpp */,
+			);
+			path = wxxmlserializer;
+			sourceTree = "<group>";
+		};
+		4DD16AFB27C4AF3C00E42682 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16AFC27C4AF3C00E42682 /* wx */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		4DD16AFC27C4AF3C00E42682 /* wx */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16AFD27C4AF3C00E42682 /* wxsf */,
+				4DD16B2527C4AF3C00E42682 /* wxxmlserializer */,
+			);
+			path = wx;
+			sourceTree = "<group>";
+		};
+		4DD16AFD27C4AF3C00E42682 /* wxsf */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16B1027C4AF3C00E42682 /* ArrowBase.h */,
+				4DD16B1727C4AF3C00E42682 /* AutoLayout.h */,
+				4DD16B1F27C4AF3C00E42682 /* BitmapShape.h */,
+				4DD16B0127C4AF3C00E42682 /* CanvasHistory.h */,
+				4DD16B0627C4AF3C00E42682 /* CanvasState.h */,
+				4DD16B0F27C4AF3C00E42682 /* CircleArrow.h */,
+				4DD16B1927C4AF3C00E42682 /* CircleShape.h */,
+				4DD16B0727C4AF3C00E42682 /* CommonFcn.h */,
+				4DD16B2127C4AF3C00E42682 /* ControlShape.h */,
+				4DD16AFE27C4AF3C00E42682 /* CurveShape.h */,
+				4DD16B0427C4AF3C00E42682 /* Defs.h */,
+				4DD16B0027C4AF3C00E42682 /* DiagramManager.h */,
+				4DD16B2327C4AF3C00E42682 /* DiamondArrow.h */,
+				4DD16B1127C4AF3C00E42682 /* DiamondShape.h */,
+				4DD16B1827C4AF3C00E42682 /* EditTextShape.h */,
+				4DD16B0A27C4AF3C00E42682 /* EllipseShape.h */,
+				4DD16B1C27C4AF3C00E42682 /* FixedRectShape.h */,
+				4DD16B1427C4AF3C00E42682 /* FlexGridShape.h */,
+				4DD16B1627C4AF3C00E42682 /* GridShape.h */,
+				4DD16B0D27C4AF3C00E42682 /* LineShape.h */,
+				4DD16B1B27C4AF3C00E42682 /* MultiSelRect.h */,
+				4DD16B2427C4AF3C00E42682 /* OpenArrow.h */,
+				4DD16B1527C4AF3C00E42682 /* OrthoShape.h */,
+				4DD16B2227C4AF3C00E42682 /* PolygonShape.h */,
+				4DD16B1E27C4AF3C00E42682 /* Printout.h */,
+				4DD16B0527C4AF3C00E42682 /* RectShape.h */,
+				4DD16AFF27C4AF3C00E42682 /* RoundOrthoShape.h */,
+				4DD16B0927C4AF3C00E42682 /* RoundRectShape.h */,
+				4DD16B1A27C4AF3C00E42682 /* ScaledDC.h */,
+				4DD16B2027C4AF3C00E42682 /* SFEvents.h */,
+				4DD16B0327C4AF3C00E42682 /* ShapeBase.h */,
+				4DD16B0B27C4AF3C00E42682 /* ShapeCanvas.h */,
+				4DD16B1D27C4AF3C00E42682 /* ShapeDataObject.h */,
+				4DD16B0C27C4AF3C00E42682 /* ShapeDockpoint.h */,
+				4DD16B0827C4AF3C00E42682 /* ShapeHandle.h */,
+				4DD16B0227C4AF3C00E42682 /* SolidArrow.h */,
+				4DD16B1327C4AF3C00E42682 /* TextShape.h */,
+				4DD16B0E27C4AF3C00E42682 /* Thumbnail.h */,
+				4DD16B1227C4AF3C00E42682 /* wxShapeFramework.h */,
+			);
+			path = wxsf;
+			sourceTree = "<group>";
+		};
+		4DD16B2527C4AF3C00E42682 /* wxxmlserializer */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16B2627C4AF3C00E42682 /* Defs.h */,
+				4DD16B2727C4AF3C00E42682 /* XmlSerializer.h */,
+				4DD16B2827C4AF3C00E42682 /* PropertyIO.h */,
+			);
+			path = wxxmlserializer;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4DD16ABB27C4ADF100E42682 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4DD16B5A27C4AF3C00E42682 /* SolidArrow.h in Headers */,
+				4DD16B5727C4AF3C00E42682 /* RoundOrthoShape.h in Headers */,
+				4DD16B6E27C4AF3C00E42682 /* GridShape.h in Headers */,
+				4DD16B6427C4AF3C00E42682 /* ShapeDockpoint.h in Headers */,
+				4DD16B6827C4AF3C00E42682 /* ArrowBase.h in Headers */,
+				4DD16B6F27C4AF3C00E42682 /* AutoLayout.h in Headers */,
+				4DD16B5927C4AF3C00E42682 /* CanvasHistory.h in Headers */,
+				4DD16B7127C4AF3C00E42682 /* CircleShape.h in Headers */,
+				4DD16B6727C4AF3C00E42682 /* CircleArrow.h in Headers */,
+				4DD16B5B27C4AF3C00E42682 /* ShapeBase.h in Headers */,
+				4DD16B7327C4AF3C00E42682 /* MultiSelRect.h in Headers */,
+				4DD16B7F27C4AF3C00E42682 /* PropertyIO.h in Headers */,
+				4DD16B7927C4AF3C00E42682 /* ControlShape.h in Headers */,
+				4DD16B5E27C4AF3C00E42682 /* CanvasState.h in Headers */,
+				4DD16B5F27C4AF3C00E42682 /* CommonFcn.h in Headers */,
+				4DD16B5627C4AF3C00E42682 /* CurveShape.h in Headers */,
+				4DD16B6227C4AF3C00E42682 /* EllipseShape.h in Headers */,
+				4DD16B6C27C4AF3C00E42682 /* FlexGridShape.h in Headers */,
+				4DD16B6327C4AF3C00E42682 /* ShapeCanvas.h in Headers */,
+				4DD16B6D27C4AF3C00E42682 /* OrthoShape.h in Headers */,
+				4DD16B6127C4AF3C00E42682 /* RoundRectShape.h in Headers */,
+				4DD16B7627C4AF3C00E42682 /* Printout.h in Headers */,
+				4DD16B6627C4AF3C00E42682 /* Thumbnail.h in Headers */,
+				4DD16B7E27C4AF3C00E42682 /* XmlSerializer.h in Headers */,
+				4DD16B6B27C4AF3C00E42682 /* TextShape.h in Headers */,
+				4DD16B7427C4AF3C00E42682 /* FixedRectShape.h in Headers */,
+				4DD16B7D27C4AF3C00E42682 /* Defs.h in Headers */,
+				4DD16B5827C4AF3C00E42682 /* DiagramManager.h in Headers */,
+				4DD16B7227C4AF3C00E42682 /* ScaledDC.h in Headers */,
+				4DD16B7727C4AF3C00E42682 /* BitmapShape.h in Headers */,
+				4DD16B7B27C4AF3C00E42682 /* DiamondArrow.h in Headers */,
+				4DD16B7A27C4AF3C00E42682 /* PolygonShape.h in Headers */,
+				4DD16B6027C4AF3C00E42682 /* ShapeHandle.h in Headers */,
+				4DD16B7C27C4AF3C00E42682 /* OpenArrow.h in Headers */,
+				4DD16B6A27C4AF3C00E42682 /* wxShapeFramework.h in Headers */,
+				4DD16B6527C4AF3C00E42682 /* LineShape.h in Headers */,
+				4DD16B6927C4AF3C00E42682 /* DiamondShape.h in Headers */,
+				4DD16B5D27C4AF3C00E42682 /* RectShape.h in Headers */,
+				4DD16B7027C4AF3C00E42682 /* EditTextShape.h in Headers */,
+				4DD16B7527C4AF3C00E42682 /* ShapeDataObject.h in Headers */,
+				4DD16B5C27C4AF3C00E42682 /* Defs.h in Headers */,
+				4DD16B7827C4AF3C00E42682 /* SFEvents.h in Headers */,
+				4DD16B3127C4AF3C00E42682 /* wx_pch.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		4DD16ABE27C4ADF100E42682 /* wxShapeFramework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4DD16AC327C4ADF100E42682 /* Build configuration list for PBXNativeTarget "wxShapeFramework" */;
+			buildPhases = (
+				4DD16ABB27C4ADF100E42682 /* Headers */,
+				4DD16ABC27C4ADF100E42682 /* Sources */,
+				4DD16ABD27C4ADF100E42682 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = wxShapeFramework;
+			productName = wxShapeFramework;
+			productReference = 4DD16ABF27C4ADF100E42682 /* libwxShapeFramework.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4DD16AB727C4ADF100E42682 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1320;
+				TargetAttributes = {
+					4DD16ABE27C4ADF100E42682 = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 4DD16ABA27C4ADF100E42682 /* Build configuration list for PBXProject "wxShapeFramework" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4DD16AB627C4ADF100E42682;
+			productRefGroup = 4DD16AC027C4ADF100E42682 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4DD16ABE27C4ADF100E42682 /* wxShapeFramework */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4DD16ABC27C4ADF100E42682 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4DD16B3027C4AF3C00E42682 /* EllipseShape.cpp in Sources */,
+				4DD16B5027C4AF3C00E42682 /* BitmapShape.cpp in Sources */,
+				4DD16B2D27C4AF3C00E42682 /* MultiSelRect.cpp in Sources */,
+				4DD16B3A27C4AF3C00E42682 /* RoundOrthoShape.cpp in Sources */,
+				4DD16B2B27C4AF3C00E42682 /* LineShape.cpp in Sources */,
+				4DD16B4227C4AF3C00E42682 /* CircleShape.cpp in Sources */,
+				4DD16B5127C4AF3C00E42682 /* ShapeBaseXml.cpp in Sources */,
+				4DD16B4927C4AF3C00E42682 /* SolidArrow.cpp in Sources */,
+				4DD16B4A27C4AF3C00E42682 /* AutoLayout.cpp in Sources */,
+				4DD16B4527C4AF3C00E42682 /* XmlSerializer.cpp in Sources */,
+				4DD16B2E27C4AF3C00E42682 /* FlexGridShape.cpp in Sources */,
+				4DD16B3E27C4AF3C00E42682 /* PolygonShapeXml.cpp in Sources */,
+				4DD16B4327C4AF3C00E42682 /* GridShape.cpp in Sources */,
+				4DD16B4D27C4AF3C00E42682 /* ShapeDockpoint.cpp in Sources */,
+				4DD16B3227C4AF3C00E42682 /* OrthoShape.cpp in Sources */,
+				4DD16B4827C4AF3C00E42682 /* RoundRectShape.cpp in Sources */,
+				4DD16B3D27C4AF3C00E42682 /* Thumbnail.cpp in Sources */,
+				4DD16B2C27C4AF3C00E42682 /* ShapeCanvas.cpp in Sources */,
+				4DD16B4727C4AF3C00E42682 /* PolygonShape.cpp in Sources */,
+				4DD16B2F27C4AF3C00E42682 /* ScaledDC.cpp in Sources */,
+				4DD16B3B27C4AF3C00E42682 /* ArrowBase.cpp in Sources */,
+				4DD16B4427C4AF3C00E42682 /* CircleArrow.cpp in Sources */,
+				4DD16B3527C4AF3C00E42682 /* ControlShape.cpp in Sources */,
+				4DD16B5227C4AF3C00E42682 /* RectShape.cpp in Sources */,
+				4DD16B5427C4AF3C00E42682 /* ShapeBase.cpp in Sources */,
+				4DD16B4627C4AF3C00E42682 /* PropertyIO.cpp in Sources */,
+				4DD16B3727C4AF3C00E42682 /* DiamondArrow.cpp in Sources */,
+				4DD16B4027C4AF3C00E42682 /* TextShape.cpp in Sources */,
+				4DD16B3827C4AF3C00E42682 /* DiamondShape.cpp in Sources */,
+				4DD16B3C27C4AF3C00E42682 /* wx_pch.cpp in Sources */,
+				4DD16B4F27C4AF3C00E42682 /* CanvasHistory.cpp in Sources */,
+				4DD16B4C27C4AF3C00E42682 /* EditTextShape.cpp in Sources */,
+				4DD16B4E27C4AF3C00E42682 /* CanvasState.cpp in Sources */,
+				4DD16B4B27C4AF3C00E42682 /* ShapeHandle.cpp in Sources */,
+				4DD16B3627C4AF3C00E42682 /* Printout.cpp in Sources */,
+				4DD16B3327C4AF3C00E42682 /* OpenArrow.cpp in Sources */,
+				4DD16B3427C4AF3C00E42682 /* BitmapShapeXml.cpp in Sources */,
+				4DD16B5327C4AF3C00E42682 /* ShapeDataObject.cpp in Sources */,
+				4DD16B4127C4AF3C00E42682 /* DiagramManager.cpp in Sources */,
+				4DD16B2A27C4AF3C00E42682 /* TextShapeXml.cpp in Sources */,
+				4DD16B3927C4AF3C00E42682 /* CommonFcn.cpp in Sources */,
+				4DD16B2927C4AF3C00E42682 /* FixedRectShape.cpp in Sources */,
+				4DD16B3F27C4AF3C00E42682 /* CurveShape.cpp in Sources */,
+				4DD16B5527C4AF3C00E42682 /* SFEvents.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4DD16AC127C4ADF100E42682 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		4DD16AC227C4ADF100E42682 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		4DD16AC427C4ADF100E42682 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 524GJ9D5JW;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREFIX_HEADER = "$(WXROOT)/include/wx/wxprec.h";
+				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
+				HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/include",
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)\n";
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"$(OTHER_LDFLAGS)",
+					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
+					"-I$(WXROOT)/include",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+				);
+				OTHER_LDFLAGS = (
+					"$(OTHER_LDFLAGS)",
+					"-L$(WXROOT)/build-cocoa-debug/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					System,
+					"-framework",
+					OpenGL,
+					"-lwx_osx_cocoau_xrc-3.1",
+					"-lwx_osx_cocoau_html-3.1",
+					"-lwx_osx_cocoau_qa-3.1",
+					"-lwx_osx_cocoau_core-3.1",
+					"-lwx_baseu_xml-3.1",
+					"-lwx_baseu_net-3.1",
+					"-lwx_baseu-3.1",
+					"-lwx_osx_cocoau_richtext-3.1",
+					"-lwx_osx_cocoau_advanced-3.1",
+					"-lwx_osx_cocoau_aui-3.1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
+				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
+				WXTOOLKIT = cocoa;
+				WXTOOLKITUPPER = COCOA;
+				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+			};
+			name = Debug;
+		};
+		4DD16AC527C4ADF100E42682 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 524GJ9D5JW;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREFIX_HEADER = "$(WXROOT)/include/wx/wxprec.h";
+				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
+				HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/include",
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited)\n";
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"$(OTHER_LDFLAGS)",
+					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
+					"-I$(WXROOT)/include",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+				);
+				OTHER_LDFLAGS = (
+					"$(OTHER_LDFLAGS)",
+					"-L$(WXROOT)/build-cocoa-debug/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					System,
+					"-framework",
+					OpenGL,
+					"-lwx_osx_cocoau_xrc-3.1",
+					"-lwx_osx_cocoau_html-3.1",
+					"-lwx_osx_cocoau_qa-3.1",
+					"-lwx_osx_cocoau_core-3.1",
+					"-lwx_baseu_xml-3.1",
+					"-lwx_baseu_net-3.1",
+					"-lwx_baseu-3.1",
+					"-lwx_osx_cocoau_richtext-3.1",
+					"-lwx_osx_cocoau_advanced-3.1",
+					"-lwx_osx_cocoau_aui-3.1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
+				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
+				WXTOOLKIT = cocoa;
+				WXTOOLKITUPPER = COCOA;
+				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4DD16ABA27C4ADF100E42682 /* Build configuration list for PBXProject "wxShapeFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DD16AC127C4ADF100E42682 /* Debug */,
+				4DD16AC227C4ADF100E42682 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4DD16AC327C4ADF100E42682 /* Build configuration list for PBXNativeTarget "wxShapeFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DD16AC427C4ADF100E42682 /* Debug */,
+				4DD16AC527C4ADF100E42682 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4DD16AB727C4ADF100E42682 /* Project object */;
+}

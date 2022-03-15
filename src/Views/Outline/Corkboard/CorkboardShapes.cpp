@@ -12,6 +12,7 @@ AutoWrapTextShape::AutoWrapTextShape() : wxSFEditTextShape()
 	SetFill(wxColour(255, 255, 255));
 	m_sText = "";
 	m_textToDraw = "";
+	m_fForceMultiline = true;
 
 	MarkSerializableDataMembers();
 }
@@ -65,34 +66,6 @@ void AutoWrapTextShape::SetHeight(int height)
 {
 	m_height = height;
 	m_nRectSize.y = height;
-}
-
-void AutoWrapTextShape::OnLeftDoubleClick(const wxPoint& pos)
-{
-	if ( GetParentCanvas() )
-	{
-		int dx, dy;
-		wxRealPoint shpPos = GetAbsolutePosition();
-		double scale = GetParentCanvas()->GetScale();
-		GetParentCanvas()->CalcUnscrolledPosition(0, 0, &dx, &dy);
-
-		wxRect shpBB = GetBoundingBox();
-
-		m_nCurrentState = GetStyle();
-		RemoveStyle(sfsSIZE_CHANGE);
-
-		int style = wxTE_BESTWRAP;
-		if ( m_fForceMultiline )
-			style = wxTE_MULTILINE;
-
-		m_pTextCtrl = new wxSFContentCtrl(GetParentCanvas(), wxID_ANY,
-			this, m_sText, wxPoint(int((shpPos.x * scale) - dx),
-			int((shpPos.y * scale) - dy)),
-			wxSize(int(shpBB.GetWidth() * scale), int(shpBB.GetHeight() * scale)), style);
-
-		m_pTextCtrl->SetBackgroundColour(m_Fill.GetColour());
-		m_pTextCtrl->SetForegroundColour(m_TextColor);
-	}
 }
 
 void AutoWrapTextShape::CalcWrappedText()

@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{451ef59d-c52d-4cef-852b-6b9198a55fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{71341b75-c524-42c3-a09b-d08339317548}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx">
+      <UniqueIdentifier>{6bb8c1a1-55ed-4b79-8172-cc8b46570d73}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\sqlite3mc_amalgamation.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wxsqlite3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\sqlite3mc_amalgamation.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sqlite3mc_config.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsqlite3.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsqlite3_version.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsqlite3def.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wx\wxsqlite3opt.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\wxsqlite3_version.rc">
+      <Filter>src</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

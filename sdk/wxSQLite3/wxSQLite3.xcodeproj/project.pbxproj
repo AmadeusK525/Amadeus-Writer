@@ -1,0 +1,432 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4DD16C1127C5261800E42682 /* wxsqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0727C5261800E42682 /* wxsqlite3.h */; };
+		4DD16C1227C5261800E42682 /* wxsqlite3opt.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0827C5261800E42682 /* wxsqlite3opt.h */; };
+		4DD16C1327C5261800E42682 /* wxsqlite3_version.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0927C5261800E42682 /* wxsqlite3_version.h */; };
+		4DD16C1427C5261800E42682 /* wxsqlite3def.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0A27C5261800E42682 /* wxsqlite3def.h */; };
+		4DD16C1527C5261800E42682 /* wxsqlite3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16C0C27C5261800E42682 /* wxsqlite3.cpp */; };
+		4DD16C1627C5261800E42682 /* sqlite3mc_amalgamation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0E27C5261800E42682 /* sqlite3mc_amalgamation.h */; };
+		4DD16C1727C5261800E42682 /* sqlite3mc_config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0F27C5261800E42682 /* sqlite3mc_config.h */; };
+		4DD16C1827C5261800E42682 /* sqlite3mc_amalgamation.c in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16C1027C5261800E42682 /* sqlite3mc_amalgamation.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4DD16BFE27C525EA00E42682 /* libwxSQLite3.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwxSQLite3.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4DD16C0727C5261800E42682 /* wxsqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3.h; sourceTree = "<group>"; };
+		4DD16C0827C5261800E42682 /* wxsqlite3opt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3opt.h; sourceTree = "<group>"; };
+		4DD16C0927C5261800E42682 /* wxsqlite3_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3_version.h; sourceTree = "<group>"; };
+		4DD16C0A27C5261800E42682 /* wxsqlite3def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3def.h; sourceTree = "<group>"; };
+		4DD16C0C27C5261800E42682 /* wxsqlite3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wxsqlite3.cpp; sourceTree = "<group>"; };
+		4DD16C0D27C5261800E42682 /* wxsqlite3_version.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wxsqlite3_version.rc; sourceTree = "<group>"; };
+		4DD16C0E27C5261800E42682 /* sqlite3mc_amalgamation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3mc_amalgamation.h; sourceTree = "<group>"; };
+		4DD16C0F27C5261800E42682 /* sqlite3mc_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3mc_config.h; sourceTree = "<group>"; };
+		4DD16C1027C5261800E42682 /* sqlite3mc_amalgamation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sqlite3mc_amalgamation.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4DD16BFC27C525EA00E42682 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4DD16BF527C525EA00E42682 = {
+			isa = PBXGroup;
+			children = (
+				4DD16C0527C5261800E42682 /* include */,
+				4DD16C0B27C5261800E42682 /* src */,
+				4DD16BFF27C525EA00E42682 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4DD16BFF27C525EA00E42682 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16BFE27C525EA00E42682 /* libwxSQLite3.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4DD16C0527C5261800E42682 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16C0627C5261800E42682 /* wx */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		4DD16C0627C5261800E42682 /* wx */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16C0727C5261800E42682 /* wxsqlite3.h */,
+				4DD16C0827C5261800E42682 /* wxsqlite3opt.h */,
+				4DD16C0927C5261800E42682 /* wxsqlite3_version.h */,
+				4DD16C0A27C5261800E42682 /* wxsqlite3def.h */,
+			);
+			path = wx;
+			sourceTree = "<group>";
+		};
+		4DD16C0B27C5261800E42682 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				4DD16C0C27C5261800E42682 /* wxsqlite3.cpp */,
+				4DD16C0D27C5261800E42682 /* wxsqlite3_version.rc */,
+				4DD16C0E27C5261800E42682 /* sqlite3mc_amalgamation.h */,
+				4DD16C0F27C5261800E42682 /* sqlite3mc_config.h */,
+				4DD16C1027C5261800E42682 /* sqlite3mc_amalgamation.c */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4DD16BFA27C525EA00E42682 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4DD16C1127C5261800E42682 /* wxsqlite3.h in Headers */,
+				4DD16C1327C5261800E42682 /* wxsqlite3_version.h in Headers */,
+				4DD16C1227C5261800E42682 /* wxsqlite3opt.h in Headers */,
+				4DD16C1427C5261800E42682 /* wxsqlite3def.h in Headers */,
+				4DD16C1727C5261800E42682 /* sqlite3mc_config.h in Headers */,
+				4DD16C1627C5261800E42682 /* sqlite3mc_amalgamation.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		4DD16BFD27C525EA00E42682 /* wxSQLite3 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4DD16C0227C525EA00E42682 /* Build configuration list for PBXNativeTarget "wxSQLite3" */;
+			buildPhases = (
+				4DD16BFA27C525EA00E42682 /* Headers */,
+				4DD16BFB27C525EA00E42682 /* Sources */,
+				4DD16BFC27C525EA00E42682 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = wxSQLite3;
+			productName = wxSQLite3;
+			productReference = 4DD16BFE27C525EA00E42682 /* libwxSQLite3.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4DD16BF627C525EA00E42682 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1320;
+				TargetAttributes = {
+					4DD16BFD27C525EA00E42682 = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 4DD16BF927C525EA00E42682 /* Build configuration list for PBXProject "wxSQLite3" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4DD16BF527C525EA00E42682;
+			productRefGroup = 4DD16BFF27C525EA00E42682 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4DD16BFD27C525EA00E42682 /* wxSQLite3 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4DD16BFB27C525EA00E42682 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4DD16C1827C5261800E42682 /* sqlite3mc_amalgamation.c in Sources */,
+				4DD16C1527C5261800E42682 /* wxsqlite3.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4DD16C0027C525EA00E42682 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		4DD16C0127C525EA00E42682 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		4DD16C0327C525EA00E42682 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 524GJ9D5JW;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
+				HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/include",
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
+					"-I$(WXROOT)/include",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+					"-msse4.2",
+					"-maes",
+				);
+				OTHER_LDFLAGS = (
+					"-L$(WXROOT)/build-cocoa-debug/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					System,
+					"-framework",
+					OpenGL,
+					"-lwx_osx_cocoau_xrc-3.1",
+					"-lwx_osx_cocoau_html-3.1",
+					"-lwx_osx_cocoau_qa-3.1",
+					"-lwx_osx_cocoau_core-3.1",
+					"-lwx_baseu_xml-3.1",
+					"-lwx_baseu_net-3.1",
+					"-lwx_baseu-3.1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
+				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
+				WXTOOLKIT = cocoa;
+				WXTOOLKITUPPER = COCOA;
+				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+			};
+			name = Debug;
+		};
+		4DD16C0427C525EA00E42682 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 524GJ9D5JW;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
+				HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/include",
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
+					"-I$(WXROOT)/include",
+					"-D_FILE_OFFSET_BITS=64",
+					"-DWXUSINGDLL",
+					"-D__WXMAC__",
+					"-D__WXOSX__",
+					"-D__WXOSX_COCOA__",
+					"-msse4.2",
+					"-maes",
+				);
+				OTHER_LDFLAGS = (
+					"-L$(WXROOT)/build-cocoa-debug/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					Carbon,
+					"-framework",
+					Cocoa,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					AudioToolbox,
+					"-framework",
+					System,
+					"-framework",
+					OpenGL,
+					"-lwx_osx_cocoau_xrc-3.1",
+					"-lwx_osx_cocoau_html-3.1",
+					"-lwx_osx_cocoau_qa-3.1",
+					"-lwx_osx_cocoau_core-3.1",
+					"-lwx_baseu_xml-3.1",
+					"-lwx_baseu_net-3.1",
+					"-lwx_baseu-3.1",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
+					./include,
+				);
+				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
+				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
+				WXTOOLKIT = cocoa;
+				WXTOOLKITUPPER = COCOA;
+				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4DD16BF927C525EA00E42682 /* Build configuration list for PBXProject "wxSQLite3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DD16C0027C525EA00E42682 /* Debug */,
+				4DD16C0127C525EA00E42682 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4DD16C0227C525EA00E42682 /* Build configuration list for PBXNativeTarget "wxSQLite3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DD16C0327C525EA00E42682 /* Debug */,
+				4DD16C0427C525EA00E42682 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4DD16BF627C525EA00E42682 /* Project object */;
+}

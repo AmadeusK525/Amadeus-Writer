@@ -30,8 +30,6 @@ public:
 	inline void SetTopSpace(int points) { m_topSpace = points; }
 	void SetHeight(int height);
 
-	virtual void OnLeftDoubleClick(const wxPoint& pos);
-
 	inline void EmtpyDrawText() { m_textToDraw.Empty(); }
 
 	void CalcWrappedText();
