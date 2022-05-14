@@ -478,7 +478,7 @@
     <ClCompile Include="src\MyApp.cpp" />
     <ClCompile Include="src\ProjectManaging.cpp" />
     <ClCompile Include="src\Utils\amUtility.cpp" />
-    <ClCompile Include="src\Views\DocumentCreator.cpp" />
+    <ClCompile Include="src\Views\Elements\DocumentCreator.cpp" />
     <ClCompile Include="src\Views\Elements\ElementCreators.cpp" />
     <ClCompile Include="src\Views\Elements\ElementShowcases.cpp" />
     <ClCompile Include="src\Views\Elements\ElementsNotebook.cpp" />

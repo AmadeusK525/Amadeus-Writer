@@ -281,7 +281,7 @@
     <ClCompile Include="src\Controls\WordProcessor.cpp">
       <Filter>src\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="src\Views\DocumentCreator.cpp">
+    <ClCompile Include="src\Views\Elements\DocumentCreator.cpp">
       <Filter>src\Views\Elements</Filter>
     </ClCompile>
   </ItemGroup>
