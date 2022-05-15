@@ -11,17 +11,8 @@
     <Filter Include="src\Utils">
       <UniqueIdentifier>{31ad3de6-e923-4900-bd14-28b565abf4f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include">
-      <UniqueIdentifier>{c0d819ff-d8c1-4dd2-bf67-725bcfedf208}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Utils">
-      <UniqueIdentifier>{f2ddc74c-af40-4aae-bac7-10c0de44f430}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Elements">
       <UniqueIdentifier>{cdad0f2c-99bf-440c-ade7-260288aeed8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Elements">
-      <UniqueIdentifier>{c39876dc-5520-4868-becc-d0bd7d2824eb}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Views">
       <UniqueIdentifier>{9c53b1ec-27fd-4802-a30f-ab44f2e7a948}</UniqueIdentifier>
@@ -29,50 +20,23 @@
     <Filter Include="src\Views\Wizards">
       <UniqueIdentifier>{cff4d851-a802-4299-aa65-8d640740ba01}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Views">
-      <UniqueIdentifier>{730a2b0d-1d64-4052-9b9f-567afc96ea14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Views\Wizards">
-      <UniqueIdentifier>{2aebe53c-e632-4553-b379-7850cd8c7a2a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Views\Outline">
       <UniqueIdentifier>{dce3321b-8395-4942-ab55-58799038b947}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Views\Outline\Corkboard">
       <UniqueIdentifier>{7d4f757f-77f3-476c-b4f6-83d81e3319ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Views\Outline">
-      <UniqueIdentifier>{1e82448e-a495-4fc9-95d3-0e230c2578dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Views\Outline\Corkboard">
-      <UniqueIdentifier>{c84f25e2-1f8f-4ab6-93f5-97300099e955}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Controls">
       <UniqueIdentifier>{15efa793-a9c7-4da1-aca3-4cdae6a9e8cd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Controls">
-      <UniqueIdentifier>{2fafd9ba-57a1-409b-98da-e50be59ef42b}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Views\Elements">
       <UniqueIdentifier>{aae61970-b63c-4a2d-a90e-21d5ead385f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Views\Elements">
-      <UniqueIdentifier>{b508818e-8489-4a19-8494-9d6a999a5d5f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Views\Overview">
       <UniqueIdentifier>{7f1f2ee5-217d-4770-8389-b2688ba31b5d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Views\Overview">
-      <UniqueIdentifier>{0a49c683-d118-4cf3-9cdb-d313bd918cef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Views\Release">
       <UniqueIdentifier>{8627e203-2173-417d-ae74-400e7dd8e873}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Views\Release">
-      <UniqueIdentifier>{4b05e21c-c825-47cf-b4fa-ceb6bc41bf3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Database">
-      <UniqueIdentifier>{e1b081ae-3a41-4432-8955-1a18533caf3f}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Database">
       <UniqueIdentifier>{aa2bc999-bd57-4847-9222-cf28abe705df}</UniqueIdentifier>
@@ -80,20 +44,11 @@
     <Filter Include="src\Views\Story">
       <UniqueIdentifier>{a5e7ed2b-d7ba-4f62-956d-fad0897b8df4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Views\Story">
-      <UniqueIdentifier>{742527e4-2eb6-41c5-9e0c-9189246b404c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Views\StoryWriter">
       <UniqueIdentifier>{c09b4be7-64c3-4e2f-93db-0648d567ac60}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Views\StoryWriter">
-      <UniqueIdentifier>{441fba62-bd5f-488b-9c91-5f83b9bb4243}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Views\Outline\Timeline">
       <UniqueIdentifier>{cc90978d-6896-4eb9-a32f-3f520306cc27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Views\Outline\Timeline">
-      <UniqueIdentifier>{0cc8750b-3042-4fbb-af8e-cf30b0a1b122}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,98 +63,95 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Utils\amUtility.h">
-      <Filter>include\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Elements\BookElements.h">
-      <Filter>include\Elements</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Wizards\BookWizard.h">
-      <Filter>include\Views\Wizards</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Outline\Corkboard\Corkboard.h">
-      <Filter>include\Views\Outline\Corkboard</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Outline\Corkboard\CorkboardShapes.h">
-      <Filter>include\Views\Outline\Corkboard</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Controls\DragList.h">
-      <Filter>include\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Elements\ElementCreators.h">
-      <Filter>include\Views\Elements</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Elements\ElementShowcases.h">
-      <Filter>include\Views\Elements</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Elements\ElementsNotebook.h">
-      <Filter>include\Views\Elements</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Controls\ImagePanel.h">
-      <Filter>include\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\MainFrame.h">
-      <Filter>include\Views</Filter>
-    </ClInclude>
-    <ClInclude Include="include\MyApp.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Outline\Outline.h">
-      <Filter>include\Views\Outline</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Outline\OutlineFiles.h">
-      <Filter>include\Views\Outline</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Overview\Overview.h">
-      <Filter>include\Views\Overview</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ProjectManaging.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Wizards\ProjectWizard.h">
-      <Filter>include\Views\Wizards</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Views\Release\Release.h">
-      <Filter>include\Views\Release</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Utils\SortFunctions.h">
-      <Filter>include\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Database\SQLEntry.h">
-      <Filter>include\Database</Filter>
-    </ClInclude>
     <ClInclude Include="src\Database\SQLEntry.h">
       <Filter>src\Database</Filter>
     </ClInclude>
-    <ClInclude Include="include\Elements\StoryElements.h">
-      <Filter>include\Elements</Filter>
+    <ClInclude Include="src\Utils\amUtility.h">
+      <Filter>src\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="include\Views\Story\StoryNotebook.h">
-      <Filter>include\Views\Story</Filter>
+    <ClInclude Include="src\Elements\BookElements.h">
+      <Filter>src\Elements</Filter>
     </ClInclude>
-    <ClInclude Include="include\Views\StoryWriter\StoryWriter.h">
-      <Filter>include\Views\StoryWriter</Filter>
+    <ClInclude Include="src\Views\Wizards\BookWizard.h">
+      <Filter>src\Views\Wizards</Filter>
     </ClInclude>
-    <ClInclude Include="include\Controls\SwitchCtrl.h">
-      <Filter>include\Controls</Filter>
+    <ClInclude Include="src\Views\Outline\Corkboard\Corkboard.h">
+      <Filter>src\Views\Outline\Corkboard</Filter>
     </ClInclude>
-    <ClInclude Include="include\Views\Outline\Timeline\Timeline.h">
-      <Filter>include\Views\Outline\Timeline</Filter>
+    <ClInclude Include="src\Views\Outline\Corkboard\CorkboardShapes.h">
+      <Filter>src\Views\Outline\Corkboard</Filter>
     </ClInclude>
-    <ClInclude Include="include\Views\Outline\Timeline\TimelineDialogs.h">
-      <Filter>include\Views\Outline\Timeline</Filter>
+    <ClInclude Include="src\Views\Elements\DocumentCreator.h">
+      <Filter>src\Views\Elements</Filter>
     </ClInclude>
-    <ClInclude Include="include\Views\Outline\Timeline\TimelineShapes.h">
-      <Filter>include\Views\Outline\Timeline</Filter>
+    <ClInclude Include="src\Controls\DragList.h">
+      <Filter>src\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="include\Controls\WordProcessor.h">
-      <Filter>include\Controls</Filter>
+    <ClInclude Include="src\Views\Elements\ElementCreators.h">
+      <Filter>src\Views\Elements</Filter>
     </ClInclude>
-    <ClInclude Include="include\Utils\wxmemdbg.h">
-      <Filter>include\Utils</Filter>
+    <ClInclude Include="src\Views\Elements\ElementShowcases.h">
+      <Filter>src\Views\Elements</Filter>
     </ClInclude>
-    <ClInclude Include="include\Views\DocumentCreator.h">
-      <Filter>include\Views\Elements</Filter>
+    <ClInclude Include="src\Views\Elements\ElementsNotebook.h">
+      <Filter>src\Views\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Controls\ImagePanel.h">
+      <Filter>src\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\MainFrame.h">
+      <Filter>src\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MyApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Outline\Outline.h">
+      <Filter>src\Views\Outline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Outline\OutlineFiles.h">
+      <Filter>src\Views\Outline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Overview\Overview.h">
+      <Filter>src\Views\Overview</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ProjectManaging.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Wizards\ProjectWizard.h">
+      <Filter>src\Views\Wizards</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Release\Release.h">
+      <Filter>src\Views\Release</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\SortFunctions.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Elements\StoryElements.h">
+      <Filter>src\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Story\StoryNotebook.h">
+      <Filter>src\Views\Story</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\StoryWriter\StoryWriter.h">
+      <Filter>src\Views\StoryWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Controls\SwitchCtrl.h">
+      <Filter>src\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Outline\Timeline\Timeline.h">
+      <Filter>src\Views\Outline\Timeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Outline\Timeline\TimelineDialogs.h">
+      <Filter>src\Views\Outline\Timeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Views\Outline\Timeline\TimelineShapes.h">
+      <Filter>src\Views\Outline\Timeline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Controls\WordProcessor.h">
+      <Filter>src\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\wxmemdbg.h">
+      <Filter>src\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

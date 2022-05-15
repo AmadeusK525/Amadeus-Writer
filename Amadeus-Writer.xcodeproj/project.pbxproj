@@ -56,7 +56,35 @@
 
 /* Begin PBXFileReference section */
 		4D3A9E9E27C572F6003312BD /* Amadeus-Writer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amadeus-Writer.entitlements"; sourceTree = "<group>"; };
-		4D96C2AC27FB402F00744328 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4D50FAE428320E5700A5DDED /* MyApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyApp.h; sourceTree = "<group>"; };
+		4D50FAE528320E5700A5DDED /* ProjectManaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectManaging.h; sourceTree = "<group>"; };
+		4D50FAE628320E6F00A5DDED /* DragList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragList.h; sourceTree = "<group>"; };
+		4D50FAE728320E6F00A5DDED /* ImagePanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePanel.h; sourceTree = "<group>"; };
+		4D50FAE828320E6F00A5DDED /* SwitchCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchCtrl.h; sourceTree = "<group>"; };
+		4D50FAE928320E6F00A5DDED /* WordProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WordProcessor.h; sourceTree = "<group>"; };
+		4D50FAEA28320E9500A5DDED /* amUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amUtility.h; sourceTree = "<group>"; };
+		4D50FAEB28320E9500A5DDED /* SortFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SortFunctions.h; sourceTree = "<group>"; };
+		4D50FAEC28320E9500A5DDED /* wxmemdbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxmemdbg.h; sourceTree = "<group>"; };
+		4D50FAED28320EBF00A5DDED /* BookElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookElements.h; sourceTree = "<group>"; };
+		4D50FAEE28320EBF00A5DDED /* StoryElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryElements.h; sourceTree = "<group>"; };
+		4D50FAEF28320EDE00A5DDED /* StoryWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryWriter.h; sourceTree = "<group>"; };
+		4D50FAF028320EE800A5DDED /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
+		4D50FAF128320EF000A5DDED /* ElementShowcases.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementShowcases.h; sourceTree = "<group>"; };
+		4D50FAF228320EF000A5DDED /* ElementCreators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementCreators.h; sourceTree = "<group>"; };
+		4D50FAF328320EF000A5DDED /* ElementsNotebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementsNotebook.h; sourceTree = "<group>"; };
+		4D50FAF428320EF000A5DDED /* DocumentCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentCreator.h; sourceTree = "<group>"; };
+		4D50FAF528320F0000A5DDED /* OutlineFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineFiles.h; path = src/Views/Outline/OutlineFiles.h; sourceTree = SOURCE_ROOT; };
+		4D50FAF628320F0000A5DDED /* Outline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Outline.h; path = src/Views/Outline/Outline.h; sourceTree = SOURCE_ROOT; };
+		4D50FAF728320F0F00A5DDED /* Corkboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Corkboard.h; sourceTree = "<group>"; };
+		4D50FAF828320F0F00A5DDED /* CorkboardShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CorkboardShapes.h; sourceTree = "<group>"; };
+		4D50FAF928320F1700A5DDED /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
+		4D50FAFA28320F1700A5DDED /* TimelineDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineDialogs.h; sourceTree = "<group>"; };
+		4D50FAFB28320F1700A5DDED /* TimelineShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineShapes.h; sourceTree = "<group>"; };
+		4D50FAFC28320F2A00A5DDED /* ProjectWizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectWizard.h; sourceTree = "<group>"; };
+		4D50FAFD28320F2A00A5DDED /* BookWizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookWizard.h; sourceTree = "<group>"; };
+		4D50FAFE28320F3300A5DDED /* Overview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Overview.h; sourceTree = "<group>"; };
+		4D50FAFF28320F3F00A5DDED /* StoryNotebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryNotebook.h; sourceTree = "<group>"; };
+		4D50FB0028320F4700A5DDED /* MainFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainFrame.h; sourceTree = "<group>"; };
 		4D96C2FC27FB947900744328 /* Underline.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Underline.svg; sourceTree = "<group>"; };
 		4D96C2FD27FB947900744328 /* AlignCenter.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AlignCenter.svg; sourceTree = "<group>"; };
 		4D96C2FE27FB947900744328 /* FullScreen.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FullScreen.svg; sourceTree = "<group>"; };
@@ -101,36 +129,6 @@
 		4DBB83FD27C56AD000F4F8E9 /* AddLocation.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddLocation.xpm; sourceTree = "<group>"; };
 		4DBB83FE27C56AD000F4F8E9 /* AddCharacter.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddCharacter.xpm; sourceTree = "<group>"; };
 		4DD1694327C4A1D400E42682 /* Amadeus-Writer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Amadeus-Writer"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4DD16A0027C4ACA200E42682 /* SQLEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLEntry.h; sourceTree = "<group>"; };
-		4DD16A0127C4ACA200E42682 /* ProjectManaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectManaging.h; sourceTree = "<group>"; };
-		4DD16A0327C4ACA200E42682 /* wxmemdbg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxmemdbg.h; sourceTree = "<group>"; };
-		4DD16A0427C4ACA200E42682 /* SortFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SortFunctions.h; sourceTree = "<group>"; };
-		4DD16A0527C4ACA200E42682 /* amUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amUtility.h; sourceTree = "<group>"; };
-		4DD16A0727C4ACA200E42682 /* WordProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WordProcessor.h; sourceTree = "<group>"; };
-		4DD16A0827C4ACA200E42682 /* ImagePanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePanel.h; sourceTree = "<group>"; };
-		4DD16A0927C4ACA200E42682 /* SwitchCtrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchCtrl.h; sourceTree = "<group>"; };
-		4DD16A0A27C4ACA200E42682 /* DragList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DragList.h; sourceTree = "<group>"; };
-		4DD16A0C27C4ACA200E42682 /* BookElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookElements.h; sourceTree = "<group>"; };
-		4DD16A0D27C4ACA200E42682 /* StoryElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryElements.h; sourceTree = "<group>"; };
-		4DD16A1027C4ACA200E42682 /* StoryWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryWriter.h; sourceTree = "<group>"; };
-		4DD16A1227C4ACA200E42682 /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
-		4DD16A1427C4ACA200E42682 /* DocumentCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentCreator.h; sourceTree = "<group>"; };
-		4DD16A1527C4ACA200E42682 /* ElementsNotebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementsNotebook.h; sourceTree = "<group>"; };
-		4DD16A1627C4ACA200E42682 /* ElementCreators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementCreators.h; sourceTree = "<group>"; };
-		4DD16A1727C4ACA200E42682 /* ElementShowcases.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElementShowcases.h; sourceTree = "<group>"; };
-		4DD16A1927C4ACA200E42682 /* Outline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Outline.h; sourceTree = "<group>"; };
-		4DD16A1B27C4ACA200E42682 /* Corkboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Corkboard.h; sourceTree = "<group>"; };
-		4DD16A1C27C4ACA200E42682 /* CorkboardShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CorkboardShapes.h; sourceTree = "<group>"; };
-		4DD16A1D27C4ACA200E42682 /* OutlineFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineFiles.h; sourceTree = "<group>"; };
-		4DD16A1F27C4ACA200E42682 /* TimelineDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineDialogs.h; sourceTree = "<group>"; };
-		4DD16A2027C4ACA200E42682 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
-		4DD16A2127C4ACA200E42682 /* TimelineShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineShapes.h; sourceTree = "<group>"; };
-		4DD16A2227C4ACA200E42682 /* MainFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainFrame.h; sourceTree = "<group>"; };
-		4DD16A2427C4ACA200E42682 /* BookWizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookWizard.h; sourceTree = "<group>"; };
-		4DD16A2527C4ACA200E42682 /* ProjectWizard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectWizard.h; sourceTree = "<group>"; };
-		4DD16A2727C4ACA200E42682 /* Overview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Overview.h; sourceTree = "<group>"; };
-		4DD16A2927C4ACA200E42682 /* StoryNotebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryNotebook.h; sourceTree = "<group>"; };
-		4DD16A2A27C4ACA200E42682 /* MyApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyApp.h; sourceTree = "<group>"; };
 		4DD16A2C27C4ACA200E42682 /* RCb17708 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RCb17708; sourceTree = "<group>"; };
 		4DD16A2D27C4ACA200E42682 /* RCa20288 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RCa20288; sourceTree = "<group>"; };
 		4DD16A2E27C4ACA200E42682 /* resource.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = resource.rc; sourceTree = "<group>"; };
@@ -247,7 +245,6 @@
 			children = (
 				4D3A9E9E27C572F6003312BD /* Amadeus-Writer.entitlements */,
 				4DD16A5C27C4ACA200E42682 /* Assets */,
-				4DD169FE27C4ACA200E42682 /* include */,
 				4DD16A2B27C4ACA200E42682 /* Resource */,
 				4DD16A3127C4ACA200E42682 /* src */,
 				4DD1694427C4A1D400E42682 /* Products */,
@@ -261,155 +258,6 @@
 				4DD1694327C4A1D400E42682 /* Amadeus-Writer */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		4DD169FE27C4ACA200E42682 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				4DD169FF27C4ACA200E42682 /* Database */,
-				4DD16A0127C4ACA200E42682 /* ProjectManaging.h */,
-				4DD16A0227C4ACA200E42682 /* Utils */,
-				4DD16A0627C4ACA200E42682 /* Controls */,
-				4DD16A0B27C4ACA200E42682 /* Elements */,
-				4DD16A0E27C4ACA200E42682 /* Views */,
-				4DD16A2A27C4ACA200E42682 /* MyApp.h */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		4DD169FF27C4ACA200E42682 /* Database */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A0027C4ACA200E42682 /* SQLEntry.h */,
-			);
-			path = Database;
-			sourceTree = "<group>";
-		};
-		4DD16A0227C4ACA200E42682 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A0327C4ACA200E42682 /* wxmemdbg.h */,
-				4DD16A0427C4ACA200E42682 /* SortFunctions.h */,
-				4DD16A0527C4ACA200E42682 /* amUtility.h */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
-		4DD16A0627C4ACA200E42682 /* Controls */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A0727C4ACA200E42682 /* WordProcessor.h */,
-				4DD16A0827C4ACA200E42682 /* ImagePanel.h */,
-				4DD16A0927C4ACA200E42682 /* SwitchCtrl.h */,
-				4DD16A0A27C4ACA200E42682 /* DragList.h */,
-			);
-			path = Controls;
-			sourceTree = "<group>";
-		};
-		4DD16A0B27C4ACA200E42682 /* Elements */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A0C27C4ACA200E42682 /* BookElements.h */,
-				4DD16A0D27C4ACA200E42682 /* StoryElements.h */,
-			);
-			path = Elements;
-			sourceTree = "<group>";
-		};
-		4DD16A0E27C4ACA200E42682 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A0F27C4ACA200E42682 /* StoryWriter */,
-				4DD16A1127C4ACA200E42682 /* Release */,
-				4DD16A1327C4ACA200E42682 /* Elements */,
-				4DD16A1827C4ACA200E42682 /* Outline */,
-				4DD16A2227C4ACA200E42682 /* MainFrame.h */,
-				4DD16A2327C4ACA200E42682 /* Wizards */,
-				4DD16A2627C4ACA200E42682 /* Overview */,
-				4DD16A2827C4ACA200E42682 /* Story */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		4DD16A0F27C4ACA200E42682 /* StoryWriter */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A1027C4ACA200E42682 /* StoryWriter.h */,
-			);
-			path = StoryWriter;
-			sourceTree = "<group>";
-		};
-		4DD16A1127C4ACA200E42682 /* Release */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A1227C4ACA200E42682 /* Release.h */,
-			);
-			path = Release;
-			sourceTree = "<group>";
-		};
-		4DD16A1327C4ACA200E42682 /* Elements */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A1427C4ACA200E42682 /* DocumentCreator.h */,
-				4DD16A1527C4ACA200E42682 /* ElementsNotebook.h */,
-				4DD16A1627C4ACA200E42682 /* ElementCreators.h */,
-				4DD16A1727C4ACA200E42682 /* ElementShowcases.h */,
-			);
-			path = Elements;
-			sourceTree = "<group>";
-		};
-		4DD16A1827C4ACA200E42682 /* Outline */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A1927C4ACA200E42682 /* Outline.h */,
-				4DD16A1A27C4ACA200E42682 /* Corkboard */,
-				4DD16A1D27C4ACA200E42682 /* OutlineFiles.h */,
-				4DD16A1E27C4ACA200E42682 /* Timeline */,
-			);
-			path = Outline;
-			sourceTree = "<group>";
-		};
-		4DD16A1A27C4ACA200E42682 /* Corkboard */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A1B27C4ACA200E42682 /* Corkboard.h */,
-				4DD16A1C27C4ACA200E42682 /* CorkboardShapes.h */,
-			);
-			path = Corkboard;
-			sourceTree = "<group>";
-		};
-		4DD16A1E27C4ACA200E42682 /* Timeline */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A1F27C4ACA200E42682 /* TimelineDialogs.h */,
-				4DD16A2027C4ACA200E42682 /* Timeline.h */,
-				4DD16A2127C4ACA200E42682 /* TimelineShapes.h */,
-			);
-			path = Timeline;
-			sourceTree = "<group>";
-		};
-		4DD16A2327C4ACA200E42682 /* Wizards */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A2427C4ACA200E42682 /* BookWizard.h */,
-				4DD16A2527C4ACA200E42682 /* ProjectWizard.h */,
-			);
-			path = Wizards;
-			sourceTree = "<group>";
-		};
-		4DD16A2627C4ACA200E42682 /* Overview */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A2727C4ACA200E42682 /* Overview.h */,
-			);
-			path = Overview;
-			sourceTree = "<group>";
-		};
-		4DD16A2827C4ACA200E42682 /* Story */ = {
-			isa = PBXGroup;
-			children = (
-				4DD16A2927C4ACA200E42682 /* StoryNotebook.h */,
-			);
-			path = Story;
 			sourceTree = "<group>";
 		};
 		4DD16A2B27C4ACA200E42682 /* Resource */ = {
@@ -427,12 +275,14 @@
 		4DD16A3127C4ACA200E42682 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				4DD16A3227C4ACA200E42682 /* Database */,
 				4DD16A3427C4ACA200E42682 /* MyApp.cpp */,
-				4DD16A3527C4ACA200E42682 /* Utils */,
 				4DD16A3727C4ACA200E42682 /* ProjectManaging.cpp */,
+				4D50FAE428320E5700A5DDED /* MyApp.h */,
+				4D50FAE528320E5700A5DDED /* ProjectManaging.h */,
 				4DD16A3827C4ACA200E42682 /* Controls */,
+				4DD16A3227C4ACA200E42682 /* Database */,
 				4DD16A3D27C4ACA200E42682 /* Elements */,
+				4DD16A3527C4ACA200E42682 /* Utils */,
 				4DD16A4027C4ACA200E42682 /* Views */,
 			);
 			path = src;
@@ -450,6 +300,9 @@
 			isa = PBXGroup;
 			children = (
 				4DD16A3627C4ACA200E42682 /* amUtility.cpp */,
+				4D50FAEA28320E9500A5DDED /* amUtility.h */,
+				4D50FAEB28320E9500A5DDED /* SortFunctions.h */,
+				4D50FAEC28320E9500A5DDED /* wxmemdbg.h */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -457,6 +310,10 @@
 		4DD16A3827C4ACA200E42682 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAE628320E6F00A5DDED /* DragList.h */,
+				4D50FAE728320E6F00A5DDED /* ImagePanel.h */,
+				4D50FAE828320E6F00A5DDED /* SwitchCtrl.h */,
+				4D50FAE928320E6F00A5DDED /* WordProcessor.h */,
 				4DD16A3927C4ACA200E42682 /* WordProcessor.cpp */,
 				4DD16A3A27C4ACA200E42682 /* SwitchCtrl.cpp */,
 				4DD16A3B27C4ACA200E42682 /* ImagePanel.cpp */,
@@ -468,6 +325,8 @@
 		4DD16A3D27C4ACA200E42682 /* Elements */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAED28320EBF00A5DDED /* BookElements.h */,
+				4D50FAEE28320EBF00A5DDED /* StoryElements.h */,
 				4DD16A3E27C4ACA200E42682 /* BookElements.cpp */,
 				4DD16A3F27C4ACA200E42682 /* StoryElements.cpp */,
 			);
@@ -477,6 +336,7 @@
 		4DD16A4027C4ACA200E42682 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FB0028320F4700A5DDED /* MainFrame.h */,
 				4DD16A4127C4ACA200E42682 /* StoryWriter */,
 				4DD16A4327C4ACA200E42682 /* MainFrame.cpp */,
 				4DD16A4427C4ACA200E42682 /* Release */,
@@ -492,6 +352,7 @@
 		4DD16A4127C4ACA200E42682 /* StoryWriter */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAEF28320EDE00A5DDED /* StoryWriter.h */,
 				4DD16A4227C4ACA200E42682 /* StoryWriter.cpp */,
 			);
 			path = StoryWriter;
@@ -500,6 +361,7 @@
 		4DD16A4427C4ACA200E42682 /* Release */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAF028320EE800A5DDED /* Release.h */,
 				4DD16A4527C4ACA200E42682 /* Release.cpp */,
 			);
 			path = Release;
@@ -508,6 +370,10 @@
 		4DD16A4627C4ACA200E42682 /* Elements */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAF428320EF000A5DDED /* DocumentCreator.h */,
+				4D50FAF228320EF000A5DDED /* ElementCreators.h */,
+				4D50FAF128320EF000A5DDED /* ElementShowcases.h */,
+				4D50FAF328320EF000A5DDED /* ElementsNotebook.h */,
 				4DD16A4727C4ACA200E42682 /* ElementsNotebook.cpp */,
 				4DD16A4827C4ACA200E42682 /* DocumentCreator.cpp */,
 				4DD16A4927C4ACA200E42682 /* ElementCreators.cpp */,
@@ -519,6 +385,8 @@
 		4DD16A4B27C4ACA200E42682 /* Outline */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAF628320F0000A5DDED /* Outline.h */,
+				4D50FAF528320F0000A5DDED /* OutlineFiles.h */,
 				4DD16A4C27C4ACA200E42682 /* Outline.cpp */,
 				4DD16A4D27C4ACA200E42682 /* OutlineFiles.cpp */,
 				4DD16A4E27C4ACA200E42682 /* Corkboard */,
@@ -530,6 +398,8 @@
 		4DD16A4E27C4ACA200E42682 /* Corkboard */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAF728320F0F00A5DDED /* Corkboard.h */,
+				4D50FAF828320F0F00A5DDED /* CorkboardShapes.h */,
 				4DD16A4F27C4ACA200E42682 /* Corkboard.cpp */,
 				4DD16A5027C4ACA200E42682 /* CorkboardShapes.cpp */,
 			);
@@ -539,6 +409,9 @@
 		4DD16A5127C4ACA200E42682 /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAF928320F1700A5DDED /* Timeline.h */,
+				4D50FAFA28320F1700A5DDED /* TimelineDialogs.h */,
+				4D50FAFB28320F1700A5DDED /* TimelineShapes.h */,
 				4DD16A5227C4ACA200E42682 /* TimelineShapes.cpp */,
 				4DD16A5327C4ACA200E42682 /* TimelineDialogs.cpp */,
 				4DD16A5427C4ACA200E42682 /* Timeline.cpp */,
@@ -549,6 +422,8 @@
 		4DD16A5527C4ACA200E42682 /* Wizards */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAFD28320F2A00A5DDED /* BookWizard.h */,
+				4D50FAFC28320F2A00A5DDED /* ProjectWizard.h */,
 				4DD16A5627C4ACA200E42682 /* BookWizard.cpp */,
 				4DD16A5727C4ACA200E42682 /* ProjectWizard.cpp */,
 			);
@@ -558,6 +433,7 @@
 		4DD16A5827C4ACA200E42682 /* Overview */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAFE28320F3300A5DDED /* Overview.h */,
 				4DD16A5927C4ACA200E42682 /* Overview.cpp */,
 			);
 			path = Overview;
@@ -566,6 +442,7 @@
 		4DD16A5A27C4ACA200E42682 /* Story */ = {
 			isa = PBXGroup;
 			children = (
+				4D50FAFF28320F3F00A5DDED /* StoryNotebook.h */,
 				4DD16A5B27C4ACA200E42682 /* StoryNotebook.cpp */,
 			);
 			path = Story;
