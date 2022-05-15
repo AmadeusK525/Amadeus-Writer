@@ -344,3 +344,6 @@ healthchecksdb
 
 Output-Debug.txt
 88165468
+
+# VSCode
+.vscode/
