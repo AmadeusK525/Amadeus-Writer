@@ -23,15 +23,16 @@ END_EVENT_TABLE()
 
 amCorkboard::amCorkboard(wxWindow* parent) : wxPanel(parent)
 {
+	const wxSize buttonSize(24, 24);
 	m_toolBar = new wxToolBar(this, -1);
-	m_toolBar->AddRadioTool(TOOL_Cursor, "", wxBITMAP_PNG(cursor), wxNullBitmap, "Default");
-	m_toolBar->AddRadioTool(TOOL_NewNote, "", wxBITMAP_PNG(newNote), wxNullBitmap, "New note");
-	m_toolBar->AddRadioTool(TOOL_NewImage, "", wxBITMAP_PNG(newImage), wxNullBitmap, "New image");
-	m_toolBar->AddRadioTool(TOOL_NewText, "", wxBITMAP_PNG(newText), wxNullBitmap, "New Text");
-	m_toolBar->AddRadioTool(TOOL_NewConnection, "", wxBITMAP_PNG(connectionLine), wxNullBitmap, "New connection");
+	m_toolBar->AddRadioTool(TOOL_Cursor, "", wxBitmapBundle::FromSVGFile("Assets/Common/Cursor.svg", buttonSize), wxNullBitmap, "Default");
+	m_toolBar->AddRadioTool(TOOL_NewNote, "", wxBitmapBundle::FromSVGFile("Assets/Common/AddNote.svg", buttonSize), wxNullBitmap, "New note");
+	m_toolBar->AddRadioTool(TOOL_NewImage, "", wxBitmapBundle::FromSVGFile("Assets/Common/AddImage.svg", buttonSize), wxNullBitmap, "New image");
+	m_toolBar->AddRadioTool(TOOL_NewText, "", wxBitmapBundle::FromSVGFile("Assets/Common/AddText.svg", buttonSize), wxNullBitmap, "New Text");
+	m_toolBar->AddRadioTool(TOOL_NewConnection, "", wxBitmapBundle::FromSVGFile("Assets/Common/Connection.svg", buttonSize), wxNullBitmap, "New connection");
 	m_toolBar->AddSeparator();
 	m_toolBar->AddSeparator();
-	m_toolBar->AddCheckTool(TOOL_CorkboardFullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Full screen");
+	m_toolBar->AddCheckTool(TOOL_CorkboardFullScreen, "", wxBitmapBundle::FromSVGFile("Assets/Common/FullScreen.svg", buttonSize), wxNullBitmap, "Full screen");
 	m_toolBar->Realize();
 	m_toolBar->SetBackgroundColour(wxColour(140, 140, 140));
 

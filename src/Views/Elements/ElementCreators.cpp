@@ -60,8 +60,10 @@ bool amElementCreator::Create(wxWindow* parent, long id,
 	customLabel->SetFont(wxFontInfo(14).Bold());
 	customLabel->SetForegroundColour(wxColour(240, 240, 240));
 
-	m_addCustom = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(25, 25));
-	m_addCustom->SetBitmap(wxBITMAP_PNG(plus));
+	const wxSize buttonSize(24, 24);
+
+	m_addCustom = new wxButton(m_panel2, -1, "", wxDefaultPosition, buttonSize);
+	m_addCustom->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Plus.svg", buttonSize));
 	m_addCustom->Bind(wxEVT_BUTTON, &amElementCreator::AddCustomAttr, this);
 
 	wxBoxSizer* customHorSiz = new wxBoxSizer(wxHORIZONTAL);
@@ -720,7 +722,7 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event)
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
-	minus->SetBitmap(wxBITMAP_PNG(minus));
+	minus->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", wxSize(size.y, size.y)));
 	minus->Bind(wxEVT_BUTTON, &amCharacterCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -1150,7 +1152,7 @@ void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event))
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(panel, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
-	minus->SetBitmap(wxBITMAP_PNG(minus));
+	minus->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", wxSize(size.y, size.y)));
 	minus->Bind(wxEVT_BUTTON, &amLocationCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* hor = new wxBoxSizer(wxHORIZONTAL);
@@ -1690,7 +1692,7 @@ void amItemCreator::AddCustomAttr(wxCommandEvent& event)
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
-	minus->SetBitmap(wxBITMAP_PNG(minus));
+	minus->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", wxSize(size.y, size.y)));
 	minus->Bind(wxEVT_BUTTON, &amCharacterCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);

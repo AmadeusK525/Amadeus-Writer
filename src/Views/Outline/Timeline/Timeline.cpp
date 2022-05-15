@@ -1954,8 +1954,9 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	m_threadPanel = new wxScrolledWindow(m_notebook);
 	m_threadPanel->SetBackgroundColour(wxColour(60, 60, 60));
 
-	wxButton* addThread = new wxButton(m_threadPanel, BUTTON_AddThread, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	addThread->SetBitmap(wxBITMAP_PNG(plus));
+	const wxSize buttonSize(24, 24);
+	wxButton* addThread = new wxButton(m_threadPanel, BUTTON_AddThread, "", wxDefaultPosition, buttonSize);
+	addThread->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Plus.svg", buttonSize));
 
 	wxStaticText* curThreadLabel = new wxStaticText(m_threadPanel, -1, _("Currently selected:"));
 	curThreadLabel->SetForegroundColour(wxColour(255, 255, 255));
@@ -2020,16 +2021,16 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 			event.Enable(m_threadThumbnail->GetThread());
 		});
 
-	wxButton* moveUpThread = new wxButton(m_threadPanel, BUTTON_MoveUpThread, "", wxDefaultPosition, wxSize(25, 25));
-	moveUpThread->SetBitmap(wxBITMAP_PNG(arrowUp));
+	wxButton* moveUpThread = new wxButton(m_threadPanel, BUTTON_MoveUpThread, "", wxDefaultPosition, buttonSize);
+	moveUpThread->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowUp.svg", buttonSize));
 	moveUpThread->SetToolTip(_("Move thread position up"));
 	moveUpThread->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event)
 		{
 			event.Enable(m_threadThumbnail->GetThread());
 		});
 
-	wxButton* moveDownThread = new wxButton(m_threadPanel, BUTTON_MoveDownThread, "", wxDefaultPosition, wxSize(25, 25));
-	moveDownThread->SetBitmap(wxBITMAP_PNG(arrowDown));
+	wxButton* moveDownThread = new wxButton(m_threadPanel, BUTTON_MoveDownThread, "", wxDefaultPosition, buttonSize);
+	moveDownThread->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowDown.svg", buttonSize));
 	moveDownThread->SetToolTip(_("Move thread position down"));
 	moveDownThread->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event)
 		{
@@ -2105,10 +2106,10 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	wxButton* moveCardLeft = new wxButton(m_cardPanel, BUTTON_MoveCardLeft, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
 	wxButton* moveCardRight = new wxButton(m_cardPanel, BUTTON_MoveCardRight, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
 
-	moveCardUp->SetBitmap(wxBITMAP_PNG(arrowUp));
-	moveCardDown->SetBitmap(wxBITMAP_PNG(arrowDown));
-	moveCardLeft->SetBitmap(wxBITMAP_PNG(arrowLeft));
-	moveCardRight->SetBitmap(wxBITMAP_PNG(arrowRight));
+	moveCardUp->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowUp.svg", buttonSize));
+	moveCardDown->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowDown.svg", buttonSize));
+	moveCardLeft->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
+	moveCardRight->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowRight.svg", buttonSize));
 
 	wxBoxSizer* moveCardHorSizer = new wxBoxSizer(wxHORIZONTAL);
 	moveCardHorSizer->AddStretchSpacer(1);
@@ -2143,8 +2144,8 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 
 	m_sectionPanel = new wxScrolledWindow(m_notebook);
 
-	wxButton* addSection = new wxButton(m_sectionPanel, BUTTON_AddSection, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	addSection->SetBitmap(wxBITMAP_PNG(plus));
+	wxButton* addSection = new wxButton(m_sectionPanel, BUTTON_AddSection, "", wxDefaultPosition, buttonSize);
+	addSection->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Plus.svg", buttonSize));
 
 	wxStaticText* curSectionLabel = new wxStaticText(m_sectionPanel, -1, "Currently selected:");
 	curSectionLabel->SetForegroundColour(wxColour(255, 255, 255));
@@ -2394,8 +2395,9 @@ amTLTimelineSidebar::amTLTimelineSidebar(wxWindow* parent, amTLTimelineCanvas* c
 	m_notebook->AddPage(m_sectionPanel, _("Sections"));
 	m_notebook->AddPage(m_preferencesPanel, _("Preferences"));
 
+	const wxSize fullScreenButtonSize(30, 30);
 	m_fullScreenBtn = new wxBitmapToggleButton(this, BUTTON_TimelineFullScreen,
-		wxBITMAP_PNG(fullScreenPng), wxDefaultPosition, FromDIP(wxSize(30, 30)));
+		wxBitmapBundle::FromSVGFile("Assets/Common/FullScreen.svg", fullScreenButtonSize), wxDefaultPosition, fullScreenButtonSize);
 	m_fullScreenBtn->Show(false);
 
 	m_mainSizer = new wxBoxSizer(wxVERTICAL);

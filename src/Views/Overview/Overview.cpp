@@ -22,11 +22,12 @@ amBookPicker::amBookPicker(amOverview* parent) :
 
 	m_mainWindow->SetMinClientSize(FromDIP(wxSize(-1, m_buttonSize.y + 10)));
 
-	wxButton* addBook = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
-	addBook->SetBitmap(wxBITMAP_PNG(plus));
+	const wxSize buttonSize(24, 24);
+	wxButton* addBook = new wxButton(this, -1, "", wxDefaultPosition, buttonSize);
+	addBook->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Plus.svg", buttonSize));
 	addBook->Bind(wxEVT_BUTTON, &amBookPicker::OnCreateBook, this);
-	wxButton* removeBook = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
-	removeBook->SetBitmap(wxBITMAP_PNG(minus));
+	wxButton* removeBook = new wxButton(this, -1, "", wxDefaultPosition, buttonSize);
+	removeBook->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", buttonSize));
 	removeBook->Bind(wxEVT_BUTTON, &amBookPicker::OnDeleteBook, this);
 
 	wxBoxSizer* bottomLine = new wxBoxSizer(wxHORIZONTAL);

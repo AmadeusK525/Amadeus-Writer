@@ -19,7 +19,7 @@
 #include "../Assets/OSX/Amadeus.xpm"
 #endif
 
-wxVector<wxIcon> StoryTreeModelNode::m_icons{};
+wxVector<wxBitmapBundle> StoryTreeModelNode::m_icons{};
 
 StoryTreeModel::StoryTreeModel()
 {
@@ -374,11 +374,11 @@ void StoryTreeModel::GetValue(wxVariant& variant,
 		it.SetText(node->GetTitle());
 
 		if ( node->IsBook() )
-			it.SetIcon(node->m_icons[0]);
+			it.SetBitmapBundle(node->m_icons[0]);
 		else if ( node->IsDocument() )
-			it.SetIcon(node->m_icons[2]);
+			it.SetBitmapBundle(node->m_icons[2]);
 		else if ( node->IsTrash() )
-			it.SetIcon(node->m_icons[3]);
+			it.SetBitmapBundle(node->m_icons[3]);
 
 		variant << it;
 		break;
@@ -639,8 +639,9 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	itemsSizer->Add(itemBSizer, wxSizerFlags(0).Expand());
 	m_itemPanel->SetSizer(itemsSizer);
 
-	wxButton* leftButton = new wxButton(m_leftPanel, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	leftButton->SetBitmap(wxBITMAP_PNG(arrowLeft));
+	const wxSize buttonSize(24, 24);
+	wxButton* leftButton = new wxButton(m_leftPanel, BUTTON_PreviousChap, "", wxDefaultPosition, buttonSize);
+	leftButton->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
 
 	m_leftSizer = new wxBoxSizer(wxVERTICAL);
 	m_leftSizer->Add(m_characterPanel, wxSizerFlags(1).Expand());
@@ -672,8 +673,8 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	m_outlineView->EnableDragSource(wxDF_UNICODETEXT);
 	m_outlineView->EnableDropTarget(wxDF_UNICODETEXT);
 
-	wxButton* leftButton2 = new wxButton(leftPanel2, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	leftButton2->SetBitmap(wxBITMAP_PNG(arrowLeft));
+	wxButton* leftButton2 = new wxButton(leftPanel2, BUTTON_PreviousChap, "", wxDefaultPosition, buttonSize);
+	leftButton2->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
 
 	wxBoxSizer* outlineSizer = new wxBoxSizer(wxVERTICAL);
 	outlineSizer->Add(m_outlineView, wxSizerFlags(1).Expand());
@@ -713,8 +714,8 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 
 	m_storyView->Refresh();
 
-	wxButton* leftButton3 = new wxButton(leftPanel3, BUTTON_PreviousChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	leftButton3->SetBitmap(wxBITMAP_PNG(arrowLeft));
+	wxButton* leftButton3 = new wxButton(leftPanel3, BUTTON_PreviousChap, "", wxDefaultPosition, buttonSize);
+	leftButton3->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
 
 	wxBoxSizer* storySizer = new wxBoxSizer(wxVERTICAL);
 	storySizer->Add(m_storyView, wxSizerFlags(1).Expand());
@@ -778,8 +779,8 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 
 	nbHolder->SetSizer(nbSizer);
 
-	wxButton* rightButton = new wxButton(rightPanel, BUTTON_NextChap, "", wxDefaultPosition, FromDIP(wxSize(25, 25)));
-	rightButton->SetBitmap(wxBITMAP_PNG(arrowRight));
+	wxButton* rightButton = new wxButton(rightPanel, BUTTON_NextChap, "", wxDefaultPosition, buttonSize);
+	rightButton->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowRight.svg", buttonSize));
 
 	m_rightSizer = new wxBoxSizer(wxVERTICAL);
 	m_rightSizer->Add(sumLabel, wxSizerFlags(0).Expand());
@@ -1518,14 +1519,26 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
 {
 	SetBackgroundColour(wxColour(30, 30, 30));
 
-	AddCheckTool(TOOL_Bold, "", wxBITMAP_PNG(boldLight), wxBITMAP_PNG(boldLight).ConvertToDisabled(), _("Bold"));
-	AddCheckTool(TOOL_Italic, "", wxBITMAP_PNG(italicLight), wxBITMAP_PNG(italicLight).ConvertToDisabled(), _("Italic"));
-	AddCheckTool(TOOL_Underline, "", wxBITMAP_PNG(underlineLight), wxBITMAP_PNG(underlineLight).ConvertToDisabled(), _("Underline"));
+    wxSize iconSize = FromDIP(wxSize(20, 20));
+
+    wxBitmapBundle boldLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Bold-light.svg", iconSize);
+    wxBitmapBundle italicLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Italic-light.svg", iconSize);
+    wxBitmapBundle underlineLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Underline-light.svg", iconSize);
+    wxBitmapBundle leftAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignLeft-light.svg", iconSize);
+    wxBitmapBundle centerAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignCenter-light.svg", iconSize);
+    wxBitmapBundle centerJustAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignCenterJust-light.svg", iconSize);
+    wxBitmapBundle rightAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignRight-light.svg", iconSize);
+    wxBitmapBundle noteViewLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/NoteView-light.svg", iconSize);
+    wxBitmapBundle fullScreenLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/FullScreen-light.svg", iconSize);
+
+	AddCheckTool(TOOL_Bold, "", boldLightBitmapBundle, wxNullBitmap, _("Bold"));
+	AddCheckTool(TOOL_Italic, "", italicLightBitmapBundle, wxNullBitmap, _("Italic"));
+	AddCheckTool(TOOL_Underline, "", underlineLightBitmapBundle, wxNullBitmap, _("Underline"));
 	AddSeparator();
-	AddRadioTool(TOOL_AlignLeft, "", wxBITMAP_PNG(leftAlignLight), wxBITMAP_PNG(leftAlignLight).ConvertToDisabled(), _("Align left"));
-	AddRadioTool(TOOL_AlignCenter, "", wxBITMAP_PNG(centerAlignLight), wxBITMAP_PNG(centerAlignLight).ConvertToDisabled(), _("Align center"));
-	AddRadioTool(TOOL_AlignCenterJust, "", wxBITMAP_PNG(centerJustAlignLight), wxBITMAP_PNG(centerJustAlignLight).ConvertToDisabled(), _("Align center and fit"));
-	AddRadioTool(TOOL_AlignRight, "", wxBITMAP_PNG(rightAlignLight), wxBITMAP_PNG(rightAlignLight).ConvertToDisabled(), _("Align right"));
+	AddRadioTool(TOOL_AlignLeft, "", leftAlignLightBitmapBundle, wxNullBitmap, _("Align left"));
+	AddRadioTool(TOOL_AlignCenter, "", centerAlignLightBitmapBundle, wxNullBitmap, _("Align center"));
+	AddRadioTool(TOOL_AlignCenterJust, "", centerJustAlignLightBitmapBundle, wxNullBitmap, _("Align center and fit"));
+	AddRadioTool(TOOL_AlignRight, "", rightAlignLightBitmapBundle, wxNullBitmap, _("Align right"));
 	AddSeparator();
 
 	wxArrayString sizes;
@@ -1553,7 +1566,7 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
 	{
 		m_parent = pSWN;
 
-		AddCheckTool(TOOL_NoteView, "", wxBITMAP_PNG(noteViewLight), wxBITMAP_PNG(noteViewLight), "Toggle note view");
+		AddCheckTool(TOOL_NoteView, "", noteViewLightBitmapBundle, wxNullBitmap, "Toggle note view");
 		AddSeparator();
 	}
 
@@ -1569,7 +1582,7 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
 	if ( amStyle |= amTB_FULLSCREEN && pSWN )
 	{
 		AddSeparator();
-		AddCheckTool(TOOL_StoryFullScreen, "", wxBITMAP_PNG(fullScreenPngLight), wxBITMAP_PNG(fullScreenPngLight), "Toggle Full Screen");
+		AddCheckTool(TOOL_StoryFullScreen, "", fullScreenLightBitmapBundle, wxNullBitmap, "Toggle Full Screen");
 	}
 
 	Realize();

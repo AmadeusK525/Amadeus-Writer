@@ -207,15 +207,19 @@ amMainFrame::amMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 	m_toolBar = new wxToolBar(m_mainPanel, -1, wxDefaultPosition, wxDefaultSize, wxTB_DEFAULT_STYLE);
 	m_toolBar->SetBackgroundColour(wxColour(100, 100, 100));
 
-	m_toolBar->AddTool(TOOL_NewDocument, wxEmptyString, wxBITMAP_PNG(documentPng), "Add new document", wxITEM_NORMAL);
-	m_toolBar->AddTool(TOOL_NewCharacter, wxEmptyString, wxBITMAP_PNG(characterPng), "Add new character", wxITEM_NORMAL);
-	m_toolBar->AddTool(TOOL_NewLocation, wxEmptyString, wxBITMAP_PNG(locationPng), "Add new location", wxITEM_NORMAL);
-	m_toolBar->AddTool(TOOL_NewItem, wxEmptyString, wxBITMAP_PNG(itemPng), "Add new item", wxITEM_NORMAL);
+    wxSize toolBitmapSize = wxSize(24, 24);
+    wxSize iconSize = FromDIP(toolBitmapSize);
+    m_toolBar->SetToolBitmapSize(toolBitmapSize);
+
+	m_toolBar->AddTool(TOOL_NewDocument, _("Add Character"), wxBitmapBundle::FromSVGFile("Assets/Common/AddDocument.svg", iconSize), "Add new document", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewCharacter, wxEmptyString, wxBitmapBundle::FromSVGFile("Assets/Common/AddCharacter.svg", iconSize), "Add new character", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewLocation, wxEmptyString, wxBitmapBundle::FromSVGFile("Assets/Common/AddLocation.svg", iconSize), "Add new location", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewItem, wxEmptyString, wxBitmapBundle::FromSVGFile("Assets/Common/AddItem.svg", iconSize), "Add new item", wxITEM_NORMAL);
 
 	m_toolBar->AddSeparator();
-	m_toolBar->AddTool(TOOL_Save, "", wxBITMAP_PNG(savePng), "Save project", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_Save, "", wxBitmapBundle::FromSVGFile("Assets/Common/Save.svg", iconSize), "Save project", wxITEM_NORMAL);
 	m_toolBar->AddSeparator();
-	m_toolBar->AddCheckTool(TOOL_FullScreen, "", wxBITMAP_PNG(fullScreenPng), wxNullBitmap, "Toggle Full Screen");
+	m_toolBar->AddCheckTool(TOOL_FullScreen, "", wxBitmapBundle::FromSVGFile("Assets/Common/FullScreen.svg", iconSize), wxNullBitmap, "Toggle Full Screen");
 
 	m_toolBar->AddStretchableSpace();
 

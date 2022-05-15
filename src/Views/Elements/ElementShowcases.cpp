@@ -26,13 +26,15 @@ amRelatedElementsContainer::amRelatedElementsContainer(wxWindow* parent, amTangi
 	m_label->SetForegroundColour(wxColour(255, 255, 255));
 	m_label->SetFont(wxFontInfo(12).Bold());
 
+	const wxSize buttonSize(25, 25);
+
 	wxButton* addRelated = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
-	addRelated->SetBitmap(wxBITMAP_PNG(plus));
+	addRelated->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Plus.svg", buttonSize));
 	addRelated->SetToolTip("Add related elements");
 	addRelated->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnAddElement, this);
 	addRelated->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_owner); });
 	wxButton* removeRelated = new wxButton(this, -1, "", wxDefaultPosition, wxSize(25, 25));
-	removeRelated->SetBitmap(wxBITMAP_PNG(minus));
+	removeRelated->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", buttonSize));
 	removeRelated->SetToolTip("Remove related elements");
 	removeRelated->Bind(wxEVT_BUTTON, &amRelatedElementsContainer::OnRemoveElement, this);
 	removeRelated->Bind(wxEVT_UPDATE_UI, [&](wxUpdateUIEvent& event) { event.Enable(m_owner && !m_owner->relatedElements.empty()); });
@@ -605,8 +607,10 @@ bool amTangibleElementShowcase::Create(wxWindow* parent)
 
 	//////////////////////////////// First panel ///////////////////////////////
 
-	m_nextPanel = new wxButton(m_mainPanel, -1, "", wxDefaultPosition, wxSize(25, 25));
-	m_nextPanel->SetBitmap(wxBITMAP_PNG(arrowRight));
+	const wxSize buttonSize(24, 24);
+
+	m_nextPanel = new wxButton(m_mainPanel, -1, "", wxDefaultPosition, buttonSize);
+	m_nextPanel->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowRight.svg", buttonSize));
 	m_nextPanel->Bind(wxEVT_BUTTON, &amTangibleElementShowcase::OnNextPanel, this);
 
 	m_role = new wxStaticText(m_mainPanel, -1, "", wxDefaultPosition, wxSize(150, -1), wxALIGN_CENTER | wxBORDER_SIMPLE);
@@ -641,8 +645,8 @@ bool amTangibleElementShowcase::Create(wxWindow* parent)
 
 	/////////////////////////////// Second Panel ///////////////////////////////
 
-	m_prevPanel = new wxButton(m_secondPanel, -1, "", wxDefaultPosition, wxSize(25, 25));
-	m_prevPanel->SetBitmap(wxBITMAP_PNG(arrowLeft));
+	m_prevPanel = new wxButton(m_secondPanel, -1, "", wxDefaultPosition, buttonSize);
+	m_prevPanel->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
 	m_prevPanel->Bind(wxEVT_BUTTON, &amTangibleElementShowcase::OnPreviousPanel, this);
 
 	m_nameSecondPanel = new wxStaticText(m_secondPanel, -1, "");

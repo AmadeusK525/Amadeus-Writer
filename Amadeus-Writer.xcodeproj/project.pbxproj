@@ -56,6 +56,46 @@
 
 /* Begin PBXFileReference section */
 		4D3A9E9E27C572F6003312BD /* Amadeus-Writer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Amadeus-Writer.entitlements"; sourceTree = "<group>"; };
+		4D96C2AC27FB402F00744328 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4D96C2FC27FB947900744328 /* Underline.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Underline.svg; sourceTree = "<group>"; };
+		4D96C2FD27FB947900744328 /* AlignCenter.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AlignCenter.svg; sourceTree = "<group>"; };
+		4D96C2FE27FB947900744328 /* FullScreen.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FullScreen.svg; sourceTree = "<group>"; };
+		4D96C2FF27FB947900744328 /* AddCharacter.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddCharacter.svg; sourceTree = "<group>"; };
+		4D96C30027FB947900744328 /* Research.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research.svg; sourceTree = "<group>"; };
+		4D96C30127FB947900744328 /* Italic-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Italic-light.svg"; sourceTree = "<group>"; };
+		4D96C30227FB947900744328 /* AddText.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddText.svg; sourceTree = "<group>"; };
+		4D96C30327FB947900744328 /* ArrowDown.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ArrowDown.svg; sourceTree = "<group>"; };
+		4D96C30427FB947900744328 /* AlignCenterJust.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AlignCenterJust.svg; sourceTree = "<group>"; };
+		4D96C30527FB947900744328 /* NoteView-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NoteView-light.svg"; sourceTree = "<group>"; };
+		4D96C30627FB947900744328 /* NoteView.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NoteView.svg; sourceTree = "<group>"; };
+		4D96C30727FB947900744328 /* ArrowRight.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ArrowRight.svg; sourceTree = "<group>"; };
+		4D96C30827FB947900744328 /* AlignCenterJust-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "AlignCenterJust-light.svg"; sourceTree = "<group>"; };
+		4D96C30927FB947900744328 /* Book.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Book.svg; sourceTree = "<group>"; };
+		4D96C30A27FB947900744328 /* Cursor.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cursor.svg; sourceTree = "<group>"; };
+		4D96C30B27FB947900744328 /* Bold.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Bold.svg; sourceTree = "<group>"; };
+		4D96C30C27FB947900744328 /* Plus.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Plus.svg; sourceTree = "<group>"; };
+		4D96C30D27FB947900744328 /* AlignLeft.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AlignLeft.svg; sourceTree = "<group>"; };
+		4D96C30E27FB947900744328 /* AddItem.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddItem.svg; sourceTree = "<group>"; };
+		4D96C30F27FB947900744328 /* Connection.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Connection.svg; sourceTree = "<group>"; };
+		4D96C31027FB947900744328 /* AddDocument.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddDocument.svg; sourceTree = "<group>"; };
+		4D96C31127FB947900744328 /* AlignRight.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AlignRight.svg; sourceTree = "<group>"; };
+		4D96C31227FB947900744328 /* AlignCenter-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "AlignCenter-light.svg"; sourceTree = "<group>"; };
+		4D96C31327FB947900744328 /* AddFile.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddFile.svg; sourceTree = "<group>"; };
+		4D96C31427FB947900744328 /* FullScreen-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "FullScreen-light.svg"; sourceTree = "<group>"; };
+		4D96C31527FB947900744328 /* Save.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Save.svg; sourceTree = "<group>"; };
+		4D96C31627FB947900744328 /* AddImage.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddImage.svg; sourceTree = "<group>"; };
+		4D96C31727FB947900744328 /* Trash.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Trash.svg; sourceTree = "<group>"; };
+		4D96C31827FB947900744328 /* Underline-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Underline-light.svg"; sourceTree = "<group>"; };
+		4D96C31927FB947900744328 /* AddLocation.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddLocation.svg; sourceTree = "<group>"; };
+		4D96C31A27FB947900744328 /* Bold-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Bold-light.svg"; sourceTree = "<group>"; };
+		4D96C31B27FB947900744328 /* Italic.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Italic.svg; sourceTree = "<group>"; };
+		4D96C31C27FB947900744328 /* ArrowUp.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ArrowUp.svg; sourceTree = "<group>"; };
+		4D96C31D27FB947900744328 /* AlignLeft-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "AlignLeft-light.svg"; sourceTree = "<group>"; };
+		4D96C31E27FB947900744328 /* ArrowLeft.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ArrowLeft.svg; sourceTree = "<group>"; };
+		4D96C31F27FB947900744328 /* AddNote.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddNote.svg; sourceTree = "<group>"; };
+		4D96C32027FB947900744328 /* AddFolder.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddFolder.svg; sourceTree = "<group>"; };
+		4D96C32127FB947900744328 /* Minus.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Minus.svg; sourceTree = "<group>"; };
+		4D96C32227FB947900744328 /* AlignRight-light.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "AlignRight-light.svg"; sourceTree = "<group>"; };
 		4DBB83FB27C568A800F4F8E9 /* AddDocument.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddDocument.xpm; sourceTree = "<group>"; };
 		4DBB83FC27C56AD000F4F8E9 /* AddItem.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddItem.xpm; sourceTree = "<group>"; };
 		4DBB83FD27C56AD000F4F8E9 /* AddLocation.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddLocation.xpm; sourceTree = "<group>"; };
@@ -156,6 +196,52 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4D96C2FB27FB947900744328 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				4D96C2FC27FB947900744328 /* Underline.svg */,
+				4D96C2FD27FB947900744328 /* AlignCenter.svg */,
+				4D96C2FE27FB947900744328 /* FullScreen.svg */,
+				4D96C2FF27FB947900744328 /* AddCharacter.svg */,
+				4D96C30027FB947900744328 /* Research.svg */,
+				4D96C30127FB947900744328 /* Italic-light.svg */,
+				4D96C30227FB947900744328 /* AddText.svg */,
+				4D96C30327FB947900744328 /* ArrowDown.svg */,
+				4D96C30427FB947900744328 /* AlignCenterJust.svg */,
+				4D96C30527FB947900744328 /* NoteView-light.svg */,
+				4D96C30627FB947900744328 /* NoteView.svg */,
+				4D96C30727FB947900744328 /* ArrowRight.svg */,
+				4D96C30827FB947900744328 /* AlignCenterJust-light.svg */,
+				4D96C30927FB947900744328 /* Book.svg */,
+				4D96C30A27FB947900744328 /* Cursor.svg */,
+				4D96C30B27FB947900744328 /* Bold.svg */,
+				4D96C30C27FB947900744328 /* Plus.svg */,
+				4D96C30D27FB947900744328 /* AlignLeft.svg */,
+				4D96C30E27FB947900744328 /* AddItem.svg */,
+				4D96C30F27FB947900744328 /* Connection.svg */,
+				4D96C31027FB947900744328 /* AddDocument.svg */,
+				4D96C31127FB947900744328 /* AlignRight.svg */,
+				4D96C31227FB947900744328 /* AlignCenter-light.svg */,
+				4D96C31327FB947900744328 /* AddFile.svg */,
+				4D96C31427FB947900744328 /* FullScreen-light.svg */,
+				4D96C31527FB947900744328 /* Save.svg */,
+				4D96C31627FB947900744328 /* AddImage.svg */,
+				4D96C31727FB947900744328 /* Trash.svg */,
+				4D96C31827FB947900744328 /* Underline-light.svg */,
+				4D96C31927FB947900744328 /* AddLocation.svg */,
+				4D96C31A27FB947900744328 /* Bold-light.svg */,
+				4D96C31B27FB947900744328 /* Italic.svg */,
+				4D96C31C27FB947900744328 /* ArrowUp.svg */,
+				4D96C31D27FB947900744328 /* AlignLeft-light.svg */,
+				4D96C31E27FB947900744328 /* ArrowLeft.svg */,
+				4D96C31F27FB947900744328 /* AddNote.svg */,
+				4D96C32027FB947900744328 /* AddFolder.svg */,
+				4D96C32127FB947900744328 /* Minus.svg */,
+				4D96C32227FB947900744328 /* AlignRight-light.svg */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		4DD1693A27C4A1D400E42682 = {
 			isa = PBXGroup;
 			children = (
@@ -488,6 +574,7 @@
 		4DD16A5C27C4ACA200E42682 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				4D96C2FB27FB947900744328 /* Common */,
 				4DD16C5027C5396F00E42682 /* OSX */,
 				4DD16A6727C4ACA200E42682 /* Screenshots */,
 			);

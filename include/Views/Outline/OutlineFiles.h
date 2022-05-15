@@ -26,7 +26,7 @@ private:
 	wxRichTextBuffer* m_buffer = nullptr;
 
 public:
-	static wxVector<wxIcon> m_icons;
+	static wxVector<wxBitmapBundle> m_icons;
 
 public:
 	inline OutlineTreeModelNode(OutlineTreeModelNode* parent,
@@ -60,23 +60,15 @@ public:
 	{
 		if ( m_icons.empty() )
 		{
-			int x = 14, y = 14;
+            const wxSize iconSize(14, 14);
 
-            wxIcon research = wxICON(researchIcon);
-			research.SetHeight(y);
-            research.SetWidth(x);
+            auto researchIcon = wxBitmapBundle::FromSVGFile("Assets/Common/Research.svg", iconSize);
+            auto fileIcon = wxBitmapBundle::FromSVGFile("Assets/Common/AddFile.svg", iconSize);
+            auto folderIcon = wxBitmapBundle::FromSVGFile("Assets/Common/AddFolder.svg", iconSize);
 
-			wxIcon folder = wxICON(folderIcon);
-			folder.SetHeight(y);
-            folder.SetWidth(x);
-
-			wxIcon file = wxICON(fileIcon);
-			file.SetHeight(y);
-            file.SetWidth(x);
-
-			m_icons.push_back(research);
-			m_icons.push_back(folder);
-			m_icons.push_back(file);
+			m_icons.push_back(researchIcon);
+			m_icons.push_back(folderIcon);
+			m_icons.push_back(fileIcon);
 
 #ifdef __WXMSW__
 			m_hoverAttr.SetBackgroundColour(wxColour(110, 110, 110));

@@ -83,7 +83,7 @@ private:
 	}
 
 public:
-	static wxVector<wxIcon> m_icons;
+	static wxVector<wxBitmapBundle> m_icons;
 
 	inline StoryTreeModelNode(StoryTreeModelNode* parent, StoryTreeModelNode* trash, am::Document* document, int position) :
 		StoryTreeModelNode(parent, trash, document->name, position, STMN_Document)
@@ -109,28 +109,17 @@ public:
 	{
 		if ( m_icons.empty() )
 		{
-			int x = 14, y = 14;
+            const wxSize iconSize(14, 14);
 
-			wxIcon book = wxICON(bookIcon);
-			book.SetHeight(y);
-            book.SetWidth(x);
+            wxBitmapBundle bookBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
+            wxBitmapBundle sectionBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
+            wxBitmapBundle fileBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
+            wxBitmapBundle trashBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
 
-            wxIcon section = wxICON(sectionIcon);
-			section.SetHeight(y);
-            section.SetWidth(x);
-
-            wxIcon document = wxICON(fileIcon);
-			document.SetHeight(y);
-            document.SetWidth(x);
-
-            wxIcon trash = wxICON(trashIcon);
-			trash.SetHeight(y);
-            trash.SetWidth(x);
-
-            m_icons.push_back(book);
-			m_icons.push_back(section);
-			m_icons.push_back(document);
-			m_icons.push_back(trash);
+            m_icons.push_back(bookBitmapBundle);
+			m_icons.push_back(sectionBitmapBundle);
+			m_icons.push_back(fileBitmapBundle);
+			m_icons.push_back(trashBitmapBundle);
 
 #ifdef __WXMSW__
 			m_hoverAttr.SetBackgroundColour(wxColour(110, 110, 110));
