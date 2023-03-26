@@ -1,5 +1,6 @@
 #include "Views/MainFrame.h"
 
+#include "Style/Style.hpp"
 #include "Views/Overview/Overview.h"
 #include "Views/Elements/ElementsNotebook.h"
 #include "Views/Story/StoryNotebook.h"
@@ -211,15 +212,15 @@ amMainFrame::amMainFrame(const wxString& title, const wxPoint& pos, const wxSize
     wxSize iconSize = FromDIP(toolBitmapSize);
     m_toolBar->SetToolBitmapSize(toolBitmapSize);
 
-	m_toolBar->AddTool(TOOL_NewDocument, _("Add Character"), wxBitmapBundle::FromSVGFile("Assets/Common/AddDocument.svg", iconSize), "Add new document", wxITEM_NORMAL);
-	m_toolBar->AddTool(TOOL_NewCharacter, wxEmptyString, wxBitmapBundle::FromSVGFile("Assets/Common/AddCharacter.svg", iconSize), "Add new character", wxITEM_NORMAL);
-	m_toolBar->AddTool(TOOL_NewLocation, wxEmptyString, wxBitmapBundle::FromSVGFile("Assets/Common/AddLocation.svg", iconSize), "Add new location", wxITEM_NORMAL);
-	m_toolBar->AddTool(TOOL_NewItem, wxEmptyString, wxBitmapBundle::FromSVGFile("Assets/Common/AddItem.svg", iconSize), "Add new item", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewDocument, _("Add Character"), Style::Icon::GetBmp(IconName::AddDocument, iconSize), "Add new document", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewCharacter, wxEmptyString, Style::Icon::GetBmp(IconName::AddCharacter, iconSize), "Add new character", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewLocation, wxEmptyString, Style::Icon::GetBmp(IconName::AddLocation, iconSize), "Add new location", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_NewItem, wxEmptyString, Style::Icon::GetBmp(IconName::AddItem, iconSize), "Add new item", wxITEM_NORMAL);
 
 	m_toolBar->AddSeparator();
-	m_toolBar->AddTool(TOOL_Save, "", wxBitmapBundle::FromSVGFile("Assets/Common/Save.svg", iconSize), "Save project", wxITEM_NORMAL);
+	m_toolBar->AddTool(TOOL_Save, "", Style::Icon::GetBmp(IconName::Save, iconSize), "Save project", wxITEM_NORMAL);
 	m_toolBar->AddSeparator();
-	m_toolBar->AddCheckTool(TOOL_FullScreen, "", wxBitmapBundle::FromSVGFile("Assets/Common/FullScreen.svg", iconSize), wxNullBitmap, "Toggle Full Screen");
+	m_toolBar->AddCheckTool(TOOL_FullScreen, "", Style::Icon::GetBmp(IconName::FullScreen, iconSize), wxNullBitmap, "Toggle Full Screen");
 
 	m_toolBar->AddStretchableSpace();
 

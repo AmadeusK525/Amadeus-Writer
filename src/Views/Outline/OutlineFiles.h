@@ -8,6 +8,7 @@
 #include <wx/richtext/richtextctrl.h>
 #include <wx/sstream.h>
 
+#include "Style/Style.hpp"
 #include "Elements/StoryElements.h"
 #include "Utils/amUtility.h"
 #include "ProjectManaging.h"
@@ -62,9 +63,9 @@ public:
 		{
             const wxSize iconSize(14, 14);
 
-            auto researchIcon = wxBitmapBundle::FromSVGFile("Assets/Common/Research.svg", iconSize);
-            auto fileIcon = wxBitmapBundle::FromSVGFile("Assets/Common/AddFile.svg", iconSize);
-            auto folderIcon = wxBitmapBundle::FromSVGFile("Assets/Common/AddFolder.svg", iconSize);
+            auto researchIcon = Style::Icon::GetBmp(IconName::Research, iconSize);
+            auto fileIcon = Style::Icon::GetBmp(IconName::AddFile, iconSize);
+            auto folderIcon = Style::Icon::GetBmp(IconName::AddFolder, iconSize);
 
 			m_icons.push_back(researchIcon);
 			m_icons.push_back(folderIcon);

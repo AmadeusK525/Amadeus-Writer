@@ -1,5 +1,6 @@
 #include "Views/Elements/ElementCreators.h"
 
+#include "Style/Style.hpp"
 #include "Views/MainFrame.h"
 #include "Views/Elements/ElementsNotebook.h"
 #include "Views/Outline/Outline.h"
@@ -63,7 +64,7 @@ bool amElementCreator::Create(wxWindow* parent, long id,
 	const wxSize buttonSize(24, 24);
 
 	m_addCustom = new wxButton(m_panel2, -1, "", wxDefaultPosition, buttonSize);
-	m_addCustom->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Plus.svg", buttonSize));
+	m_addCustom->SetBitmap(Style::Icon::GetBmp(IconName::Plus, buttonSize));
 	m_addCustom->Bind(wxEVT_BUTTON, &amElementCreator::AddCustomAttr, this);
 
 	wxBoxSizer* customHorSiz = new wxBoxSizer(wxHORIZONTAL);
@@ -722,7 +723,7 @@ void amCharacterCreator::AddCustomAttr(wxCommandEvent& event)
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
-	minus->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", wxSize(size.y, size.y)));
+	minus->SetBitmap(Style::Icon::GetBmp(IconName::Minus, wxSize(size.y, size.y)));
 	minus->Bind(wxEVT_BUTTON, &amCharacterCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -1152,7 +1153,7 @@ void amLocationCreator::AddCustomAttr(wxCommandEvent& WXUNUSED(event))
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(panel, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
-	minus->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", wxSize(size.y, size.y)));
+	minus->SetBitmap(Style::Icon::GetBmp(IconName::Minus, wxSize(size.y, size.y)));
 	minus->Bind(wxEVT_BUTTON, &amLocationCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* hor = new wxBoxSizer(wxHORIZONTAL);
@@ -1692,7 +1693,7 @@ void amItemCreator::AddCustomAttr(wxCommandEvent& event)
 	label->SetFont(wxFontInfo(13).Bold());
 
 	wxButton* minus = new wxButton(m_panel2, -1, "", wxDefaultPosition, wxSize(size.y, size.y));
-	minus->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", wxSize(size.y, size.y)));
+	minus->SetBitmap(Style::Icon::GetBmp(IconName::Minus, wxSize(size.y, size.y)));
 	minus->Bind(wxEVT_BUTTON, &amCharacterCreator::RemoveCustomAttr, this);
 
 	wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);

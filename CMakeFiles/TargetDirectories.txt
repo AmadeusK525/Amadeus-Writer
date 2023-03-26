@@ -1,0 +1,9 @@
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/CMakeFiles/Amadeus-Writer.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/CMakeFiles/ALL_BUILD.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/CMakeFiles/ZERO_CHECK.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeFiles/wxSQLite3.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeFiles/ALL_BUILD.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeFiles/ZERO_CHECK.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeFiles/wxSF.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeFiles/ALL_BUILD.dir
+/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeFiles/ZERO_CHECK.dir

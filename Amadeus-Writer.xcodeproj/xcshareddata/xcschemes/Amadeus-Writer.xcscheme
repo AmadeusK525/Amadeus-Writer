@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4DD1694227C4A1D400E42682"
-               BuildableName = "Amadeus-Writer"
+               BlueprintIdentifier = "B338B7CDFE0E41DEA1C6B623"
+               BuildableName = "Amadeus-Writer.app"
                BlueprintName = "Amadeus-Writer"
                ReferencedContainer = "container:Amadeus-Writer.xcodeproj">
             </BuildableReference>
@@ -45,8 +45,8 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4DD1694227C4A1D400E42682"
-            BuildableName = "Amadeus-Writer"
+            BlueprintIdentifier = "B338B7CDFE0E41DEA1C6B623"
+            BuildableName = "Amadeus-Writer.app"
             BlueprintName = "Amadeus-Writer"
             ReferencedContainer = "container:Amadeus-Writer.xcodeproj">
          </BuildableReference>
@@ -62,8 +62,8 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4DD1694227C4A1D400E42682"
-            BuildableName = "Amadeus-Writer"
+            BlueprintIdentifier = "B338B7CDFE0E41DEA1C6B623"
+            BuildableName = "Amadeus-Writer.app"
             BlueprintName = "Amadeus-Writer"
             ReferencedContainer = "container:Amadeus-Writer.xcodeproj">
          </BuildableReference>

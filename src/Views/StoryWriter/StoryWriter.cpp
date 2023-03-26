@@ -1,6 +1,7 @@
 #include "Views/StoryWriter/StoryWriter.h"
 #include "Views/Elements/ElementsNotebook.h"
 #include "Views/Outline/Outline.h"
+#include "Style/Style.hpp"
 #include "Utils/amUtility.h"
 
 #include <wx/popupwin.h>
@@ -641,7 +642,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 
 	const wxSize buttonSize(24, 24);
 	wxButton* leftButton = new wxButton(m_leftPanel, BUTTON_PreviousChap, "", wxDefaultPosition, buttonSize);
-	leftButton->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
+	leftButton->SetBitmap(Style::Icon::GetBmp(IconName::ArrowLeft, buttonSize));
 
 	m_leftSizer = new wxBoxSizer(wxVERTICAL);
 	m_leftSizer->Add(m_characterPanel, wxSizerFlags(1).Expand());
@@ -674,7 +675,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	m_outlineView->EnableDropTarget(wxDF_UNICODETEXT);
 
 	wxButton* leftButton2 = new wxButton(leftPanel2, BUTTON_PreviousChap, "", wxDefaultPosition, buttonSize);
-	leftButton2->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
+	leftButton2->SetBitmap(Style::Icon::GetBmp(IconName::ArrowLeft, buttonSize));
 
 	wxBoxSizer* outlineSizer = new wxBoxSizer(wxVERTICAL);
 	outlineSizer->Add(m_outlineView, wxSizerFlags(1).Expand());
@@ -715,7 +716,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	m_storyView->Refresh();
 
 	wxButton* leftButton3 = new wxButton(leftPanel3, BUTTON_PreviousChap, "", wxDefaultPosition, buttonSize);
-	leftButton3->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowLeft.svg", buttonSize));
+	leftButton3->SetBitmap(Style::Icon::GetBmp(IconName::ArrowLeft, buttonSize));
 
 	wxBoxSizer* storySizer = new wxBoxSizer(wxVERTICAL);
 	storySizer->Add(m_storyView, wxSizerFlags(1).Expand());
@@ -780,7 +781,7 @@ amStoryWriter::amStoryWriter(wxWindow* parent, am::Document* document) :
 	nbHolder->SetSizer(nbSizer);
 
 	wxButton* rightButton = new wxButton(rightPanel, BUTTON_NextChap, "", wxDefaultPosition, buttonSize);
-	rightButton->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/ArrowRight.svg", buttonSize));
+	rightButton->SetBitmap(Style::Icon::GetBmp(IconName::ArrowRight, buttonSize));
 
 	m_rightSizer = new wxBoxSizer(wxVERTICAL);
 	m_rightSizer->Add(sumLabel, wxSizerFlags(0).Expand());
@@ -1521,15 +1522,15 @@ amStoryWriterToolbar::amStoryWriterToolbar(wxWindow* parent,
 
     wxSize iconSize = FromDIP(wxSize(20, 20));
 
-    wxBitmapBundle boldLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Bold-light.svg", iconSize);
-    wxBitmapBundle italicLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Italic-light.svg", iconSize);
-    wxBitmapBundle underlineLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Underline-light.svg", iconSize);
-    wxBitmapBundle leftAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignLeft-light.svg", iconSize);
-    wxBitmapBundle centerAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignCenter-light.svg", iconSize);
-    wxBitmapBundle centerJustAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignCenterJust-light.svg", iconSize);
-    wxBitmapBundle rightAlignLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/AlignRight-light.svg", iconSize);
-    wxBitmapBundle noteViewLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/NoteView-light.svg", iconSize);
-    wxBitmapBundle fullScreenLightBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/FullScreen-light.svg", iconSize);
+    wxBitmapBundle boldLightBitmapBundle = Style::Icon::GetBmp(IconName::BoldLight, iconSize);
+    wxBitmapBundle italicLightBitmapBundle = Style::Icon::GetBmp(IconName::ItalicLight, iconSize);
+    wxBitmapBundle underlineLightBitmapBundle = Style::Icon::GetBmp(IconName::UnderlineLight, iconSize);
+    wxBitmapBundle leftAlignLightBitmapBundle = Style::Icon::GetBmp(IconName::AlignLeftLight, iconSize);
+    wxBitmapBundle centerAlignLightBitmapBundle = Style::Icon::GetBmp(IconName::AlignCenterLight, iconSize);
+    wxBitmapBundle centerJustAlignLightBitmapBundle = Style::Icon::GetBmp(IconName::AlignCenterJustLight, iconSize);
+    wxBitmapBundle rightAlignLightBitmapBundle = Style::Icon::GetBmp(IconName::AlignRightLight, iconSize);
+    wxBitmapBundle noteViewLightBitmapBundle = Style::Icon::GetBmp(IconName::NoteViewLight, iconSize);
+    wxBitmapBundle fullScreenLightBitmapBundle = Style::Icon::GetBmp(IconName::FullScreenLight, iconSize);
 
 	AddCheckTool(TOOL_Bold, "", boldLightBitmapBundle, wxNullBitmap, _("Bold"));
 	AddCheckTool(TOOL_Italic, "", italicLightBitmapBundle, wxNullBitmap, _("Italic"));

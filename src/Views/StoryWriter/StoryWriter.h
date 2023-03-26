@@ -10,6 +10,7 @@
 #include <wx/scrolwin.h>
 
 #include "ProjectManaging.h"
+#include "Style/Style.hpp"
 #include "Views/Story/StoryNotebook.h"
 #include "Views/Outline/OutlineFiles.h"
 
@@ -111,10 +112,10 @@ public:
 		{
             const wxSize iconSize(14, 14);
 
-            wxBitmapBundle bookBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
-            wxBitmapBundle sectionBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
-            wxBitmapBundle fileBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
-            wxBitmapBundle trashBitmapBundle = wxBitmapBundle::FromSVGFile("Assets/Common/Book.svg", iconSize);
+            wxBitmapBundle bookBitmapBundle = Style::Icon::GetBmp(IconName::Book, iconSize);
+            wxBitmapBundle sectionBitmapBundle = Style::Icon::GetBmp(IconName::Book, iconSize);
+            wxBitmapBundle fileBitmapBundle = Style::Icon::GetBmp(IconName::AddFile, iconSize);
+            wxBitmapBundle trashBitmapBundle = Style::Icon::GetBmp(IconName::Trash, iconSize);
 
             m_icons.push_back(bookBitmapBundle);
 			m_icons.push_back(sectionBitmapBundle);

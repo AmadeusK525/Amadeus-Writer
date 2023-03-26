@@ -1,0 +1,901 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 09E098100B8F448E9E16229C /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				318612DD2A796278EB32FE73 /* Generate CMakeFiles/ZERO_CHECK */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		FA6189BE9EAF4DDBBE752F1E /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 7276A89F034F44DE91806F8B /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				7A4EEDBB1BBD793DD99B3C90 /* Generate CMakeFiles/ALL_BUILD */,
+			);
+			dependencies = (
+				0F019D55C6D34B21B28B670B /* PBXTargetDependency */,
+				B1759B3EBE5D4B058EBF3290 /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		0968ACB79990429791A2FA92 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/AutoLayout.cpp */ = {isa = PBXBuildFile; fileRef = 1181B0F770D64C66BB6EBDAC /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/AutoLayout.cpp */; };
+		0E9298FC20FC4FEC8B3906D2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OpenArrow.cpp */ = {isa = PBXBuildFile; fileRef = C49D720AA8814274A1CB861B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OpenArrow.cpp */; };
+		0EA0ECABD3724848852C46B2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBase.cpp */ = {isa = PBXBuildFile; fileRef = EE04BF890199472982724D1A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBase.cpp */; };
+		1D5814F2FFF1413B89B74E12 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondArrow.cpp */ = {isa = PBXBuildFile; fileRef = 4313057FD646433BAE206F64 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondArrow.cpp */; };
+		2685A8E480FF4843834A426A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShapeXml.cpp */ = {isa = PBXBuildFile; fileRef = 0ADB8B9DF19B400FABCEA3A3 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShapeXml.cpp */; };
+		27B69D07BD6A4A988AF488E8 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CommonFcn.cpp */ = {isa = PBXBuildFile; fileRef = 1BF96C8D911C49CBBE1606DE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CommonFcn.cpp */; };
+		285D5C7E67C34CCCB24249C7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleShape.cpp */ = {isa = PBXBuildFile; fileRef = B20CF4C2AE12476484270066 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleShape.cpp */; };
+		2A220A5522DD4393BE4FC43B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EllipseShape.cpp */ = {isa = PBXBuildFile; fileRef = EB49F76DD44C49D2B0118EE9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EllipseShape.cpp */; };
+		2B8E288D6303457AB31FF9AA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleArrow.cpp */ = {isa = PBXBuildFile; fileRef = 0DD4A0B5878B41CA9798BB9F /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleArrow.cpp */; };
+		332DD4085C78430CAC8EDBD1 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundRectShape.cpp */ = {isa = PBXBuildFile; fileRef = 278ABDD3A8D94A2BAB4239DA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundRectShape.cpp */; };
+		3831AC560FD64AA8A3FD46FD /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShapeXml.cpp */ = {isa = PBXBuildFile; fileRef = 0191089E03224206B405C012 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShapeXml.cpp */; };
+		494AD873E6C4433D9BF403B2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShapeXml.cpp */ = {isa = PBXBuildFile; fileRef = C1E997C31FA84071BF94BE20 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShapeXml.cpp */; };
+		497AA88B15A94402A0E66E16 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FixedRectShape.cpp */ = {isa = PBXBuildFile; fileRef = B6FC4FEFCD4740848737F1D2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FixedRectShape.cpp */; };
+		49971D17999643E9BAEEAFD6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeCanvas.cpp */ = {isa = PBXBuildFile; fileRef = 4C2A1A91E36E4EA9A72E49F7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeCanvas.cpp */; };
+		4A9413F04D7044F38252CBAF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OrthoShape.cpp */ = {isa = PBXBuildFile; fileRef = 98202ECDF4C84CA0B15E0B10 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OrthoShape.cpp */; };
+		6A67DA85790048A4BD4B0F4B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeHandle.cpp */ = {isa = PBXBuildFile; fileRef = 8E43EA84A0D5479B88411DE7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeHandle.cpp */; };
+		72985C9E6C754E4581DA1765 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasState.cpp */ = {isa = PBXBuildFile; fileRef = DE573A2142724F84A1FA2456 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasState.cpp */; };
+		763FF30D74944F35A55337C3 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GUI.fbp */ = {isa = PBXBuildFile; fileRef = F99449DD679F44F2B48EF07A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GUI.fbp */; };
+		782B0B90FD81485B9CFD47BF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ArrowBase.cpp */ = {isa = PBXBuildFile; fileRef = A5426F59D0DF4C08BF50931C /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ArrowBase.cpp */; };
+		7C1DEC596B0F4AF09E633D10 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RectShape.cpp */ = {isa = PBXBuildFile; fileRef = FC9527699429427895FD96CA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RectShape.cpp */; };
+		7FD6DAB2F99E4EA3A88C6FB5 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/LineShape.cpp */ = {isa = PBXBuildFile; fileRef = F2149944024E459196BC2EA7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/LineShape.cpp */; };
+		8484903205824B58A95FCC55 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasHistory.cpp */ = {isa = PBXBuildFile; fileRef = 76A2B63B67D0456EAEEB52CB /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasHistory.cpp */; };
+		8F7F464CA7964073B102774F /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShape.cpp */ = {isa = PBXBuildFile; fileRef = 5EB2B4842F084C3C9503CCB1 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShape.cpp */; };
+		9608AA65B9A94817B471251F /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ScaledDC.cpp */ = {isa = PBXBuildFile; fileRef = 98C0A6040CA945F8BB3F3035 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ScaledDC.cpp */; };
+		96A8F063F7D440AE96FD482B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiagramManager.cpp */ = {isa = PBXBuildFile; fileRef = 5A0D24EE2B8F490FBEC8E4BA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiagramManager.cpp */; };
+		9AC851F9E28B445EADC67057 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Thumbnail.cpp */ = {isa = PBXBuildFile; fileRef = DE2AD4C965A0467DA3627B61 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Thumbnail.cpp */; };
+		AB9EAADD413446F892334DC6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GridShape.cpp */ = {isa = PBXBuildFile; fileRef = 10FC1DF3AF284798916503A9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GridShape.cpp */; };
+		AD0A4E3289D2495684209204 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBaseXml.cpp */ = {isa = PBXBuildFile; fileRef = 4AD4DA8BD1D947A1B534B8F5 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBaseXml.cpp */; };
+		B2F97CB77C0843538A14771A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SolidArrow.cpp */ = {isa = PBXBuildFile; fileRef = F1A19FC9330745A1879F9B79 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SolidArrow.cpp */; };
+		B39741F2F4FF4DBCB620F919 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ControlShape.cpp */ = {isa = PBXBuildFile; fileRef = CC4A9C83FB864EDA805A4997 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ControlShape.cpp */; };
+		B88EE529854D4F3C9D30349D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundOrthoShape.cpp */ = {isa = PBXBuildFile; fileRef = 80D2A7B509724D66BA86510A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundOrthoShape.cpp */; };
+		BC48F7E2D86A4D53A92353BF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/XmlSerializer.cpp */ = {isa = PBXBuildFile; fileRef = C98D5BDEC498402A92D7ABCF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/XmlSerializer.cpp */; };
+		BEBB35793BD14102A8E9D520 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SFEvents.cpp */ = {isa = PBXBuildFile; fileRef = EBDD9BEF123E4D43B468BE05 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SFEvents.cpp */; };
+		C1BD0CA2F34F4716A801524E /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EditTextShape.cpp */ = {isa = PBXBuildFile; fileRef = 0E091EA786EC43BFBB55FAEE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EditTextShape.cpp */; };
+		C55713F30EC243229087D810 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShape.cpp */ = {isa = PBXBuildFile; fileRef = B8CD603329E2482BAA92EA29 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShape.cpp */; };
+		CB4B198079CE46D1AA5ED083 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShape.cpp */ = {isa = PBXBuildFile; fileRef = EF2ABEB940494DFD9D8AC44A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShape.cpp */; };
+		CC6A072CC5D74AF8A34DF86D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Printout.cpp */ = {isa = PBXBuildFile; fileRef = 5904158000D643A08DF99CA2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Printout.cpp */; };
+		CD91975144014BCCAE854C65 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FlexGridShape.cpp */ = {isa = PBXBuildFile; fileRef = 073F491CB11A42D4B2B8DE85 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FlexGridShape.cpp */; };
+		D8BBA5824CF648EEA0A5F0B6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDockpoint.cpp */ = {isa = PBXBuildFile; fileRef = 6CB00340837C459E9783759D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDockpoint.cpp */; };
+		F24EBAB3C70F481BA9D25061 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/MultiSelRect.cpp */ = {isa = PBXBuildFile; fileRef = 4AD75C04BD8E4D8084204BF6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/MultiSelRect.cpp */; };
+		F2C0DF60C1AD4A799ADF6B92 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/PropertyIO.cpp */ = {isa = PBXBuildFile; fileRef = 6D22EC22387F441DAD6AF29E /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/PropertyIO.cpp */; };
+		F494DF7601A4465FB640B24B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = C437261A23B04A07A684AEEE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeLists.txt */; };
+		F75C40B51BF743B0B176CAAE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondShape.cpp */ = {isa = PBXBuildFile; fileRef = 87EEED44C0884AB6A8FE77B0 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondShape.cpp */; };
+		FA558C2E456D4F0C81ABD40C /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CurveShape.cpp */ = {isa = PBXBuildFile; fileRef = 95A1A2052F6A4FB3BAE60790 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CurveShape.cpp */; };
+		FE57F60358954300BC36E8DF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDataObject.cpp */ = {isa = PBXBuildFile; fileRef = 67F38126E95D40D1A3A24AF9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDataObject.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		4A25CB4DBE704DECA473E68B /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		968C38C3E16B4714AA3A9B76 /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+		A70EDD71726D4B3C85D90606 /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		D297354FD588428AB7C9C290 /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		97601DF1810640DAB3C010A5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 907174F4D6504A98807FC69D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9F4FB104FF949C7A4FA7352;
+			remoteInfo = ZERO_CHECK;
+		};
+		A34AFDF0A8144A38AE27C92F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 907174F4D6504A98807FC69D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 50A841D5A5E5492F823CA664;
+			remoteInfo = wxSF;
+		};
+		A7146014B769420F863B5E82 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 907174F4D6504A98807FC69D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9F4FB104FF949C7A4FA7352;
+			remoteInfo = ZERO_CHECK;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0191089E03224206B405C012 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShapeXml.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PolygonShapeXml.cpp; path = src/PolygonShapeXml.cpp; sourceTree = SOURCE_ROOT; };
+		073F491CB11A42D4B2B8DE85 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FlexGridShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FlexGridShape.cpp; path = src/FlexGridShape.cpp; sourceTree = SOURCE_ROOT; };
+		0ADB8B9DF19B400FABCEA3A3 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShapeXml.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = BitmapShapeXml.cpp; path = src/BitmapShapeXml.cpp; sourceTree = SOURCE_ROOT; };
+		0DD4A0B5878B41CA9798BB9F /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleArrow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CircleArrow.cpp; path = src/CircleArrow.cpp; sourceTree = SOURCE_ROOT; };
+		0E091EA786EC43BFBB55FAEE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EditTextShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = EditTextShape.cpp; path = src/EditTextShape.cpp; sourceTree = SOURCE_ROOT; };
+		10FC1DF3AF284798916503A9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GridShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = GridShape.cpp; path = src/GridShape.cpp; sourceTree = SOURCE_ROOT; };
+		1181B0F770D64C66BB6EBDAC /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/AutoLayout.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = AutoLayout.cpp; path = src/AutoLayout.cpp; sourceTree = SOURCE_ROOT; };
+		1BF96C8D911C49CBBE1606DE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CommonFcn.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CommonFcn.cpp; path = src/CommonFcn.cpp; sourceTree = SOURCE_ROOT; };
+		278ABDD3A8D94A2BAB4239DA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundRectShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = RoundRectShape.cpp; path = src/RoundRectShape.cpp; sourceTree = SOURCE_ROOT; };
+		4313057FD646433BAE206F64 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondArrow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DiamondArrow.cpp; path = src/DiamondArrow.cpp; sourceTree = SOURCE_ROOT; };
+		457CD2D12ABE41A8A04ED489 /* wxSF */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwxSF.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4AD4DA8BD1D947A1B534B8F5 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBaseXml.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShapeBaseXml.cpp; path = src/ShapeBaseXml.cpp; sourceTree = SOURCE_ROOT; };
+		4AD75C04BD8E4D8084204BF6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/MultiSelRect.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = MultiSelRect.cpp; path = src/MultiSelRect.cpp; sourceTree = SOURCE_ROOT; };
+		4C2A1A91E36E4EA9A72E49F7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeCanvas.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShapeCanvas.cpp; path = src/ShapeCanvas.cpp; sourceTree = SOURCE_ROOT; };
+		5904158000D643A08DF99CA2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Printout.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Printout.cpp; path = src/Printout.cpp; sourceTree = SOURCE_ROOT; };
+		5A0D24EE2B8F490FBEC8E4BA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiagramManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DiagramManager.cpp; path = src/DiagramManager.cpp; sourceTree = SOURCE_ROOT; };
+		5EB2B4842F084C3C9503CCB1 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PolygonShape.cpp; path = src/PolygonShape.cpp; sourceTree = SOURCE_ROOT; };
+		67F38126E95D40D1A3A24AF9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDataObject.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShapeDataObject.cpp; path = src/ShapeDataObject.cpp; sourceTree = SOURCE_ROOT; };
+		6CB00340837C459E9783759D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDockpoint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShapeDockpoint.cpp; path = src/ShapeDockpoint.cpp; sourceTree = SOURCE_ROOT; };
+		6D22EC22387F441DAD6AF29E /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/PropertyIO.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PropertyIO.cpp; path = src/wxxmlserializer/PropertyIO.cpp; sourceTree = SOURCE_ROOT; };
+		76A2B63B67D0456EAEEB52CB /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasHistory.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CanvasHistory.cpp; path = src/CanvasHistory.cpp; sourceTree = SOURCE_ROOT; };
+		80D2A7B509724D66BA86510A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundOrthoShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = RoundOrthoShape.cpp; path = src/RoundOrthoShape.cpp; sourceTree = SOURCE_ROOT; };
+		87EEED44C0884AB6A8FE77B0 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = DiamondShape.cpp; path = src/DiamondShape.cpp; sourceTree = SOURCE_ROOT; };
+		8E43EA84A0D5479B88411DE7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeHandle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShapeHandle.cpp; path = src/ShapeHandle.cpp; sourceTree = SOURCE_ROOT; };
+		95A1A2052F6A4FB3BAE60790 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CurveShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CurveShape.cpp; path = src/CurveShape.cpp; sourceTree = SOURCE_ROOT; };
+		98202ECDF4C84CA0B15E0B10 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OrthoShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OrthoShape.cpp; path = src/OrthoShape.cpp; sourceTree = SOURCE_ROOT; };
+		98C0A6040CA945F8BB3F3035 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ScaledDC.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ScaledDC.cpp; path = src/ScaledDC.cpp; sourceTree = SOURCE_ROOT; };
+		A5426F59D0DF4C08BF50931C /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ArrowBase.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ArrowBase.cpp; path = src/ArrowBase.cpp; sourceTree = SOURCE_ROOT; };
+		B20CF4C2AE12476484270066 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CircleShape.cpp; path = src/CircleShape.cpp; sourceTree = SOURCE_ROOT; };
+		B6FC4FEFCD4740848737F1D2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FixedRectShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = FixedRectShape.cpp; path = src/FixedRectShape.cpp; sourceTree = SOURCE_ROOT; };
+		B8CD603329E2482BAA92EA29 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TextShape.cpp; path = src/TextShape.cpp; sourceTree = SOURCE_ROOT; };
+		C1E997C31FA84071BF94BE20 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShapeXml.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = TextShapeXml.cpp; path = src/TextShapeXml.cpp; sourceTree = SOURCE_ROOT; };
+		C437261A23B04A07A684AEEE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		C49D720AA8814274A1CB861B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OpenArrow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OpenArrow.cpp; path = src/OpenArrow.cpp; sourceTree = SOURCE_ROOT; };
+		C98D5BDEC498402A92D7ABCF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/XmlSerializer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = XmlSerializer.cpp; path = src/wxxmlserializer/XmlSerializer.cpp; sourceTree = SOURCE_ROOT; };
+		CC4A9C83FB864EDA805A4997 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ControlShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ControlShape.cpp; path = src/ControlShape.cpp; sourceTree = SOURCE_ROOT; };
+		DE2AD4C965A0467DA3627B61 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Thumbnail.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Thumbnail.cpp; path = src/Thumbnail.cpp; sourceTree = SOURCE_ROOT; };
+		DE573A2142724F84A1FA2456 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasState.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = CanvasState.cpp; path = src/CanvasState.cpp; sourceTree = SOURCE_ROOT; };
+		EB49F76DD44C49D2B0118EE9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EllipseShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = EllipseShape.cpp; path = src/EllipseShape.cpp; sourceTree = SOURCE_ROOT; };
+		EBDD9BEF123E4D43B468BE05 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SFEvents.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SFEvents.cpp; path = src/SFEvents.cpp; sourceTree = SOURCE_ROOT; };
+		EE04BF890199472982724D1A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBase.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ShapeBase.cpp; path = src/ShapeBase.cpp; sourceTree = SOURCE_ROOT; };
+		EF2ABEB940494DFD9D8AC44A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = BitmapShape.cpp; path = src/BitmapShape.cpp; sourceTree = SOURCE_ROOT; };
+		F1A19FC9330745A1879F9B79 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SolidArrow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = SolidArrow.cpp; path = src/SolidArrow.cpp; sourceTree = SOURCE_ROOT; };
+		F2149944024E459196BC2EA7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/LineShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = LineShape.cpp; path = src/LineShape.cpp; sourceTree = SOURCE_ROOT; };
+		F29DB9B3807E4FF5B4629295 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		F99449DD679F44F2B48EF07A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GUI.fbp */ = {isa = PBXFileReference; explicitFileType = sourcecode; fileEncoding = 4; name = GUI.fbp; path = src/GUI.fbp; sourceTree = SOURCE_ROOT; };
+		FC9527699429427895FD96CA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RectShape.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = RectShape.cpp; path = src/RectShape.cpp; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2FEDF47DAE3342AAAFE08885 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		16EF8590FA1F404EB229B428 /* CMake Rules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "CMake Rules";
+			sourceTree = "<group>";
+		};
+		1EB9A7E837014C578155ED86 = {
+			isa = PBXGroup;
+			children = (
+				432E984E3BB347D0B1C7FD51 /* wxSF */,
+				3E583683083C4A2AB6675D09 /* ALL_BUILD */,
+				FE529432CA814D7DB4B96714 /* Products */,
+				B19FA7A50ED3469FADBC05A8 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		3E583683083C4A2AB6675D09 /* ALL_BUILD */ = {
+			isa = PBXGroup;
+			children = (
+				16EF8590FA1F404EB229B428 /* CMake Rules */,
+				F29DB9B3807E4FF5B4629295 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeLists.txt */,
+			);
+			name = ALL_BUILD;
+			sourceTree = "<group>";
+		};
+		432E984E3BB347D0B1C7FD51 /* wxSF */ = {
+			isa = PBXGroup;
+			children = (
+				8B433A81BC614D738BC44AE9 /* Source Files */,
+				C437261A23B04A07A684AEEE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeLists.txt */,
+				F99449DD679F44F2B48EF07A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GUI.fbp */,
+			);
+			name = wxSF;
+			sourceTree = "<group>";
+		};
+		8B433A81BC614D738BC44AE9 /* Source Files */ = {
+			isa = PBXGroup;
+			children = (
+				A5426F59D0DF4C08BF50931C /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ArrowBase.cpp */,
+				1181B0F770D64C66BB6EBDAC /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/AutoLayout.cpp */,
+				EF2ABEB940494DFD9D8AC44A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShape.cpp */,
+				0ADB8B9DF19B400FABCEA3A3 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShapeXml.cpp */,
+				76A2B63B67D0456EAEEB52CB /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasHistory.cpp */,
+				DE573A2142724F84A1FA2456 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasState.cpp */,
+				0DD4A0B5878B41CA9798BB9F /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleArrow.cpp */,
+				B20CF4C2AE12476484270066 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleShape.cpp */,
+				1BF96C8D911C49CBBE1606DE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CommonFcn.cpp */,
+				CC4A9C83FB864EDA805A4997 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ControlShape.cpp */,
+				95A1A2052F6A4FB3BAE60790 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CurveShape.cpp */,
+				5A0D24EE2B8F490FBEC8E4BA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiagramManager.cpp */,
+				4313057FD646433BAE206F64 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondArrow.cpp */,
+				87EEED44C0884AB6A8FE77B0 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondShape.cpp */,
+				0E091EA786EC43BFBB55FAEE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EditTextShape.cpp */,
+				EB49F76DD44C49D2B0118EE9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EllipseShape.cpp */,
+				B6FC4FEFCD4740848737F1D2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FixedRectShape.cpp */,
+				073F491CB11A42D4B2B8DE85 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FlexGridShape.cpp */,
+				10FC1DF3AF284798916503A9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GridShape.cpp */,
+				F2149944024E459196BC2EA7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/LineShape.cpp */,
+				4AD75C04BD8E4D8084204BF6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/MultiSelRect.cpp */,
+				C49D720AA8814274A1CB861B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OpenArrow.cpp */,
+				98202ECDF4C84CA0B15E0B10 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OrthoShape.cpp */,
+				5EB2B4842F084C3C9503CCB1 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShape.cpp */,
+				0191089E03224206B405C012 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShapeXml.cpp */,
+				5904158000D643A08DF99CA2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Printout.cpp */,
+				FC9527699429427895FD96CA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RectShape.cpp */,
+				80D2A7B509724D66BA86510A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundOrthoShape.cpp */,
+				278ABDD3A8D94A2BAB4239DA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundRectShape.cpp */,
+				EBDD9BEF123E4D43B468BE05 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SFEvents.cpp */,
+				98C0A6040CA945F8BB3F3035 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ScaledDC.cpp */,
+				EE04BF890199472982724D1A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBase.cpp */,
+				4AD4DA8BD1D947A1B534B8F5 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBaseXml.cpp */,
+				4C2A1A91E36E4EA9A72E49F7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeCanvas.cpp */,
+				67F38126E95D40D1A3A24AF9 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDataObject.cpp */,
+				6CB00340837C459E9783759D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDockpoint.cpp */,
+				8E43EA84A0D5479B88411DE7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeHandle.cpp */,
+				F1A19FC9330745A1879F9B79 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SolidArrow.cpp */,
+				B8CD603329E2482BAA92EA29 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShape.cpp */,
+				C1E997C31FA84071BF94BE20 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShapeXml.cpp */,
+				DE2AD4C965A0467DA3627B61 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Thumbnail.cpp */,
+				6D22EC22387F441DAD6AF29E /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/PropertyIO.cpp */,
+				C98D5BDEC498402A92D7ABCF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/XmlSerializer.cpp */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		B19FA7A50ED3469FADBC05A8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FE529432CA814D7DB4B96714 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				457CD2D12ABE41A8A04ED489 /* wxSF */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		50A841D5A5E5492F823CA664 /* wxSF */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7317FEB39F94A65A3946CF6 /* Build configuration list for PBXNativeTarget "wxSF" */;
+			buildPhases = (
+				E0A50B861B8D4A95AA06E040 /* Sources */,
+				2FEDF47DAE3342AAAFE08885 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CFBEFDA2E52F4154A9A650E5 /* PBXTargetDependency */,
+			);
+			name = wxSF;
+			productName = wxSF;
+			productReference = 457CD2D12ABE41A8A04ED489 /* wxSF */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		907174F4D6504A98807FC69D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1340;
+			};
+			buildConfigurationList = 6F5557168FC14F19B38CDF94 /* Build configuration list for PBXProject "wxSF" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				A70EDD71726D4B3C85D90606 /* Debug */,
+				D297354FD588428AB7C9C290 /* Release */,
+				4A25CB4DBE704DECA473E68B /* MinSizeRel */,
+				968C38C3E16B4714AA3A9B76 /* RelWithDebInfo */,
+			);
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 1EB9A7E837014C578155ED86;
+			projectDirPath = .;
+			projectRoot = "";
+			targets = (
+				FA6189BE9EAF4DDBBE752F1E /* ALL_BUILD */,
+				F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */,
+				50A841D5A5E5492F823CA664 /* wxSF */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		318612DD2A796278EB32FE73 /* Generate CMakeFiles/ZERO_CHECK */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ZERO_CHECK";
+			outputPaths = (
+"/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeFiles/ZERO_CHECK"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeScripts/ReRunCMake.make
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		3C0110FC8322DE7E50886E21 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		7A4EEDBB1BBD793DD99B3C90 /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+"/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/CMakeFiles/ALL_BUILD"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework
+  echo Build\\ all\\ projects
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		9B50530E35CC49C82C2FACCF = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E0A50B861B8D4A95AA06E040 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				782B0B90FD81485B9CFD47BF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ArrowBase.cpp */,
+				0968ACB79990429791A2FA92 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/AutoLayout.cpp */,
+				CB4B198079CE46D1AA5ED083 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShape.cpp */,
+				2685A8E480FF4843834A426A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/BitmapShapeXml.cpp */,
+				8484903205824B58A95FCC55 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasHistory.cpp */,
+				72985C9E6C754E4581DA1765 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CanvasState.cpp */,
+				2B8E288D6303457AB31FF9AA /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleArrow.cpp */,
+				285D5C7E67C34CCCB24249C7 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CircleShape.cpp */,
+				27B69D07BD6A4A988AF488E8 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CommonFcn.cpp */,
+				B39741F2F4FF4DBCB620F919 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ControlShape.cpp */,
+				FA558C2E456D4F0C81ABD40C /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/CurveShape.cpp */,
+				96A8F063F7D440AE96FD482B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiagramManager.cpp */,
+				1D5814F2FFF1413B89B74E12 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondArrow.cpp */,
+				F75C40B51BF743B0B176CAAE /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/DiamondShape.cpp */,
+				C1BD0CA2F34F4716A801524E /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EditTextShape.cpp */,
+				2A220A5522DD4393BE4FC43B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/EllipseShape.cpp */,
+				497AA88B15A94402A0E66E16 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FixedRectShape.cpp */,
+				CD91975144014BCCAE854C65 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/FlexGridShape.cpp */,
+				AB9EAADD413446F892334DC6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/GridShape.cpp */,
+				7FD6DAB2F99E4EA3A88C6FB5 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/LineShape.cpp */,
+				F24EBAB3C70F481BA9D25061 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/MultiSelRect.cpp */,
+				0E9298FC20FC4FEC8B3906D2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OpenArrow.cpp */,
+				4A9413F04D7044F38252CBAF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/OrthoShape.cpp */,
+				8F7F464CA7964073B102774F /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShape.cpp */,
+				3831AC560FD64AA8A3FD46FD /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/PolygonShapeXml.cpp */,
+				CC6A072CC5D74AF8A34DF86D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Printout.cpp */,
+				7C1DEC596B0F4AF09E633D10 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RectShape.cpp */,
+				B88EE529854D4F3C9D30349D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundOrthoShape.cpp */,
+				332DD4085C78430CAC8EDBD1 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/RoundRectShape.cpp */,
+				BEBB35793BD14102A8E9D520 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SFEvents.cpp */,
+				9608AA65B9A94817B471251F /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ScaledDC.cpp */,
+				0EA0ECABD3724848852C46B2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBase.cpp */,
+				AD0A4E3289D2495684209204 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeBaseXml.cpp */,
+				49971D17999643E9BAEEAFD6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeCanvas.cpp */,
+				FE57F60358954300BC36E8DF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDataObject.cpp */,
+				D8BBA5824CF648EEA0A5F0B6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeDockpoint.cpp */,
+				6A67DA85790048A4BD4B0F4B /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/ShapeHandle.cpp */,
+				B2F97CB77C0843538A14771A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/SolidArrow.cpp */,
+				C55713F30EC243229087D810 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShape.cpp */,
+				494AD873E6C4433D9BF403B2 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/TextShapeXml.cpp */,
+				9AC851F9E28B445EADC67057 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/Thumbnail.cpp */,
+				F2C0DF60C1AD4A799ADF6B92 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/PropertyIO.cpp */,
+				BC48F7E2D86A4D53A92353BF /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src/wxxmlserializer/XmlSerializer.cpp */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0F019D55C6D34B21B28B670B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 50A841D5A5E5492F823CA664 /* wxSF */;
+			targetProxy = A34AFDF0A8144A38AE27C92F /* PBXContainerItemProxy */;
+		};
+		B1759B3EBE5D4B058EBF3290 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */;
+			targetProxy = 97601DF1810640DAB3C010A5 /* PBXContainerItemProxy */;
+		};
+		CFBEFDA2E52F4154A9A650E5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */;
+			targetProxy = A7146014B769420F863B5E82 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2E9A11BE85194C728B6F2269 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		3B4556BE167C499B95DEBBF9 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src","$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = " -pthread        -DNDEBUG ";
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSF;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		530F7BA09A304B198E9AB52B /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src","$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = " -pthread     -DNDEBUG ";
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSF;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		5EA4A9AB01614AA2987770AD /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		6C0088EAD3494C3081B8439F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		7DBA8C10ADFC454D80C02D68 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/build";
+			};
+			name = MinSizeRel;
+		};
+		8A884668467946CB8827A8B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		90599A4D67B547E097EC3547 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src","$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = " -pthread     -DNDEBUG ";
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSF;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		A20227A2F8B24077821BCAA3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		A45A78A56807418CAFC2082B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		A4A489D5EEDB42C7AA326EE6 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		BEE890E62A6248B1A84045EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/build";
+			};
+			name = Release;
+		};
+		DF8318F347554E41B47A9CE9 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		ED523E2DE63642A1A5EB5623 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/build";
+			};
+			name = RelWithDebInfo;
+		};
+		F47265F4D4564F8FAF0626E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/build";
+			};
+			name = Debug;
+		};
+		FF168C29BF81409CB51CFBD9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .a;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework/src","$(inherited)");
+				INSTALL_PATH = "";
+				LIBRARY_STYLE = STATIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CPLUSPLUSFLAGS = " -pthread    ";
+				OTHER_LIBTOOLFLAGS = ("");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSF;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxShapeFramework";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		09E098100B8F448E9E16229C /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A20227A2F8B24077821BCAA3 /* Debug */,
+				6C0088EAD3494C3081B8439F /* Release */,
+				DF8318F347554E41B47A9CE9 /* MinSizeRel */,
+				A4A489D5EEDB42C7AA326EE6 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6F5557168FC14F19B38CDF94 /* Build configuration list for PBXProject "wxSF" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F47265F4D4564F8FAF0626E0 /* Debug */,
+				BEE890E62A6248B1A84045EF /* Release */,
+				7DBA8C10ADFC454D80C02D68 /* MinSizeRel */,
+				ED523E2DE63642A1A5EB5623 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7276A89F034F44DE91806F8B /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8A884668467946CB8827A8B0 /* Debug */,
+				A45A78A56807418CAFC2082B /* Release */,
+				2E9A11BE85194C728B6F2269 /* MinSizeRel */,
+				5EA4A9AB01614AA2987770AD /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A7317FEB39F94A65A3946CF6 /* Build configuration list for PBXNativeTarget "wxSF" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF168C29BF81409CB51CFBD9 /* Debug */,
+				90599A4D67B547E097EC3547 /* Release */,
+				530F7BA09A304B198E9AB52B /* MinSizeRel */,
+				3B4556BE167C499B95DEBBF9 /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 907174F4D6504A98807FC69D /* Project object */;
+}

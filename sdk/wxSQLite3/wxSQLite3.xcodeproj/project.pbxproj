@@ -3,35 +3,111 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 3EAC96C52AAD4A11BDF18447 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */;
+			buildPhases = (
+				C66F0A867B0E2ED5652DEB66 /* Generate CMakeFiles/ZERO_CHECK */,
+			);
+			dependencies = (
+			);
+			name = ZERO_CHECK;
+			productName = ZERO_CHECK;
+		};
+		FA6189BE9EAF4DDBBE752F1E /* ALL_BUILD */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FB48C20AE53C4DD69C62111A /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+			buildPhases = (
+				D90DBCBEB398AAD6CECA4295 /* Generate CMakeFiles/ALL_BUILD */,
+			);
+			dependencies = (
+				14639438CD5D431DA1B8C851 /* PBXTargetDependency */,
+				DF820AB6EC314C478AA19794 /* PBXTargetDependency */,
+			);
+			name = ALL_BUILD;
+			productName = ALL_BUILD;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
-		4DD16C1127C5261800E42682 /* wxsqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0727C5261800E42682 /* wxsqlite3.h */; };
-		4DD16C1227C5261800E42682 /* wxsqlite3opt.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0827C5261800E42682 /* wxsqlite3opt.h */; };
-		4DD16C1327C5261800E42682 /* wxsqlite3_version.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0927C5261800E42682 /* wxsqlite3_version.h */; };
-		4DD16C1427C5261800E42682 /* wxsqlite3def.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0A27C5261800E42682 /* wxsqlite3def.h */; };
-		4DD16C1527C5261800E42682 /* wxsqlite3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16C0C27C5261800E42682 /* wxsqlite3.cpp */; };
-		4DD16C1627C5261800E42682 /* sqlite3mc_amalgamation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0E27C5261800E42682 /* sqlite3mc_amalgamation.h */; };
-		4DD16C1727C5261800E42682 /* sqlite3mc_config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD16C0F27C5261800E42682 /* sqlite3mc_config.h */; };
-		4DD16C1827C5261800E42682 /* sqlite3mc_amalgamation.c in Sources */ = {isa = PBXBuildFile; fileRef = 4DD16C1027C5261800E42682 /* sqlite3mc_amalgamation.c */; };
+		6D9080D39B574448AFF8FE00 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = A174CF9552A146CDBA535C03 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeLists.txt */; };
+		9D89246A5A6B48E3A2BFC8EC /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/wxsqlite3.cpp */ = {isa = PBXBuildFile; fileRef = F0F5A0E38B9E4BEB9BFA6944 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/wxsqlite3.cpp */; };
+		E262A2CD92544795B2595AE6 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_config.h */ = {isa = PBXBuildFile; fileRef = 4B55C7368B6B480F99FF8B05 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_config.h */; };
+		E4E314646AC14493AC54AF12 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.h */ = {isa = PBXBuildFile; fileRef = 06102103986C44BCB63C9B70 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.h */; };
+		F4EB76A9332145768B7F8426 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.c */ = {isa = PBXBuildFile; fileRef = 865C6E00BE294DB8B33AB50A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.c */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildStyle section */
+		1869E4A3D1BE4DB2A4F8D4FD /* RelWithDebInfo */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = RelWithDebInfo;
+		};
+		2E730CBBD0B149F7A3BD7E4E /* MinSizeRel */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = MinSizeRel;
+		};
+		32E3D321085D42219E0686AB /* Debug */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		60CA22CD772248289E6CFF8F /* Release */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Release;
+		};
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+		9A81C6FE8F834F22831DB538 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1DC41567675D475AACD6BEFE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1920D14EF13E49B4964BE3E6;
+			remoteInfo = wxSQLite3;
+		};
+		9E99B6BB2C9645A29C3DFE22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1DC41567675D475AACD6BEFE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9F4FB104FF949C7A4FA7352;
+			remoteInfo = ZERO_CHECK;
+		};
+		EC8CDE058E2144C38237733E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1DC41567675D475AACD6BEFE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9F4FB104FF949C7A4FA7352;
+			remoteInfo = ZERO_CHECK;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		4DD16BFE27C525EA00E42682 /* libwxSQLite3.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwxSQLite3.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4DD16C0727C5261800E42682 /* wxsqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3.h; sourceTree = "<group>"; };
-		4DD16C0827C5261800E42682 /* wxsqlite3opt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3opt.h; sourceTree = "<group>"; };
-		4DD16C0927C5261800E42682 /* wxsqlite3_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3_version.h; sourceTree = "<group>"; };
-		4DD16C0A27C5261800E42682 /* wxsqlite3def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxsqlite3def.h; sourceTree = "<group>"; };
-		4DD16C0C27C5261800E42682 /* wxsqlite3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wxsqlite3.cpp; sourceTree = "<group>"; };
-		4DD16C0D27C5261800E42682 /* wxsqlite3_version.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wxsqlite3_version.rc; sourceTree = "<group>"; };
-		4DD16C0E27C5261800E42682 /* sqlite3mc_amalgamation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3mc_amalgamation.h; sourceTree = "<group>"; };
-		4DD16C0F27C5261800E42682 /* sqlite3mc_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3mc_config.h; sourceTree = "<group>"; };
-		4DD16C1027C5261800E42682 /* sqlite3mc_amalgamation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sqlite3mc_amalgamation.c; sourceTree = "<group>"; };
+		06102103986C44BCB63C9B70 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = sqlite3mc_amalgamation.h; path = src/sqlite3mc_amalgamation.h; sourceTree = SOURCE_ROOT; };
+		4B55C7368B6B480F99FF8B05 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = sqlite3mc_config.h; path = src/sqlite3mc_config.h; sourceTree = SOURCE_ROOT; };
+		84E9E61C58A6425A9834E66D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		865C6E00BE294DB8B33AB50A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 4; name = sqlite3mc_amalgamation.c; path = src/sqlite3mc_amalgamation.c; sourceTree = SOURCE_ROOT; };
+		A174CF9552A146CDBA535C03 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = sourcecode.text; fileEncoding = 4; name = CMakeLists.txt; path = CMakeLists.txt; sourceTree = SOURCE_ROOT; };
+		A186E0FA1AF645BBB580ED8A /* wxSQLite3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libwxSQLite3.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0F5A0E38B9E4BEB9BFA6944 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/wxsqlite3.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = wxsqlite3.cpp; path = src/wxsqlite3.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4DD16BFC27C525EA00E42682 /* Frameworks */ = {
+		691D722885624C028C446239 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -41,392 +117,684 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4DD16BF527C525EA00E42682 = {
+		068F5C5111B340CC8DA4FFF7 /* CMake Rules */ = {
 			isa = PBXGroup;
 			children = (
-				4DD16C0527C5261800E42682 /* include */,
-				4DD16C0B27C5261800E42682 /* src */,
-				4DD16BFF27C525EA00E42682 /* Products */,
 			);
+			name = "CMake Rules";
 			sourceTree = "<group>";
 		};
-		4DD16BFF27C525EA00E42682 /* Products */ = {
+		15D954447E634F1FBDF4F6F0 /* Source Files */ = {
 			isa = PBXGroup;
 			children = (
-				4DD16BFE27C525EA00E42682 /* libwxSQLite3.a */,
+				865C6E00BE294DB8B33AB50A /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.c */,
+				F0F5A0E38B9E4BEB9BFA6944 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/wxsqlite3.cpp */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+		5A1467DEC7D643838208C346 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A186E0FA1AF645BBB580ED8A /* wxSQLite3 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		4DD16C0527C5261800E42682 /* include */ = {
+		ADF241D5CA9D46EF8ECF7CE8 = {
 			isa = PBXGroup;
 			children = (
-				4DD16C0627C5261800E42682 /* wx */,
+				EB3D37A5D9134465BAFFFBB1 /* wxSQLite3 */,
+				B33BFB4E6A7B4D1181129D34 /* ALL_BUILD */,
+				5A1467DEC7D643838208C346 /* Products */,
+				C8B710394BE8434B90AABEE9 /* Frameworks */,
 			);
-			path = include;
 			sourceTree = "<group>";
 		};
-		4DD16C0627C5261800E42682 /* wx */ = {
+		B33BFB4E6A7B4D1181129D34 /* ALL_BUILD */ = {
 			isa = PBXGroup;
 			children = (
-				4DD16C0727C5261800E42682 /* wxsqlite3.h */,
-				4DD16C0827C5261800E42682 /* wxsqlite3opt.h */,
-				4DD16C0927C5261800E42682 /* wxsqlite3_version.h */,
-				4DD16C0A27C5261800E42682 /* wxsqlite3def.h */,
+				068F5C5111B340CC8DA4FFF7 /* CMake Rules */,
+				84E9E61C58A6425A9834E66D /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeLists.txt */,
 			);
-			path = wx;
+			name = ALL_BUILD;
 			sourceTree = "<group>";
 		};
-		4DD16C0B27C5261800E42682 /* src */ = {
+		C8B710394BE8434B90AABEE9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4DD16C0C27C5261800E42682 /* wxsqlite3.cpp */,
-				4DD16C0D27C5261800E42682 /* wxsqlite3_version.rc */,
-				4DD16C0E27C5261800E42682 /* sqlite3mc_amalgamation.h */,
-				4DD16C0F27C5261800E42682 /* sqlite3mc_config.h */,
-				4DD16C1027C5261800E42682 /* sqlite3mc_amalgamation.c */,
 			);
-			path = src;
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC5FDA2B4D6F42929073688E /* Header Files */ = {
+			isa = PBXGroup;
+			children = (
+				06102103986C44BCB63C9B70 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.h */,
+				4B55C7368B6B480F99FF8B05 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_config.h */,
+			);
+			name = "Header Files";
+			sourceTree = "<group>";
+		};
+		EB3D37A5D9134465BAFFFBB1 /* wxSQLite3 */ = {
+			isa = PBXGroup;
+			children = (
+				DC5FDA2B4D6F42929073688E /* Header Files */,
+				15D954447E634F1FBDF4F6F0 /* Source Files */,
+				A174CF9552A146CDBA535C03 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeLists.txt */,
+			);
+			name = wxSQLite3;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		4DD16BFA27C525EA00E42682 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4DD16C1127C5261800E42682 /* wxsqlite3.h in Headers */,
-				4DD16C1327C5261800E42682 /* wxsqlite3_version.h in Headers */,
-				4DD16C1227C5261800E42682 /* wxsqlite3opt.h in Headers */,
-				4DD16C1427C5261800E42682 /* wxsqlite3def.h in Headers */,
-				4DD16C1727C5261800E42682 /* sqlite3mc_config.h in Headers */,
-				4DD16C1627C5261800E42682 /* sqlite3mc_amalgamation.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		4DD16BFD27C525EA00E42682 /* wxSQLite3 */ = {
+		1920D14EF13E49B4964BE3E6 /* wxSQLite3 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4DD16C0227C525EA00E42682 /* Build configuration list for PBXNativeTarget "wxSQLite3" */;
+			buildConfigurationList = 65881CDAB35444C8B470A9A0 /* Build configuration list for PBXNativeTarget "wxSQLite3" */;
 			buildPhases = (
-				4DD16BFA27C525EA00E42682 /* Headers */,
-				4DD16BFB27C525EA00E42682 /* Sources */,
-				4DD16BFC27C525EA00E42682 /* Frameworks */,
+				77F558A36493473BA24677F7 /* Sources */,
+				691D722885624C028C446239 /* Frameworks */,
+				BD0DCBE007A9BC936D41D495 /* CMake PostBuild Rules */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FF8E3442A9E144E6BBADAE2C /* PBXTargetDependency */,
 			);
 			name = wxSQLite3;
 			productName = wxSQLite3;
-			productReference = 4DD16BFE27C525EA00E42682 /* libwxSQLite3.a */;
-			productType = "com.apple.product-type.library.static";
+			productReference = A186E0FA1AF645BBB580ED8A /* wxSQLite3 */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		4DD16BF627C525EA00E42682 /* Project object */ = {
+		1DC41567675D475AACD6BEFE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1320;
-				TargetAttributes = {
-					4DD16BFD27C525EA00E42682 = {
-						CreatedOnToolsVersion = 13.2.1;
-					};
-				};
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1340;
 			};
-			buildConfigurationList = 4DD16BF927C525EA00E42682 /* Build configuration list for PBXProject "wxSQLite3" */;
-			compatibilityVersion = "Xcode 13.0";
-			developmentRegion = en;
-			hasScannedForEncodings = 0;
-			knownRegions = (
-				en,
-				Base,
+			buildConfigurationList = 83933E83CCD74DF29F8E2940 /* Build configuration list for PBXProject "wxSQLite3" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				32E3D321085D42219E0686AB /* Debug */,
+				60CA22CD772248289E6CFF8F /* Release */,
+				2E730CBBD0B149F7A3BD7E4E /* MinSizeRel */,
+				1869E4A3D1BE4DB2A4F8D4FD /* RelWithDebInfo */,
 			);
-			mainGroup = 4DD16BF527C525EA00E42682;
-			productRefGroup = 4DD16BFF27C525EA00E42682 /* Products */;
-			projectDirPath = "";
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = ADF241D5CA9D46EF8ECF7CE8;
+			projectDirPath = .;
 			projectRoot = "";
 			targets = (
-				4DD16BFD27C525EA00E42682 /* wxSQLite3 */,
+				FA6189BE9EAF4DDBBE752F1E /* ALL_BUILD */,
+				F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */,
+				1920D14EF13E49B4964BE3E6 /* wxSQLite3 */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3C0110FC8322DE7E50886E21 = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		9B50530E35CC49C82C2FACCF = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here
+exit 0";
+			showEnvVarsInLog = 0;
+		};
+		BD0DCBE007A9BC936D41D495 /* CMake PostBuild Rules */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "CMake PostBuild Rules";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  /opt/homebrew/Cellar/cmake/3.24.0/bin/cmake -E cmake_symlink_library /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/Debug/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/Debug/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/Debug/libwxSQLite3.dylib
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  /opt/homebrew/Cellar/cmake/3.24.0/bin/cmake -E cmake_symlink_library /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/Release/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/Release/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/Release/libwxSQLite3.dylib
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  /opt/homebrew/Cellar/cmake/3.24.0/bin/cmake -E cmake_symlink_library /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/MinSizeRel/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/MinSizeRel/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/MinSizeRel/libwxSQLite3.dylib
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  /opt/homebrew/Cellar/cmake/3.24.0/bin/cmake -E cmake_symlink_library /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/RelWithDebInfo/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/RelWithDebInfo/libwxSQLite3.dylib /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/RelWithDebInfo/libwxSQLite3.dylib
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		C66F0A867B0E2ED5652DEB66 /* Generate CMakeFiles/ZERO_CHECK */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ZERO_CHECK";
+			outputPaths = (
+"/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeFiles/ZERO_CHECK"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeScripts/ReRunCMake.make
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  make -f /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeScripts/ReRunCMake.make
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+		D90DBCBEB398AAD6CECA4295 /* Generate CMakeFiles/ALL_BUILD */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate CMakeFiles/ALL_BUILD";
+			outputPaths = (
+"/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/CMakeFiles/ALL_BUILD"			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e
+if test \"$CONFIGURATION\" = \"Debug\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"Release\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"MinSizeRel\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  echo Build\\ all\\ projects
+fi
+if test \"$CONFIGURATION\" = \"RelWithDebInfo\"; then :
+  cd /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3
+  echo Build\\ all\\ projects
+fi
+";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		4DD16BFB27C525EA00E42682 /* Sources */ = {
+		77F558A36493473BA24677F7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4DD16C1827C5261800E42682 /* sqlite3mc_amalgamation.c in Sources */,
-				4DD16C1527C5261800E42682 /* wxsqlite3.cpp in Sources */,
+				F4EB76A9332145768B7F8426 /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/sqlite3mc_amalgamation.c */,
+				9D89246A5A6B48E3A2BFC8EC /* /Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src/wxsqlite3.cpp */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		14639438CD5D431DA1B8C851 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1920D14EF13E49B4964BE3E6 /* wxSQLite3 */;
+			targetProxy = 9A81C6FE8F834F22831DB538 /* PBXContainerItemProxy */;
+		};
+		DF820AB6EC314C478AA19794 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */;
+			targetProxy = EC8CDE058E2144C38237733E /* PBXContainerItemProxy */;
+		};
+		FF8E3442A9E144E6BBADAE2C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9F4FB104FF949C7A4FA7352 /* ZERO_CHECK */;
+			targetProxy = 9E99B6BB2C9645A29C3DFE22 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		4DD16C0027C525EA00E42682 /* Debug */ = {
+		0443993FE12048538AFD7C0E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		4DD16C0127C525EA00E42682 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = Release;
 		};
-		4DD16C0327C525EA00E42682 /* Debug */ = {
+		0B74EDBC4AC44BCC8E8CCD23 /* MinSizeRel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 524GJ9D5JW;
-				EXECUTABLE_PREFIX = lib;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
-				HEADER_SEARCH_PATHS = (
-					"$(WXROOT)/include",
-					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
-					./include,
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
-					"-I$(WXROOT)/include",
-					"-D_FILE_OFFSET_BITS=64",
-					"-DWXUSINGDLL",
-					"-D__WXMAC__",
-					"-D__WXOSX__",
-					"-D__WXOSX_COCOA__",
-					"-msse4.2",
-					"-maes",
-				);
-				OTHER_LDFLAGS = (
-					"-L$(WXROOT)/build-cocoa-debug/lib",
-					"-framework",
-					IOKit,
-					"-framework",
-					Carbon,
-					"-framework",
-					Cocoa,
-					"-framework",
-					QuartzCore,
-					"-framework",
-					AudioToolbox,
-					"-framework",
-					System,
-					"-framework",
-					OpenGL,
-					"-lwx_osx_cocoau_xrc-3.1",
-					"-lwx_osx_cocoau_html-3.1",
-					"-lwx_osx_cocoau_qa-3.1",
-					"-lwx_osx_cocoau_core-3.1",
-					"-lwx_baseu_xml-3.1",
-					"-lwx_baseu_net-3.1",
-					"-lwx_baseu-3.1",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = (
-					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
-					./include,
-				);
-				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
-				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
-				WXTOOLKIT = cocoa;
-				WXTOOLKITUPPER = COCOA;
-				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		12B38B7471B84F35ABA67D9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = Debug;
 		};
-		4DD16C0427C525EA00E42682 /* Release */ = {
+		29361F2B23894CA48879D774 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 524GJ9D5JW;
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
 				EXECUTABLE_PREFIX = lib;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(WX_PREPROCESSOR_DEFINITIONS)";
-				HEADER_SEARCH_PATHS = (
-					"$(WXROOT)/include",
-					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
-					./include,
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-I$(WXROOT)/build-cocoa-debug/lib/wx/include/osx_cocoa-unicode-3.1",
-					"-I$(WXROOT)/include",
-					"-D_FILE_OFFSET_BITS=64",
-					"-DWXUSINGDLL",
-					"-D__WXMAC__",
-					"-D__WXOSX__",
-					"-D__WXOSX_COCOA__",
-					"-msse4.2",
-					"-maes",
-				);
-				OTHER_LDFLAGS = (
-					"-L$(WXROOT)/build-cocoa-debug/lib",
-					"-framework",
-					IOKit,
-					"-framework",
-					Carbon,
-					"-framework",
-					Cocoa,
-					"-framework",
-					QuartzCore,
-					"-framework",
-					AudioToolbox,
-					"-framework",
-					System,
-					"-framework",
-					OpenGL,
-					"-lwx_osx_cocoau_xrc-3.1",
-					"-lwx_osx_cocoau_html-3.1",
-					"-lwx_osx_cocoau_qa-3.1",
-					"-lwx_osx_cocoau_core-3.1",
-					"-lwx_baseu_xml-3.1",
-					"-lwx_baseu_net-3.1",
-					"-lwx_baseu-3.1",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = (
-					"$(WXROOT)/build/osx/setup/$(WXTOOLKIT)/include",
-					./include,
-				);
-				WXPLATFORM = "__WXOSX_$(WXTOOLKITUPPER)__";
-				WXROOT = /Users/amadeusk525/Documents/Amadeus/wxWidgets;
-				WXTOOLKIT = cocoa;
-				WXTOOLKITUPPER = COCOA;
-				WX_PREPROCESSOR_DEFINITIONS = "WXBUILDING $(WXPLATFORM) __WX__ _FILE_OFFSET_BITS=64 _LARGE_FILES MACOS_CLASSIC __WXMAC_XCODE__=1 SCI_LEXER NO_CXX11_REGEX WX_PRECOMP=1 wxUSE_UNICODE_UTF8=0 wxUSE_UNICODE_WCHAR=1 HAVE_CONFIG_H PNG_NO_CONFIG_H";
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",wxSQLite3_EXPORTS,WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src","$(inherited)");
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (/usr/local/lib,"$(inherited)");
+				LIBRARY_SEARCH_PATHS = ("/usr/local/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",/usr/local/lib,"$(inherited)");
+				LIBRARY_STYLE = DYNAMIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = ("   -fPIC ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = " -pthread    -fPIC ";
+				OTHER_LDFLAGS = (" -dynamiclib -Wl,-headerpad_max_install_names","-L/usr/local/lib","-pthread","-lwx_osx_cocoau_xrc-3.3","-lwx_osx_cocoau_webview-3.3","-lwx_osx_cocoau_stc-3.3","-lwx_osx_cocoau_richtext-3.3","-lwx_osx_cocoau_ribbon-3.3","-lwx_osx_cocoau_propgrid-3.3","-lwx_osx_cocoau_aui-3.3","-lwx_osx_cocoau_gl-3.3","-lwx_osx_cocoau_media-3.3","-lwx_osx_cocoau_html-3.3","-lwx_osx_cocoau_qa-3.3","-lwx_osx_cocoau_core-3.3","-lwx_baseu_xml-3.3","-lwx_baseu_net-3.3","-lwx_baseu-3.3","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSQLite3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		4CA65B723D1C40A9A8E12054 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",wxSQLite3_EXPORTS,WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src","$(inherited)");
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (/usr/local/lib,"$(inherited)");
+				LIBRARY_SEARCH_PATHS = ("/usr/local/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",/usr/local/lib,"$(inherited)");
+				LIBRARY_STYLE = DYNAMIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = ("    -DNDEBUG -fPIC ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = " -pthread     -DNDEBUG -fPIC ";
+				OTHER_LDFLAGS = (" -dynamiclib -Wl,-headerpad_max_install_names","-L/usr/local/lib","-pthread","-lwx_osx_cocoau_xrc-3.3","-lwx_osx_cocoau_webview-3.3","-lwx_osx_cocoau_stc-3.3","-lwx_osx_cocoau_richtext-3.3","-lwx_osx_cocoau_ribbon-3.3","-lwx_osx_cocoau_propgrid-3.3","-lwx_osx_cocoau_aui-3.3","-lwx_osx_cocoau_gl-3.3","-lwx_osx_cocoau_media-3.3","-lwx_osx_cocoau_html-3.3","-lwx_osx_cocoau_qa-3.3","-lwx_osx_cocoau_core-3.3","-lwx_baseu_xml-3.3","-lwx_baseu_net-3.3","-lwx_baseu-3.3","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSQLite3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
 			};
 			name = Release;
+		};
+		588D8776D32A41CE8CA1EA82 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",wxSQLite3_EXPORTS,WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src","$(inherited)");
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (/usr/local/lib,"$(inherited)");
+				LIBRARY_SEARCH_PATHS = ("/usr/local/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",/usr/local/lib,"$(inherited)");
+				LIBRARY_STYLE = DYNAMIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = ("       -DNDEBUG -fPIC ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = " -pthread        -DNDEBUG -fPIC ";
+				OTHER_LDFLAGS = (" -dynamiclib -Wl,-headerpad_max_install_names","-L/usr/local/lib","-pthread","-lwx_osx_cocoau_xrc-3.3","-lwx_osx_cocoau_webview-3.3","-lwx_osx_cocoau_stc-3.3","-lwx_osx_cocoau_richtext-3.3","-lwx_osx_cocoau_ribbon-3.3","-lwx_osx_cocoau_propgrid-3.3","-lwx_osx_cocoau_aui-3.3","-lwx_osx_cocoau_gl-3.3","-lwx_osx_cocoau_media-3.3","-lwx_osx_cocoau_html-3.3","-lwx_osx_cocoau_qa-3.3","-lwx_osx_cocoau_core-3.3","-lwx_baseu_xml-3.3","-lwx_baseu_net-3.3","-lwx_baseu-3.3","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSQLite3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		61F63EB2F0104BFD899973FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Debug;
+		};
+		9FD6F3CD88DA4048A8DFD02C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/build";
+			};
+			name = Release;
+		};
+		AF7A989BFBED49458761FF88 /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		B4074AA2322F4AACA65F18C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ZERO_CHECK;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = Release;
+		};
+		BAD53CA9C5A64F2FBC5AD7F3 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		D4490088A4384D59B2A52C6A /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'","$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INSTALL_PATH = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = ("","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = ALL_BUILD;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = RelWithDebInfo;
+		};
+		D7589DBF90B9437EAE0A23EE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/build";
+			};
+			name = Debug;
+		};
+		EA351A9F4B8C45CF979006DA /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/build";
+			};
+			name = MinSizeRel;
+		};
+		EE3FF5A234424C5BA53C5015 /* MinSizeRel */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_PREFIX = lib;
+				EXECUTABLE_SUFFIX = .dylib;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'",wxSQLite3_EXPORTS,WXUSINGDLL,__WXOSX_COCOA__,__WXMAC__,__WXOSX__,"$(inherited)");
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ("/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/include","/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/src","$(inherited)");
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = (/usr/local/lib,"$(inherited)");
+				LIBRARY_SEARCH_PATHS = ("/usr/local/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",/usr/local/lib,"$(inherited)");
+				LIBRARY_STYLE = DYNAMIC;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = ("    -DNDEBUG -fPIC ","$(inherited)");
+				OTHER_CPLUSPLUSFLAGS = " -pthread     -DNDEBUG -fPIC ";
+				OTHER_LDFLAGS = (" -dynamiclib -Wl,-headerpad_max_install_names","-L/usr/local/lib","-pthread","-lwx_osx_cocoau_xrc-3.3","-lwx_osx_cocoau_webview-3.3","-lwx_osx_cocoau_stc-3.3","-lwx_osx_cocoau_richtext-3.3","-lwx_osx_cocoau_ribbon-3.3","-lwx_osx_cocoau_propgrid-3.3","-lwx_osx_cocoau_aui-3.3","-lwx_osx_cocoau_gl-3.3","-lwx_osx_cocoau_media-3.3","-lwx_osx_cocoau_html-3.3","-lwx_osx_cocoau_qa-3.3","-lwx_osx_cocoau_core-3.3","-lwx_baseu_xml-3.3","-lwx_baseu_net-3.3","-lwx_baseu-3.3","$(inherited)");
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = wxSQLite3;
+				SECTORDER_FLAGS = "";
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3";
+				SYSTEM_HEADER_SEARCH_PATHS = ("/usr/local/lib/wx/include/osx_cocoa-unicode-3.3","/usr/local/include/wx-3.3","$(inherited)");
+				USE_HEADERMAP = NO;
+				WARNING_CFLAGS = ("$(inherited)");
+			};
+			name = MinSizeRel;
+		};
+		F8E15483CCB443349EAE695D /* RelWithDebInfo */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk;
+				SYMROOT = "/Users/amadeusk525/Documents/Amadeus/Amadeus-Writer/sdk/wxSQLite3/build";
+			};
+			name = RelWithDebInfo;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4DD16BF927C525EA00E42682 /* Build configuration list for PBXProject "wxSQLite3" */ = {
+		3EAC96C52AAD4A11BDF18447 /* Build configuration list for PBXAggregateTarget "ZERO_CHECK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4DD16C0027C525EA00E42682 /* Debug */,
-				4DD16C0127C525EA00E42682 /* Release */,
+				12B38B7471B84F35ABA67D9A /* Debug */,
+				B4074AA2322F4AACA65F18C5 /* Release */,
+				0B74EDBC4AC44BCC8E8CCD23 /* MinSizeRel */,
+				AF7A989BFBED49458761FF88 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
-		4DD16C0227C525EA00E42682 /* Build configuration list for PBXNativeTarget "wxSQLite3" */ = {
+		65881CDAB35444C8B470A9A0 /* Build configuration list for PBXNativeTarget "wxSQLite3" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4DD16C0327C525EA00E42682 /* Debug */,
-				4DD16C0427C525EA00E42682 /* Release */,
+				29361F2B23894CA48879D774 /* Debug */,
+				4CA65B723D1C40A9A8E12054 /* Release */,
+				EE3FF5A234424C5BA53C5015 /* MinSizeRel */,
+				588D8776D32A41CE8CA1EA82 /* RelWithDebInfo */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
+		};
+		83933E83CCD74DF29F8E2940 /* Build configuration list for PBXProject "wxSQLite3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D7589DBF90B9437EAE0A23EE /* Debug */,
+				9FD6F3CD88DA4048A8DFD02C /* Release */,
+				EA351A9F4B8C45CF979006DA /* MinSizeRel */,
+				F8E15483CCB443349EAE695D /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FB48C20AE53C4DD69C62111A /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61F63EB2F0104BFD899973FA /* Debug */,
+				0443993FE12048538AFD7C0E /* Release */,
+				BAD53CA9C5A64F2FBC5AD7F3 /* MinSizeRel */,
+				D4490088A4384D59B2A52C6A /* RelWithDebInfo */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 4DD16BF627C525EA00E42682 /* Project object */;
+	rootObject = 1DC41567675D475AACD6BEFE /* Project object */;
 }

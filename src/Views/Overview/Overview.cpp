@@ -1,4 +1,5 @@
 #include "Views/Overview/Overview.h"
+#include "Style/Style.hpp"
 #include "Utils/amUtility.h"
 #include "MyApp.h"
 
@@ -24,10 +25,10 @@ amBookPicker::amBookPicker(amOverview* parent) :
 
 	const wxSize buttonSize(24, 24);
 	wxButton* addBook = new wxButton(this, -1, "", wxDefaultPosition, buttonSize);
-	addBook->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Plus.svg", buttonSize));
+	addBook->SetBitmap(Style::Icon::GetBmp(IconName::Plus, buttonSize));
 	addBook->Bind(wxEVT_BUTTON, &amBookPicker::OnCreateBook, this);
 	wxButton* removeBook = new wxButton(this, -1, "", wxDefaultPosition, buttonSize);
-	removeBook->SetBitmap(wxBitmapBundle::FromSVGFile("Assets/Common/Minus.svg", buttonSize));
+	removeBook->SetBitmap(Style::Icon::GetBmp(IconName::Minus, buttonSize));
 	removeBook->Bind(wxEVT_BUTTON, &amBookPicker::OnDeleteBook, this);
 
 	wxBoxSizer* bottomLine = new wxBoxSizer(wxHORIZONTAL);

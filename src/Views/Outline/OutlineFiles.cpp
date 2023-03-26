@@ -1,5 +1,6 @@
 #include "Views/Outline/OutlineFiles.h"
 
+#include "Style/Style.hpp"
 #include "Views/MainFrame.h"
 #include "MyApp.h"
 
@@ -457,8 +458,8 @@ amOutlineFilesPanel::amOutlineFilesPanel(wxWindow* parent) : amSplitterWindow(pa
 	const wxSize iconSize(24, 24);
 
 	m_filesTB = new wxToolBar(m_leftPanel, -1);
-	m_filesTB->AddTool(TOOL_NewFile, "", wxBitmapBundle::FromSVGFile("Assets/Common/AddFile-light.svg", iconSize), _("Add new file."));
-	m_filesTB->AddTool(TOOL_NewFolder, "", wxBitmapBundle::FromSVGFile("Assets/Common/AddFolder-light.svg", iconSize), _("Add new folder."));
+	m_filesTB->AddTool(TOOL_NewFile, "", Style::Icon::GetBmp(IconName::AddFileLight, iconSize), _("Add new file."));
+	m_filesTB->AddTool(TOOL_NewFolder, "", Style::Icon::GetBmp(IconName::AddFolderLight, iconSize), _("Add new folder."));
 	m_filesTB->SetBackgroundColour(wxColour(30, 30, 30));
 
 	m_filesTB->Realize();
